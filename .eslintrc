@@ -1,0 +1,20 @@
+{
+  "parser": "babel-eslint",
+  "extends": "eslint:recommended",
+  "rules": {
+    "arrow-parens": [2, "as-needed"],
+    "no-console": 0,
+    "no-const-assign": 2,
+    "no-unneeded-ternary": 2,
+    "no-var": 2,
+    "prefer-arrow-callback": 2,
+    "prefer-const": 2,
+    "semi": [2, "never"]
+  },
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true,
+    "node": true
+  }
+}
