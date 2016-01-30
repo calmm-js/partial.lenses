@@ -5,6 +5,7 @@
     "arrow-parens": [2, "as-needed"],
     "no-console": 0,
     "no-const-assign": 2,
+    "no-sparse-arrays": 0,
     "no-unneeded-ternary": 2,
     "no-var": 2,
     "prefer-arrow-callback": 2,
