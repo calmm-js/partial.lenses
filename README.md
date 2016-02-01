@@ -124,8 +124,8 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 ```
 
 The use case for `normalize` is to make it easy to determine whether, after a
-sequence of changes, the data has actually changed.  By keeping the data
-normalized, a simple `R.equals` comparison will do.
+change, the data has actually changed.  By keeping the data normalized, a simple
+`R.equals` comparison will do.
 
 ### L.replace(inn, out)
 
