@@ -112,6 +112,21 @@ viewed is determined by finding the first element from the input array that
 matches the given unary predicate.  When no matching element is found the effect
 is same as with `R.index` with the index set to the length of the array.
 
+### L.normalize(transform)
+
+`L.normalize(transform)` maps the value with same given `transform` when viewed
+and set and implicitly maps undefined to undefined.  More specifically,
+`L.normalize(transform)` is equivalent to `R.lens(toPartial(transform),
+toPartial(transform))` where
+
+```js
+const toPartial = transform => x => undefined === x ? x : transform(x)
+```
+
+The use case for `normalize` is to make it easy to determine whether, after a
+sequence of changes, the data has actually changed.  By keeping the data
+normalized, a simple `R.equals` comparison will do.
+
 ### L.replace(inn, out)
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice

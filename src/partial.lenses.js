@@ -32,6 +32,9 @@ const setKey = (k, v, o) => {
 
 const dropped = xs => Object.keys(xs).length === 0 ? undefined : xs
 
+//
+
+const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
@@ -60,6 +63,9 @@ L.view = R.view
 L.replace = (inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
          conserve(y => R.equals(y, out) ? inn : y))
+
+L.normalize = transform =>
+  R.lens(toPartial(transform), conserve(toPartial(transform)))
 
 L.prop = k =>
   R.lens(o => o && o[k],
