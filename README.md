@@ -121,8 +121,15 @@ versa when set.  Values are compared using `R.equals` (see
 Examples:
 
 ```js
-> L.view(L(L.replace(undefined, {type: "title", text: ""}), "text"), undefined)
+> L.view(L(L.replace(undefined, {type: "title", text: ""}),
+           "text"),
+         undefined)
 ""
-> L.set(L(L.replace(undefined, {type: "title", text: ""}), "text"), "", {type: "title", text: "not empty"})
+> L.set(L(L.replace(undefined, {type: "title", text: ""}),
+          "text"),
+        "",
+        {type: "title", text: "not empty"})
 undefined
 ```
+
+The use case for `replace` is to handle optional properties and elements.
