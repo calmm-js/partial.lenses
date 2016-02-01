@@ -5,10 +5,14 @@ import R from "ramda"
 const deleteKey = (k, o) => {
   if (o === undefined || !(k in o))
     return o
-  const r = {}
-  for (const p in o)
-    if (p !== k)
+  let r
+  for (const p in o) {
+    if (p !== k) {
+      if (undefined === r)
+        r = {}
       r[p] = o[p]
+    }
+  }
   return r
 }
 
@@ -23,6 +27,11 @@ const setKey = (k, v, o) => {
       r[p] = o[p]
   return r
 }
+
+//
+
+const dropped = xs => Object.keys(xs).length === 0 ? undefined : xs
+
 
 //
 
@@ -63,7 +72,7 @@ L.find = predicate => R.lens(xs => xs && xs.find(predicate), (x, xs) => {
     const i = xs.findIndex(predicate)
     if (i < 0)
       return xs
-    return xs.slice(0, i).concat(xs.slice(i+1))
+    return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
   } else {
     if (xs === undefined)
       return [x]
@@ -81,7 +90,7 @@ L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
     if (xs === undefined)
       return undefined
     if (i < xs.length)
-      return xs.slice(0, i).concat(xs.slice(i+1))
+      return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
     return xs
   } else {
     if (xs === undefined)

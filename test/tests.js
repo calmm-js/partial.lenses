@@ -19,6 +19,8 @@ const testEq = (expr, fn, expect) => it(`${expr} => ${show(expect)}`, () => {
 })
 
 describe('L.find', () => {
+  testEq('L.set(L.find(R.equals(2)), undefined, [,,2])', () =>
+          L.set(L.find(R.equals(2)), undefined, [,,2]), undefined)
   testEq('L.set(L.find(R.equals(2)), undefined, [1, 2, 3])', () =>
           L.set(L.find(R.equals(2)), undefined, [1, 2, 3]), [1, 3])
   testEq('L.set(L.find(R.equals(2)), 4, [1, 2, 3])', () =>
@@ -36,6 +38,8 @@ describe('L.find', () => {
 })
 
 describe('L.index', () => {
+  testEq('L.set(L(1), undefined, [,,])', () =>
+          L.set(L(1), undefined, [,,]), undefined)
   testEq('L.set(L(1), 4, [1, 2, 3])', () =>
           L.set(L(1), 4, [1, 2, 3]), [1, 4, 3])
   testEq('L.set(L(2), 4, undefined)', () =>
@@ -57,6 +61,8 @@ describe('L.index', () => {
 })
 
 describe('L.prop', () => {
+  testEq('L.set(L("x"), undefined, {x: 1})', () =>
+          L.set(L("x"), undefined, {x: 1}), undefined)
   testEq('L.set(L("y"), undefined, {x: 1, y: 2})', () =>
           L.set(L("y"), undefined, {x: 1, y: 2}), {x: 1})
   testEq('L.set(L("y"), 3, {x: 1, y: 2})', () =>
