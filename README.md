@@ -108,9 +108,8 @@ partial lens:
 
 `L.find(predicate)` operates on arrays like `L.index`, but the index to be
 viewed is determined by finding the first element from the input array that
-matches the unary `predicate`.  When no element is found, the result is, of
-course, undefined and like with `R.index` when the index set to the length of
-the array.
+matches the given unary predicate.  When no matching element is found the effect
+is same as with `R.index` when the index set to the length of the array.
 
 ### L.replace(inn, out)
 
