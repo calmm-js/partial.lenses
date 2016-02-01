@@ -1,30 +1,40 @@
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 
 This library provides a collection of [Ramda](http://ramdajs.com/) compatible
-partial (dealing with `undefined` results) lenses.  The intention is to make
-modification or editing of JSON data convenient and *compositional*.
+*partial* lenses.  While an ordinary lens can be used to view and update an
+existing part of a data structure, a partial lens can *view* optional data,
+*insert* new data, *update* existing data and *delete* existing data.
 
-## Motivation
+To illustrate the idea we could give lenses the naive type definition
 
-Consider the following REPL session using Ramda 0.19.1:
-
-```js
-> R.set(R.lensPath(["x", "y"]), 1, {})
-{ x: { y: 1 } }
-> R.set(R.compose(R.lensProp("x"), R.lensProp("y")), 1, {})
-TypeError: Cannot read property 'y' of undefined
-> R.view(R.lensPath(["x", "y"]), {})
-undefined
-> R.view(R.compose(R.lensProp("x"), R.lensProp("y")), {})
-TypeError: Cannot read property 'y' of undefined
-> R.set(R.lensPath(["x", "y"]), undefined, {x: {y: 1}})
-{ x: { y: undefined } }
-> R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
-{ x: { y: undefined } }
+```haskell
+type Lens s a = (s -> a, a -> s -> s)
 ```
 
-One might assume that `R.lensPath([p1, ..., pN])` is equivalent to
-`R.compose(R.lensProp(p1), ..., R.lensProp(pN))`, but that is not the case.
+defining a lens as a pair of a getter and a setter for ordinary lenses.  The
+type of a partial lens would then be
+
+```haskell
+type PartialLens s a = (s -> Maybe a, Maybe a -> s -> s)
+```
+
+which we can simplify to
+
+```haskell
+type PartialLens s a = Lens s (Maybe a)
+```
+
+This means that partial lenses can be composed, viewed, mapped over and set
+using the same operations as with ordinary lenses.  However, primitive partial
+lenses (e.g. `L.prop` explained below) are not necessarily the same as primitive
+ordinary lenses (e.g. Ramda's
+[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)).
+
+In Javascript, optional data can be mapped to `undefined`, which is what partial
+lenses also do.  When the viewed part of a data structure is missing, the result
+is `undefined`.  When a part of a data structure is set to `undefined`, the part
+is deleted.  Partial lenses are defined in such a way that operations compose
+and one can conveniently and robustly operate on deeply nested data structures.
 
 ## Usage
 
