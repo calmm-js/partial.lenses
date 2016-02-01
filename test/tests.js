@@ -87,3 +87,24 @@ describe("L.replace", () => {
   testEq('L.set(L.replace(undefined, ""), "defined", "anything")', () =>
           L.set(L.replace(undefined, ""), "defined", "anything"), "defined")
 })
+
+describe("L.normalize", () => {
+  testEq('L.view(L.normalize(R.sortBy(R.identity)), [1,3,2,5])', () =>
+          L.view(L.normalize(R.sortBy(R.identity)), [1,3,2,5]), [1,2,3,5])
+
+  testEq('L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, [1,3,2,5])', () =>
+          L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, [1,3,2,5]),
+         [1,3,4,5])
+
+  testEq('L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, undefined)', () =>
+          L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, undefined),
+         [4])
+
+  testEq('L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [2])', () =>
+          L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [2]),
+         undefined)
+
+  testEq('L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [1,3,2,5])', () =>
+          L.set(L(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [1,3,2,5]),
+         [1,3,5])
+})
