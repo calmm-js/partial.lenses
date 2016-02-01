@@ -11,8 +11,8 @@ To illustrate the idea we could give lenses the naive type definition
 type Lens s a = (s -> a, a -> s -> s)
 ```
 
-defining a lens as a pair of a getter and a setter for ordinary lenses.  The
-type of a partial lens would then be
+defining a lens as a pair of a getter and a setter.  The type of a partial lens
+would then be
 
 ```haskell
 type PartialLens s a = (s -> Maybe a, Maybe a -> s -> s)
