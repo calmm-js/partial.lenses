@@ -114,7 +114,7 @@ is same as with `R.index` when the index set to the length of the array.
 ### L.replace(inn, out)
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
-verse when set.  Values are compared using `R.equals` (see
+versa when set.  Values are compared using `R.equals` (see
 [equals](http://ramdajs.com/0.19.0/docs/#equals)).
 
 Examples:
