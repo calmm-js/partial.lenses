@@ -46,8 +46,9 @@ import `L`:
 
 ## Shorthand composition and lifting
 
-The default import, `L`, is also a shorthand function for lens composition and
-lifting.  The semantics can be described as
+The default import, `L`, is also a shorthand function for lens composition (see
+[compose](http://ramdajs.com/0.19.0/docs/#compose)) and lifting.  The semantics
+can be described as
 
 ```
 L(l1, ..., lN) === R.compose(lift(l1), ..., lift(lN))
