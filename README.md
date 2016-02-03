@@ -5,6 +5,12 @@ This library provides a collection of [Ramda](http://ramdajs.com/) compatible
 existing part of a data structure, a partial lens can *view* optional data,
 *insert* new data, *update* existing data and *delete* existing data.
 
+In Javascript, optional data can be mapped to `undefined`, which is what partial
+lenses also do.  When the viewed part of a data structure is missing, the result
+is `undefined`.  When a part of a data structure is set to `undefined`, the part
+is deleted.  Partial lenses are defined in such a way that operations compose
+and one can conveniently and robustly operate on deeply nested data structures.
+
 Index:
 * [Examples](#examples)
 * [Reference](#reference)
@@ -267,9 +273,3 @@ using the same operations as with ordinary lenses.  However, primitive partial
 lenses (e.g. [L.prop](#lpropstring)) are not necessarily the same as primitive
 ordinary lenses (e.g. Ramda's
 [lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)).
-
-In Javascript, optional data can be mapped to `undefined`, which is what partial
-lenses also do.  When the viewed part of a data structure is missing, the result
-is `undefined`.  When a part of a data structure is set to `undefined`, the part
-is deleted.  Partial lenses are defined in such a way that operations compose
-and one can conveniently and robustly operate on deeply nested data structures.
