@@ -19,7 +19,7 @@ const data = { contents: [ { language: "en", text: "Title" },
                            { language: "sv", text: "Rubrik" } ] }
 ```
 
-Let's define a parameterized lens for accessing texts:
+First we define a parameterized lens for accessing texts:
 
 ```js
 const textIn = language =>
@@ -31,7 +31,8 @@ const textIn = language =>
     L.default(""))
 ```
 
-We can view or query texts:
+Like with ordinary lenses, we can now use the partial lens to view or query
+texts:
 
 ```js
 > L.view(textIn("sv"), data)
@@ -47,7 +48,8 @@ If we query a text that does not exist, we get the default:
 ""
 ```
 
-We get the default even if query from `undefined`:
+With the partial lens we defined, we get the default even if we query from
+`undefined`:
 
 ```js
 > L.view(textIn("fi"), undefined)
@@ -56,7 +58,15 @@ We get the default even if query from `undefined`:
 
 With partial lenses, `undefined` is the equivalent of empty.
 
-We can insert texts:
+As with ordinary lenses, we can use the same lens to update texts:
+
+```js
+> L.set(textIn("en"), "The title", data)
+{ contents: [ { language: "en", text: "The title" },
+              { language: "sv", text: "Rubrik" } ] }
+```
+
+The same partial lens also allows us to insert new texts:
 
 ```js
 > L.set(textIn("fi"), "Otsikko", data)
@@ -67,15 +77,7 @@ We can insert texts:
 
 Note the position into which the new text was inserted.
 
-We can update texts:
-
-```js
-> L.set(textIn("en"), "The title", data)
-{ contents: [ { language: "en", text: "The title" },
-              { language: "sv", text: "Rubrik" } ] }
-```
-
-And we can delete texts:
+Finally, we can use the same partial lens to delete texts:
 
 ```js
 > L.delete(textIn("sv"), data)
@@ -85,7 +87,8 @@ And we can delete texts:
 If we delete all of the texts, we get `undefined`:
 
 ```js
-> R.pipe(L.delete(textIn("sv")), L.delete(textIn("en")))(data)
+> R.pipe(L.delete(textIn("sv")),
+         L.delete(textIn("en")))(data)
 undefined
 ```
 
