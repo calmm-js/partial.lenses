@@ -111,30 +111,21 @@ import L from "partial.lenses"
 
 ### Operations on lenses
 
-For convenience, you can access basic operations on lenses via the default
-import `L`:
+You can access basic operations on lenses via the default import `L`:
 
-* `L.compose(l1, ..., ln)` is the same as `R.compose(l1, ..., lN)` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
-* `L.lens(get, set)` is the same as `R.lens(get, set)` (see [lens](http://ramdajs.com/0.19.0/docs/#lens)).
-* `L.over(l, x2x, s)` is the same as `R.over(l, x2x, s)` (see [over](http://ramdajs.com/0.19.0/docs/#over)).
-* `L.set(l, x, s)` is the same as `R.set(l, x, s)` (see [set](http://ramdajs.com/0.19.0/docs/#set)).
-* `L.view(l, s)` is the same as `R.view(l, s)` (see [view](http://ramdajs.com/0.19.0/docs/#view)).
+* `L(l1, ..., ln)` and `L.compose(l1, ..., ln)` both are the same as
+  `R.compose(lift(l1), ..., lift(lN))` (see
+  [compose](http://ramdajs.com/0.19.0/docs/#compose)).
+* `L.lens(get, set)` is the same as `R.lens(get, set)` (see
+  [lens](http://ramdajs.com/0.19.0/docs/#lens)).
+* `L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
+  [over](http://ramdajs.com/0.19.0/docs/#over)).
+* `L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
+  [set](http://ramdajs.com/0.19.0/docs/#set)).
+* `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
+  [view](http://ramdajs.com/0.19.0/docs/#view)).
 
-For convenience, there is also a shorthand for delete:
-
-* `L.delete(l, s)` is the same as `R.set(l, undefined, s)`.
-
-### Shorthand composition and lifting
-
-The default import, `L`, is also a shorthand function for lens composition (see
-[compose](http://ramdajs.com/0.19.0/docs/#compose)) and lifting.  The semantics
-can be described as
-
-```
-L(l1, ..., lN) === R.compose(lift(l1), ..., lift(lN))
-```
-
-where
+The `lift` operation is defined as
 
 ```js
 const lift = l => {
@@ -146,14 +137,30 @@ const lift = l => {
 }
 ```
 
-Note that `L.compose` does not perform lifting.
+and is available as a non-default export.
+
+### L.delete(l, s)
+
+For convenience, there is also a shorthand for delete:
+
+* `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
+
+### L.firstOf(l1, ..., lN)
+
+`L.firstOf(l1, ..., lN)` returns a partial lens that acts like the first of the
+given lenses whose view is not undefined on the given target.  When the views of
+all of the given lenses are undefined, the returned lens acts like the first of
+the given lenses.
+
+Note that `L.firstOf` is an associative operation, but there is no identity
+element.
 
 ### Lenses
 
 #### L.prop(string)
 
-`L.prop(string)` is much like `R.lensProp(string)` (see
-[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but composes as a partial
+`L.prop(string)` or `L(string)` is similar to `R.lensProp(string)` (see
+[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
 lens:
 * When viewing an undefined property or an undefined object, the result is
   undefined.
@@ -162,9 +169,9 @@ lens:
 
 #### L.index(integer)
 
-`L.index(integer)` is like `R.lensIndex(integer)` (see
-[lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but composes as a
-partial lens:
+`L.index(integer)` or `L(integer)` is similar to `R.lensIndex(integer)` (see
+[lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
+lens:
 * When viewing an undefined array index or an undefined array, the result is
   undefined.
 * When setting an array index to undefined, the element is removed from the
