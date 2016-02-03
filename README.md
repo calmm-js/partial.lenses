@@ -178,7 +178,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 `R.compose(L.prop(p1), ..., L.prop(pN))` or just use the shorthand notation
 `L(p1, ..., pN)`.
 
-### Technical
+### Types
 
 To illustrate the idea we could give lenses the naive type definition
 
