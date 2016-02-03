@@ -139,13 +139,13 @@ const lift = l => {
 
 and is available as a non-default export.
 
-### L.delete(l, s)
+#### L.delete(l, s)
 
 For convenience, there is also a shorthand for delete:
 
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
-### L.firstOf(l1, ..., lN)
+#### L.firstOf(l1, ..., lN)
 
 `L.firstOf(l1, ..., lN)` returns a partial lens that acts like the first of the
 given lenses whose view is not undefined on the given target.  When the views of
