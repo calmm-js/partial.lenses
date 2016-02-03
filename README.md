@@ -157,21 +157,6 @@ lens:
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
-Examples:
-
-```js
-> L.set(L("x", "y"), undefined, {x: {y: 1}})
-undefined
-> L.set(L("x", "y"), 2, {x: {y: 1}})
-{ x: { y: 2 } }
-> L.set(L("x", "y"), undefined, {x: {y: 1}, z: 3})
-{ z: 3 }
-> L.set(L("x", "y"), 2, {x: {y: 1}, z: 3})
-{ x: { y: 2 }, z: 3 }
-> L.view(L("x", "y"), undefined)
-undefined
-```
-
 #### L.index(integer)
 
 `L.index(integer)` is like `R.lensIndex(integer)` (see
@@ -212,23 +197,9 @@ change, the data has actually changed.  By keeping the data normalized, a simple
 versa when set.  Values are compared using `R.equals` (see
 [equals](http://ramdajs.com/0.19.0/docs/#equals)).
 
-Examples:
-
-```js
-> L.view(L(L.replace(undefined, {type: "title", text: ""}),
-           "text"),
-         undefined)
-""
-> L.set(L(L.replace(undefined, {type: "title", text: ""}),
-          "text"),
-        "",
-        {type: "title", text: "not empty"})
-undefined
-```
-
 The use case for `replace` is to handle optional and required properties and
-elements.  In most cases, rather than using `replace`, you will use a
-combination of `required` and `default`:
+elements.  In most cases, rather than using `replace`, you will make selective
+use of `required` and `default`:
 
 ##### L.default(out)
 
@@ -237,6 +208,10 @@ combination of `required` and `default`:
 ##### L.required(inn)
 
 `L.required(inn)` is the same as `L.replace(inn, undefined)`.
+
+##### L.define(value)
+
+`L.define(value)` is the same as `L(L.required(value), L.default(value))`.
 
 ## Background
 
