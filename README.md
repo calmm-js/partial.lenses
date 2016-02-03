@@ -199,7 +199,7 @@ type PartialLens s a = Lens s (Maybe a)
 
 This means that partial lenses can be composed, viewed, mapped over and set
 using the same operations as with ordinary lenses.  However, primitive partial
-lenses (e.g. [L.prop](#lpropstring)`) are not necessarily the same as primitive
+lenses (e.g. [L.prop](#lpropstring)) are not necessarily the same as primitive
 ordinary lenses (e.g. Ramda's
 [lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)).
 
