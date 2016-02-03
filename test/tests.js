@@ -40,6 +40,8 @@ describe('L.find', () => {
 describe('L.index', () => {
   testEq('L.set(L(1), undefined, [,,])', () =>
           L.set(L(1), undefined, [,,]), undefined)
+  testEq('L.set(L(L.required([]), 1), undefined, [,,])', () =>
+          L.set(L(L.required([]), 1), undefined, [,,]), [])
   testEq('L.set(L(1), 4, [1, 2, 3])', () =>
           L.set(L(1), 4, [1, 2, 3]), [1, 4, 3])
   testEq('L.set(L(2), 4, undefined)', () =>
@@ -63,6 +65,10 @@ describe('L.index', () => {
 describe('L.prop', () => {
   testEq('L.set(L("x"), undefined, {x: 1})', () =>
           L.set(L("x"), undefined, {x: 1}), undefined)
+  testEq('L.set(L("x", L.required(null)), undefined, {x: 1})', () =>
+          L.set(L("x", L.required(null)), undefined, {x: 1}), {x: null})
+  testEq('L.set(L("x", L.required(null)), 2, {x: 1})', () =>
+          L.set(L("x", L.required(null)), 2, {x: 1}), {x: 2})
   testEq('L.delete(L("y"), {x: 1, y: 2})', () =>
           L.delete(L("y"), {x: 1, y: 2}), {x: 1})
   testEq('L.set(L("y"), 3, {x: 1, y: 2})', () =>
