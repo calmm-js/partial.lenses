@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [ [Examples](#examples) | [Reference](#reference) | [Background](#background) ]
+[ [Examples](#examples) | [Reference](#reference) | [Background](#background) ]
 
 This library provides a collection of [Ramda](http://ramdajs.com/) compatible
 *partial* lenses.  While an ordinary lens can be used to view and update an
@@ -10,6 +10,8 @@ lenses also do.  When the viewed part of a data structure is missing, the result
 is `undefined`.  When a part of a data structure is set to `undefined`, the part
 is deleted.  Partial lenses are defined in such a way that operations compose
 and one can conveniently and robustly operate on deeply nested data structures.
+
+[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 
 ## Examples
 
