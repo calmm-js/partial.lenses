@@ -152,6 +152,8 @@ The use case for `replace` is to handle optional properties and elements.
 
 ## Background
 
+### Motivation
+
 Consider the following REPL session using Ramda 0.19.1:
 
 ```js
@@ -176,7 +178,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 `R.compose(L.prop(p1), ..., L.prop(pN))` or just use the shorthand notation
 `L(p1, ..., pN)`.
 
-## Technical
+### Technical
 
 To illustrate the idea we could give lenses the naive type definition
 
