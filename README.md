@@ -12,7 +12,82 @@ Index:
 
 ## Examples
 
-TBD
+Let's work with the following sample JSON object:
+
+```js
+const data = { contents: [ { language: "en", text: "Title" },
+                           { language: "sv", text: "Rubrik" } ] }
+```
+
+Let's define a parameterized lens for accessing texts:
+
+```js
+const textIn = language =>
+  L("contents",
+    L.normalize(R.sortBy(R.prop("language"))),
+    L.find(c => c.language === language),
+    L.default({language}),
+    "text",
+    L.default(""))
+```
+
+We can view or query texts:
+
+```js
+> L.view(textIn("sv"), data)
+"Rubrik"
+> L.view(textIn("en"), data)
+"Title"
+```
+
+If we query a text that does not exist, we get the default:
+
+```js
+> L.view(textIn("fi"), data)
+""
+```
+
+We get the default even if query from `undefined`:
+
+```js
+> L.view(textIn("fi"), undefined)
+""
+```
+
+With partial lenses, `undefined` is the equivalent of empty.
+
+We can insert texts:
+
+```js
+> L.set(textIn("fi"), "Otsikko", data)
+{ contents: [ { language: "en", text: "The title" },
+              { language: "fi", text: "Otsikko" },
+              { language: "sv", text: "Rubrik" } ] }
+```
+
+Note the position into which the new text was inserted.
+
+We can update texts:
+
+```js
+> L.set(textIn("en"), "The title", data)
+{ contents: [ { language: "en", text: "The title" },
+              { language: "sv", text: "Rubrik" } ] }
+```
+
+And we can delete texts:
+
+```js
+> L.delete(textIn("sv"), data)
+{ contents: [ { language: "en", text: "The title" } ] }
+```
+
+If we delete all of the texts, we get `undefined`:
+
+```js
+> R.pipe(L.delete(textIn("sv")), L.delete(textIn("en")))(data)
+undefined
+```
 
 ## Reference
 
