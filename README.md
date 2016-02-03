@@ -93,6 +93,9 @@ If we delete all of the texts, we get the required value:
 { contents: [] }
 ```
 
+Note that unless required and default values are explicitly specified as part of
+the lens, they will both be undefined.
+
 ## Reference
 
 ### Usage
