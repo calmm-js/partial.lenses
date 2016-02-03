@@ -56,7 +56,7 @@ With the partial lens we defined, we get the default even if we query from
 ""
 ```
 
-With partial lenses, `undefined` is the equivalent of empty.
+With partial lenses, `undefined` is the equivalent of empty or non-existent.
 
 As with ordinary lenses, we can use the same lens to update texts:
 
