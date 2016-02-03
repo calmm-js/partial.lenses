@@ -71,7 +71,7 @@ The same partial lens also allows us to insert new texts:
 
 ```js
 > L.set(textIn("fi"), "Otsikko", data)
-{ contents: [ { language: "en", text: "The title" },
+{ contents: [ { language: "en", text: "Title" },
               { language: "fi", text: "Otsikko" },
               { language: "sv", text: "Rubrik" } ] }
 ```
@@ -82,7 +82,7 @@ Finally, we can use the same partial lens to delete texts:
 
 ```js
 > L.set(textIn("sv"), undefined, data)
-{ contents: [ { language: "en", text: "The title" } ] }
+{ contents: [ { language: "en", text: "Title" } ] }
 ```
 
 If we delete all of the texts, we get the required value:
