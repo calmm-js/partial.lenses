@@ -80,15 +80,15 @@ Note the position into which the new text was inserted.
 Finally, we can use the same partial lens to delete texts:
 
 ```js
-> L.delete(textIn("sv"), data)
+> L.set(textIn("sv"), undefined, data)
 { contents: [ { language: "en", text: "The title" } ] }
 ```
 
 If we delete all of the texts, we get `undefined`:
 
 ```js
-> R.pipe(L.delete(textIn("sv")),
-         L.delete(textIn("en")))(data)
+> R.pipe(L.set(textIn("sv"), undefined),
+         L.set(textIn("en"), undefined))(data)
 undefined
 ```
 
