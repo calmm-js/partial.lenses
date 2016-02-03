@@ -67,6 +67,7 @@ L.replace = R.curry((inn, out) =>
          conserve(y => R.equals(y, out) ? inn : y)))
 
 L.default = L.replace(undefined)
+L.required = inn => L.replace(inn, undefined)
 
 L.normalize = transform =>
   R.lens(toPartial(transform), conserve(toPartial(transform)))

@@ -24,6 +24,7 @@ First we define a parameterized lens for accessing texts:
 ```js
 const textIn = language =>
   L("contents",
+    L.required([]),
     L.normalize(R.sortBy(R.prop("language"))),
     L.find(c => c.language === language),
     L.default({language}),
@@ -84,12 +85,12 @@ Finally, we can use the same partial lens to delete texts:
 { contents: [ { language: "en", text: "The title" } ] }
 ```
 
-If we delete all of the texts, we get `undefined`:
+If we delete all of the texts, we get the required value:
 
 ```js
 > R.pipe(L.set(textIn("sv"), undefined),
          L.set(textIn("en"), undefined))(data)
-undefined
+{ contents: [] }
 ```
 
 ## Reference
@@ -222,11 +223,17 @@ Examples:
 undefined
 ```
 
-The use case for `replace` is to handle optional properties and elements.
+The use case for `replace` is to handle optional and required properties and
+elements.  In most cases, rather than using `replace`, you will use a
+combination of `required` and `default`:
 
-#### L.default(out)
+##### L.default(out)
 
 `L.default(out)` is the same as `L.replace(undefined, out)`.
+
+##### L.required(inn)
+
+`L.required(inn)` is the same as `L.replace(inn, undefined)`.
 
 ## Background
 
