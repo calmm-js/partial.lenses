@@ -55,14 +55,18 @@ const lift = l => {
 
 const L = (...ls) => ls.length === 1 ? lift(ls[0]) : R.compose(...ls.map(lift))
 
+L.compose = R.compose
+L.delete = R.curry((l, s) => R.set(l, undefined, s))
 L.lens = R.lens
 L.over = R.over
-L.set  = R.set
+L.set = R.set
 L.view = R.view
 
-L.replace = (inn, out) =>
+L.replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
-         conserve(y => R.equals(y, out) ? inn : y))
+         conserve(y => R.equals(y, out) ? inn : y)))
+
+L.default = L.replace(undefined)
 
 L.normalize = transform =>
   R.lens(toPartial(transform), conserve(toPartial(transform)))
