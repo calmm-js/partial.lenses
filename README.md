@@ -28,13 +28,13 @@ First we define a parameterized lens for accessing texts:
 
 ```js
 const textIn = language =>
-  L(L.prop("contents"),
-    L.required([]),
-    L.normalize(R.sortBy(R.prop("language"))),
-    L.find(c => c.language === language),
-    L.default({language}),
-    L.prop("text"),
-    L.default(""))
+  L.compose(L.prop("contents"),
+            L.required([]),
+            L.normalize(R.sortBy(R.prop("language"))),
+            L.find(c => c.language === language),
+            L.default({language}),
+            L.prop("text"),
+            L.default(""))
 ```
 
 Like with ordinary lenses, we can now use the partial lens to view or query
@@ -100,6 +100,12 @@ If we delete all of the texts, we get the required value:
 
 Note that unless required and default values are explicitly specified as part of
 the lens, they will both be undefined.
+
+For clarity, the code snippets in this section avoided some of the shorthands
+that this library supports.  In particular,
+* `L.compose(...)` can be abbreviated as `L(...)`,
+* `L.prop(string)` can be abbreviated as `string`, and
+* `L.set(l, undefined, s)` can be abbreviated as `L.delete(l, s)`.
 
 ## Reference
 
