@@ -28,12 +28,12 @@ First we define a parameterized lens for accessing texts:
 
 ```js
 const textIn = language =>
-  L("contents",
+  L(L.prop("contents"),
     L.required([]),
     L.normalize(R.sortBy(R.prop("language"))),
     L.find(c => c.language === language),
     L.default({language}),
-    "text",
+    L.prop("text"),
     L.default(""))
 ```
 
@@ -127,6 +127,8 @@ You can access basic operations on lenses via the default import `L`:
 * `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
   [view](http://ramdajs.com/0.19.0/docs/#view)).
 
+#### Lifting
+
 The idempotent `lift` operation is defined as
 
 ```js
@@ -139,7 +141,8 @@ const lift = l => {
 }
 ```
 
-and is available as a non-default export.
+and is available as a non-default export.  All operations in this library that
+take lenses as arguments implicitly lift them.
 
 #### L.delete(l, s)
 
