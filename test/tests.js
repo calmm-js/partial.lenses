@@ -18,6 +18,39 @@ const testEq = (expr, fn, expect) => it(`${expr} => ${show(expect)}`, () => {
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 })
 
+describe("arities", () => {
+  testEq('L.compose.length', () =>
+          L.compose.length, 1)
+  testEq('L.default.length', () =>
+          L.default.length, 1)
+  testEq('L.define.length', () =>
+          L.define.length, 1)
+  testEq('L.delete.length', () =>
+          L.delete.length, 2)
+  testEq('L.find.length', () =>
+          L.find.length, 1)
+  testEq('L.index.length', () =>
+          L.index.length, 1)
+  testEq('L.length', () =>
+          L.length, 1)
+  testEq('L.lens.length', () =>
+          L.lens.length, 2)
+  testEq('L.normalize.length', () =>
+          L.normalize.length, 1)
+  testEq('L.over.length', () =>
+          L.over.length, 3)
+  testEq('L.prop.length', () =>
+          L.prop.length, 1)
+  testEq('L.replace.length', () =>
+          L.replace.length, 2)
+  testEq('L.required.length', () =>
+          L.required.length, 1)
+  testEq('L.set.length', () =>
+          L.set.length, 3)
+  testEq('L.view.length', () =>
+          L.view.length, 2)
+})
+
 describe('L.find', () => {
   testEq('L.set(L.find(R.equals(2)), undefined, [,,2])', () =>
           L.set(L.find(R.equals(2)), undefined, [,,2]), undefined)

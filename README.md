@@ -113,8 +113,8 @@ import L from "partial.lenses"
 
 You can access basic operations on lenses via the default import `L`:
 
-* `L(l1, ..., ln)` and `L.compose(l1, ..., ln)` both are the same as
-  `R.compose(lift(l1), ..., lift(lN))` (see
+* `L(l0, ...ls)` and `L.compose(l0, ...ls)` both are the same as
+  `R.compose(lift(l0), ...ls.map(lift))` (see
   [compose](http://ramdajs.com/0.19.0/docs/#compose)).
 * `L.lens(get, set)` is the same as `R.lens(get, set)` (see
   [lens](http://ramdajs.com/0.19.0/docs/#lens)).
@@ -145,12 +145,12 @@ For convenience, there is also a shorthand for delete:
 
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
-#### L.firstOf(l1, ..., lN)
+#### L.firstOf(l0, ...ls)
 
-`L.firstOf(l1, ..., lN)` returns a partial lens that acts like the first of the
-given lenses whose view is not undefined on the given target.  When the views of
-all of the given lenses are undefined, the returned lens acts like the first of
-the given lenses.
+`L.firstOf(l0, ...ls)` returns a partial lens that acts like the first of the
+given lenses, `l0, ...ls`, whose view is not undefined on the given target.
+When the views of all of the given lenses are undefined, the returned lens acts
+like `l0`.
 
 Note that `L.firstOf` is an associative operation, but there is no identity
 element.
@@ -244,12 +244,12 @@ TypeError: Cannot read property 'y' of undefined
 { x: { y: undefined } }
 ```
 
-One might assume that `R.lensPath([p1, ..., pN])` is equivalent to
-`R.compose(R.lensProp(p1), ..., R.lensProp(pN))`, but that is not the case.
+One might assume that `R.lensPath([p0, ...ps])` is equivalent to
+`R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
 
 With partial lenses you can robustly compose a path lens from prop lenses
-`R.compose(L.prop(p1), ..., L.prop(pN))` or just use the shorthand notation
-`L(p1, ..., pN)`.
+`R.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
+`L(p0, ...ps)`.
 
 ### Types
 

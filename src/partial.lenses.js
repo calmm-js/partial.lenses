@@ -53,7 +53,8 @@ export const lift = l => {
   }
 }
 
-const L = (...ls) => ls.length === 1 ? lift(ls[0]) : R.compose(...ls.map(lift))
+const L = (l, ...ls) =>
+  ls.length === 0 ? lift(l) : R.compose(lift(l), ...ls.map(lift))
 
 L.compose = L
 L.delete = R.curry((l, s) => R.set(lift(l), undefined, s))
@@ -62,26 +63,25 @@ L.over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
 L.set = R.curry((l, x, s) => R.set(lift(l), x, s))
 L.view = R.curry((l, s) => R.view(lift(l), s))
 
-L.firstOf = (...ls) => {
-  switch (ls.length) {
-  case 0:
-    throw new Error("firstOf called without arguments")
-  case 1:
-    return lift(ls[0])
-  default:
-    const choose = (target, otherwise) => {
-      for (let i=0, n=ls.length; i<n; ++i) {
-        const l = ls[i]
-        const r = R.view(lift(l), target)
-        if (undefined !== r)
-          return otherwise ? l : r
-      }
-      return otherwise
+L.firstOf = (l0, ...ls) => {
+  l0 = lift(l0)
+
+  if (ls.length === 0)
+    return l0
+
+  return toFunctor => target => {
+    let l = l0
+    let r = R.view(l0, target)
+
+    for (let i=0; undefined === r && i<ls.length; ++i) {
+      l = lift(ls[i])
+      r = R.view(l, target)
     }
 
-    return toFunctor => target =>
-      R.map(focus => R.set(lift(choose(target, ls[0])), focus, target),
-            toFunctor(choose(target)))
+    if (undefined === r)
+      l = l0
+
+    return R.map(focus => R.set(l, focus, target), toFunctor(r))
   }
 }
 
