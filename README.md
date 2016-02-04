@@ -3,7 +3,8 @@
 This library provides a collection of [Ramda](http://ramdajs.com/) compatible
 *partial* lenses.  While an ordinary lens can be used to view and update an
 existing part of a data structure, a partial lens can *view* optional data,
-*insert* new data, *update* existing data and *delete* existing data.
+*insert* new data, *update* existing data and *delete* existing data and can
+provide *default* values and maintain *required* data structure parts.
 
 In Javascript, optional data can be mapped to `undefined`, which is what partial
 lenses also do.  When the viewed part of a data structure is missing, the result
