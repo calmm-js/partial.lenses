@@ -6,11 +6,12 @@ existing part of a data structure, a partial lens can *view* optional data,
 *insert* new data, *update* existing data and *delete* existing data and can
 provide *default* values and maintain *required* data structure parts.
 
-In Javascript, optional data can be mapped to `undefined`, which is what partial
-lenses also do.  When the viewed part of a data structure is missing, the result
-is `undefined`.  When a part of a data structure is set to `undefined`, the part
-is deleted.  Partial lenses are defined in such a way that operations compose
-and one can conveniently and robustly operate on deeply nested data structures.
+In Javascript, missing data can be mapped to `undefined`, which is what partial
+lenses also do.  When a part of a data structure is missing, an attempt to view
+it returns `undefined`.  When a part is missing, setting it to a defined value
+inserts the new part.  Setting an existing part to `undefined` deletes it.
+Partial lenses are defined in such a way that operations compose and one can
+conveniently and robustly operate on deeply nested data structures.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 
