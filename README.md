@@ -125,7 +125,7 @@ You can access basic operations on lenses via the default import `L`:
 * `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
   [view](http://ramdajs.com/0.19.0/docs/#view)).
 
-The `lift` operation is defined as
+The idempotent `lift` operation is defined as
 
 ```js
 const lift = l => {
