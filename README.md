@@ -150,12 +150,6 @@ const lift = l => {
 and is available as a non-default export.  All operations in this library that
 take lenses as arguments implicitly lift them.
 
-#### L.delete(l, s)
-
-For convenience, there is also a shorthand for delete:
-
-* `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
-
 #### L.firstOf(l0, ...ls)
 
 `L.firstOf(l0, ...ls)` returns a partial lens that acts like the first of the
@@ -166,29 +160,13 @@ like `l0`.
 Note that `L.firstOf` is an associative operation, but there is no identity
 element.
 
+#### L.delete(l, s)
+
+For convenience, there is also a shorthand for delete:
+
+* `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
+
 ### Lenses
-
-#### L.prop(string)
-
-`L.prop(string)` or `L(string)` is similar to `R.lensProp(string)` (see
-[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
-lens:
-* When viewing an undefined property or an undefined object, the result is
-  undefined.
-* When setting property to undefined, the property is removed from the result.
-  If the result would be an empty object, the whole result will be undefined.
-
-#### L.index(integer)
-
-`L.index(integer)` or `L(integer)` is similar to `R.lensIndex(integer)` (see
-[lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
-lens:
-* When viewing an undefined array index or an undefined array, the result is
-  undefined.
-* When setting an array index to undefined, the element is removed from the
-  resulting array, shifting all higher indices down by one.  If the result would
-  be an array without indices (ignoring length), the whole result will be
-  undefined.
 
 #### L.filter(predicate)
 
@@ -212,6 +190,18 @@ viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `R.index` with the index set to the length of the array.
 
+#### L.index(integer)
+
+`L.index(integer)` or `L(integer)` is similar to `R.lensIndex(integer)` (see
+[lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
+lens:
+* When viewing an undefined array index or an undefined array, the result is
+  undefined.
+* When setting an array index to undefined, the element is removed from the
+  resulting array, shifting all higher indices down by one.  If the result would
+  be an array without indices (ignoring length), the whole result will be
+  undefined.
+
 #### L.normalize(transform)
 
 `L.normalize(transform)` maps the value with same given `transform` when viewed
@@ -226,6 +216,16 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 The use case for `normalize` is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a simple
 `R.equals` comparison will do.
+
+#### L.prop(string)
+
+`L.prop(string)` or `L(string)` is similar to `R.lensProp(string)` (see
+[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
+lens:
+* When viewing an undefined property or an undefined object, the result is
+  undefined.
+* When setting property to undefined, the property is removed from the result.
+  If the result would be an empty object, the whole result will be undefined.
 
 #### L.replace(inn, out)
 
