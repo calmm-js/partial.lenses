@@ -31,7 +31,7 @@ const textIn = language =>
   L.compose(L.prop("contents"),
             L.required([]),
             L.normalize(R.sortBy(R.prop("language"))),
-            L.find(c => c.language === language),
+            L.find(R.whereEq({language})),
             L.default({language}),
             L.prop("text"),
             L.default(""))
