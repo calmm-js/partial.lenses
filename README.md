@@ -213,9 +213,9 @@ toPartial(transform))` where
 const toPartial = transform => x => undefined === x ? x : transform(x)
 ```
 
-The use case for `normalize` is to make it easy to determine whether, after a
-change, the data has actually changed.  By keeping the data normalized, a simple
-`R.equals` comparison will do.
+The main use case for `normalize` is to make it easy to determine whether, after
+a change, the data has actually changed.  By keeping the data normalized, a
+simple `R.equals` comparison will do.
 
 #### L.prop(string)
 
@@ -233,21 +233,21 @@ lens:
 versa when set.  Values are compared using `R.equals` (see
 [equals](http://ramdajs.com/0.19.0/docs/#equals)).
 
-The use case for `replace` is to handle optional and required properties and
-elements.  In most cases, rather than using `replace`, you will make selective
-use of `required` and `default`:
+The main use case for `replace` is to handle optional and required properties
+and elements.  In most cases, rather than using `replace`, you will make
+selective use of `default` and `required`:
 
 ##### L.default(out)
 
 `L.default(out)` is the same as `L.replace(undefined, out)`.
 
-##### L.required(inn)
-
-`L.required(inn)` is the same as `L.replace(inn, undefined)`.
-
 ##### L.define(value)
 
 `L.define(value)` is the same as `L(L.required(value), L.default(value))`.
+
+##### L.required(inn)
+
+`L.required(inn)` is the same as `L.replace(inn, undefined)`.
 
 ## Background
 
