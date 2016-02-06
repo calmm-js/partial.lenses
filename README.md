@@ -190,6 +190,21 @@ lens:
   be an array without indices (ignoring length), the whole result will be
   undefined.
 
+#### L.filter(predicate)
+
+`L.filter(predicate)` operates on arrays.  When viewed, only elements matching
+the given predicate will be returned.  When set, the resulting array will be
+formed by concatenating the set array and the complement of the filtered
+context.  If the resulting array would be empty, the whole result will be
+undefined.
+
+*Note:* An alternative design for filter could implement a smarter algorithm to
+combine arrays when set.  For example, an algorithm based on
+[edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
+maintain relative order of elements.  While this would not be difficult to
+implement, it doesn't seem to make sense, because in most cases use of
+`normalize` would be preferable.
+
 #### L.find(predicate)
 
 `L.find(predicate)` operates on arrays like `L.index`, but the index to be

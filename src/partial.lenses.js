@@ -38,10 +38,9 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
-const conserve = f => (n0, o) => {
-  const n = f(n0, o)
-  return R.equals(n, o) ? o : n
-}
+const conserve = (c0, c1) => R.equals(c0, c1) ? c0 : c1
+
+const toConserve = f => (y, c0) =>  conserve(c0, f(y, c0))
 
 //
 
@@ -87,14 +86,14 @@ L.firstOf = (l0, ...ls) => {
 
 L.replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
-         conserve(y => R.equals(y, out) ? inn : y)))
+         toConserve(y => R.equals(y, out) ? inn : y)))
 
 L.default = L.replace(undefined)
 L.required = inn => L.replace(inn, undefined)
 L.define = v => R.compose(L.required(v), L.default(v))
 
 L.normalize = transform =>
-  R.lens(toPartial(transform), conserve(toPartial(transform)))
+  R.lens(toPartial(transform), toConserve(toPartial(transform)))
 
 L.prop = k =>
   R.lens(o => o && o[k],
@@ -137,5 +136,8 @@ L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
     return xs.slice(0, i).concat([x], xs.slice(i+1))
   }
 })
+
+L.filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
+  conserve(xs, dropped(R.concat(ys || [], (xs || []).filter(R.complement(p))))))
 
 export default L

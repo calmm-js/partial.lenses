@@ -111,3 +111,13 @@ describe("L.firstOf", () => {
   testEq('L.delete(L.firstOf("x", "y"), {x: 11, y: 12})', {y: 12})
   testEq('L.delete(L.firstOf("y", "x"), {x: 11, y: 12})', {x: 11})
 })
+
+describe("L.filter", () => {
+  testEq('L.view(L.filter(R.lt(9)), [3,1,4,1,5,9,2])', [])
+  testEq('L.view(L.filter(R.lt(2)), undefined)', undefined)
+  testEq('L.view(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [3,4,5,9])
+  testEq('L.delete(L(L.filter(R.lt(2)), 1), [3,1,4,1,5,9,2])', [3,5,9,1,1,2])
+  testEq('L.set(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])', undefined)
+  testEq('L.delete(L.filter(R.lt(0)), [3,1,4,1,5,9,2])', undefined)
+  testEq('L.delete(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [1,1,2])
+})
