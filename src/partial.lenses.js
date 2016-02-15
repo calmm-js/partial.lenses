@@ -62,27 +62,15 @@ L.over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
 L.set = R.curry((l, x, s) => R.set(lift(l), x, s))
 L.view = R.curry((l, s) => R.view(lift(l), s))
 
-L.firstOf = (l0, ...ls) => {
-  l0 = lift(l0)
-
-  if (ls.length === 0)
-    return l0
-
-  return toFunctor => target => {
-    let l = l0
-    let r = R.view(l0, target)
-
-    for (let i=0; undefined === r && i<ls.length; ++i) {
-      l = lift(ls[i])
-      r = R.view(l, target)
-    }
-
-    if (undefined === r)
-      l = l0
-
-    return R.map(focus => R.set(l, focus, target), toFunctor(r))
-  }
+L.choose = x2yL => toFunctor => target => {
+  const l = x2yL(target)
+  return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
+
+L.firstOf = (l, ...ls) => L.choose(x => {
+  const lls = [l, ...ls]
+  return lift(lls[Math.max(0, lls.findIndex(l => L.view(l, x) !== undefined))])
+})
 
 L.replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
@@ -99,24 +87,13 @@ L.prop = k =>
   R.lens(o => o && o[k],
          (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
 
-L.find = predicate => R.lens(xs => xs && xs.find(predicate), (x, xs) => {
-  if (x === undefined) {
-    if (xs === undefined)
-      return undefined
-    const i = xs.findIndex(predicate)
-    if (i < 0)
-      return xs
-    return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
-  } else {
-    if (xs === undefined)
-      return [x]
-    const i = xs.findIndex(predicate)
-    if (i < 0)
-      return xs.concat([x])
-    if (R.equals(x, xs[i]))
-      return xs
-    return xs.slice(0, i).concat([x], xs.slice(i+1))
-  }
+L.find = predicate => L.choose(xs => {
+  if (xs === undefined)
+    return L.append
+  const i = xs.findIndex(predicate)
+  if (i < 0)
+    return L.append
+  return L.index(i)
 })
 
 L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
@@ -134,6 +111,17 @@ L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
     if (R.equals(x, xs[i]))
       return xs
     return xs.slice(0, i).concat([x], xs.slice(i+1))
+  }
+})
+
+L.append = R.lens(() => {}, (x, xs) => {
+  if (x === undefined) {
+    return xs
+  } else {
+    if (xs === undefined)
+      return [x]
+    else
+      return xs.concat([x])
   }
 })
 
