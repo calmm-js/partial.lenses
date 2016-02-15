@@ -1,4 +1,4 @@
-[ [Examples](#examples) | [Reference](#reference) | [Background](#background) ]
+[ [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
 
 This library provides a collection of [Ramda](http://ramdajs.com/) compatible
 *partial* lenses.  While an ordinary lens can be used to view and update an
@@ -15,7 +15,7 @@ conveniently and robustly operate on deeply nested data structures.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 
-## Examples
+## Tutorial
 
 Let's work with the following sample JSON object:
 
@@ -24,7 +24,7 @@ const data = { contents: [ { language: "en", text: "Title" },
                            { language: "sv", text: "Rubrik" } ] }
 ```
 
-First we define a parameterized lens for accessing texts:
+First we compose a parameterized lens for accessing texts:
 
 ```js
 const textIn = language =>
@@ -37,8 +37,10 @@ const textIn = language =>
             L.default(""))
 ```
 
-Like with ordinary lenses, we can now use the partial lens to view or query
-texts:
+### Querying data
+
+Thanks to the parameterized search part, `L.find(R.whereEq({language}))`, of the
+lens composition, we can use it to query texts:
 
 ```js
 > L.view(textIn("sv"), data)
@@ -47,15 +49,17 @@ texts:
 "Title"
 ```
 
-If we query a text that does not exist, we get the default:
+Partial lenses can deal with missing data.  If we use the partial lens to query
+a text that does not exist, we get the default:
 
 ```js
 > L.view(textIn("fi"), data)
 ""
 ```
 
-With the partial lens we defined, we get the default even if we query from
-`undefined`:
+We get this default, rather than undefined, thanks to the last part,
+`L.default("")`, of our lens composition.  We get the default even if we query
+from `undefined`:
 
 ```js
 > L.view(textIn("fi"), undefined)
@@ -64,6 +68,8 @@ With the partial lens we defined, we get the default even if we query from
 
 With partial lenses, `undefined` is the equivalent of empty or non-existent.
 
+### Updating data
+
 As with ordinary lenses, we can use the same lens to update texts:
 
 ```js
@@ -71,6 +77,8 @@ As with ordinary lenses, we can use the same lens to update texts:
 { contents: [ { language: "en", text: "The title" },
               { language: "sv", text: "Rubrik" } ] }
 ```
+
+### Inserting data
 
 The same partial lens also allows us to insert new texts:
 
@@ -81,7 +89,11 @@ The same partial lens also allows us to insert new texts:
               { language: "sv", text: "Rubrik" } ] }
 ```
 
-Note the position into which the new text was inserted.
+Note the position into which the new text was inserted.  The array of texts is
+kept sorted thanks to the `L.normalize(R.sortBy(R.prop("language")))` part of
+our lens.
+
+### Deleting data
 
 Finally, we can use the same partial lens to delete texts:
 
@@ -89,6 +101,12 @@ Finally, we can use the same partial lens to delete texts:
 > L.set(textIn("sv"), undefined, data)
 { contents: [ { language: "en", text: "Title" } ] }
 ```
+
+Note that a single text is actually a part of an object.  The key to having the
+whole object vanish, rather than just the `text` property, is the
+`L.default({language})` part of our lens composition.  A `L.default(value)` lens
+works *symmetrically*.  When set with `value`, the result is `undefined`, which
+means that the focus of the lens is to be deleted.
 
 If we delete all of the texts, we get the required value:
 
@@ -98,14 +116,78 @@ If we delete all of the texts, we get the required value:
 { contents: [] }
 ```
 
+The `contents` property is not removed thanks to the `L.required([])` part of
+our lens composition.  `L.required` is the dual of `L.default`.  `L.default`
+replaces undefined values when viewed and `L.required` replaces undefined values
+when set.
+
 Note that unless required and default values are explicitly specified as part of
 the lens, they will both be undefined.
 
-For clarity, the code snippets in this section avoided some of the shorthands
-that this library supports.  In particular,
+### Shorthands
+
+For clarity, the previous code snippets avoided some of the shorthands that this
+library supports.  In particular,
 * `L.compose(...)` can be abbreviated as `L(...)`,
 * `L.prop(string)` can be abbreviated as `string`, and
 * `L.set(l, undefined, s)` can be abbreviated as `L.delete(l, s)`.
+
+### Systematic composition
+
+It is also typical to compose lenses out of short paths following the schema of
+the JSON data being manipulated.  Reconsider the lens from the start of the
+example:
+
+```js
+const textIn = language =>
+  L.compose(L.prop("contents"),
+            L.required([]),
+            L.normalize(R.sortBy(R.prop("language"))),
+            L.find(R.whereEq({language})),
+            L.default({language}),
+            L.prop("text"),
+            L.default(""))
+```
+
+Following the structure or schema of the JSON, we could break this into three
+separate lenses:
+* a lens for accessing the contents of a data object,
+* a lens for querying a content object from contents, and
+* a lens for accessing the text of a content.
+
+Furthermore, we could organize these the lenses into an object following the
+structure of the JSON:
+
+```js
+const M = {
+  data: {
+    contents: L("contents",
+                L.required([]),
+                L.normalize(R.sortBy(R.prop("language"))))
+  },
+  contents: {
+    contentIn: language => L(L.find(R.whereEq({language})),
+                             L.default({language}))
+  },
+  content: {
+    text: L("text", L.default(""))
+  }
+}
+```
+
+Using the above object, we could rewrite the parameterized `textIn` lens as:
+
+```js
+const textIn = language => L(M.data.contents,
+                             M.contents.contentIn(language),
+                             M.content.text)
+```
+
+This style of organizing lenses is overkill for our toy example.  In a more
+realistic case the `data` object would contain many more properties.  Also,
+rather than composing a lens, like `textIn` above, to access a leaf property
+from the root of our object, we might actually compose lenses incrementally as
+we inspect the model structure.
 
 ## Reference
 
