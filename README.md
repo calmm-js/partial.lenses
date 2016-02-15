@@ -193,7 +193,7 @@ implement, it doesn't seem to make sense, because in most cases use of
 `L.find(value => boolean)` operates on arrays like `L.index`, but the index to
 be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
-same as with `R.index` with the index set to the length of the array.
+same as with `L.append`.
 
 #### L.firstOf(l, ...ls)
 
