@@ -63,13 +63,13 @@ L.set = R.curry((l, x, s) => R.set(lift(l), x, s))
 L.view = R.curry((l, s) => R.view(lift(l), s))
 
 L.choose = x2yL => toFunctor => target => {
-  const l = x2yL(target)
+  const l = lift(x2yL(target))
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
 
 L.firstOf = (l, ...ls) => L.choose(x => {
   const lls = [l, ...ls]
-  return lift(lls[Math.max(0, lls.findIndex(l => L.view(l, x) !== undefined))])
+  return lls[Math.max(0, lls.findIndex(l => L.view(l, x) !== undefined))]
 })
 
 L.replace = R.curry((inn, out) =>
