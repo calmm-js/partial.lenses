@@ -24,7 +24,14 @@ const data = { contents: [ { language: "en", text: "Title" },
                            { language: "sv", text: "Rubrik" } ] }
 ```
 
-First we compose a parameterized lens for accessing texts:
+First we import libraries
+
+```js
+import L from "partial.lenses"
+import R from "ramda"
+```
+
+and compose a parameterized lens for accessing texts:
 
 ```js
 const textIn = language =>
