@@ -37,6 +37,10 @@ const textIn = language =>
             L.default(""))
 ```
 
+Take a moment to read through the above definition line by line.  Each line has
+a specific purpose.  The purpose of the `L.prop(...)` lines is probably obvious.
+The other lines we will mention below.
+
 ### Querying data
 
 Thanks to the parameterized search part, `L.find(R.whereEq({language}))`, of the
