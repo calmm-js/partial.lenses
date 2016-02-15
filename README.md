@@ -135,6 +135,13 @@ when set.
 Note that unless required and default values are explicitly specified as part of
 the lens, they will both be undefined.
 
+### Exercise
+
+Take out one or more `L.required(...)`, `L.normalize(...)` or `L.default(...)`
+part from the lens composition and try to predict what happens when you rerun
+the examples with the modified lens composition.  Verify your reasoning by
+actually rerunning the examples.
+
 ### Shorthands
 
 For clarity, the previous code snippets avoided some of the shorthands that this
