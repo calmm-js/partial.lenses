@@ -121,8 +121,8 @@ import L from "partial.lenses"
 
 You can access basic operations on lenses via the default import `L`:
 
-* `L(l0, ...ls)` and `L.compose(l0, ...ls)` both are the same as
-  `R.compose(lift(l0), ...ls.map(lift))` (see
+* `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
+  `R.compose(lift(l), ...ls.map(lift))` (see
   [compose](http://ramdajs.com/0.19.0/docs/#compose)).
 * `L.lens(get, set)` is the same as `R.lens(get, set)` (see
   [lens](http://ramdajs.com/0.19.0/docs/#lens)).
@@ -150,16 +150,6 @@ const lift = l => {
 and is available as a non-default export.  All operations in this library that
 take lenses as arguments implicitly lift them.
 
-#### L.firstOf(l0, ...ls)
-
-`L.firstOf(l0, ...ls)` returns a partial lens that acts like the first of the
-given lenses, `l0, ...ls`, whose view is not undefined on the given target.
-When the views of all of the given lenses are undefined, the returned lens acts
-like `l0`.
-
-Note that `L.firstOf` is an associative operation, but there is no identity
-element.
-
 #### L.delete(l, s)
 
 For convenience, there is also a shorthand for delete:
@@ -167,6 +157,21 @@ For convenience, there is also a shorthand for delete:
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
 ### Lenses
+
+In alphabetical order.
+
+#### L.append
+
+`L.append` is a special lens that operates on arrays.  The view of `L.append` is
+always undefined.  Setting `L.append` to undefined has no effect by itself.
+Setting `L.append` to a defined value appends the value to the end of the
+focused array.
+
+#### L.choose(maybeValue => PartialLens)
+
+`L.choose(maybeValue => PartialLens)` creates a lens whose operation is
+determined by the given function that maps the underlying view, which can be
+undefined, to a lens.
 
 #### L.filter(predicate)
 
@@ -183,12 +188,22 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
 `normalize` would be preferable.
 
-#### L.find(predicate)
+#### L.find(value => boolean)
 
-`L.find(predicate)` operates on arrays like `L.index`, but the index to be
-viewed is determined by finding the first element from the input array that
+`L.find(value => boolean)` operates on arrays like `L.index`, but the index to
+be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `R.index` with the index set to the length of the array.
+
+#### L.firstOf(l, ...ls)
+
+`L.firstOf(l, ...ls)` returns a partial lens that acts like the first of the
+given lenses, `l, ...ls`, whose view is not undefined on the given target.  When
+the views of all of the given lenses are undefined, the returned lens acts like
+`l`.
+
+Note that `L.firstOf` is an associative operation, but there is no identity
+element.
 
 #### L.index(integer)
 
@@ -202,10 +217,10 @@ lens:
   be an array without indices (ignoring length), the whole result will be
   undefined.
 
-#### L.normalize(transform)
+#### L.normalize(value => value)
 
-`L.normalize(transform)` maps the value with same given `transform` when viewed
-and set and implicitly maps undefined to undefined.  More specifically,
+`L.normalize(value => value)` maps the value with same given transform when
+viewed and set and implicitly maps undefined to undefined.  More specifically,
 `L.normalize(transform)` is equivalent to `R.lens(toPartial(transform),
 toPartial(transform))` where
 
