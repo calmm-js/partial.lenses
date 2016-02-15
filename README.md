@@ -132,7 +132,7 @@ library supports.  In particular,
 * `L.prop(string)` can be abbreviated as `string`, and
 * `L.set(l, undefined, s)` can be abbreviated as `L.delete(l, s)`.
 
-### Systematic composition
+### Systematic decomposition
 
 It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Reconsider the lens from the start of the
