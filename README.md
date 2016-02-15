@@ -153,7 +153,7 @@ Following the structure or schema of the JSON, we could break this into three
 separate lenses:
 * a lens for accessing the contents of a data object,
 * a parameterized lens for querying a content object from contents, and
-* a lens for accessing the text of a content.
+* a lens for accessing the text of a content object.
 
 Furthermore, we could organize the lenses into an object following the structure
 of the JSON:
