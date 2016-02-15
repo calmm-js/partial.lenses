@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Ramda compatible lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
@@ -28,13 +28,13 @@
     "ramda": "^0.19.1"
   },
   "devDependencies": {
-    "babel": "^6.3.13",
-    "babel-cli": "^6.3.17",
-    "babel-eslint": "^4.1.6",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.3.16",
-    "babel-preset-es2015": "^6.3.13",
-    "babel-preset-stage-2": "^6.3.13",
-    "eslint": "^1.10.3",
-    "mocha": "^2.4.4"
+    "babel": "^6.5.2",
+    "babel-cli": "^6.5.1",
+    "babel-eslint": "^4.1.8",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.5.2",
+    "babel-preset-es2015": "^6.5.0",
+    "babel-preset-stage-2": "^6.5.0",
+    "eslint": "^2.0.0",
+    "mocha": "^2.4.5"
   }
 }
