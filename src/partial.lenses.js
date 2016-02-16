@@ -114,16 +114,8 @@ L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   }
 })
 
-L.append = R.lens(() => {}, (x, xs) => {
-  if (x === undefined) {
-    return xs
-  } else {
-    if (xs === undefined)
-      return [x]
-    else
-      return xs.concat([x])
-  }
-})
+L.append = R.lens(() => {}, (x, xs) =>
+  x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
 
 L.filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
   conserve(xs, dropped(R.concat(ys || [], (xs || []).filter(R.complement(p))))))
