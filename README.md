@@ -137,8 +137,8 @@ the lens, they will both be undefined.
 
 ### Exercise
 
-Take out one or more `L.required(...)`, `L.normalize(...)` or `L.default(...)`
-part from the lens composition and try to predict what happens when you rerun
+Take out one (or more) `L.required(...)`, `L.normalize(...)` or `L.default(...)`
+part(s) from the lens composition and try to predict what happens when you rerun
 the examples with the modified lens composition.  Verify your reasoning by
 actually rerunning the examples.
 
