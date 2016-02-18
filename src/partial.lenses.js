@@ -91,9 +91,7 @@ L.find = predicate => L.choose(xs => {
   if (xs === undefined)
     return L.append
   const i = xs.findIndex(predicate)
-  if (i < 0)
-    return L.append
-  return L.index(i)
+  return i < 0 ? L.append : i
 })
 
 L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
