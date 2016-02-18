@@ -271,7 +271,7 @@ focused array.
 
 `L.choose(maybeValue => PartialLens)` creates a lens whose operation is
 determined by the given function that maps the underlying view, which can be
-undefined, to a lens.
+undefined, to a lens.  The lens returned by the given function will be lifted.
 
 #### L.filter(predicate)
 
