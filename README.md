@@ -6,7 +6,7 @@ existing part of a data structure, a partial lens can *view* optional data,
 *insert* new data, *update* existing data and *delete* existing data and can
 provide *default* values and maintain *required* data structure parts.
 
-In Javascript, missing data can be mapped to `undefined`, which is what partial
+In JavaScript, missing data can be mapped to `undefined`, which is what partial
 lenses also do.  When a part of a data structure is missing, an attempt to view
 it returns `undefined`.  When a part is missing, setting it to a defined value
 inserts the new part.  Setting an existing part to `undefined` deletes it.
@@ -286,7 +286,7 @@ Note that the type of `L.choose` is
 choose :: (Maybe a -> PartialLens s b) -> PartialLens s a -> PartialLens s b
 ```
 
-which is very similar to the type of the monadic bind operation.
+which is very similar to the type of a monadic bind operation.
 
 #### L.filter(predicate)
 
