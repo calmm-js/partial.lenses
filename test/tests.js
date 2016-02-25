@@ -112,6 +112,12 @@ describe("L.firstOf", () => {
   testEq('L.delete(L.firstOf("y", "x"), {x: 11, y: 12})', {x: 11})
 })
 
+describe("L.findWith", () => {
+  testEq('L.view(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', "c")
+  testEq('L.set(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b","d"]}])
+  testEq('L.delete(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b"]}])
+})
+
 describe("L.filter", () => {
   testEq('L.view(L.filter(R.lt(9)), [3,1,4,1,5,9,2])', [])
   testEq('L.view(L.filter(R.lt(2)), undefined)', undefined)
@@ -120,4 +126,8 @@ describe("L.filter", () => {
   testEq('L.set(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])', undefined)
   testEq('L.delete(L.filter(R.lt(0)), [3,1,4,1,5,9,2])', undefined)
   testEq('L.delete(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [1,1,2])
+})
+
+describe("L.deleteAll", () => {
+  testEq('L.deleteAll(L.find(x => x < 2), [3,1,4,1,5,9,2])', [3,4,5,9,2])
 })

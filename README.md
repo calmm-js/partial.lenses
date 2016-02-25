@@ -256,6 +256,13 @@ For convenience, there is also a shorthand for delete:
 
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
+#### L.deleteAll(l, s)
+
+`L.deleteAll(l, s)` deletes all the non `undefined` items targeted by the lens
+`l` from `s`.  This only makes sense for a lens that
+* can potentially focus on more than one item and
+* will focus on `undefined` when it doesn't find an item to focus on.
+
 ### Lenses
 
 In alphabetical order.
@@ -272,6 +279,14 @@ focused array.
 `L.choose(maybeValue => PartialLens)` creates a lens whose operation is
 determined by the given function that maps the underlying view, which can be
 undefined, to a lens.  The lens returned by the given function will be lifted.
+
+Note that the type of `L.choose` is
+
+```haskell
+choose :: (Maybe a -> PartialLens b s) -> PartialLens a s -> PartialLens b s
+```
+
+which is very similar to the type of the monadic bind operation.
 
 #### L.filter(predicate)
 
@@ -295,6 +310,21 @@ be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
+#### L.findWith(l, ...ls)
+
+`L.findWith(l, ...ls)` is defined as
+
+```js
+L.findWith = (l, ...ls) => {
+  const lls = L(l, ...ls)
+  return L(L.find(x => L.view(lls, x) !== undefined), lls)
+}
+```
+
+and basically chooses an index from an array through which the given lens, `L(l,
+...ls)`, focuses on a defined item and then returns a lens that focuses on that
+item.
+
 #### L.firstOf(l, ...ls)
 
 `L.firstOf(l, ...ls)` returns a partial lens that acts like the first of the
@@ -304,6 +334,7 @@ the views of all of the given lenses are undefined, the returned lens acts like
 
 Note that `L.firstOf` is an associative operation, but there is no identity
 element.
+
 
 #### L.index(integer)
 
