@@ -283,7 +283,7 @@ undefined, to a lens.  The lens returned by the given function will be lifted.
 Note that the type of `L.choose` is
 
 ```haskell
-choose :: (Maybe a -> PartialLens b s) -> PartialLens a s -> PartialLens b s
+choose :: (Maybe a -> PartialLens s b) -> PartialLens s a -> PartialLens s b
 ```
 
 which is very similar to the type of the monadic bind operation.
