@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "Ramda compatible lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
