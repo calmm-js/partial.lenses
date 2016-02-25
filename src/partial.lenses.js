@@ -57,6 +57,11 @@ const L = (l, ...ls) =>
 
 L.compose = L
 L.delete = R.curry((l, s) => R.set(lift(l), undefined, s))
+L.deleteAll = R.curry((lens, data) => {
+  while (L.view(lens, data) !== undefined)
+    data = L.delete(lens, data)
+  return data
+})
 L.lens = R.lens
 L.over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
 L.set = R.curry((l, x, s) => R.set(lift(l), x, s))
@@ -93,6 +98,11 @@ L.find = predicate => L.choose(xs => {
   const i = xs.findIndex(predicate)
   return i < 0 ? L.append : i
 })
+
+L.findWith = (l, ...ls) => {
+  const lls = L(l, ...ls)
+  return L(L.find(x => L.view(lls, x) !== undefined), lls)
+}
 
 L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   if (x === undefined) {
