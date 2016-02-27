@@ -40,7 +40,7 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 const conserve = (c0, c1) => R.equals(c0, c1) ? c0 : c1
 
-const toConserve = f => (y, c0) =>  conserve(c0, f(y, c0))
+const toConserve = f => (y, c0) => conserve(c0, f(y, c0))
 
 //
 
