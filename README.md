@@ -274,6 +274,14 @@ always undefined.  Setting `L.append` to undefined has no effect by itself.
 Setting `L.append` to a defined value appends the value to the end of the
 focused array.
 
+#### L.augment({prop: obj => val, ...props})
+
+`L.augment({prop: obj => val, ...props})` is given a template of functions to
+compute new properties.  When viewing or setting undefined, the result is
+undefined.  When viewing a defined object, the object is extended with the
+computed properties.  When set with a defined object, the extended properties
+are removed.
+
 #### L.choose(maybeValue => PartialLens)
 
 `L.choose(maybeValue => PartialLens)` creates a lens whose operation is
