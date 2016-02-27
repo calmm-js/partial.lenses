@@ -131,3 +131,10 @@ describe("L.filter", () => {
 describe("L.deleteAll", () => {
   testEq('L.deleteAll(L.find(x => x < 2), [3,1,4,1,5,9,2])', [3,4,5,9,2])
 })
+
+describe("L.augment", () => {
+  testEq('L.view(L.augment({y: c => c.x+1, z: c => c.x-1}), {x: 0})', {x: 0, y: 1, z: -1})
+  testEq('L.view(L.augment({y: c => c.x+1}), {x: 2, y: -1})', {x: 2, y: 3})
+  testEq('L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
+  testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
+})

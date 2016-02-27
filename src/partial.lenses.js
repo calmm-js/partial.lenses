@@ -128,4 +128,25 @@ L.append = R.lens(() => {}, (x, xs) =>
 L.filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
   conserve(xs, dropped(R.concat(ys || [], (xs || []).filter(R.complement(p))))))
 
+L.augment = template => R.lens(
+  toPartial(x => {
+    const z = {...x}
+    for (const k in template)
+      z[k] = template[k](x)
+    return z
+  }),
+  toConserve((y, c) => {
+    if (y === undefined)
+      return undefined
+    const z = {}
+    for (const k in y) {
+      if (!(k in template))
+        z[k] = y[k]
+      else
+        if (k in c)
+          z[k] = c[k]
+    }
+    return z
+  }))
+
 export default L
