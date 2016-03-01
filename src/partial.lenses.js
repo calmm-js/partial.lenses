@@ -138,13 +138,18 @@ L.augment = template => R.lens(
   toConserve((y, c) => {
     if (y === undefined)
       return undefined
-    const z = {}
+    let z
+    const set = (k, v) => {
+      if (undefined === z)
+        z = {}
+      z[k] = v
+    }
     for (const k in y) {
       if (!(k in template))
-        z[k] = y[k]
+        set(k, y[k])
       else
         if (k in c)
-          z[k] = c[k]
+          set(k, c[k])
     }
     return z
   }))

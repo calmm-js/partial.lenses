@@ -137,4 +137,5 @@ describe("L.augment", () => {
   testEq('L.view(L.augment({y: c => c.x+1}), {x: 2, y: -1})', {x: 2, y: 3})
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
+  testEq('L.delete(L(L.augment({y: () => 1}), "x"), {x:0})', undefined)
 })
