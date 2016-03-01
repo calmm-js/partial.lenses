@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dirty-js/partial.lenses.git"
+    "url": "git+https://github.com/calmm-js/partial.lenses.git"
   },
   "keywords": [
     "ramda",
@@ -21,9 +21,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dirty-js/partial.lenses/issues"
+    "url": "https://github.com/calmm-js/partial.lenses/issues"
   },
-  "homepage": "https://github.com/dirty-js/partial.lenses#readme",
+  "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
     "ramda": "^0.19.1"
   },
