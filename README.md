@@ -221,7 +221,7 @@ import L from "partial.lenses"
 
 You can access basic operations on lenses via the default import `L`:
 
-#### `L.compose(l, ...ls)`
+#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens a a1, ...PLens aN b) -> PLens a b")
 
 `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as `R.compose(lift(l),
 ...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
@@ -323,7 +323,7 @@ be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
-#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens a1 a2, ...PLens aN b) -> PLens [a] b")
+#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens a a1, ...PLens aN b) -> PLens [a] b")
 
 `L.findWith(l, ...ls)` is defined as
 
