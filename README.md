@@ -250,13 +250,13 @@ const lift = l => {
 and is available as a non-default export.  All operations in this library that
 take lenses as arguments implicitly lift them.
 
-#### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PartialLens s a -> s -> s")
+#### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PLens s a -> s -> s")
 
 For convenience, there is also a shorthand for delete:
 
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
-#### [`L.deleteAll(l, s)`](#ldeletealll-s "L.deleteAll :: PartialLens s a -> s -> s")
+#### [`L.deleteAll(l, s)`](#ldeletealll-s "L.deleteAll :: PLens s a -> s -> s")
 
 `L.deleteAll(l, s)` deletes all the non `undefined` items targeted by the lens
 `l` from `s`.  This only makes sense for a lens that
@@ -267,7 +267,7 @@ For convenience, there is also a shorthand for delete:
 
 In alphabetical order.
 
-#### [`L.append`](#lappend "L.append :: PartialLens (Array a) a")
+#### [`L.append`](#lappend "L.append :: PLens [a] a")
 
 `L.append` is a special lens that operates on arrays.  The view of `L.append` is
 always undefined.  Setting `L.append` to undefined has no effect by itself.
@@ -282,13 +282,13 @@ undefined.  When viewing a defined object, the object is extended with the
 computed properties.  When set with a defined object, the extended properties
 are removed.
 
-#### [`L.choose(maybeValue => PartialLens)`](#lchoosemaybevalue--partiallens "L.choose :: (Maybe a -> PartialLens a b) -> PartialLens a b")
+#### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--partiallens "L.choose :: (Maybe a -> PLens a b) -> PLens a b")
 
-`L.choose(maybeValue => PartialLens)` creates a lens whose operation is
-determined by the given function that maps the underlying view, which can be
-undefined, to a lens.  The lens returned by the given function will be lifted.
+`L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
+the given function that maps the underlying view, which can be undefined, to a
+lens.  The lens returned by the given function will be lifted.
 
-#### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PartialLens (Array a) a")
+#### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] a")
 
 `L.filter(predicate)` operates on arrays.  When viewed, only elements matching
 the given predicate will be returned.  When set, the resulting array will be
@@ -303,14 +303,14 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
 `normalize` would be preferable.
 
-#### [`L.find(value => boolean)`](#lfindvalue--boolean "L.find :: (a -> Boolean) -> PartialLens (Array a) a")
+#### [`L.find(value => boolean)`](#lfindvalue--boolean "L.find :: (a -> Boolean) -> PLens [a] a")
 
 `L.find(value => boolean)` operates on arrays like `L.index`, but the index to
 be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
-#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PartialLens a1 a2, ...PartialLens aN b) -> PartialLens (Array a) b")
+#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens a1 a2, ...PLens aN b) -> PLens [a] b")
 
 `L.findWith(l, ...ls)` is defined as
 
@@ -325,7 +325,7 @@ and basically chooses an index from an array through which the given lens, `L(l,
 ...ls)`, focuses on a defined item and then returns a lens that focuses on that
 item.
 
-#### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PartialLens s a, ...PartialLens s a) -> PartialLens s a")
+#### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PLens s a, ...PLens s a) -> PLens s a")
 
 `L.firstOf(l, ...ls)` returns a partial lens that acts like the first of the
 given lenses, `l, ...ls`, whose view is not undefined on the given target.  When
@@ -435,13 +435,13 @@ defining a lens as a pair of a getter and a setter.  The type of a partial lens
 would then be
 
 ```haskell
-type PartialLens s a = (s -> Maybe a, Maybe a -> s -> s)
+type PLens s a = (s -> Maybe a, Maybe a -> s -> s)
 ```
 
 which we can simplify to
 
 ```haskell
-type PartialLens s a = Lens s (Maybe a)
+type PLens s a = Lens s (Maybe a)
 ```
 
 This means that partial lenses can be composed, viewed, mapped over and set
