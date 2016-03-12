@@ -274,7 +274,7 @@ always undefined.  Setting `L.append` to undefined has no effect by itself.
 Setting `L.append` to a defined value appends the value to the end of the
 focused array.
 
-#### L.augment({prop: obj => val, ...props})
+#### [`L.augment({prop: obj => val, ...props})`](#laugmentprop-obj--val-props "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
 
 `L.augment({prop: obj => val, ...props})` is given a template of functions to
 compute new properties.  When viewing or setting undefined, the result is
