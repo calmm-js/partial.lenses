@@ -250,7 +250,7 @@ const lift = l => {
 and is available as a non-default export.  All operations in this library that
 take lenses as arguments implicitly lift them.
 
-#### L.delete(l, s)
+#### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PartialLens s a -> s -> s")
 
 For convenience, there is also a shorthand for delete:
 
