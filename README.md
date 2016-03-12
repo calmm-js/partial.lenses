@@ -226,22 +226,22 @@ You can access basic operations on lenses via the default import `L`:
 `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as `R.compose(lift(l),
 ...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
 
-#### [`L.lens(get, set)`](#llensget-set "L.lens :: (s -> a) -> (a -> s -> s) -> PLens s a")
+#### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
 
 `L.lens(get, set)` is the same as `R.lens(get, set)` (see
 [lens](http://ramdajs.com/0.19.0/docs/#lens)).
 
-#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (a -> a) -> s -> s")
+#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
 `L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
 [over](http://ramdajs.com/0.19.0/docs/#over)).
 
-#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> a -> s -> s")
+#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
 `L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
 [set](http://ramdajs.com/0.19.0/docs/#set)).
 
-#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> s -> a")
+#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
 
 `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
 [view](http://ramdajs.com/0.19.0/docs/#view)).
@@ -263,13 +263,13 @@ const lift = l => {
 and is available as a non-default export.  All operations in this library that
 take lenses as arguments implicitly lift them.
 
-#### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PLens s a -> s -> s")
+#### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PLens s a -> Maybe s -> Maybe s")
 
 For convenience, there is also a shorthand for delete:
 
 * `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
 
-#### [`L.deleteAll(l, s)`](#ldeletealll-s "L.deleteAll :: PLens s a -> s -> s")
+#### [`L.deleteAll(l, s)`](#ldeletealll-s "L.deleteAll :: PLens s a -> Maybe s -> Maybe s")
 
 `L.deleteAll(l, s)` deletes all the non `undefined` items targeted by the lens
 `l` from `s`.  This only makes sense for a lens that
@@ -447,13 +447,13 @@ defining a lens as a pair of a getter and a setter.  The type of a partial lens
 would then be
 
 ```haskell
-type PLens s a = (s -> Maybe a, Maybe a -> s -> s)
+type PLens s a = (Maybe s -> Maybe a, Maybe a -> Maybe s -> Maybe s)
 ```
 
 which we can simplify to
 
 ```haskell
-type PLens s a = Lens s (Maybe a)
+type PLens s a = Lens (Maybe s) (Maybe a)
 ```
 
 This means that partial lenses can be composed, viewed, mapped over and set
