@@ -335,8 +335,7 @@ the views of all of the given lenses are undefined, the returned lens acts like
 Note that `L.firstOf` is an associative operation, but there is no identity
 element.
 
-
-#### L.index(integer)
+#### [`L.index(integer)`](#lindexinteger "L.index :: Integer -> PLens [a] a")
 
 `L.index(integer)` or `L(integer)` is similar to `R.lensIndex(integer)` (see
 [lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
@@ -348,7 +347,7 @@ lens:
   be an array without indices (ignoring length), the whole result will be
   undefined.
 
-#### L.normalize(value => value)
+#### [`L.normalize(value => value)`](#lnormalizevalue--value "L.normalize :: (a -> a) -> PLens a a")
 
 `L.normalize(value => value)` maps the value with same given transform when
 viewed and set and implicitly maps undefined to undefined.  More specifically,
@@ -363,7 +362,7 @@ The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
 simple `R.equals` comparison will do.
 
-#### L.prop(string)
+#### [`L.prop(string)`](#lpropstring "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
 `L.prop(string)` or `L(string)` is similar to `R.lensProp(string)` (see
 [lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
@@ -373,7 +372,7 @@ lens:
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
-#### L.replace(inn, out)
+#### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe a -> Maybe a -> PLens a a")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
 versa when set.  Values are compared using `R.equals` (see
@@ -383,15 +382,15 @@ The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
 selective use of `default` and `required`:
 
-##### L.default(out)
+##### [`L.default(out)`](#ldefaultout "L.default :: a -> PLens a a")
 
 `L.default(out)` is the same as `L.replace(undefined, out)`.
 
-##### L.define(value)
+##### [`L.define(value)`](#ldefinevalue "L.define :: a -> PLens a a")
 
 `L.define(value)` is the same as `L(L.required(value), L.default(value))`.
 
-##### L.required(inn)
+##### [`L.required(inn)`](#lrequiredinn "L.required :: a -> PLens a a")
 
 `L.required(inn)` is the same as `L.replace(inn, undefined)`.
 
