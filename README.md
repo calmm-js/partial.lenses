@@ -288,7 +288,7 @@ are removed.
 the given function that maps the underlying view, which can be undefined, to a
 lens.  The lens returned by the given function will be lifted.
 
-#### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] a")
+#### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
 `L.filter(predicate)` operates on arrays.  When viewed, only elements matching
 the given predicate will be returned.  When set, the resulting array will be
