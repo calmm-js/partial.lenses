@@ -221,7 +221,7 @@ import L from "partial.lenses"
 
 You can access basic operations on lenses via the default import `L`:
 
-#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens a a1, ...PLens aN b) -> PLens a b")
+#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
 `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as `R.compose(lift(l),
 ...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
@@ -295,7 +295,7 @@ undefined.  When viewing a defined object, the object is extended with the
 computed properties.  When set with a defined object, the extended properties
 are removed.
 
-#### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe a -> PLens a b) -> PLens a b")
+#### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
 the given function that maps the underlying view, which can be undefined, to a
@@ -323,7 +323,7 @@ be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
-#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens a a1, ...PLens aN b) -> PLens [a] b")
+#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
 `L.findWith(l, ...ls)` is defined as
 
@@ -360,7 +360,7 @@ lens:
   be an array without indices (ignoring length), the whole result will be
   undefined.
 
-#### [`L.normalize(value => value)`](#lnormalizevalue--value "L.normalize :: (a -> a) -> PLens a a")
+#### [`L.normalize(value => value)`](#lnormalizevalue--value "L.normalize :: (s -> s) -> PLens s s")
 
 `L.normalize(value => value)` maps the value with same given transform when
 viewed and set and implicitly maps undefined to undefined.  More specifically,
@@ -385,7 +385,7 @@ lens:
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
-#### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe a -> Maybe a -> PLens a a")
+#### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
 versa when set.  Values are compared using `R.equals` (see
@@ -395,15 +395,15 @@ The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
 selective use of `default` and `required`:
 
-##### [`L.default(out)`](#ldefaultout "L.default :: a -> PLens a a")
+##### [`L.default(out)`](#ldefaultout "L.default :: s -> PLens s s")
 
 `L.default(out)` is the same as `L.replace(undefined, out)`.
 
-##### [`L.define(value)`](#ldefinevalue "L.define :: a -> PLens a a")
+##### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
 
 `L.define(value)` is the same as `L(L.required(value), L.default(value))`.
 
-##### [`L.required(inn)`](#lrequiredinn "L.required :: a -> PLens a a")
+##### [`L.required(inn)`](#lrequiredinn "L.required :: s -> PLens s s")
 
 `L.required(inn)` is the same as `L.replace(inn, undefined)`.
 
