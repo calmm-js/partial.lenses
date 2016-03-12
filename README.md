@@ -282,7 +282,7 @@ undefined.  When viewing a defined object, the object is extended with the
 computed properties.  When set with a defined object, the extended properties
 are removed.
 
-#### [`L.choose(maybeValue => PartialLens)`](#lchoosemaybevalue-partiallens "L.choose :: (Maybe a -> PartialLens a b) -> PartialLens a b")
+#### [`L.choose(maybeValue => PartialLens)`](#lchoosemaybevalue--partiallens "L.choose :: (Maybe a -> PartialLens a b) -> PartialLens a b")
 
 `L.choose(maybeValue => PartialLens)` creates a lens whose operation is
 determined by the given function that maps the underlying view, which can be
@@ -303,7 +303,7 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
 `normalize` would be preferable.
 
-#### [`L.find(value => boolean)`](#lfindvalue-boolean "L.find :: (a -> Boolean) -> PartialLens (Array a) a")
+#### [`L.find(value => boolean)`](#lfindvalue--boolean "L.find :: (a -> Boolean) -> PartialLens (Array a) a")
 
 `L.find(value => boolean)` operates on arrays like `L.index`, but the index to
 be viewed is determined by finding the first element from the input array that
