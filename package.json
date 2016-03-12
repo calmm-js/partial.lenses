@@ -1,7 +1,7 @@
 {
   "name": "partial.lenses",
-  "version": "1.1.1",
-  "description": "Ramda compatible lenses",
+  "version": "1.1.2",
+  "description": "Ramda compatible partial lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
     "dist": "babel src --source-maps inline --out-dir lib",
