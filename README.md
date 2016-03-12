@@ -282,7 +282,7 @@ undefined.  When viewing a defined object, the object is extended with the
 computed properties.  When set with a defined object, the extended properties
 are removed.
 
-#### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--partiallens "L.choose :: (Maybe a -> PLens a b) -> PLens a b")
+#### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe a -> PLens a b) -> PLens a b")
 
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
 the given function that maps the underlying view, which can be undefined, to a
