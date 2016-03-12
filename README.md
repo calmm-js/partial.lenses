@@ -221,17 +221,30 @@ import L from "partial.lenses"
 
 You can access basic operations on lenses via the default import `L`:
 
-* `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
-  `R.compose(lift(l), ...ls.map(lift))` (see
-  [compose](http://ramdajs.com/0.19.0/docs/#compose)).
-* `L.lens(get, set)` is the same as `R.lens(get, set)` (see
-  [lens](http://ramdajs.com/0.19.0/docs/#lens)).
-* `L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
-  [over](http://ramdajs.com/0.19.0/docs/#over)).
-* `L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
-  [set](http://ramdajs.com/0.19.0/docs/#set)).
-* `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
-  [view](http://ramdajs.com/0.19.0/docs/#view)).
+#### `L.compose(l, ...ls)`
+
+`L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as `R.compose(lift(l),
+...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
+
+#### [`L.lens(get, set)`](#llensget-set "L.lens :: (s -> a) -> (a -> s -> s) -> PLens s a")
+
+`L.lens(get, set)` is the same as `R.lens(get, set)` (see
+[lens](http://ramdajs.com/0.19.0/docs/#lens)).
+
+#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (a -> a) -> s -> s")
+
+`L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
+[over](http://ramdajs.com/0.19.0/docs/#over)).
+
+#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> a -> s -> s")
+
+`L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
+[set](http://ramdajs.com/0.19.0/docs/#set)).
+
+#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> s -> a")
+
+`L.view(l, s)` is the same as `R.view(lift(l), s)` (see
+[view](http://ramdajs.com/0.19.0/docs/#view)).
 
 #### Lifting
 
