@@ -139,3 +139,13 @@ describe("L.augment", () => {
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
   testEq('L.delete(L(L.augment({y: () => 1}), "x"), {x:0})', undefined)
 })
+
+describe("L.pick", () => {
+  testEq('L.view(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
+  testEq('L.set(L(L.pick({x: "c"}), "x"), 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})
+  testEq('L.view(L.pick({x: "b", y: "a"}), {a: [2], b: 1})', {x: 1, y: [2]})
+  testEq('L.set(L(L.pick({x: "b", y: "a"}), "x"), 3, {a: [2], b: 1})', {a: [2], b: 3})
+  testEq('L.delete(L(L.pick({x: "b", y: "a"}), "y"), {a: [2], b: 1})', {b: 1})
+  testEq('L.delete(L(L.pick({x: "b"}), "x"), {a: [2], b: 1})', {a: [2]})
+  testEq('L.deleteAll(L(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
+})
