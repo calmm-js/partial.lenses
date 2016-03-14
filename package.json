@@ -28,7 +28,6 @@
     "ramda": "^0.19.1"
   },
   "devDependencies": {
-    "babel": "^6.5.2",
     "babel-cli": "^6.6.5",
     "babel-eslint": "^5.0.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.7.0",
