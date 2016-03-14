@@ -375,7 +375,7 @@ The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
 simple `R.equals` comparison will do.
 
-#### `L.pick({p1: l1, ...pls})`
+#### [`L.pick({p1: l1, ...pls})`](#lpickp1-l1-pls "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 
 `L.pick({p1: l1, ...pls})` creates a lens out of the given object template of
 lenses.  When viewed, an object is created, whose properties are obtained by
