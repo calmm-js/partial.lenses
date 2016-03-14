@@ -375,6 +375,19 @@ The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
 simple `R.equals` comparison will do.
 
+#### `L.pick({p1: l1, ...pls})`
+
+`L.pick({p1: l1, ...pls})` creates a lens out of the given object template of
+lenses.  When viewed, an object is created, whose properties are obtained by
+viewing through the lenses of the template.  When set with an object, the
+properties of the object are set to the context via the lenses of the template.
+`undefined` is treated as the equivalent of empty or non-existent in both
+directions.
+
+Note that, when set, `L.pick` simply ignores any properties that the given
+template doesn't mention.  Note that the underlying data structure need not be
+an object.
+
 #### [`L.prop(string)`](#lpropstring "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
 `L.prop(string)` or `L(string)` is similar to `R.lensProp(string)` (see

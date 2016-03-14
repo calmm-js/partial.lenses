@@ -154,4 +154,24 @@ L.augment = template => R.lens(
     return z
   }))
 
+L.pick = template => L.lens(
+  c => {
+    let r
+    for (const k in template) {
+      const v = L.view(template[k], c)
+      if (v !== undefined) {
+        if (r === undefined)
+          r = {}
+        r[k] = v
+      }
+    }
+    return r
+  },
+  (o = {}, cIn) => {
+    let c = cIn
+    for (const k in template)
+      c = L.set(template[k], o[k], c)
+    return c
+  })
+
 export default L
