@@ -258,6 +258,13 @@ For example:
 [set](http://ramdajs.com/0.19.0/docs/#set)) and is also equivalent to `L.over(l,
 () => x, s)`.
 
+For example:
+
+```js
+> L.set(L("a", 0, "x"), 11, {id: "z"})
+{a: [{x: 11}], id: "z"}
+```
+
 #### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
 
 `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
@@ -307,6 +314,13 @@ For example:
 `l` from `s`.  This only makes sense for a lens that
 * can potentially focus on more than one item and
 * will focus on `undefined` when it doesn't find an item to focus on.
+
+For example:
+
+```js
+> L.deleteAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
+[{x: 1}, {y: 4}, {z: 5}]
+```
 
 ### Lenses
 
