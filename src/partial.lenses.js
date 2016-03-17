@@ -101,7 +101,7 @@ L.find = predicate => L.choose(xs => {
 
 L.findWith = (l, ...ls) => {
   const lls = L(l, ...ls)
-  return L(L.find(x => L.view(lls, x) !== undefined), lls)
+  return L(L.find(x => R.view(lls, x) !== undefined), lls)
 }
 
 L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
@@ -154,7 +154,7 @@ L.augment = template => R.lens(
     return z
   }))
 
-L.pick = template => L.lens(
+L.pick = template => R.lens(
   c => {
     let r
     for (const k in template) {
