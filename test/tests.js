@@ -195,6 +195,10 @@ describe("BST", () => {
     let op
     let k
 
+    const error = () => {
+      throw new Error("From " + show(t0) + " " + op + " with " + k + " gave " + t1)
+    }
+
     for (let i=0; i<1000; ++i) {
       k = randomInt(0, 10)
       op = randomPick("set", "delete")
@@ -202,14 +206,18 @@ describe("BST", () => {
       switch (op) {
         case "set":
           t1 = L.set(BST.valueOf(k), k, t0)
+          if (undefined === L.view(BST.valueOf(k), t1))
+            error()
           break
         case "delete":
           t1 = L.delete(BST.valueOf(k), t0)
+          if (undefined !== L.view(BST.valueOf(k), t1))
+            error()
           break
       }
 
       if (!BST.isValid(t1))
-        throw new Error("From " + show(t0) + " " + op + " with " + k + " gave " + t1)
+        error()
 
       t0 = t1
     }
