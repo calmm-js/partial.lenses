@@ -224,27 +224,52 @@ You can access basic operations on lenses via the default import `L`:
 #### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
 `L(l, ...ls)` and `L.compose(l, ...ls)` both are the same as `R.compose(lift(l),
-...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)).
+...ls.map(lift))` (see [compose](http://ramdajs.com/0.19.0/docs/#compose)) and
+compose a lens from a path of lenses.
+
+For example:
+
+```js
+> L.view(L("a", 1), {a: ["b", "c"]})
+"c"
+```
 
 #### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
 
 `L.lens(get, set)` is the same as `R.lens(get, set)` (see
-[lens](http://ramdajs.com/0.19.0/docs/#lens)).
+[lens](http://ramdajs.com/0.19.0/docs/#lens)) and creates a new primitive lens.
 
 #### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
 `L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
-[over](http://ramdajs.com/0.19.0/docs/#over)).
+[over](http://ramdajs.com/0.19.0/docs/#over)) and allows one to map over the
+focused element of a data structure.
+
+For example:
+
+```js
+> L.over("elems", R.map(L.delete("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+{elems: [{y: 2}, {y: 4}]}
+```
 
 #### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
 `L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
-[set](http://ramdajs.com/0.19.0/docs/#set)).
+[set](http://ramdajs.com/0.19.0/docs/#set)) and is also equivalent to `L.over(l,
+() => x, s)`.
 
 #### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
 
 `L.view(l, s)` is the same as `R.view(lift(l), s)` (see
-[view](http://ramdajs.com/0.19.0/docs/#view)).
+[view](http://ramdajs.com/0.19.0/docs/#view)) and returns the focused element
+from a data structure.
+
+For example:
+
+```js
+> L.view("y", {x: 112, y: 101})
+101
+```
 
 #### Lifting
 
@@ -269,7 +294,7 @@ take lenses as arguments implicitly lift them.
 lenses, setting to undefined typically has the effect of removing the focused
 element.
 
-For example,
+For example:
 
 ```js
 > L.delete(L("a", "b"), {a: {b: 1}, x: {y: 2}})
