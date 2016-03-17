@@ -262,16 +262,20 @@ updated `binarySearch` definition:
 
 ```js
 const binarySearch = key =>
-  L(L.default({key}),
-    L.normalize(node => {
+  L(L.normalize(node => {
+      if (!node)
+        return node
       if ("value" in node)
         return node
       if (!("greater" in node) && "smaller" in node)
         return node.smaller
       if (!("smaller" in node) && "greater" in node)
         return node.greater
-      return node
+      return L.set(binarySearch(node.smaller.key),
+                   node.smaller,
+                   node.greater)
     }),
+    L.default({key}),
     L.choose(node =>
              key < node.key ? L("smaller", binarySearch(key)) :
              node.key < key ? L("greater", binarySearch(key)) :
@@ -283,7 +287,6 @@ Now we can also delete values from a binary tree:
 ```js
 > L.delete(valueOf('c'), t)
 { greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
-
 ```
 
 As an exercise you could improve the normalization to maintain some balance
