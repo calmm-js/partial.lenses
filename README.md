@@ -207,6 +207,88 @@ rather than composing a lens, like `textIn` above, to access a leaf property
 from the root of our object, we might actually compose lenses incrementally as
 we inspect the model structure.
 
+### Food for thought: BST as a lens
+
+The previous example is based on an actual use case.  In this section we look at
+a more involved example: BST, binary search tree, as a lens.
+
+Binary search may initially seem to be outside the scope of definable lenses.
+However, the `L.choose` lens allows for dynamic construction of lenses based on
+examining the data structure being manipulated.  Inside `L.choose` we can write
+the ordinary BST logic to pick a correct branch based on the key in the
+currently examined node and the key that we are looking for.  So, here is our
+first attempt at a BST lens:
+
+```js
+const binarySearch = key =>
+  L(L.default({key}),
+    L.choose(node =>
+             key < node.key ? L("smaller", binarySearch(key)) :
+             node.key < key ? L("greater", binarySearch(key)) :
+                              L.identity))
+
+const valueOf = key => L(binarySearch(key), "value")
+```
+
+This actually works to a degree.  We can use the `valueOf` lens constructor to
+build a binary tree:
+
+```js
+> const t = R.reduce((tree, item) => L.set(valueOf(item.key), item.value, tree),
+                     undefined,
+                     [{key: "c", value: 1},
+                      {key: "a", value: 2},
+                      {key: "b", value: 3}])
+> t
+{ smaller: { greater: { value: 3, key: 'b' }, value: 2, key: 'a' },
+  value: 1,
+  key: 'c' }
+```
+
+However, the above `binarySearch` lens constructor does not maintain the BST
+structure when values are being deleted:
+
+```js
+> L.delete(valueOf('c'), t)
+{ smaller: { greater: { value: 3, key: 'b' },
+             value: 2,
+             key: 'a' },
+  key: 'c' }
+```
+
+How do we fix this?  What we need is to normalize the data structure after
+changes.  The `L.normalize` lens can be used for that purpose.  Here is the
+updated `binarySearch` definition:
+
+```js
+const binarySearch = key =>
+  L(L.default({key}),
+    L.normalize(node => {
+      if ("value" in node)
+        return node
+      if (!("greater" in node) && "smaller" in node)
+        return node.smaller
+      if (!("smaller" in node) && "greater" in node)
+        return node.greater
+      return node
+    }),
+    L.choose(node =>
+             key < node.key ? L("smaller", binarySearch(key)) :
+             node.key < key ? L("greater", binarySearch(key)) :
+                              L.identity))
+```
+
+Now we can also delete values from a binary tree:
+
+```js
+> L.delete(valueOf('c'), t)
+{ greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
+
+```
+
+As an exercise you could improve the normalization to maintain some balance
+condition such as AVL.
+
 ## Reference
 
 ### Usage
