@@ -263,8 +263,6 @@ updated `binarySearch` definition:
 ```js
 const binarySearch = key =>
   L(L.normalize(node => {
-      if (!node)
-        return node
       if ("value" in node)
         return node
       if (!("greater" in node) && "smaller" in node)
