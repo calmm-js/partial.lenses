@@ -174,4 +174,6 @@ L.pick = template => R.lens(
     return c
   })
 
+L.identity = R.lens(R.identity, R.identity)
+
 export default L

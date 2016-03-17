@@ -394,6 +394,12 @@ the views of all of the given lenses are undefined, the returned lens acts like
 Note that `L.firstOf` is an associative operation, but there is no identity
 element.
 
+#### [`L.identity`](#lidentity "L.identity :: PLens s s")
+
+`L.identity` is equivalent to `R.lens(R.identity, R.identity)` and is the
+identity element of lenses: both `L(L.identity, l)` and `L(l, L.identity)` are
+equivalent to `l`.
+
 #### [`L.index(integer)`](#lindexinteger "L.index :: Integer -> PLens [a] a")
 
 `L.index(integer)` or `L(integer)` is similar to `R.lensIndex(integer)` (see
