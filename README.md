@@ -287,7 +287,8 @@ Now we can also delete values from a binary tree:
 ```
 
 As an exercise you could improve the normalization to maintain some balance
-condition such as AVL.
+condition such as AVL.  Another worthy exercise would be to make it so that the
+empty binary tree is `null` rather than `undefined`.
 
 ## Reference
 
