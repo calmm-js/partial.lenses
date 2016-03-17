@@ -535,6 +535,15 @@ lens:
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
+#### [`L.props(key, ...keys)`](#lpropskey-keys "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
+
+`L.props(key, ...keys)` focuses on a subset of properties of an object.  The
+view of `L.props` is undefined when none of the properties is defined.
+Otherwise the view is an object containing a subset of the properties.  Setting
+through `L.props` updates the whole subset of properties, which means that any
+undefined properties are removed if they did exists previously.  When set, any
+extra properties are ignored.
+
 #### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice

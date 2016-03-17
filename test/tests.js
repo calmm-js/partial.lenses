@@ -154,6 +154,16 @@ describe("L.pick", () => {
   testEq('L.deleteAll(L(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
 })
 
+describe("L.props", () => {
+  testEq('L.view(L.props("x", "y"), {x: 1, y: 2, z: 3})', {x: 1, y: 2})
+  testEq('L.view(L.props("x", "y"), {z: 3})', undefined)
+  testEq('L.view(L.props("x", "y"), {x: 2, z: 3})', {x: 2})
+  testEq('L.delete(L.props("x", "y"), {x: 1, y: 2, z: 3})', {z: 3})
+  testEq('L.set(L.props("x", "y"), {}, {x: 1, y: 2, z: 3})', {z: 3})
+  testEq('L.set(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
+  testEq('L.delete(L.props("x", "y"), {x: 1, y: 2})', undefined)
+})
+
 const BST = {
   search: key =>
     L(L.normalize(node => {
