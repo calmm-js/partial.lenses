@@ -153,3 +153,65 @@ describe("L.pick", () => {
   testEq('L.delete(L(L.pick({x: "b"}), "x"), {a: [2], b: 1})', {a: [2]})
   testEq('L.deleteAll(L(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
 })
+
+const BST = {
+  search: key =>
+    L(L.normalize(node => {
+      if (!node)
+        return node
+      if ("value" in node)
+        return node
+      if (!("greater" in node) && "smaller" in node)
+        return node.smaller
+      if (!("smaller" in node) && "greater" in node)
+        return node.greater
+      return L.set(BST.search(node.smaller.key),
+                   node.smaller,
+                   node.greater)}),
+      L.default({key}),
+      L.choose(node =>
+               key < node.key ? L("smaller", BST.search(key)) :
+               node.key < key ? L("greater", BST.search(key)) :
+                                L.identity)),
+  valueOf: key => L(BST.search(key), "value"),
+  isValid: (node, keyPred = () => true) =>
+    undefined === node
+    || "key" in node
+    && "value" in node
+    && keyPred(node.key)
+    && BST.isValid(node.smaller, key => key < node.key)
+    && BST.isValid(node.greater, key => node.key < key)
+}
+
+describe("BST", () => {
+  const randomInt = (min, max) =>
+    Math.floor(Math.random() * (max - min)) + min
+  const randomPick = (...choices) =>
+    choices[randomInt(0, choices.length)]
+
+  it("maintains validity through operations", () => {
+    let t0
+    let t1
+    let op
+    let k
+
+    for (let i=0; i<1000; ++i) {
+      k = randomInt(0, 10)
+      op = randomPick("set", "delete")
+
+      switch (op) {
+        case "set":
+          t1 = L.set(BST.valueOf(k), k, t0)
+          break
+        case "delete":
+          t1 = L.delete(BST.valueOf(k), t0)
+          break
+      }
+
+      if (!BST.isValid(t1))
+        throw new Error("From " + show(t0) + " " + op + " with " + k + " gave " + t1)
+
+      t0 = t1
+    }
+  })
+})
