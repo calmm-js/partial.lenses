@@ -165,22 +165,25 @@ describe("L.props", () => {
 })
 
 const BST = {
-  search: key =>
-    L(L.normalize(node => {
-      if ("value" in node)
-        return node
-      if (!("greater" in node) && "smaller" in node)
-        return node.smaller
-      if (!("smaller" in node) && "greater" in node)
-        return node.greater
-      return L.set(BST.search(node.smaller.key),
-                   node.smaller,
-                   node.greater)}),
-      L.default({key}),
-      L.choose(node =>
-               key < node.key ? L("smaller", BST.search(key)) :
-               node.key < key ? L("greater", BST.search(key)) :
-                                L.identity)),
+  search: key => {
+    const rec =
+      L(L.normalize(node => {
+          if ("value" in node)
+            return node
+          if (!("greater" in node) && "smaller" in node)
+            return node.smaller
+          if (!("smaller" in node) && "greater" in node)
+            return node.greater
+          return L.set(BST.search(node.smaller.key),
+                       node.smaller,
+                       node.greater)}),
+        L.default({key}),
+        L.choose(node =>
+                 key < node.key ? L("smaller", rec) :
+                 node.key < key ? L("greater", rec) :
+                                  L.identity))
+    return rec
+  },
   valueOf: key => L(BST.search(key), "value"),
   isValid: (node, keyPred = () => true) =>
     undefined === node
