@@ -273,8 +273,7 @@ const binarySearch = key =>
         return node.greater
       return L.set(binarySearch(node.smaller.key),
                    node.smaller,
-                   node.greater)
-    }),
+                   node.greater)}),
     L.default({key}),
     L.choose(node =>
              key < node.key ? L("smaller", binarySearch(key)) :
