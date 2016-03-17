@@ -265,9 +265,16 @@ take lenses as arguments implicitly lift them.
 
 #### [`L.delete(l, s)`](#ldeletel-s "L.delete :: PLens s a -> Maybe s -> Maybe s")
 
-For convenience, there is also a shorthand for delete:
+`L.delete(l, s)` is equivalent to `L.set(l, undefined, s)`.  With partial
+lenses, setting to undefined typically has the effect of removing the focused
+element.
 
-* `L.delete(l, s)` is the same as `R.set(lift(l), undefined, s)`.
+For example,
+
+```js
+> L.delete(L("a", "b"), {a: {b: 1}, x: {y: 2}})
+{x: {y: 2}}
+```
 
 #### [`L.deleteAll(l, s)`](#ldeletealll-s "L.deleteAll :: PLens s a -> Maybe s -> Maybe s")
 
