@@ -167,31 +167,27 @@ describe("L.props", () => {
 const BST = {
   search: key => {
     const rec =
-      L(L.normalize(node => {
-          if ("value" in node)
-            return node
-          if (!("greater" in node) && "smaller" in node)
-            return node.smaller
-          if (!("smaller" in node) && "greater" in node)
-            return node.greater
-          return L.set(BST.search(node.smaller.key),
-                       node.smaller,
-                       node.greater)}),
+      L(L.normalize(n => {
+          if (undefined !== n.value) return n
+          if (n.smaller && !n.greater) return n.smaller
+          if (!n.smaller && n.greater) return n.greater
+          return L.set(BST.search(n.smaller.key), n.smaller, n.greater)}),
         L.default({key}),
-        L.choose(node =>
-                 key < node.key ? L("smaller", rec) :
-                 node.key < key ? L("greater", rec) :
-                                  L.identity))
+        L.choose(n => key < n.key ? L("smaller", rec) :
+                      n.key < key ? L("greater", rec) :
+                                    L.identity))
     return rec
   },
+
   valueOf: key => L(BST.search(key), "value"),
-  isValid: (node, keyPred = () => true) =>
-    undefined === node
-    || "key" in node
-    && "value" in node
-    && keyPred(node.key)
-    && BST.isValid(node.smaller, key => key < node.key)
-    && BST.isValid(node.greater, key => node.key < key)
+
+  isValid: (n, keyPred = () => true) =>
+    undefined === n
+    || "key" in n
+    && "value" in n
+    && keyPred(n.key)
+    && BST.isValid(n.smaller, key => key < n.key)
+    && BST.isValid(n.greater, key => n.key < key)
 }
 
 describe("BST", () => {
