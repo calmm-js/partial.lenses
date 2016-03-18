@@ -447,6 +447,13 @@ formed by concatenating the set array and the complement of the filtered
 context.  If the resulting array would be empty, the whole result will be
 undefined.
 
+For example:
+
+```js
+> L.delete(L.filter(x => x <= 2), [3,1,4,1,5,9,2])
+[ 3, 4, 5, 9 ]
+```
+
 *Note:* An alternative design for filter could implement a smarter algorithm to
 combine arrays when set.  For example, an algorithm based on
 [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
@@ -460,6 +467,11 @@ implement, it doesn't seem to make sense, because in most cases use of
 be viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
+
+```js
+> L.deleteAll(L.find(x => x <= 2), [3,1,4,1,5,9,2])
+[ 3, 4, 5, 9 ]
+```
 
 #### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
@@ -527,6 +539,13 @@ viewing through the lenses of the template.  When set with an object, the
 properties of the object are set to the context via the lenses of the template.
 `undefined` is treated as the equivalent of empty or non-existent in both
 directions.
+
+**NOTE** In order for a lens created with `L.pick` to work in a predictable
+manner, the given lenses must operate on independent parts of the data
+structure.  As a trivial example, if you would define `L.pick({x: "same", y:
+"same"})`, then both of the resulting object properties, `x` and `y`, address
+the same property of the underlying object, so writing through the lens will
+give unpredictable results.
 
 Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Note that the underlying data structure need not be
