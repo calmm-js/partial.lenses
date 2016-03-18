@@ -597,15 +597,41 @@ selective use of `default` and `required`:
 
 ##### [`L.default(out)`](#ldefaultout "L.default :: s -> PLens s s")
 
-`L.default(out)` is the same as `L.replace(undefined, out)`.
+`L.default(out)` is the same as `L.replace(undefined, out)`.  `L.default` is
+used to specify a default value for an element in case it is missing.  This can
+be useful to avoid having to check for and provide default behavior elsewhere.
+
+For example:
+
+```js
+> L.view(L("items", L.default([])), {})
+[]
+> L.view(L("items", L.default([])), {items: [1, 2, 3]})
+[ 1, 2, 3 ]
+```
 
 ##### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
 
 `L.define(value)` is the same as `L(L.required(value), L.default(value))`.
+`L.define` is used to specify a value to act as both the default value and the
+required value for an element.
 
 ##### [`L.required(inn)`](#lrequiredinn "L.required :: s -> PLens s s")
 
-`L.required(inn)` is the same as `L.replace(inn, undefined)`.
+`L.required(inn)` is the same as `L.replace(inn, undefined)`.  `L.required` is
+used to specify that an element is not to be deleted; in case it is deleted, the
+given value will be substituted instead.
+
+For example:
+
+```js
+> L.delete(L("items", 0), {items: [1]})
+undefined
+> L.delete(L(L.required({}), "items", 0), {items: [1]})
+{}
+> L.delete(L("items", L.required([]), 0), {items: [1]})
+{ items: [] }
+```
 
 ## Background
 
