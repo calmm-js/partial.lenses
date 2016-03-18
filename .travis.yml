@@ -7,4 +7,4 @@ script:
   - nyc npm test
 after_success:
   - nyc report --reporter=lcov
-  - codecov
+  - codecov --token=93108552-0ff8-49a6-ac00-5f308815f1e3
