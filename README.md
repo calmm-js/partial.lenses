@@ -212,12 +212,14 @@ we inspect the model structure.
 The previous example is based on an actual use case.  In this section we look at
 a more involved example: BST, binary search tree, as a lens.
 
-Binary search may initially seem to be outside the scope of definable lenses.
-However, the `L.choose` lens allows for dynamic construction of lenses based on
-examining the data structure being manipulated.  Inside `L.choose` we can write
-the ordinary BST logic to pick the correct branch based on the key in the
-currently examined node and the key that we are looking for.  So, here is our
-first attempt at a BST lens:
+Binary search might initially seem to be outside the scope of definable lenses.
+However, given basic BST operations, one could easily wrap them as a primitive
+partial lens.  But could we leverage lens combinators to build a BST lens more
+directly?  We can.  The `L.choose` lens combinator allows for dynamic
+construction of lenses based on examining the data structure being manipulated.
+Inside `L.choose` we can write the ordinary BST logic to pick the correct branch
+based on the key in the currently examined node and the key that we are looking
+for.  So, here is our first attempt at a BST lens:
 
 ```js
 const search = key =>
