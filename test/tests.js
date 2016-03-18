@@ -63,6 +63,7 @@ describe('L.index', () => {
   testEq('L.set(L(5), undefined, [1, 2, 3])', [1, 2, 3])
   testEq('L.view(5, undefined)', undefined)
   testEq('L.view(L(5), [1, 2, 3])', undefined)
+  testEq('L.set(1, "2", ["1", "2", "3"])', ["1", "2", "3"])
 })
 
 describe('L.prop', () => {
@@ -142,6 +143,7 @@ describe("L.augment", () => {
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
   testEq('L.delete(L(L.augment({y: () => 1}), "x"), {x:0})', undefined)
+  testEq('L.delete(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
 })
 
 describe("L.pick", () => {
@@ -162,6 +164,7 @@ describe("L.props", () => {
   testEq('L.set(L.props("x", "y"), {}, {x: 1, y: 2, z: 3})', {z: 3})
   testEq('L.set(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
   testEq('L.delete(L.props("x", "y"), {x: 1, y: 2})', undefined)
+  testEq('L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
 })
 
 const BST = {
