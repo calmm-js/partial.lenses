@@ -542,10 +542,9 @@ directions.
 
 **NOTE:** In order for a lens created with `L.pick` to work in a predictable
 manner, the given lenses must operate on independent parts of the data
-structure.  As a trivial example, if you would define `L.pick({x: "same", y:
-"same"})`, then both of the resulting object properties, `x` and `y`, address
-the same property of the underlying object, so writing through the lens will
-give unpredictable results.
+structure.  As a trivial example, in `L.pick({x: "same", y: "same"})` both of
+the resulting object properties, `x` and `y`, address the same property of the
+underlying object, so writing through the lens will give unpredictable results.
 
 Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Note that the underlying data structure need not be
