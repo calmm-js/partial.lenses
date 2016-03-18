@@ -1,10 +1,12 @@
 [ [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
 
-This library provides a collection of [Ramda](http://ramdajs.com/) compatible
-*partial* lenses.  While an ordinary lens can be used to view and update an
-existing part of a data structure, a partial lens can *view* optional data,
-*insert* new data, *update* existing data and *delete* existing data and can
-provide *default* values and maintain *required* data structure parts.
+Lenses are a convenient abstraction for performing updates on individual
+elements of immutable data structures.  This library provides a collection of
+[Ramda](http://ramdajs.com/) compatible *partial* lenses.  While an ordinary
+lens can be used to view and update an existing part of a data structure, a
+partial lens can *view* optional data, *insert* new data, *update* existing data
+and *delete* existing data and can provide *default* values and maintain
+*required* data structure parts.
 
 In JavaScript, missing data can be mapped to `undefined`, which is what partial
 lenses also do.  When a part of a data structure is missing, an attempt to view
@@ -569,11 +571,25 @@ through `L.props` updates the whole subset of properties, which means that any
 undefined properties are removed if they did exists previously.  When set, any
 extra properties are ignored.
 
+```js
+> L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
+{ z: 3, x: 4 }
+```
+
 #### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
 versa when set.  Values are compared using `R.equals` (see
 [equals](http://ramdajs.com/0.19.0/docs/#equals)).
+
+For example:
+
+```js
+> L.view(L.replace(1, 2), 1)
+2
+> L.set(L.replace(1, 2), 2, 0)
+1
+```
 
 The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
