@@ -167,11 +167,11 @@ describe("L.props", () => {
 const BST = {
   search: key => {
     const rec =
-      L(L.normalize(n => {
-          if (undefined !== n.value) return n
-          if (n.smaller && !n.greater) return n.smaller
-          if (!n.smaller && n.greater) return n.greater
-          return L.set(BST.search(n.smaller.key), n.smaller, n.greater)}),
+      L(L.normalize(n =>
+          undefined !== n.value   ? n         :
+          n.smaller && !n.greater ? n.smaller :
+          !n.smaller && n.greater ? n.greater :
+          L.set(BST.search(n.smaller.key), n.smaller, n.greater)),
         L.default({key}),
         L.choose(n => key < n.key ? L("smaller", rec) :
                       n.key < key ? L("greater", rec) :

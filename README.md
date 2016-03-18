@@ -220,14 +220,13 @@ currently examined node and the key that we are looking for.  So, here is our
 first attempt at a BST lens:
 
 ```js
-const binarySearch = key =>
+const search = key =>
   L(L.default({key}),
-    L.choose(node =>
-             key < node.key ? L("smaller", binarySearch(key)) :
-             node.key < key ? L("greater", binarySearch(key)) :
-                              L.identity))
+    L.choose(n => key < n.key ? L("smaller", search(key)) :
+                  n.key < key ? L("greater", search(key)) :
+                                L.identity))
 
-const valueOf = key => L(binarySearch(key), "value")
+const valueOf = key => L(search(key), "value")
 ```
 
 This actually works to a degree.  We can use the `valueOf` lens constructor to
@@ -245,7 +244,7 @@ build a binary tree:
   key: 'c' }
 ```
 
-However, the above `binarySearch` lens constructor does not maintain the BST
+However, the above `search` lens constructor does not maintain the BST
 structure when values are being deleted:
 
 ```js
@@ -256,27 +255,21 @@ structure when values are being deleted:
   key: 'c' }
 ```
 
-How do we fix this?  What we need is to normalize the data structure after
-changes.  The `L.normalize` lens can be used for that purpose.  Here is the
-updated `binarySearch` definition:
+How do we fix this?  We could check and transform the data structure to a BST
+after changes.  The `L.normalize` lens can be used for that purpose.  Here is
+the updated `search` definition:
 
 ```js
-const binarySearch = key =>
-  L(L.normalize(node => {
-      if ("value" in node)
-        return node
-      if (!("greater" in node) && "smaller" in node)
-        return node.smaller
-      if (!("smaller" in node) && "greater" in node)
-        return node.greater
-      return L.set(binarySearch(node.smaller.key),
-                   node.smaller,
-                   node.greater)}),
+const search = key =>
+  L(L.normalize(n =>
+      undefined !== n.value   ? n         :
+      n.smaller && !n.greater ? n.smaller :
+      !n.smaller && n.greater ? n.greater :
+      L.set(search(n.smaller.key), n.smaller, n.greater)),
     L.default({key}),
-    L.choose(node =>
-             key < node.key ? L("smaller", binarySearch(key)) :
-             node.key < key ? L("greater", binarySearch(key)) :
-                              L.identity))
+    L.choose(n => key < n.key ? L("smaller", search(key)) :
+                  n.key < key ? L("greater", search(key)) :
+                                L.identity))
 ```
 
 Now we can also delete values from a binary tree:
