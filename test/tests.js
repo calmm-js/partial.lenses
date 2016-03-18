@@ -197,36 +197,38 @@ describe("BST", () => {
     choices[randomInt(0, choices.length)]
 
   it("maintains validity through operations", () => {
-    let t0
-    let t1
+    let before
+    let after
     let op
-    let k
+    let key
 
     const error = () => {
-      throw new Error("From " + show(t0) + " " + op + " with " + k + " gave " + t1)
+      throw new Error("From " + show(before) +
+                      " " + op + " with " + key +
+                      " gave " + show(after))
     }
 
     for (let i=0; i<1000; ++i) {
-      k = randomInt(0, 10)
+      key = randomInt(0, 10)
       op = randomPick("set", "delete")
 
       switch (op) {
         case "set":
-          t1 = L.set(BST.valueOf(k), k, t0)
-          if (undefined === L.view(BST.valueOf(k), t1))
+          after = L.set(BST.valueOf(key), key, before)
+          if (undefined === L.view(BST.valueOf(key), after))
             error()
           break
         case "delete":
-          t1 = L.delete(BST.valueOf(k), t0)
-          if (undefined !== L.view(BST.valueOf(k), t1))
+          after = L.delete(BST.valueOf(key), before)
+          if (undefined !== L.view(BST.valueOf(key), after))
             error()
           break
       }
 
-      if (!BST.isValid(t1))
+      if (!BST.isValid(after))
         error()
 
-      t0 = t1
+      before = after
     }
   })
 })
