@@ -411,6 +411,13 @@ always undefined.  Setting `L.append` to undefined has no effect by itself.
 Setting `L.append` to a defined value appends the value to the end of the
 focused array.
 
+For example:
+
+```js
+> L.set(L.append, "x", undefined)
+[ 'x' ]
+```
+
 #### [`L.augment({prop: obj => val, ...props})`](#laugmentprop-obj--val-props "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
 
 `L.augment({prop: obj => val, ...props})` is given a template of functions to
@@ -418,6 +425,13 @@ compute new properties.  When viewing or setting undefined, the result is
 undefined.  When viewing a defined object, the object is extended with the
 computed properties.  When set with a defined object, the extended properties
 are removed.
+
+For example:
+
+```js
+> L.over(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
+{ x: 3, z: -1 }
+```
 
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
