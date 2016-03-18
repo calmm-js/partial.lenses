@@ -540,7 +540,7 @@ properties of the object are set to the context via the lenses of the template.
 `undefined` is treated as the equivalent of empty or non-existent in both
 directions.
 
-**NOTE** In order for a lens created with `L.pick` to work in a predictable
+**NOTE:** In order for a lens created with `L.pick` to work in a predictable
 manner, the given lenses must operate on independent parts of the data
 structure.  As a trivial example, if you would define `L.pick({x: "same", y:
 "same"})`, then both of the resulting object properties, `x` and `y`, address
