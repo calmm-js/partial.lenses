@@ -1,12 +1,12 @@
 [ [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
 
-Lenses are a convenient abstraction for performing updates on individual
-elements of immutable data structures.  This library provides a collection of
-[Ramda](http://ramdajs.com/) compatible *partial* lenses.  While an ordinary
-lens can be used to view and update an existing part of a data structure, a
-partial lens can *view* optional data, *insert* new data, *update* existing data
-and *delete* existing data and can provide *default* values and maintain
-*required* data structure parts.
+Lenses are primarily a convenient abstraction for performing updates on
+individual elements of immutable data structures.  This library provides a
+collection of [Ramda](http://ramdajs.com/) compatible *partial* lenses.  While
+an ordinary lens can be used to view and update an existing part of a data
+structure, a partial lens can *view* optional data, *insert* new data, *update*
+existing data and *delete* existing data and can provide *default* values and
+maintain *required* data structure parts.
 
 In JavaScript, missing data can be mapped to `undefined`, which is what partial
 lenses also do.  When a part of a data structure is missing, an attempt to view
@@ -237,11 +237,12 @@ This actually works to a degree.  We can use the `valueOf` lens constructor to
 build a binary tree:
 
 ```js
-> const t = R.reduce((tree, item) => L.set(valueOf(item.key), item.value, tree),
-                     undefined,
-                     [{key: "c", value: 1},
-                      {key: "a", value: 2},
-                      {key: "b", value: 3}])
+> const t = R.reduce(
+    (tree, {key, value}) => L.set(valueOf(key), value, tree),
+    undefined,
+    [{key: "c", value: 1},
+     {key: "a", value: 2},
+     {key: "b", value: 3}])
 > t
 { smaller: { greater: { value: 3, key: 'b' }, value: 2, key: 'a' },
   value: 1,
@@ -283,9 +284,12 @@ Now we can also delete values from a binary tree:
 { greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
 ```
 
-As an exercise you could improve the normalization to maintain some balance
-condition such as AVL.  Another worthy exercise would be to make it so that the
-empty binary tree is `null` rather than `undefined`.
+As an exercise, you could improve the normalization to better maintain balance.
+Perhaps you might even enhance it to maintain a balance condition such as
+[AVL](https://en.wikipedia.org/wiki/AVL_tree) or
+[Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).  Another
+worthy exercise would be to make it so that the empty binary tree is `null`
+rather than `undefined`.
 
 ## Reference
 
