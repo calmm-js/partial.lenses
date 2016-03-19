@@ -497,18 +497,18 @@ same as with `L.append`.
 
 #### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
-`L.findWith(l, ...ls)` is defined as
+`L.findWith(l, ...ls)` chooses an index from an array through which the given
+lens, `L(l, ...ls)`, focuses on a defined item and then returns a lens that
+focuses on that item.
+
+For example:
 
 ```js
-L.findWith = (l, ...ls) => {
-  const lls = L(l, ...ls)
-  return L(L.find(x => L.view(lls, x) !== undefined), lls)
-}
+> L.view(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
+9
+> L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
+[ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
-
-and basically chooses an index from an array through which the given lens, `L(l,
-...ls)`, focuses on a defined item and then returns a lens that focuses on that
-item.
 
 #### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PLens s a, ...PLens s a) -> PLens s a")
 
