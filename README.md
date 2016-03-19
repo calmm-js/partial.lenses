@@ -599,8 +599,8 @@ the resulting object properties, `x` and `y`, address the same property of the
 underlying object, so writing through the lens will give unpredictable results.
 
 Note that, when set, `L.pick` simply ignores any properties that the given
-template doesn't mention.  Note that the underlying data structure need not be
-an object.
+template doesn't mention.  Also note that the underlying data structure need not
+be an object.
 
 #### [`L.prop(string)`](#lpropstring "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
