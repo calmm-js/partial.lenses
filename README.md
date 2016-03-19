@@ -439,7 +439,27 @@ For example:
 
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
 the given function that maps the underlying view, which can be undefined, to a
-lens.  The lens returned by the given function will be lifted.
+lens.  In other words, the `L.choose` combinator allows a lens to be constructed
+*after* examining the data structure being manipulated.  The lens returned by
+the function given to `L.choose` will be lifted.
+
+For example, given:
+
+```js
+const majorAxis = L.choose(({x, y} = {}) =>
+  Math.abs(x) < Math.abs(y) ? "y" : "x")
+```
+
+we get:
+
+```js
+> L.view(majorAxis, {x: 1, y: 2})
+2
+> L.view(majorAxis, {x: -3, y: 1})
+-3
+> L.over(majorAxis, R.negate, {x: 2, y: -3})
+{ y: 3, x: 2 }
+```
 
 #### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
