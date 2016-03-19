@@ -180,36 +180,7 @@ L.identity = R.lens(R.identity, R.identity)
 
 L.props = (k, ...ks) => {
   const kks = [k, ...ks]
-  return R.lens(
-    (o = empty) => {
-      let r
-      kks.forEach(k => {
-        if (k in o) {
-          if (!r)
-            r = {}
-          r[k] = o[k]
-        }
-      })
-      return r
-    },
-    toConserve((s = empty, o = empty) => {
-      let r
-      for (const k in o) {
-        if (!R.contains(k, kks)) {
-          if (!r)
-            r = {}
-          r[k] = o[k]
-        }
-      }
-      kks.forEach(k => {
-        if (k in s) {
-          if (!r)
-            r = {}
-          r[k] = s[k]
-        }
-      })
-      return r
-    }))
+  return L.pick(R.zipObj(kks, kks))
 }
 
 export default L

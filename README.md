@@ -584,12 +584,13 @@ lens:
 
 #### [`L.props(key, ...keys)`](#lpropskey-keys "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
 
-`L.props(key, ...keys)` focuses on a subset of properties of an object.  The
-view of `L.props` is undefined when none of the properties is defined.
-Otherwise the view is an object containing a subset of the properties.  Setting
-through `L.props` updates the whole subset of properties, which means that any
-undefined properties are removed if they did exists previously.  When set, any
-extra properties are ignored.
+`L.props(k1, ..., kN)` is equivalent to `L.pick({[k1]: k1, ..., [kN]: kN})` and
+focuses on a subset of properties of an object, allowing one to treat the subset
+of properties as a unit.  The view of `L.props` is undefined when none of the
+properties is defined.  Otherwise the view is an object containing a subset of
+the properties.  Setting through `L.props` updates the whole subset of
+properties, which means that any undefined properties are removed if they did
+exists previously.  When set, any extra properties are ignored.
 
 ```js
 > L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
