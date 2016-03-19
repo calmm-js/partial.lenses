@@ -556,11 +556,41 @@ simple `R.equals` comparison will do.
 #### [`L.pick({p1: l1, ...pls})`](#lpickp1-l1-pls "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 
 `L.pick({p1: l1, ...pls})` creates a lens out of the given object template of
-lenses.  When viewed, an object is created, whose properties are obtained by
+lenses and allows one to pick apart a data structure and then put it back
+together.  When viewed, an object is created, whose properties are obtained by
 viewing through the lenses of the template.  When set with an object, the
 properties of the object are set to the context via the lenses of the template.
 `undefined` is treated as the equivalent of empty or non-existent in both
 directions.
+
+For example, let's say we need to deal with data and schema in need of some
+semantic restructuring:
+
+```js
+const data = {px: 1, py: 2, vx: 1.0, vy: 0.0}
+```
+
+We can use `L.pick` to create lenses to pick apart the data and put it back
+together into a more meaningful structure:
+
+```js
+const asVec = prefix => L.pick({x: prefix + "x", y: prefix + "y"})
+const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
+```
+
+We now have a better structured view of the data:
+
+```js
+> L.view(sanitize, data)
+{ pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
+```
+
+That works in both directions:
+
+```js
+> L.over(L(sanitize, "pos", "x"), R.add(5), data)
+{ px: 6, py: 2, vx: 1, vy: 0 }
+```
 
 **NOTE:** In order for a lens created with `L.pick` to work in a predictable
 manner, the given lenses must operate on independent parts of the data
