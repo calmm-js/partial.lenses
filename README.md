@@ -547,17 +547,27 @@ when the last element is deleted, the result is `undefined` rather than an empty
 array.  This is by design, because this allows the deletion to propagate
 upwards.  It is not uncommon, however, to have cases where deleting the last
 element from an array must not delete the array itself.  In such cases you want
-to use `L.required([])` to access the array.  Consider the following examples:
+to use `L.required([])` to access the array.  Consider the following examples
+without `L.required([])`:
 
 ```js
 > L.delete(0, ["a", "b"])
 [ 'b' ]
 > L.delete(0, ["b"])
 undefined
+> L.delete(L("elems", 0), {elems: ["b"], some: "thing"})
+{ some: 'thing' }
+```
+
+Then consider the same example with `L.required([])`:
+
+```js
 > L.delete(L(L.required([]), 0), ["a", "b"])
 [ 'b' ]
 > L.delete(L(L.required([]), 0), ["b"])
 []
+> L.delete(L("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
+{ elems: [], some: 'thing' }
 ```
 
 #### [`L.normalize(value => value)`](#lnormalizevalue--value "L.normalize :: (s -> s) -> PLens s s")
