@@ -559,7 +559,7 @@ undefined
 { some: 'thing' }
 ```
 
-Then consider the same example with `L.required([])`:
+Then consider the same examples with `L.required([])`:
 
 ```js
 > L.delete(L(L.required([]), 0), ["a", "b"])
