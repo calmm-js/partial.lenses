@@ -344,7 +344,9 @@ For example:
 
 `L.update(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
 [set](http://ramdajs.com/0.19.0/docs/#set)) and is also equivalent to `L.over(l,
-() => x, s)`.
+() => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !== undefined`
+then `L.update(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
+[update](http://ramdajs.com/0.19.0/docs/#update)).
 
 For example:
 
