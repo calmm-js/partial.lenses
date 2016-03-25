@@ -148,7 +148,7 @@ actually rerunning the examples.
 
 For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
-* `L.compose(...)` can be abbreviated to use the default import, e.g. `Ls(...)`,
+* `L.compose(...)` can be abbreviated to use the default import, e.g. `P(...)`,
 * `L.prop(string)` can be abbreviated as `string`, and
 * `L.update(l, undefined, s)` can be abbreviated as `L.remove(l, s)`.
 
@@ -181,16 +181,16 @@ of the JSON:
 ```js
 const M = {
   data: {
-    contents: Ls("contents",
-                 L.required([]),
-                 L.normalize(R.sortBy(R.prop("language"))))
+    contents: P("contents",
+                L.required([]),
+                L.normalize(R.sortBy(R.prop("language"))))
   },
   contents: {
-    contentIn: language => Ls(L.find(R.whereEq({language})),
-                              L.defaults({language}))
+    contentIn: language => P(L.find(R.whereEq({language})),
+                             L.defaults({language}))
   },
   content: {
-    text: Ls("text", L.defaults(""))
+    text: P("text", L.defaults(""))
   }
 }
 ```
@@ -198,9 +198,9 @@ const M = {
 Using the above object, we could rewrite the parameterized `textIn` lens as:
 
 ```js
-const textIn = language => Ls(M.data.contents,
-                              M.contents.contentIn(language),
-                              M.content.text)
+const textIn = language => P(M.data.contents,
+                             M.contents.contentIn(language),
+                             M.content.text)
 ```
 
 This style of organizing lenses is overkill for our toy example.  In a more
@@ -225,12 +225,12 @@ for.  So, here is our first attempt at a BST lens:
 
 ```js
 const search = key =>
-  Ls(L.defaults({key}),
-     L.choose(n => key < n.key ? Ls("smaller", search(key)) :
-                   n.key < key ? Ls("greater", search(key)) :
-                                 L.identity))
+  P(L.defaults({key}),
+    L.choose(n => key < n.key ? P("smaller", search(key)) :
+                  n.key < key ? P("greater", search(key)) :
+                                L.identity))
 
-const valueOf = key => Ls(search(key), "value")
+const valueOf = key => P(search(key), "value")
 ```
 
 This actually works to a degree.  We can use the `valueOf` lens constructor to
@@ -266,15 +266,15 @@ the updated `search` definition:
 
 ```js
 const search = key =>
-  Ls(L.normalize(n =>
-       undefined !== n.value   ? n         :
-       n.smaller && !n.greater ? n.smaller :
-       !n.smaller && n.greater ? n.greater :
-       L.update(search(n.smaller.key), n.smaller, n.greater)),
-     L.defaults({key}),
-     L.choose(n => key < n.key ? Ls("smaller", search(key)) :
-                   n.key < key ? Ls("greater", search(key)) :
-                                 L.identity))
+  P(L.normalize(n =>
+      undefined !== n.value   ? n         :
+      n.smaller && !n.greater ? n.smaller :
+      !n.smaller && n.greater ? n.greater :
+      L.update(search(n.smaller.key), n.smaller, n.greater)),
+    L.defaults({key}),
+    L.choose(n => key < n.key ? P("smaller", search(key)) :
+                  n.key < key ? P("greater", search(key)) :
+                                L.identity))
 ```
 
 Now we can also remove values from a binary tree:
@@ -298,10 +298,10 @@ rather than `undefined`.
 The lenses and operations on lenses are accessed via the default import:
 
 ```js
-import Ls, * as L from "partial.lenses"
+import P, * as L from "partial.lenses"
 ```
 
-Use of the default import, `Ls`, is optional and is an alias for `L.compose`.
+Use of the default import, `P`, is optional and is an alias for `L.compose`.
 
 ### Operations on lenses
 
@@ -309,7 +309,7 @@ You can access basic operations on lenses via the default import `L`:
 
 #### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
-The default import `Ls(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
+The default import `P(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
 `R.compose(lift(l), ...ls.map(lift))` (see
 [compose](http://ramdajs.com/0.19.0/docs/#compose)) and compose a lens from a
 path of lenses.  Furthermore, `L.compose()` is the same as `L.identity`, which
@@ -318,7 +318,7 @@ reflects the fact that `L.identity` is the identity element of lens composition.
 For example:
 
 ```js
-> L.view(Ls("a", 1), {a: ["b", "c"]})
+> L.view(P("a", 1), {a: ["b", "c"]})
 "c"
 ```
 
@@ -351,7 +351,7 @@ then `L.update(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
 For example:
 
 ```js
-> L.update(Ls("a", 0, "x"), 11, {id: "z"})
+> L.update(P("a", 0, "x"), 11, {id: "z"})
 {a: [{x: 11}], id: "z"}
 ```
 
@@ -394,7 +394,7 @@ element.
 For example:
 
 ```js
-> L.remove(Ls("a", "b"), {a: {b: 1}, x: {y: 2}})
+> L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
 {x: {y: 2}}
 ```
 
@@ -508,7 +508,7 @@ same as with `L.append`.
 #### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
 `L.findWith(l, ...ls)` chooses an index from an array through which the given
-lens, `Ls(l, ...ls)`, focuses on a defined item and then returns a lens that
+lens, `P(l, ...ls)`, focuses on a defined item and then returns a lens that
 focuses on that item.
 
 For example:
@@ -533,12 +533,12 @@ element.
 #### [`L.identity`](#lidentity "L.identity :: PLens s s")
 
 `L.identity` is equivalent to `R.lens(R.identity, R.identity)` and is the
-identity element of lenses: both `Ls(L.identity, l)` and `Ls(l, L.identity)` are
+identity element of lenses: both `P(L.identity, l)` and `P(l, L.identity)` are
 equivalent to `l`.
 
 #### [`L.index(integer)`](#lindexinteger "L.index :: Integer -> PLens [a] a")
 
-`L.index(integer)` or `Ls(integer)` is similar to `R.lensIndex(integer)` (see
+`L.index(integer)` or `P(integer)` is similar to `R.lensIndex(integer)` (see
 [lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
 lens:
 * When viewing an undefined array index or an undefined array, the result is
@@ -561,18 +561,18 @@ without `L.required([])`:
 [ 'b' ]
 > L.remove(0, ["b"])
 undefined
-> L.remove(Ls("elems", 0), {elems: ["b"], some: "thing"})
+> L.remove(P("elems", 0), {elems: ["b"], some: "thing"})
 { some: 'thing' }
 ```
 
 Then consider the same examples with `L.required([])`:
 
 ```js
-> L.remove(Ls(L.required([]), 0), ["a", "b"])
+> L.remove(P(L.required([]), 0), ["a", "b"])
 [ 'b' ]
-> L.remove(Ls(L.required([]), 0), ["b"])
+> L.remove(P(L.required([]), 0), ["b"])
 []
-> L.remove(Ls("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
+> L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
 { elems: [], some: 'thing' }
 ```
 
@@ -626,7 +626,7 @@ We now have a better structured view of the data:
 That works in both directions:
 
 ```js
-> L.over(Ls(sanitize, "pos", "x"), R.add(5), data)
+> L.over(P(sanitize, "pos", "x"), R.add(5), data)
 { px: 6, py: 2, vx: 1, vy: 0 }
 ```
 
@@ -642,7 +642,7 @@ be an object.
 
 #### [`L.prop(string)`](#lpropstring "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
-`L.prop(string)` or `Ls(string)` is similar to `R.lensProp(string)` (see
+`L.prop(string)` or `P(string)` is similar to `R.lensProp(string)` (see
 [lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
 lens:
 * When viewing an undefined property or an undefined object, the result is
@@ -693,15 +693,15 @@ be useful to avoid having to check for and provide default behavior elsewhere.
 For example:
 
 ```js
-> L.view(Ls("items", L.defaults([])), {})
+> L.view(P("items", L.defaults([])), {})
 []
-> L.view(Ls("items", L.defaults([])), {items: [1, 2, 3]})
+> L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
 [ 1, 2, 3 ]
 ```
 
 ##### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
 
-`L.define(value)` is the same as `Ls(L.required(value), L.defaults(value))`.
+`L.define(value)` is the same as `P(L.required(value), L.defaults(value))`.
 `L.define` is used to specify a value to act as both the default value and the
 required value for an element.
 
@@ -714,11 +714,11 @@ given value will be substituted instead.
 For example:
 
 ```js
-> L.remove(Ls("items", 0), {items: [1]})
+> L.remove(P("items", 0), {items: [1]})
 undefined
-> L.remove(Ls(L.required({}), "items", 0), {items: [1]})
+> L.remove(P(L.required({}), "items", 0), {items: [1]})
 {}
-> L.remove(Ls("items", L.required([]), 0), {items: [1]})
+> L.remove(P("items", L.required([]), 0), {items: [1]})
 { items: [] }
 ```
 
@@ -748,7 +748,7 @@ One might assume that `R.lensPath([p0, ...ps])` is equivalent to
 
 With partial lenses you can robustly compose a path lens from prop lenses
 `R.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
-`Ls(p0, ...ps)`.
+`P(p0, ...ps)`.
 
 ### Types
 
