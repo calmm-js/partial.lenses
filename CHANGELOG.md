@@ -41,10 +41,3 @@ Module prefix no longer works as `compose`:
 -L.deleteAll
 +L.removeAll
 ```
-
-`set` was renamed to `update` to better describe semantics:
-
-```diff
--L.set
-+L.update
-```
