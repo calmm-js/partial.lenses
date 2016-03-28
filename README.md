@@ -5,8 +5,8 @@ individual elements of immutable data structures.  This library provides a
 collection of [Ramda](http://ramdajs.com/) compatible *partial* lenses.  While
 an ordinary lens can be used to view and update an existing part of a data
 structure, a partial lens can *view* optional data, *insert* new data, *update*
-existing data and *remove* existing data and can provide *default* values and
-maintain *required* data structure parts.
+existing data and *remove* existing data and can provide *defaults* and maintain
+*required* data structure parts.
 
 In JavaScript, missing data can be mapped to `undefined`, which is what partial
 lenses also do.  When a part of a data structure is missing, an attempt to view
@@ -134,8 +134,8 @@ our lens composition.  `L.required` is the dual of `L.defaults`.  `L.defaults`
 replaces undefined values when viewed and `L.required` replaces undefined values
 when set.
 
-Note that unless required and default values are explicitly specified as part of
-the lens, they will both be undefined.
+Note that unless defaults and required values are explicitly specified as part
+of the lens, they will both be undefined.
 
 ### Exercise
 
@@ -305,32 +305,12 @@ Use of the default import, `P`, is optional and is an alias for `L.compose`.
 
 ### Operations on lenses
 
-You can access basic operations on lenses via the default import `L`:
-
-#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
-
-The default import `P(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
-`R.compose(lift(l), ...ls.map(lift))` (see
-[compose](http://ramdajs.com/0.19.0/docs/#compose)) and compose a lens from a
-path of lenses.  Furthermore, `L.compose()` is the same as `L.identity`, which
-reflects the fact that `L.identity` is the identity element of lens composition.
-
-For example:
-
-```js
-> L.view(P("a", 1), {a: ["b", "c"]})
-"c"
-```
-
-#### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
-
-`L.lens(get, set)` is the same as `R.lens(get, set)` (see
-[lens](http://ramdajs.com/0.19.0/docs/#lens)) and creates a new primitive lens.
+In alphabetical order.
 
 #### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
 `L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
-[over](http://ramdajs.com/0.19.0/docs/#over)) and allows one to map over the
+[over](http://ramdajs.com/0.20.0/docs/#over)) and allows one to map over the
 focused element of a data structure.
 
 For example:
@@ -339,51 +319,6 @@ For example:
 > L.over("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 {elems: [{y: 2}, {y: 4}]}
 ```
-
-#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
-
-`L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
-[set](http://ramdajs.com/0.19.0/docs/#set)) and is also equivalent to `L.over(l,
-() => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !== undefined`
-then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
-[update](http://ramdajs.com/0.19.0/docs/#update)).
-
-For example:
-
-```js
-> L.set(P("a", 0, "x"), 11, {id: "z"})
-{a: [{x: 11}], id: "z"}
-```
-
-#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
-
-`L.view(l, s)` is the same as `R.view(lift(l), s)` (see
-[view](http://ramdajs.com/0.19.0/docs/#view)) and returns the focused element
-from a data structure.
-
-For example:
-
-```js
-> L.view("y", {x: 112, y: 101})
-101
-```
-
-#### Lifting
-
-The idempotent `lift` operation is defined as
-
-```js
-const lift = l => {
-  switch (typeof l) {
-  case "string": return L.prop(l)
-  case "number": return L.index(l)
-  default:       return l
-  }
-}
-```
-
-and is available as a non-default export.  All operations in this library that
-take lenses as arguments implicitly lift them.
 
 #### [`L.remove(l, s)`](#lremovel-s "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
@@ -412,7 +347,35 @@ For example:
 [{x: 1}, {y: 4}, {z: 5}]
 ```
 
-### Lenses
+#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
+
+`L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
+[set](http://ramdajs.com/0.20.0/docs/#set)) and is also equivalent to `L.over(l,
+() => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !== undefined`
+then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
+[update](http://ramdajs.com/0.20.0/docs/#update)).
+
+For example:
+
+```js
+> L.set(P("a", 0, "x"), 11, {id: "z"})
+{a: [{x: 11}], id: "z"}
+```
+
+#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
+
+`L.view(l, s)` is the same as `R.view(lift(l), s)` (see
+[view](http://ramdajs.com/0.20.0/docs/#view)) and returns the focused element
+from a data structure.
+
+For example:
+
+```js
+> L.view("y", {x: 112, y: 101})
+101
+```
+
+### Lens combinators
 
 In alphabetical order.
 
@@ -469,6 +432,21 @@ we get:
 -3
 > L.over(majorAxis, R.negate, {x: 2, y: -3})
 { y: 3, x: 2 }
+```
+
+#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
+
+The default import `P(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
+`R.compose(lift(l), ...ls.map(lift))` (see
+[compose](http://ramdajs.com/0.20.0/docs/#compose)) and compose a lens from a
+path of lenses.  Furthermore, `L.compose()` is the same as `L.identity`, which
+reflects the fact that `L.identity` is the identity element of lens composition.
+
+For example:
+
+```js
+> L.view(P("a", 1), {a: ["b", "c"]})
+"c"
 ```
 
 #### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] [a]")
@@ -539,7 +517,7 @@ equivalent to `l`.
 #### [`L.index(integer)`](#lindexinteger "L.index :: Integer -> PLens [a] a")
 
 `L.index(integer)` or `P(integer)` is similar to `R.lensIndex(integer)` (see
-[lensIndex](http://ramdajs.com/0.19.0/docs/#lensIndex)), but acts as a partial
+[lensIndex](http://ramdajs.com/0.20.0/docs/#lensIndex)), but acts as a partial
 lens:
 * When viewing an undefined array index or an undefined array, the result is
   undefined.
@@ -575,6 +553,11 @@ Then consider the same examples with `L.required([])`:
 > L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
 { elems: [], some: 'thing' }
 ```
+
+#### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
+
+`L.lens(get, set)` is the same as `R.lens(get, set)` (see
+[lens](http://ramdajs.com/0.20.0/docs/#lens)) and creates a new primitive lens.
 
 #### [`L.normalize(value => value)`](#lnormalizevalue--value "L.normalize :: (s -> s) -> PLens s s")
 
@@ -643,7 +626,7 @@ be an object.
 #### [`L.prop(string)`](#lpropstring "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
 `L.prop(string)` or `P(string)` is similar to `R.lensProp(string)` (see
-[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)), but acts as a partial
+[lensProp](http://ramdajs.com/0.20.0/docs/#lensProp)), but acts as a partial
 lens:
 * When viewing an undefined property or an undefined object, the result is
   undefined.
@@ -669,7 +652,7 @@ exists previously.  When set, any extra properties are ignored.
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
 versa when set.  Values are compared using `R.equals` (see
-[equals](http://ramdajs.com/0.19.0/docs/#equals)).
+[equals](http://ramdajs.com/0.20.0/docs/#equals)).
 
 For example:
 
@@ -682,9 +665,9 @@ For example:
 
 The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
-selective use of `default` and `required`:
+selective use of `defaults` and `required`:
 
-##### [`L.defaults(out)`](#ldefaultout "L.defaults :: s -> PLens s s")
+##### [`L.defaults(out)`](#ldefaultsout "L.defaults :: s -> PLens s s")
 
 `L.defaults(out)` is the same as `L.replace(undefined, out)`.  `L.defaults` is
 used to specify a default value for an element in case it is missing.  This can
@@ -721,6 +704,25 @@ undefined
 > L.remove(P("items", L.required([]), 0), {items: [1]})
 { items: [] }
 ```
+
+### Auxiliary
+
+#### [`lift(pl)`](#liftpl "L.lift :: (p :: a) -> PLens {p :: a, ...ps} a & Integer -> PLens [a] a & PLens s a -> PLens s a")
+
+The idempotent `lift` operation is defined as
+
+```js
+const lift = l => {
+  switch (typeof l) {
+  case "string": return L.prop(l)
+  case "number": return L.index(l)
+  default:       return l
+  }
+}
+```
+
+and is available as a non-default export.  All operations in this library that
+take lenses as arguments implicitly lift them.
 
 ## Background
 
@@ -775,4 +777,4 @@ This means that partial lenses can be composed, viewed, mapped over and set
 using the same operations as with ordinary lenses.  However, primitive partial
 lenses (e.g. [L.prop](#lpropstring)) are not necessarily the same as primitive
 ordinary lenses (e.g. Ramda's
-[lensProp](http://ramdajs.com/0.19.0/docs/#lensProp)).
+[lensProp](http://ramdajs.com/0.20.0/docs/#lensProp)).
