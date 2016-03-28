@@ -56,18 +56,18 @@ Thanks to the parameterized search part, `L.find(R.whereEq({language}))`, of the
 lens composition, we can use it to query texts:
 
 ```js
-> L.view(textIn("sv"), data)
-"Rubrik"
-> L.view(textIn("en"), data)
-"Title"
+L.view(textIn("sv"), data)
+// "Rubrik"
+L.view(textIn("en"), data)
+// "Title"
 ```
 
 Partial lenses can deal with missing data.  If we use the partial lens to query
 a text that does not exist, we get the default:
 
 ```js
-> L.view(textIn("fi"), data)
-""
+L.view(textIn("fi"), data)
+// ""
 ```
 
 We get this default, rather than undefined, thanks to the last part,
@@ -75,8 +75,8 @@ We get this default, rather than undefined, thanks to the last part,
 from `undefined`:
 
 ```js
-> L.view(textIn("fi"), undefined)
-""
+L.view(textIn("fi"), undefined)
+// ""
 ```
 
 With partial lenses, `undefined` is the equivalent of empty or non-existent.
@@ -86,9 +86,9 @@ With partial lenses, `undefined` is the equivalent of empty or non-existent.
 As with ordinary lenses, we can use the same lens to update texts:
 
 ```js
-> L.set(textIn("en"), "The title", data)
-{ contents: [ { language: "en", text: "The title" },
-              { language: "sv", text: "Rubrik" } ] }
+L.set(textIn("en"), "The title", data)
+// { contents: [ { language: "en", text: "The title" },
+//               { language: "sv", text: "Rubrik" } ] }
 ```
 
 ### Inserting data
@@ -96,10 +96,10 @@ As with ordinary lenses, we can use the same lens to update texts:
 The same partial lens also allows us to insert new texts:
 
 ```js
-> L.set(textIn("fi"), "Otsikko", data)
-{ contents: [ { language: "en", text: "Title" },
-              { language: "fi", text: "Otsikko" },
-              { language: "sv", text: "Rubrik" } ] }
+L.set(textIn("fi"), "Otsikko", data)
+// { contents: [ { language: "en", text: "Title" },
+//               { language: "fi", text: "Otsikko" },
+//               { language: "sv", text: "Rubrik" } ] }
 ```
 
 Note the position into which the new text was inserted.  The array of texts is
@@ -111,8 +111,8 @@ our lens.
 Finally, we can use the same partial lens to remove texts:
 
 ```js
-> L.set(textIn("sv"), undefined, data)
-{ contents: [ { language: "en", text: "Title" } ] }
+L.set(textIn("sv"), undefined, data)
+// { contents: [ { language: "en", text: "Title" } ] }
 ```
 
 Note that a single text is actually a part of an object.  The key to having the
@@ -124,9 +124,9 @@ means that the focus of the lens is to be removed.
 If we remove all of the texts, we get the required value:
 
 ```js
-> R.pipe(L.set(textIn("sv"), undefined),
-         L.set(textIn("en"), undefined))(data)
-{ contents: [] }
+R.pipe(L.set(textIn("sv"), undefined),
+       L.set(textIn("en"), undefined))(data)
+// { contents: [] }
 ```
 
 The `contents` property is not removed thanks to the `L.required([])` part of
@@ -237,27 +237,27 @@ This actually works to a degree.  We can use the `valueOf` lens constructor to
 build a binary tree:
 
 ```js
-> const t = R.reduce(
-    (tree, {key, value}) => L.set(valueOf(key), value, tree),
-    undefined,
-    [{key: "c", value: 1},
-     {key: "a", value: 2},
-     {key: "b", value: 3}])
-> t
-{ smaller: { greater: { value: 3, key: 'b' }, value: 2, key: 'a' },
-  value: 1,
-  key: 'c' }
+const t = R.reduce(
+  (tree, {key, value}) => L.set(valueOf(key), value, tree),
+  undefined,
+  [{key: "c", value: 1},
+   {key: "a", value: 2},
+   {key: "b", value: 3}])
+t
+// { smaller: { greater: { value: 3, key: 'b' }, value: 2, key: 'a' },
+//   value: 1,
+//   key: 'c' }
 ```
 
 However, the above `search` lens constructor does not maintain the BST
 structure when values are being removed:
 
 ```js
-> L.remove(valueOf('c'), t)
-{ smaller: { greater: { value: 3, key: 'b' },
-             value: 2,
-             key: 'a' },
-  key: 'c' }
+L.remove(valueOf('c'), t)
+// { smaller: { greater: { value: 3, key: 'b' },
+//              value: 2,
+//              key: 'a' },
+//   key: 'c' }
 ```
 
 How do we fix this?  We could check and transform the data structure to a BST
@@ -280,8 +280,8 @@ const search = key =>
 Now we can also remove values from a binary tree:
 
 ```js
-> L.remove(valueOf('c'), t)
-{ greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
+L.remove(valueOf('c'), t)
+// { greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
 ```
 
 As an exercise, you could improve the normalization to better maintain balance.
@@ -316,8 +316,8 @@ focused element of a data structure.
 For example:
 
 ```js
-> L.over("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
-{elems: [{y: 2}, {y: 4}]}
+L.over("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+// {elems: [{y: 2}, {y: 4}]}
 ```
 
 #### [`L.remove(l, s)`](#lremovel-s "L.remove :: PLens s a -> Maybe s -> Maybe s")
@@ -329,8 +329,8 @@ element.
 For example:
 
 ```js
-> L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
-{x: {y: 2}}
+L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
+// {x: {y: 2}}
 ```
 
 #### [`L.removeAll(l, s)`](#lremovealll-s "L.removeAll :: PLens s a -> Maybe s -> Maybe s")
@@ -343,8 +343,8 @@ For example:
 For example:
 
 ```js
-> L.removeAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
-[{x: 1}, {y: 4}, {z: 5}]
+L.removeAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
+// [{x: 1}, {y: 4}, {z: 5}]
 ```
 
 #### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
@@ -358,8 +358,8 @@ then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
 For example:
 
 ```js
-> L.set(P("a", 0, "x"), 11, {id: "z"})
-{a: [{x: 11}], id: "z"}
+L.set(P("a", 0, "x"), 11, {id: "z"})
+// {a: [{x: 11}], id: "z"}
 ```
 
 #### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
@@ -371,8 +371,8 @@ from a data structure.
 For example:
 
 ```js
-> L.view("y", {x: 112, y: 101})
-101
+L.view("y", {x: 112, y: 101})
+// 101
 ```
 
 ### Lens combinators
@@ -389,8 +389,8 @@ focused array.
 For example:
 
 ```js
-> L.set(L.append, "x", undefined)
-[ 'x' ]
+L.set(L.append, "x", undefined)
+// [ 'x' ]
 ```
 
 #### [`L.augment({prop: obj => val, ...props})`](#laugmentprop-obj--val-props "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
@@ -404,8 +404,8 @@ are removed.
 For example:
 
 ```js
-> L.over(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
-{ x: 3, z: -1 }
+L.over(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
+// { x: 3, z: -1 }
 ```
 
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
@@ -426,12 +426,12 @@ const majorAxis = L.choose(({x, y} = {}) =>
 we get:
 
 ```js
-> L.view(majorAxis, {x: 1, y: 2})
-2
-> L.view(majorAxis, {x: -3, y: 1})
--3
-> L.over(majorAxis, R.negate, {x: 2, y: -3})
-{ y: 3, x: 2 }
+L.view(majorAxis, {x: 1, y: 2})
+// 2
+L.view(majorAxis, {x: -3, y: 1})
+// -3
+L.over(majorAxis, R.negate, {x: 2, y: -3})
+// { y: 3, x: 2 }
 ```
 
 #### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
@@ -445,8 +445,8 @@ reflects the fact that `L.identity` is the identity element of lens composition.
 For example:
 
 ```js
-> L.view(P("a", 1), {a: ["b", "c"]})
-"c"
+L.view(P("a", 1), {a: ["b", "c"]})
+// "c"
 ```
 
 #### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] [a]")
@@ -460,8 +460,8 @@ undefined.
 For example:
 
 ```js
-> L.remove(L.filter(x => x <= 2), [3,1,4,1,5,9,2])
-[ 3, 4, 5, 9 ]
+L.remove(L.filter(x => x <= 2), [3,1,4,1,5,9,2])
+// [ 3, 4, 5, 9 ]
 ```
 
 *Note:* An alternative design for filter could implement a smarter algorithm to
@@ -479,8 +479,8 @@ matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
 ```js
-> L.removeAll(L.find(x => x <= 2), [3,1,4,1,5,9,2])
-[ 3, 4, 5, 9 ]
+L.removeAll(L.find(x => x <= 2), [3,1,4,1,5,9,2])
+// [ 3, 4, 5, 9 ]
 ```
 
 #### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
@@ -492,10 +492,10 @@ focuses on that item.
 For example:
 
 ```js
-> L.view(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
-9
-> L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
-[ { z: 6 }, { x: 3 }, { y: 6 } ]
+L.view(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
+// 9
+L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
+// [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
 
 #### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PLens s a, ...PLens s a) -> PLens s a")
@@ -535,23 +535,23 @@ an array must not remove the array itself.  In such cases you want to use
 `L.required([])`:
 
 ```js
-> L.remove(0, ["a", "b"])
-[ 'b' ]
-> L.remove(0, ["b"])
-undefined
-> L.remove(P("elems", 0), {elems: ["b"], some: "thing"})
-{ some: 'thing' }
+L.remove(0, ["a", "b"])
+// [ 'b' ]
+L.remove(0, ["b"])
+// undefined
+L.remove(P("elems", 0), {elems: ["b"], some: "thing"})
+// { some: 'thing' }
 ```
 
 Then consider the same examples with `L.required([])`:
 
 ```js
-> L.remove(P(L.required([]), 0), ["a", "b"])
-[ 'b' ]
-> L.remove(P(L.required([]), 0), ["b"])
-[]
-> L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
-{ elems: [], some: 'thing' }
+L.remove(P(L.required([]), 0), ["a", "b"])
+// [ 'b' ]
+L.remove(P(L.required([]), 0), ["b"])
+// []
+L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
+// { elems: [], some: 'thing' }
 ```
 
 #### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
@@ -602,15 +602,15 @@ const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
 We now have a better structured view of the data:
 
 ```js
-> L.view(sanitize, data)
-{ pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
+L.view(sanitize, data)
+// { pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
 ```
 
 That works in both directions:
 
 ```js
-> L.over(P(sanitize, "pos", "x"), R.add(5), data)
-{ px: 6, py: 2, vx: 1, vy: 0 }
+L.over(P(sanitize, "pos", "x"), R.add(5), data)
+// { px: 6, py: 2, vx: 1, vy: 0 }
 ```
 
 **NOTE:** In order for a lens created with `L.pick` to work in a predictable
@@ -644,8 +644,8 @@ properties, which means that any undefined properties are removed if they did
 exists previously.  When set, any extra properties are ignored.
 
 ```js
-> L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
-{ z: 3, x: 4 }
+L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
+// { z: 3, x: 4 }
 ```
 
 #### [`L.replace(inn, out)`](#lreplaceinn-out "L.replace :: Maybe s -> Maybe s -> PLens s s")
@@ -657,10 +657,10 @@ versa when set.  Values are compared using `R.equals` (see
 For example:
 
 ```js
-> L.view(L.replace(1, 2), 1)
-2
-> L.set(L.replace(1, 2), 2, 0)
-1
+L.view(L.replace(1, 2), 1)
+// 2
+L.set(L.replace(1, 2), 2, 0)
+// 1
 ```
 
 The main use case for `replace` is to handle optional and required properties
@@ -676,10 +676,10 @@ be useful to avoid having to check for and provide default behavior elsewhere.
 For example:
 
 ```js
-> L.view(P("items", L.defaults([])), {})
-[]
-> L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
-[ 1, 2, 3 ]
+L.view(P("items", L.defaults([])), {})
+// []
+L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
+// [ 1, 2, 3 ]
 ```
 
 ##### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
@@ -697,12 +697,12 @@ given value will be substituted instead.
 For example:
 
 ```js
-> L.remove(P("items", 0), {items: [1]})
-undefined
-> L.remove(P(L.required({}), "items", 0), {items: [1]})
-{}
-> L.remove(P("items", L.required([]), 0), {items: [1]})
-{ items: [] }
+L.remove(P("items", 0), {items: [1]})
+// undefined
+L.remove(P(L.required({}), "items", 0), {items: [1]})
+// {}
+L.remove(P("items", L.required([]), 0), {items: [1]})
+// { items: [] }
 ```
 
 ### Auxiliary
@@ -731,18 +731,18 @@ take lenses as arguments implicitly lift them.
 Consider the following REPL session using Ramda 0.19.1:
 
 ```js
-> R.set(R.lensPath(["x", "y"]), 1, {})
-{ x: { y: 1 } }
-> R.set(R.compose(R.lensProp("x"), R.lensProp("y")), 1, {})
-TypeError: Cannot read property 'y' of undefined
-> R.view(R.lensPath(["x", "y"]), {})
-undefined
-> R.view(R.compose(R.lensProp("x"), R.lensProp("y")), {})
-TypeError: Cannot read property 'y' of undefined
-> R.set(R.lensPath(["x", "y"]), undefined, {x: {y: 1}})
-{ x: { y: undefined } }
-> R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
-{ x: { y: undefined } }
+R.set(R.lensPath(["x", "y"]), 1, {})
+// { x: { y: 1 } }
+R.set(R.compose(R.lensProp("x"), R.lensProp("y")), 1, {})
+// TypeError: Cannot read property 'y' of undefined
+R.view(R.lensPath(["x", "y"]), {})
+// undefined
+R.view(R.compose(R.lensProp("x"), R.lensProp("y")), {})
+// TypeError: Cannot read property 'y' of undefined
+R.set(R.lensPath(["x", "y"]), undefined, {x: {y: 1}})
+// { x: { y: undefined } }
+R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
+// { x: { y: undefined } }
 ```
 
 One might assume that `R.lensPath([p0, ...ps])` is equivalent to
