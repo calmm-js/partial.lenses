@@ -707,7 +707,7 @@ undefined
 
 ### Auxiliary
 
-#### [`lift(pl)`](#liftpl "L.lift :: (p :: a) -> PLens {p :: a, ...ps} a & Integer -> PLens [a] a & PLens s a -> PLens s a")
+#### [`L.lift(pl)`](#lliftpl "L.lift :: (p :: a) -> PLens {p :: a, ...ps} a & Integer -> PLens [a] a & PLens s a -> PLens s a")
 
 The idempotent `lift` operation is defined as
 
