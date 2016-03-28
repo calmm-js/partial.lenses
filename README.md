@@ -449,6 +449,27 @@ L.view(P("a", 1), {a: ["b", "c"]})
 // "c"
 ```
 
+#### [`L.defaults(out)`](#ldefaultsout "L.defaults :: s -> PLens s s")
+
+`L.defaults(out)` is the same as `L.replace(undefined, out)`.  `L.defaults` is
+used to specify a default value for an element in case it is missing.  This can
+be useful to avoid having to check for and provide default behavior elsewhere.
+
+For example:
+
+```js
+L.view(P("items", L.defaults([])), {})
+// []
+L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
+// [ 1, 2, 3 ]
+```
+
+#### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
+
+`L.define(value)` is the same as `P(L.required(value), L.defaults(value))`.
+`L.define` is used to specify a value to act as both the default value and the
+required value for an element.
+
 #### [`L.filter(predicate)`](#lfilterpredicate "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
 `L.filter(predicate)` operates on arrays.  When viewed, only elements matching
@@ -665,30 +686,9 @@ L.set(L.replace(1, 2), 2, 0)
 
 The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
-selective use of `defaults` and `required`:
+selective use of `defaults` and `required`.
 
-##### [`L.defaults(out)`](#ldefaultsout "L.defaults :: s -> PLens s s")
-
-`L.defaults(out)` is the same as `L.replace(undefined, out)`.  `L.defaults` is
-used to specify a default value for an element in case it is missing.  This can
-be useful to avoid having to check for and provide default behavior elsewhere.
-
-For example:
-
-```js
-L.view(P("items", L.defaults([])), {})
-// []
-L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
-// [ 1, 2, 3 ]
-```
-
-##### [`L.define(value)`](#ldefinevalue "L.define :: s -> PLens s s")
-
-`L.define(value)` is the same as `P(L.required(value), L.defaults(value))`.
-`L.define` is used to specify a value to act as both the default value and the
-required value for an element.
-
-##### [`L.required(inn)`](#lrequiredinn "L.required :: s -> PLens s s")
+#### [`L.required(inn)`](#lrequiredinn "L.required :: s -> PLens s s")
 
 `L.required(inn)` is the same as `L.replace(inn, undefined)`.  `L.required` is
 used to specify that an element is not to be removed; in case it is removed, the
