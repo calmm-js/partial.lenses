@@ -40,73 +40,76 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
-const conserve = (c0, c1) => R.equals(c0, c1) ? c0 : c1
+const conserve = (c1, c0) => R.equals(c1, c0) ? c0 : c1
 
-const toConserve = f => (y, c0) => conserve(c0, f(y, c0))
+const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
 
 //
 
 export const lift = l => {
   switch (typeof l) {
-  case "string": return L.prop(l)
-  case "number": return L.index(l)
+  case "string": return prop(l)
+  case "number": return index(l)
   default:       return l
   }
 }
 
-const L = (l, ...ls) =>
-  ls.length === 0 ? lift(l) : R.compose(lift(l), ...ls.map(lift))
+export const compose = (...ls) =>
+  ls.length === 0 ? identity    :
+  ls.length === 1 ? lift(ls[0]) :
+  R.compose(...ls.map(lift))
 
-L.compose = L
-L.delete = R.curry((l, s) => R.set(lift(l), undefined, s))
-L.deleteAll = R.curry((lens, data) => {
-  while (L.view(lens, data) !== undefined)
-    data = L.delete(lens, data)
+export const remove = R.curry((l, s) => R.set(lift(l), undefined, s))
+
+export const removeAll = R.curry((lens, data) => {
+  while (view(lens, data) !== undefined)
+    data = remove(lens, data)
   return data
 })
-L.lens = R.lens
-L.over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
-L.set = R.curry((l, x, s) => R.set(lift(l), x, s))
-L.view = R.curry((l, s) => R.view(lift(l), s))
 
-L.choose = x2yL => toFunctor => target => {
+export const lens = R.lens
+export const over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
+export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
+export const view = R.curry((l, s) => R.view(lift(l), s))
+
+export const choose = x2yL => toFunctor => target => {
   const l = lift(x2yL(target))
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
 
-L.firstOf = (l, ...ls) => L.choose(x => {
+export const firstOf = (l, ...ls) => choose(x => {
   const lls = [l, ...ls]
-  return lls[Math.max(0, lls.findIndex(l => L.view(l, x) !== undefined))]
+  return lls[Math.max(0, lls.findIndex(l => view(l, x) !== undefined))]
 })
 
-L.replace = R.curry((inn, out) =>
+export const replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
          toConserve(y => R.equals(y, out) ? inn : y)))
 
-L.default = L.replace(undefined)
-L.required = inn => L.replace(inn, undefined)
-L.define = v => R.compose(L.required(v), L.default(v))
+export const defaults = replace(undefined)
+export const required = inn => replace(inn, undefined)
+export const define = v => R.compose(required(v), defaults(v))
 
-L.normalize = transform =>
+export const normalize = transform =>
   R.lens(toPartial(transform), toConserve(toPartial(transform)))
 
-L.prop = k =>
+export const prop = k =>
   R.lens(o => o && o[k],
          (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
 
-L.find = predicate => L.choose(xs => {
+export const find = predicate => choose(xs => {
   if (xs === undefined)
-    return L.append
+    return append
   const i = xs.findIndex(predicate)
-  return i < 0 ? L.append : i
+  return i < 0 ? append : i
 })
 
-L.findWith = (l, ...ls) => {
-  const lls = L(l, ...ls)
-  return L(L.find(x => R.view(lls, x) !== undefined), lls)
+export const findWith = (l, ...ls) => {
+  const lls = compose(l, ...ls)
+  return compose(find(x => R.view(lls, x) !== undefined), lls)
 }
 
-L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
+export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   if (x === undefined) {
     if (xs === undefined)
       return undefined
@@ -124,13 +127,13 @@ L.index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   }
 })
 
-L.append = R.lens(() => {}, (x, xs) =>
+export const append = R.lens(() => {}, (x, xs) =>
   x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
 
-L.filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
-  conserve(xs, dropped(R.concat(ys || [], (xs || []).filter(R.complement(p))))))
+export const filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
+  conserve(dropped(R.concat(ys || [], (xs || []).filter(R.complement(p)))), xs))
 
-L.augment = template => R.lens(
+export const augment = template => R.lens(
   toPartial(x => {
     const z = {...x}
     for (const k in template)
@@ -156,11 +159,11 @@ L.augment = template => R.lens(
     return z
   }))
 
-L.pick = template => R.lens(
+export const pick = template => R.lens(
   c => {
     let r
     for (const k in template) {
-      const v = L.view(template[k], c)
+      const v = view(template[k], c)
       if (v !== undefined) {
         if (r === undefined)
           r = {}
@@ -172,15 +175,15 @@ L.pick = template => R.lens(
   (o = empty, cIn) => {
     let c = cIn
     for (const k in template)
-      c = L.set(template[k], o[k], c)
+      c = set(template[k], o[k], c)
     return c
   })
 
-L.identity = R.lens(R.identity, R.identity)
+export const identity = R.lens(R.identity, conserve)
 
-L.props = (k, ...ks) => {
+export const props = (k, ...ks) => {
   const kks = [k, ...ks]
-  return L.pick(R.zipObj(kks, kks))
+  return pick(R.zipObj(kks, kks))
 }
 
-export default L
+export default compose
