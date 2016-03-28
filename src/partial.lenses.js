@@ -69,7 +69,7 @@ export const removeAll = R.curry((lens, data) => {
 
 export const lens = R.lens
 export const over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
-export const update = R.curry((l, x, s) => R.set(lift(l), x, s))
+export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
 export const view = R.curry((l, s) => R.view(lift(l), s))
 
 export const choose = x2yL => toFunctor => target => {
@@ -175,7 +175,7 @@ export const pick = template => R.lens(
   (o = empty, cIn) => {
     let c = cIn
     for (const k in template)
-      c = update(template[k], o[k], c)
+      c = set(template[k], o[k], c)
     return c
   })
 

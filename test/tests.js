@@ -43,44 +43,44 @@ describe("arities", () => {
   testEq('L.remove.length', 2)
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
-  testEq('L.update.length', 3)
+  testEq('L.set.length', 3)
   testEq('L.view.length', 2)
 })
 
 describe('L.find', () => {
-  testEq('L.update(L.find(R.equals(2)), undefined, [,,2])', undefined)
-  testEq('L.update(L.find(R.equals(2)), undefined, [1, 2, 3])', [1, 3])
-  testEq('L.update(L.find(R.equals(2)), 4, [1, 2, 3])', [1, 4, 3])
-  testEq('L.update(L.find(R.equals(2)), 2, [1, 4, 3])', [1, 4, 3, 2])
-  testEq('L.update(L.find(R.equals(2)), 2, undefined)', [2])
-  testEq('L.update(L.find(R.equals(2)), 2, [])', [2])
+  testEq('L.set(L.find(R.equals(2)), undefined, [,,2])', undefined)
+  testEq('L.set(L.find(R.equals(2)), undefined, [1, 2, 3])', [1, 3])
+  testEq('L.set(L.find(R.equals(2)), 4, [1, 2, 3])', [1, 4, 3])
+  testEq('L.set(L.find(R.equals(2)), 2, [1, 4, 3])', [1, 4, 3, 2])
+  testEq('L.set(L.find(R.equals(2)), 2, undefined)', [2])
+  testEq('L.set(L.find(R.equals(2)), 2, [])', [2])
   testEq('L.view(L.find(R.equals(2)), undefined)', undefined)
   testEq('L.view(L.find(R.equals(2)), [3])', undefined)
 })
 
 describe('L.index', () => {
-  testEq('L.update(P(1), undefined, [,,])', undefined)
-  testEq('L.update(P(L.required([]), 1), undefined, [,,])', [])
-  testEq('L.update(P(1), 4, [1, 2, 3])', [1, 4, 3])
-  testEq('L.update(2, 4, undefined)', [,, 4])
-  testEq('L.update(P(2), 4, [1])', [1,, 4])
+  testEq('L.set(P(1), undefined, [,,])', undefined)
+  testEq('L.set(P(L.required([]), 1), undefined, [,,])', [])
+  testEq('L.set(P(1), 4, [1, 2, 3])', [1, 4, 3])
+  testEq('L.set(2, 4, undefined)', [,, 4])
+  testEq('L.set(P(2), 4, [1])', [1,, 4])
   testEq('L.remove(P(0), [1, 2, 3])', [2, 3])
-  testEq('L.update(P(1), undefined, [1, 2, 3])', [1, 3])
-  testEq('L.update(2, undefined, [1, 2, 3])', [1, 2])
-  testEq('L.update(P(5), undefined, [1, 2, 3])', [1, 2, 3])
+  testEq('L.set(P(1), undefined, [1, 2, 3])', [1, 3])
+  testEq('L.set(2, undefined, [1, 2, 3])', [1, 2])
+  testEq('L.set(P(5), undefined, [1, 2, 3])', [1, 2, 3])
   testEq('L.view(5, undefined)', undefined)
   testEq('L.view(P(5), [1, 2, 3])', undefined)
-  testEq('L.update(1, "2", ["1", "2", "3"])', ["1", "2", "3"])
+  testEq('L.set(1, "2", ["1", "2", "3"])', ["1", "2", "3"])
 })
 
 describe('L.prop', () => {
-  testEq('L.update(P("x"), undefined, {x: 1})', undefined)
-  testEq('L.update(P("x", L.required(null)), undefined, {x: 1})', {x: null})
-  testEq('L.update(P("x", L.required(null)), 2, {x: 1})', {x: 2})
+  testEq('L.set(P("x"), undefined, {x: 1})', undefined)
+  testEq('L.set(P("x", L.required(null)), undefined, {x: 1})', {x: null})
+  testEq('L.set(P("x", L.required(null)), 2, {x: 1})', {x: 2})
   testEq('L.remove("y", {x: 1, y: 2})', {x: 1})
-  testEq('L.update(P("y"), 3, {x: 1, y: 2})', {x: 1, y: 3})
-  testEq('L.update("z", 3, {x: 1, y: 2})', {x: 1, y: 2, z: 3})
-  testEq('L.update(P("z"), 3, undefined)', {z: 3})
+  testEq('L.set(P("y"), 3, {x: 1, y: 2})', {x: 1, y: 3})
+  testEq('L.set("z", 3, {x: 1, y: 2})', {x: 1, y: 2, z: 3})
+  testEq('L.set(P("z"), 3, undefined)', {z: 3})
   testEq('L.view("z", undefined)', undefined)
   testEq('L.view(P("z"), {x: 1})', undefined)
 })
@@ -88,26 +88,26 @@ describe('L.prop', () => {
 describe("L.replace", () => {
   testEq('L.view(L.replace(undefined, ""), undefined)', "")
   testEq('L.view(L.replace(undefined, ""), "defined")', "defined")
-  testEq('L.update(L.replace(undefined, ""), "", "anything")', undefined)
-  testEq('L.update(L.replace(undefined, ""), "defined", "anything")', "defined")
+  testEq('L.set(L.replace(undefined, ""), "", "anything")', undefined)
+  testEq('L.set(L.replace(undefined, ""), "defined", "anything")', "defined")
 })
 
 describe("L.defaults", () => {
   testEq('L.view(L.defaults(""), undefined)', "")
   testEq('L.view(L.defaults(""), "defined")', "defined")
-  testEq('L.update(L.defaults(""), "", "anything")', undefined)
-  testEq('L.update(L.defaults(""), "defined", "anything")', "defined")
+  testEq('L.set(L.defaults(""), "", "anything")', undefined)
+  testEq('L.set(L.defaults(""), "defined", "anything")', "defined")
 })
 
 describe("L.normalize", () => {
   testEq('L.view(L.normalize(R.sortBy(R.identity)), [1,3,2,5])', [1,2,3,5])
-  testEq('L.update(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, [1,3,2,5])',
+  testEq('L.set(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, [1,3,2,5])',
          [1,3,4,5])
-  testEq('L.update(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, undefined)',
+  testEq('L.set(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), 4, undefined)',
          [4])
   testEq('L.remove(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), [2])',
          undefined)
-  testEq('L.update(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [1,3,2,5])',
+  testEq('L.set(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [1,3,2,5])',
          [1,3,5])
 })
 
@@ -117,8 +117,8 @@ describe("L.firstOf", () => {
   testEq('L.view(L.firstOf("x", "y"), {z: 13})', undefined)
   testEq('L.over(L.firstOf("x", "y"), x => x-2, {x: 11, y: 12})', {x: 9, y: 12})
   testEq('L.over(L.firstOf("y", "x"), x => x-2, {x: 11, y: 12})', {x: 11, y: 10})
-  testEq('L.update(L.firstOf("x", "y"), 12, {z: 13})', {x: 12, z: 13})
-  testEq('L.update(L.firstOf("y", "x"), 12, {z: 13})', {y: 12, z: 13})
+  testEq('L.set(L.firstOf("x", "y"), 12, {z: 13})', {x: 12, z: 13})
+  testEq('L.set(L.firstOf("y", "x"), 12, {z: 13})', {y: 12, z: 13})
   testEq('L.remove(L.firstOf("x", "y"), {z: 13})', {z: 13})
   testEq('L.remove(L.firstOf("x", "y"), {x: 11, y: 12})', {y: 12})
   testEq('L.remove(L.firstOf("y", "x"), {x: 11, y: 12})', {x: 11})
@@ -126,7 +126,7 @@ describe("L.firstOf", () => {
 
 describe("L.findWith", () => {
   testEq('L.view(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', "c")
-  testEq('L.update(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b","d"]}])
+  testEq('L.set(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b","d"]}])
   testEq('L.remove(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b"]}])
 })
 
@@ -135,7 +135,7 @@ describe("L.filter", () => {
   testEq('L.view(L.filter(R.lt(2)), undefined)', undefined)
   testEq('L.view(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [3,4,5,9])
   testEq('L.remove(P(L.filter(R.lt(2)), 1), [3,1,4,1,5,9,2])', [3,5,9,1,1,2])
-  testEq('L.update(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])', undefined)
+  testEq('L.set(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])', undefined)
   testEq('L.remove(L.filter(R.lt(0)), [3,1,4,1,5,9,2])', undefined)
   testEq('L.remove(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [1,1,2])
 })
@@ -147,17 +147,17 @@ describe("L.removeAll", () => {
 describe("L.augment", () => {
   testEq('L.view(L.augment({y: c => c.x+1, z: c => c.x-1}), {x: 0})', {x: 0, y: 1, z: -1})
   testEq('L.view(L.augment({y: c => c.x+1}), {x: 2, y: -1})', {x: 2, y: 3})
-  testEq('L.update(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
-  testEq('L.update(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
+  testEq('L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
+  testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
   testEq('L.remove(P(L.augment({y: () => 1}), "x"), {x:0})', undefined)
   testEq('L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
 })
 
 describe("L.pick", () => {
   testEq('L.view(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
-  testEq('L.update(P(L.pick({x: "c"}), "x"), 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})
+  testEq('L.set(P(L.pick({x: "c"}), "x"), 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})
   testEq('L.view(L.pick({x: "b", y: "a"}), {a: [2], b: 1})', {x: 1, y: [2]})
-  testEq('L.update(P(L.pick({x: "b", y: "a"}), "x"), 3, {a: [2], b: 1})', {a: [2], b: 3})
+  testEq('L.set(P(L.pick({x: "b", y: "a"}), "x"), 3, {a: [2], b: 1})', {a: [2], b: 3})
   testEq('L.remove(P(L.pick({x: "b", y: "a"}), "y"), {a: [2], b: 1})', {b: 1})
   testEq('L.remove(P(L.pick({x: "b"}), "x"), {a: [2], b: 1})', {a: [2]})
   testEq('L.removeAll(P(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
@@ -168,10 +168,10 @@ describe("L.props", () => {
   testEq('L.view(L.props("x", "y"), {z: 3})', undefined)
   testEq('L.view(L.props("x", "y"), {x: 2, z: 3})', {x: 2})
   testEq('L.remove(L.props("x", "y"), {x: 1, y: 2, z: 3})', {z: 3})
-  testEq('L.update(L.props("x", "y"), {}, {x: 1, y: 2, z: 3})', {z: 3})
-  testEq('L.update(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
+  testEq('L.set(L.props("x", "y"), {}, {x: 1, y: 2, z: 3})', {z: 3})
+  testEq('L.set(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
   testEq('L.remove(L.props("x", "y"), {x: 1, y: 2})', undefined)
-  testEq('L.update(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
+  testEq('L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
 })
 
 const BST = {
@@ -181,7 +181,7 @@ const BST = {
           undefined !== n.value   ? n         :
           n.smaller && !n.greater ? n.smaller :
           !n.smaller && n.greater ? n.greater :
-          L.update(BST.search(n.smaller.key), n.smaller, n.greater)),
+          L.set(BST.search(n.smaller.key), n.smaller, n.greater)),
         L.defaults({key}),
         L.choose(n => key < n.key ? P("smaller", rec) :
                       n.key < key ? P("greater", rec) :
@@ -224,7 +224,7 @@ describe("BST", () => {
 
       switch (op) {
         case "set":
-          after = L.update(BST.valueOf(key), key, before)
+          after = L.set(BST.valueOf(key), key, before)
           if (undefined === L.view(BST.valueOf(key), after))
             error()
           break

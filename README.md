@@ -86,7 +86,7 @@ With partial lenses, `undefined` is the equivalent of empty or non-existent.
 As with ordinary lenses, we can use the same lens to update texts:
 
 ```js
-> L.update(textIn("en"), "The title", data)
+> L.set(textIn("en"), "The title", data)
 { contents: [ { language: "en", text: "The title" },
               { language: "sv", text: "Rubrik" } ] }
 ```
@@ -96,7 +96,7 @@ As with ordinary lenses, we can use the same lens to update texts:
 The same partial lens also allows us to insert new texts:
 
 ```js
-> L.update(textIn("fi"), "Otsikko", data)
+> L.set(textIn("fi"), "Otsikko", data)
 { contents: [ { language: "en", text: "Title" },
               { language: "fi", text: "Otsikko" },
               { language: "sv", text: "Rubrik" } ] }
@@ -111,7 +111,7 @@ our lens.
 Finally, we can use the same partial lens to remove texts:
 
 ```js
-> L.update(textIn("sv"), undefined, data)
+> L.set(textIn("sv"), undefined, data)
 { contents: [ { language: "en", text: "Title" } ] }
 ```
 
@@ -124,8 +124,8 @@ means that the focus of the lens is to be removed.
 If we remove all of the texts, we get the required value:
 
 ```js
-> R.pipe(L.update(textIn("sv"), undefined),
-         L.update(textIn("en"), undefined))(data)
+> R.pipe(L.set(textIn("sv"), undefined),
+         L.set(textIn("en"), undefined))(data)
 { contents: [] }
 ```
 
@@ -150,7 +150,7 @@ For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
 * `L.compose(...)` can be abbreviated to use the default import, e.g. `P(...)`,
 * `L.prop(string)` can be abbreviated as `string`, and
-* `L.update(l, undefined, s)` can be abbreviated as `L.remove(l, s)`.
+* `L.set(l, undefined, s)` can be abbreviated as `L.remove(l, s)`.
 
 ### Systematic decomposition
 
@@ -238,7 +238,7 @@ build a binary tree:
 
 ```js
 > const t = R.reduce(
-    (tree, {key, value}) => L.update(valueOf(key), value, tree),
+    (tree, {key, value}) => L.set(valueOf(key), value, tree),
     undefined,
     [{key: "c", value: 1},
      {key: "a", value: 2},
@@ -270,7 +270,7 @@ const search = key =>
       undefined !== n.value   ? n         :
       n.smaller && !n.greater ? n.smaller :
       !n.smaller && n.greater ? n.greater :
-      L.update(search(n.smaller.key), n.smaller, n.greater)),
+      L.set(search(n.smaller.key), n.smaller, n.greater)),
     L.defaults({key}),
     L.choose(n => key < n.key ? P("smaller", search(key)) :
                   n.key < key ? P("greater", search(key)) :
@@ -340,18 +340,18 @@ For example:
 {elems: [{y: 2}, {y: 4}]}
 ```
 
-#### [`L.update(l, x, s)`](#lsetl-x-s "L.update :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
+#### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
-`L.update(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
+`L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
 [set](http://ramdajs.com/0.19.0/docs/#set)) and is also equivalent to `L.over(l,
 () => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !== undefined`
-then `L.update(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
+then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
 [update](http://ramdajs.com/0.19.0/docs/#update)).
 
 For example:
 
 ```js
-> L.update(P("a", 0, "x"), 11, {id: "z"})
+> L.set(P("a", 0, "x"), 11, {id: "z"})
 {a: [{x: 11}], id: "z"}
 ```
 
@@ -387,7 +387,7 @@ take lenses as arguments implicitly lift them.
 
 #### [`L.remove(l, s)`](#lremovel-s "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
-`L.remove(l, s)` is equivalent to `L.update(l, undefined, s)`.  With partial
+`L.remove(l, s)` is equivalent to `L.set(l, undefined, s)`.  With partial
 lenses, setting to undefined typically has the effect of removing the focused
 element.
 
@@ -426,7 +426,7 @@ focused array.
 For example:
 
 ```js
-> L.update(L.append, "x", undefined)
+> L.set(L.append, "x", undefined)
 [ 'x' ]
 ```
 
@@ -516,7 +516,7 @@ For example:
 ```js
 > L.view(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 9
-> L.update(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
+> L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
 
@@ -661,7 +661,7 @@ properties, which means that any undefined properties are removed if they did
 exists previously.  When set, any extra properties are ignored.
 
 ```js
-> L.update(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
+> L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 { z: 3, x: 4 }
 ```
 
@@ -676,7 +676,7 @@ For example:
 ```js
 > L.view(L.replace(1, 2), 1)
 2
-> L.update(L.replace(1, 2), 2, 0)
+> L.set(L.replace(1, 2), 2, 0)
 1
 ```
 
