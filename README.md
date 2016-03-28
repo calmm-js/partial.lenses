@@ -106,7 +106,7 @@ Note the position into which the new text was inserted.  The array of texts is
 kept sorted thanks to the `L.normalize(R.sortBy(R.prop("language")))` part of
 our lens.
 
-### Deleting data
+### Removing data
 
 Finally, we can use the same partial lens to remove texts:
 
@@ -526,13 +526,13 @@ lens:
   be an array without indices (ignoring length), the whole result will be
   undefined.
 
-**NOTE:** There is a gotcha related to deleting elements from an array.  Namely,
+**NOTE:** There is a gotcha related to removing elements from an array.  Namely,
 when the last element is removed, the result is `undefined` rather than an empty
-array.  This is by design, because this allows the deletion to propagate
-upwards.  It is not uncommon, however, to have cases where deleting the last
-element from an array must not remove the array itself.  In such cases you want
-to use `L.required([])` to access the array.  Consider the following examples
-without `L.required([])`:
+array.  This is by design, because this allows the removal to propagate upwards.
+It is not uncommon, however, to have cases where removing the last element from
+an array must not remove the array itself.  In such cases you want to use
+`L.required([])` to access the array.  Consider the following examples without
+`L.required([])`:
 
 ```js
 > L.remove(0, ["a", "b"])
