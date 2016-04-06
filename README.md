@@ -209,7 +209,7 @@ rather than composing a lens, like `textIn` above, to access a leaf property
 from the root of our object, we might actually compose lenses incrementally as
 we inspect the model structure.
 
-### Example: An array of keys as boolean flags
+### Example: An array of ids as boolean flags
 
 A case that we have run into multiple times is where we have an array of
 constant strings such as
@@ -222,11 +222,11 @@ that we wish to manipulate as if it was a collection of boolean flags.  Here is
 a parameterized lens that does just that:
 
 ```js
-const flag = key =>
+const flag = id =>
   P(L.normalize(R.sortBy(R.identity)),
-    L.find(R.equals(key)),
+    L.find(R.equals(id)),
     L.replace(undefined, false),
-    L.replace(key, true))
+    L.replace(id, true))
 ```
 
 Now we can treat individual constants as boolean flags:
