@@ -209,9 +209,47 @@ rather than composing a lens, like `textIn` above, to access a leaf property
 from the root of our object, we might actually compose lenses incrementally as
 we inspect the model structure.
 
+### Example: An array of keys as boolean flags
+
+A case that we have run into multiple times is where we have an array of
+constant strings such as
+
+```js
+const data = ["id-19", "id-76"]
+```
+
+that we wish to manipulate as if it was a collection of boolean flags.  Here is
+a parameterized lens that does just that:
+
+```js
+const flag = key =>
+  P(L.normalize(R.sortBy(R.identity)),
+    L.find(R.equals(key)),
+    L.replace(undefined, false),
+    L.replace(key, true))
+```
+
+Now we can treat individual constants as boolean flags:
+
+```js
+L.view(flag("id-69"), data)
+// false
+L.view(flag("id-76"), data)
+// true
+```
+
+In both directions:
+
+```js
+L.set(flag("id-69"), true, data)
+// ["id-19", "id-69", "id-76"]
+L.set(flag("id-76"), false, data)
+// ["id-19"]
+```
+
 ### Food for thought: BST as a lens
 
-The previous example is based on an actual use case.  In this section we look at
+The previous examples are based on actual use cases.  In this section we look at
 a more involved example: BST, binary search tree, as a lens.
 
 Binary search might initially seem to be outside the scope of definable lenses.
