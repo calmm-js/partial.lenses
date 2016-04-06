@@ -1,5 +1,13 @@
 # Changelog
 
+## 3.0.0
+
+Dropped explicit Ramda compatibility.  In particular, `L.compose` no longer
+necessarily returns a Ramda compatible lens and, in the future, the
+implementation may be changed to be Ramda incompatible.
+
+Removed deprecated functions `L.view`, `L.over` and `L.firstOf`.
+
 ## 2.2.0
 
 Renamed `L.view` and `L.over`:

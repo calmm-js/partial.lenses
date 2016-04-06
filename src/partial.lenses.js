@@ -61,7 +61,7 @@ const snd = (_, c) => c
 
 //
 
-export const lift = l => {
+const lift = l => {
   switch (typeof l) {
   case "string": return prop(l)
   case "number": return index(l)
@@ -70,8 +70,8 @@ export const lift = l => {
 }
 
 export const compose = (...ls) =>
-  ls.length === 0 ? identity    :
-  ls.length === 1 ? lift(ls[0]) :
+  ls.length === 0 ? identity :
+  ls.length === 1 ? ls[0] :
   R.compose(...ls.map(lift))
 
 export const remove = R.curry((l, s) => R.set(lift(l), undefined, s))
@@ -84,14 +84,8 @@ export const removeAll = R.curry((lens, data) => {
 
 export const lens = R.lens
 export const modify = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
-export const over = R.curry((l, x2x, s) =>
-  deprecated("`over` has been deprecated --- use `modify`") ||
-  R.over(lift(l), x2x, s))
 export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
 export const get = R.curry((l, s) => R.view(lift(l), s))
-export const view = R.curry((l, s) =>
-  deprecated("`view` has been deprecated --- use `get`") ||
-  R.view(lift(l), s))
 
 export const choose = x2yL => toFunctor => target => {
   const l = lift(x2yL(target))

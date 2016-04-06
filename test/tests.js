@@ -18,11 +18,11 @@ const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 })
 
-describe("default === compose", () => {
-  it("P === L.compose", () => {
-     if (P !== L.compose)
-       throw new Error("Not the same")
-  })
+describe("compose", () => {
+  testEq("P === L.compose", true)
+  testEq('P() === L.identity', true)
+  testEq('P("x")', "x")
+  testEq('P(101)', 101)
 })
 
 describe("arities", () => {
