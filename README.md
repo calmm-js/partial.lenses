@@ -481,8 +481,8 @@ performs lens composition.  The following equations characterize lens
 composition:
 
 ```js
-         L.compose()          = L.identity
-         L.compose(l)         = l
+                  L.compose() = L.identity
+                 L.compose(l) = l
    L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
 L.modify(L.compose(l, ...ls)) = R.pipe(L.modify(l), ...ls.map(L.modify))
 ```
