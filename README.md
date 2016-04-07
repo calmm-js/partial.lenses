@@ -578,10 +578,15 @@ element.
 
 #### [`L.identity`](#lidentity "L.identity :: PLens s s")
 
-`L.identity` is the identity element of lenses:
+`L.identity` is the identity element of lenses.  The following equations
+characterize `L.identity`:
 
-* `L.get(L.identity, x) === x` and `L.modify(L.identity, f, x) === f(x)`.
-* Both `P(L.identity, l)` and `P(l, L.identity)` are equivalent to `l`.
+```js
+      L.get(L.identity, x) = x
+L.modify(L.identity, f, x) = f(x)
+  L.compose(L.identity, l) = l
+  L.compose(l, L.identity) = l
+```
 
 #### [`L.index(integer)`](#lindexinteger "L.index :: Integer -> PLens [a] a")
 
