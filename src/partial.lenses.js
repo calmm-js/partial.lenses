@@ -107,15 +107,15 @@ export const firstOf = (l, ...ls) =>
   orElse(l, choice(l, ...ls))
 
 export const replace = R.curry((inn, out) =>
-  R.lens(x => R.equals(x, inn) ? out : x,
-         toConserve(y => R.equals(y, out) ? inn : y)))
+  lens(x => R.equals(x, inn) ? out : x,
+       toConserve(y => R.equals(y, out) ? inn : y)))
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
 export const define = v => R.compose(required(v), defaults(v))
 
 export const normalize = transform =>
-  R.lens(toPartial(transform), toConserve(toPartial(transform)))
+  lens(toPartial(transform), toConserve(toPartial(transform)))
 
 export const prop = k =>
   R.lens(o => o && o[k],
@@ -151,13 +151,13 @@ export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   }
 })
 
-export const append = R.lens(snd, (x, xs) =>
+export const append = lens(snd, (x, xs) =>
   x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
 
-export const filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
+export const filter = p => lens(xs => xs && xs.filter(p), (ys, xs) =>
   conserve(dropped(R.concat(ys || [], (xs || []).filter(R.complement(p)))), xs))
 
-export const augment = template => R.lens(
+export const augment = template => lens(
   toPartial(x => {
     const z = {...x}
     for (const k in template)
@@ -183,7 +183,7 @@ export const augment = template => R.lens(
     return z
   }))
 
-export const pick = template => R.lens(
+export const pick = template => lens(
   c => {
     let r
     for (const k in template) {
@@ -203,7 +203,7 @@ export const pick = template => R.lens(
     return c
   })
 
-export const identity = R.lens(R.identity, conserve)
+export const identity = lens(R.identity, conserve)
 
 export const props = (k, ...ks) => {
   const kks = [k, ...ks]
