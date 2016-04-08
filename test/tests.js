@@ -27,6 +27,7 @@ describe("default === compose", () => {
 
 describe("arities", () => {
   testEq('L.augment.length', 1)
+  testEq('L.choice.length', 0)
   testEq('L.compose.length', 0)
   testEq('L.defaults.length', 1)
   testEq('L.define.length', 1)
@@ -36,6 +37,7 @@ describe("arities", () => {
   testEq('L.index.length', 1)
   testEq('L.lens.length', 2)
   testEq('L.normalize.length', 1)
+  testEq('L.orElse.length', 2)
   testEq('L.over.length', 3)
   testEq('L.pick.length', 1)
   testEq('L.prop.length', 1)
@@ -109,6 +111,27 @@ describe("L.normalize", () => {
          undefined)
   testEq('L.set(P(L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))), undefined, [1,3,2,5])',
          [1,3,5])
+})
+
+describe("L.nothing", () => {
+  testEq('L.view(L.nothing, "anything")', undefined)
+  testEq('L.set(L.nothing, "anything", "original")', "original")
+})
+
+describe("L.orElse", () => {
+  testEq('L.view(L.orElse("b", "a"), {a: 2, b: 1})', 2)
+  testEq('L.view(L.orElse("b", "a"), {b: 2})', 2)
+  testEq('L.set(L.orElse("b", "a"), 3, {a: 2, b: 1})', {a: 3, b: 1})
+  testEq('L.set(L.orElse("b", "a"), 3, {b: 2})', {b: 3})
+})
+
+describe("L.choice", () => {
+  testEq('L.view(L.choice("x", "y"), {x: "a"})', "a")
+  testEq('L.view(L.choice("x", "y"), {y: "b"})', "b")
+  testEq('L.view(L.choice("x", "y"), {z: "c"})', undefined)
+  testEq('L.set(L.choice("x", "y"), "A", {x: "a"})', {x: "A"})
+  testEq('L.set(L.choice("x", "y"), "B", {y: "b"})', {y: "B"})
+  testEq('L.set(L.choice("x", "y"), "C", {z: "c"})', {z: "c"})
 })
 
 describe("L.firstOf", () => {

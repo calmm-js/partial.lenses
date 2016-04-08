@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.1.0
+
+Deprecated `L.firstOf` and added `L.choice`, `L.nothing` and `L.orElse` that
+allows the same (and more) functionality to be expressed more compositionally.
+
 ## 2.0.0
 
 Changed from using a single default export to named exports to support dead-code
