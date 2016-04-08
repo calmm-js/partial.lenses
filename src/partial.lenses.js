@@ -129,7 +129,7 @@ export const find = predicate => choose(xs => {
 })
 
 export const findWith = (l, ...ls) => {
-  const lls = compose(l, ...ls)
+  const lls = lift(compose(l, ...ls))
   return compose(find(x => R.view(lls, x) !== undefined), lls)
 }
 
