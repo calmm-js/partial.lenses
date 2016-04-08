@@ -472,7 +472,7 @@ L.over(majorAxis, R.negate, {x: 2, y: -3})
 // { y: 3, x: 2 }
 ```
 
-#### [`L.choice(...ls)`](#lchoice-ls "L.choice :: (...PLens s a) -> PLens s a")
+#### [`L.choice(...ls)`](#lchoicels "L.choice :: (...PLens s a) -> PLens s a")
 
 `L.choice(...ls)` returns a partial lens that acts like the first of the given
 lenses, `...ls`, whose view is not undefined on the given target.  When the
