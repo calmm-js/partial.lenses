@@ -472,6 +472,13 @@ L.over(majorAxis, R.negate, {x: 2, y: -3})
 // { y: 3, x: 2 }
 ```
 
+#### [`L.choice(...ls)`](#lchoice-ls "L.choice :: (...PLens s a) -> PLens s a")
+
+`L.choice(...ls)` returns a partial lens that acts like the first of the given
+lenses, `...ls`, whose view is not undefined on the given target.  When the
+views of all of the given lenses are undefined, the returned lens acts like
+`L.nothing`, which is the identity element of `L.choice`.
+
 #### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
 The default import `P(l, ...ls)` and `L.compose(l, ...ls)` both are the same as
@@ -559,6 +566,8 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 
 #### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PLens s a, ...PLens s a) -> PLens s a")
 
+**`L.firstOf` is deprecated and will be removed. See `L.choice` and `L.orElse`.**
+
 `L.firstOf(l, ...ls)` returns a partial lens that acts like the first of the
 given lenses, `l, ...ls`, whose view is not undefined on the given target.  When
 the views of all of the given lenses are undefined, the returned lens acts like
@@ -632,6 +641,25 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
 simple `R.equals` comparison will do.
+
+#### [`L.nothing`](#lnothing "L.nothing :: PLens s s")
+
+`L.nothing` is a special lens whose view is always undefined and setting through
+`L.nothing` has no effect.  In other words, for all `x` and `y`:
+
+```js
+  L.view(L.nothing, x) = undefined
+L.set(L.nothing, y, x) = x
+```
+
+`L.nothing` is the identity element of `L.choice`.
+
+#### [`L.orElse(backup, primary)`](#lorelsebackup-primary "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
+
+`L.orElse(backup, primary)` acts like `primary` when its view is not undefined
+and otherwise like `backup`.  You can use `L.orElse` on its own with
+`R.reduceRight` (and `R.reduce`) to create an associative choice over lenses or
+use `L.orElse` to specify a default or backup lens for `L.choice`, for example.
 
 #### [`L.pick({p1: l1, ...pls})`](#lpickp1-l1-pls "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 

@@ -46,6 +46,10 @@ const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
 
 //
 
+const snd = (_, c) => c
+
+//
+
 export const lift = l => {
   switch (typeof l) {
   case "string": return prop(l)
@@ -77,10 +81,17 @@ export const choose = x2yL => toFunctor => target => {
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
 
-export const firstOf = (l, ...ls) => choose(x => {
-  const lls = [l, ...ls]
-  return lls[Math.max(0, lls.findIndex(l => view(l, x) !== undefined))]
+export const nothing = lens(snd, snd)
+
+export const orElse =
+  R.curry((d, l) => choose(x => view(l, x) !== undefined ? l : d))
+
+export const choice = (...ls) => choose(x => {
+  const i = ls.findIndex(l => view(l, x) !== undefined)
+  return 0 <= i ? ls[i] : nothing
 })
+
+export const firstOf = (l, ...ls) => orElse(l, choice(l, ...ls))
 
 export const replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
@@ -127,7 +138,7 @@ export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   }
 })
 
-export const append = R.lens(() => {}, (x, xs) =>
+export const append = R.lens(snd, (x, xs) =>
   x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
 
 export const filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
