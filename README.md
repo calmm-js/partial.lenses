@@ -329,6 +329,9 @@ rather than `undefined`.
 
 ## Reference
 
+**Protip:** The link headings for functions in this reference have naive
+approximate types as tooltips.
+
 ### Usage
 
 The lenses and operations on lenses are accessed via the default import:
