@@ -530,10 +530,10 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
 `normalize` would be preferable.
 
-#### [`L.find(value => boolean)`](#lfindvalue--boolean "L.find :: (a -> Boolean) -> PLens [a] a")
+#### [`L.find(predicate)`](#lfindpredicate "L.find :: (a -> Boolean) -> PLens [a] a")
 
-`L.find(value => boolean)` operates on arrays like `L.index`, but the index to
-be viewed is determined by finding the first element from the input array that
+`L.find(predicate)` operates on arrays like `L.index`, but the index to be
+viewed is determined by finding the first element from the input array that
 matches the given predicate.  When no matching element is found the effect is
 same as with `L.append`.
 
