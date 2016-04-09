@@ -1,4 +1,4 @@
-import R from "ramda"
+import * as R from "ramda"
 
 import P, * as L from "../src/partial.lenses"
 
