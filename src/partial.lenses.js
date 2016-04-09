@@ -2,6 +2,17 @@ import R from "ramda"
 
 //
 
+const warned = {}
+
+const deprecated = message => {
+  if (!(message in warned)) {
+    warned[message] = message
+    console.warn("partial.lenses:", message)
+  }
+}
+
+//
+
 const empty = {}
 
 const deleteKey = (k, o) => {
@@ -66,15 +77,21 @@ export const compose = (...ls) =>
 export const remove = R.curry((l, s) => R.set(lift(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
-  while (view(lens, data) !== undefined)
+  while (get(lens, data) !== undefined)
     data = remove(lens, data)
   return data
 })
 
 export const lens = R.lens
-export const over = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
+export const modify = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
+export const over = R.curry((l, x2x, s) =>
+  deprecated("`over` has been deprecated --- use `modify`") ||
+  R.over(lift(l), x2x, s))
 export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
-export const view = R.curry((l, s) => R.view(lift(l), s))
+export const get = R.curry((l, s) => R.view(lift(l), s))
+export const view = R.curry((l, s) =>
+  deprecated("`view` has been deprecated --- use `get`") ||
+  R.view(lift(l), s))
 
 export const choose = x2yL => toFunctor => target => {
   const l = lift(x2yL(target))
@@ -84,14 +101,16 @@ export const choose = x2yL => toFunctor => target => {
 export const nothing = lens(snd, snd)
 
 export const orElse =
-  R.curry((d, l) => choose(x => view(l, x) !== undefined ? l : d))
+  R.curry((d, l) => choose(x => get(l, x) !== undefined ? l : d))
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => view(l, x) !== undefined)
+  const i = ls.findIndex(l => get(l, x) !== undefined)
   return 0 <= i ? ls[i] : nothing
 })
 
-export const firstOf = (l, ...ls) => orElse(l, choice(l, ...ls))
+export const firstOf = (l, ...ls) =>
+  deprecated("`firstOf` has been deprecated --- use `choice` and `orElse`") ||
+  orElse(l, choice(l, ...ls))
 
 export const replace = R.curry((inn, out) =>
   R.lens(x => R.equals(x, inn) ? out : x,
@@ -174,7 +193,7 @@ export const pick = template => R.lens(
   c => {
     let r
     for (const k in template) {
-      const v = view(template[k], c)
+      const v = get(template[k], c)
       if (v !== undefined) {
         if (r === undefined)
           r = {}

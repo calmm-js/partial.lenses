@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.2.0
+
+Renamed `L.view` and `L.over`:
+
+```diff
+-L.view
++L.get
+```
+
+```diff
+-L.over
++L.modify
+```
+
+Calling deprecated functions now results in `console.warn` messages.
+
 ## 2.1.0
 
 Deprecated `L.firstOf` and added `L.choice`, `L.nothing` and `L.orElse` that

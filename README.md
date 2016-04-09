@@ -56,9 +56,9 @@ Thanks to the parameterized search part, `L.find(R.whereEq({language}))`, of the
 lens composition, we can use it to query texts:
 
 ```js
-L.view(textIn("sv"), data)
+L.get(textIn("sv"), data)
 // "Rubrik"
-L.view(textIn("en"), data)
+L.get(textIn("en"), data)
 // "Title"
 ```
 
@@ -66,7 +66,7 @@ Partial lenses can deal with missing data.  If we use the partial lens to query
 a text that does not exist, we get the default:
 
 ```js
-L.view(textIn("fi"), data)
+L.get(textIn("fi"), data)
 // ""
 ```
 
@@ -75,7 +75,7 @@ We get this default, rather than undefined, thanks to the last part,
 from `undefined`:
 
 ```js
-L.view(textIn("fi"), undefined)
+L.get(textIn("fi"), undefined)
 // ""
 ```
 
@@ -232,9 +232,9 @@ const flag = id =>
 Now we can treat individual constants as boolean flags:
 
 ```js
-L.view(flag("id-69"), data)
+L.get(flag("id-69"), data)
 // false
-L.view(flag("id-76"), data)
+L.get(flag("id-76"), data)
 // true
 ```
 
@@ -345,18 +345,35 @@ Use of the default import, `P`, is optional and is an alias for `L.compose`.
 
 In alphabetical order.
 
-#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+#### [`L.get(l, s)`](#lgetl-s "L.get :: PLens s a -> Maybe s -> Maybe a")
 
-`L.over(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
+`L.get(l, s)` is the same as `R.view(lift(l), s)` (see
+[view](http://ramdajs.com/0.20.0/docs/#view)) and returns the focused element
+from a data structure.
+
+For example:
+
+```js
+L.get("y", {x: 112, y: 101})
+// 101
+```
+
+#### [`L.modify(l, x2x, s)`](#lmodifyl-x2x-s "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+
+`L.modify(l, x2x, s)` is the same as `R.over(lift(l), x2x, s)` (see
 [over](http://ramdajs.com/0.20.0/docs/#over)) and allows one to map over the
 focused element of a data structure.
 
 For example:
 
 ```js
-L.over("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+L.modify("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // {elems: [{y: 2}, {y: 4}]}
 ```
+
+#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+
+**`L.over` is a deprecated synonym for `L.modify` and will be removed.**
 
 #### [`L.remove(l, s)`](#lremovel-s "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
@@ -388,10 +405,10 @@ L.removeAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
 #### [`L.set(l, x, s)`](#lsetl-x-s "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
 `L.set(l, x, s)` is the same as `R.set(lift(l), x, s)` (see
-[set](http://ramdajs.com/0.20.0/docs/#set)) and is also equivalent to `L.over(l,
-() => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !== undefined`
-then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)` (see
-[update](http://ramdajs.com/0.20.0/docs/#update)).
+[set](http://ramdajs.com/0.20.0/docs/#set)) and is also equivalent to
+`L.modify(l, () => x, s)`.  Assuming that `0 <= i && i < xs.length` and `x !==
+undefined` then `L.set(i, x, xs)` is also equivalent to `R.update(i, x, xs)`
+(see [update](http://ramdajs.com/0.20.0/docs/#update)).
 
 For example:
 
@@ -400,18 +417,9 @@ L.set(P("a", 0, "x"), 11, {id: "z"})
 // {a: [{x: 11}], id: "z"}
 ```
 
-#### [`L.view(l, s)`](#lviewl-s "L.view :: PLens s a -> Maybe s -> Maybe a")
+#### [`L.view(l, s)`](#lviewl-s "L.get :: PLens s a -> Maybe s -> Maybe a")
 
-`L.view(l, s)` is the same as `R.view(lift(l), s)` (see
-[view](http://ramdajs.com/0.20.0/docs/#view)) and returns the focused element
-from a data structure.
-
-For example:
-
-```js
-L.view("y", {x: 112, y: 101})
-// 101
-```
+**`L.view` is a deprecated synonym for `L.get` and will be removed.**
 
 ### Lens combinators
 
@@ -442,7 +450,7 @@ are removed.
 For example:
 
 ```js
-L.over(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
+L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
 // { x: 3, z: -1 }
 ```
 
@@ -464,11 +472,11 @@ const majorAxis = L.choose(({x, y} = {}) =>
 we get:
 
 ```js
-L.view(majorAxis, {x: 1, y: 2})
+L.get(majorAxis, {x: 1, y: 2})
 // 2
-L.view(majorAxis, {x: -3, y: 1})
+L.get(majorAxis, {x: -3, y: 1})
 // -3
-L.over(majorAxis, R.negate, {x: 2, y: -3})
+L.modify(majorAxis, R.negate, {x: 2, y: -3})
 // { y: 3, x: 2 }
 ```
 
@@ -490,7 +498,7 @@ reflects the fact that `L.identity` is the identity element of lens composition.
 For example:
 
 ```js
-L.view(P("a", 1), {a: ["b", "c"]})
+L.get(P("a", 1), {a: ["b", "c"]})
 // "c"
 ```
 
@@ -503,9 +511,9 @@ be useful to avoid having to check for and provide default behavior elsewhere.
 For example:
 
 ```js
-L.view(P("items", L.defaults([])), {})
+L.get(P("items", L.defaults([])), {})
 // []
-L.view(P("items", L.defaults([])), {items: [1, 2, 3]})
+L.get(P("items", L.defaults([])), {items: [1, 2, 3]})
 // [ 1, 2, 3 ]
 ```
 
@@ -558,7 +566,7 @@ focuses on that item.
 For example:
 
 ```js
-L.view(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
+L.get(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 // 9
 L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
@@ -648,7 +656,7 @@ simple `R.equals` comparison will do.
 `L.nothing` has no effect.  In other words, for all `x` and `y`:
 
 ```js
-  L.view(L.nothing, x) = undefined
+   L.get(L.nothing, x) = undefined
 L.set(L.nothing, y, x) = x
 ```
 
@@ -689,14 +697,14 @@ const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
 We now have a better structured view of the data:
 
 ```js
-L.view(sanitize, data)
+L.get(sanitize, data)
 // { pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
 ```
 
 That works in both directions:
 
 ```js
-L.over(P(sanitize, "pos", "x"), R.add(5), data)
+L.modify(P(sanitize, "pos", "x"), R.add(5), data)
 // { px: 6, py: 2, vx: 1, vy: 0 }
 ```
 
@@ -744,7 +752,7 @@ versa when set.  Values are compared using `R.equals` (see
 For example:
 
 ```js
-L.view(L.replace(1, 2), 1)
+L.get(L.replace(1, 2), 1)
 // 2
 L.set(L.replace(1, 2), 2, 0)
 // 1
