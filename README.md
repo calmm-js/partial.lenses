@@ -565,8 +565,8 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 
 #### [`L.identity`](#lidentity "L.identity :: PLens s s")
 
-`L.identity` is the identity element of lenses.  The following equations
-characterize `L.identity`:
+`L.identity` is the identity element of lens composition.  The following
+equations characterize `L.identity`:
 
 ```js
       L.get(L.identity, x) = x
