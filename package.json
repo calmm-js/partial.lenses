@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "Ramda compatible partial lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "ramda": "^0.20.1"
+    "ramda": ">=0.20.1 <0.22.0"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",
