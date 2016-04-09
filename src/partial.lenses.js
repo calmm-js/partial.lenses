@@ -2,17 +2,6 @@ import R from "ramda"
 
 //
 
-const warned = {}
-
-const deprecated = message => {
-  if (!(message in warned)) {
-    warned[message] = message
-    console.warn("partial.lenses:", message)
-  }
-}
-
-//
-
 const id = x => x
 const snd = (_, c) => c
 
@@ -115,10 +104,6 @@ export const choice = (...ls) => choose(x => {
   const i = ls.findIndex(l => get(l, x) !== undefined)
   return 0 <= i ? ls[i] : nothing
 })
-
-export const firstOf = (l, ...ls) =>
-  deprecated("`firstOf` has been deprecated --- use `choice` and `orElse`") ||
-  orElse(l, choice(l, ...ls))
 
 export const replace = R.curry((inn, out) =>
   lens(x => R.equals(x, inn) ? out : x,

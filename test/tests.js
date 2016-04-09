@@ -167,19 +167,6 @@ describe("L.choice", () => {
   testEq('L.set(L.choice("x", "y"), "C", {z: "c"})', {z: "c"})
 })
 
-describe("L.firstOf", () => {
-  testEq('L.get(L.firstOf("x", "y"), {x: 11, y: 12})', 11)
-  testEq('L.get(L.firstOf("y", "x"), {x: 11, y: 12})', 12)
-  testEq('L.get(L.firstOf("x", "y"), {z: 13})', undefined)
-  testEq('L.modify(L.firstOf("x", "y"), x => x-2, {x: 11, y: 12})', {x: 9, y: 12})
-  testEq('L.modify(L.firstOf("y", "x"), x => x-2, {x: 11, y: 12})', {x: 11, y: 10})
-  testEq('L.set(L.firstOf("x", "y"), 12, {z: 13})', {x: 12, z: 13})
-  testEq('L.set(L.firstOf("y", "x"), 12, {z: 13})', {y: 12, z: 13})
-  testEq('L.remove(L.firstOf("x", "y"), {z: 13})', {z: 13})
-  testEq('L.remove(L.firstOf("x", "y"), {x: 11, y: 12})', {y: 12})
-  testEq('L.remove(L.firstOf("y", "x"), {x: 11, y: 12})', {x: 11})
-})
-
 describe("L.findWith", () => {
   testEq('L.get(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', "c")
   testEq('L.set(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b","d"]}])
@@ -216,7 +203,7 @@ describe("L.pick", () => {
   testEq('L.set(P(L.pick({x: "b", y: "a"}), "x"), 3, {a: [2], b: 1})', {a: [2], b: 3})
   testEq('L.remove(P(L.pick({x: "b", y: "a"}), "y"), {a: [2], b: 1})', {b: 1})
   testEq('L.remove(P(L.pick({x: "b"}), "x"), {a: [2], b: 1})', {a: [2]})
-  testEq('L.removeAll(P(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
+  testEq('L.removeAll(P(L.pick({x: "b", y: "a"}), L.choice("y", "x")), {a: [2], b: 1})', undefined)
 })
 
 describe("L.props", () => {
