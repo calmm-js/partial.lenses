@@ -369,10 +369,6 @@ L.modify("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // {elems: [{y: 2}, {y: 4}]}
 ```
 
-#### [`L.over(l, x2x, s)`](#loverl-x2x-s "L.over :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
-
-**`L.over` is a deprecated synonym for `L.modify` and will be removed.**
-
 #### [`L.remove(l, s)`](#lremovel-s "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
 `L.remove(l, s)` is equivalent to `L.set(l, undefined, s)`.  With partial
@@ -566,18 +562,6 @@ L.get(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
-
-#### [`L.firstOf(l, ...ls)`](#lfirstofl-ls "L.firstOf :: (PLens s a, ...PLens s a) -> PLens s a")
-
-**`L.firstOf` is deprecated and will be removed. See `L.choice` and `L.orElse`.**
-
-`L.firstOf(l, ...ls)` returns a partial lens that acts like the first of the
-given lenses, `l, ...ls`, whose view is not undefined on the given target.  When
-the views of all of the given lenses are undefined, the returned lens acts like
-`l`.
-
-Note that `L.firstOf` is an associative operation, but there is no identity
-element.
 
 #### [`L.identity`](#lidentity "L.identity :: PLens s s")
 
