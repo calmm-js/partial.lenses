@@ -16,7 +16,8 @@
   "keywords": [
     "json",
     "lens",
-    "partial"
+    "partial",
+    "ramda"
   ],
   "license": "MIT",
   "bugs": {

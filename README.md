@@ -809,6 +809,20 @@ L.remove(P("items", L.required([]), 0), {items: [1]})
 // { items: [] }
 ```
 
+### Interop
+
+Conversions between lens libraries.
+
+#### [`L.fromRamda(lens)`](#lfromramdalens "L.fromRamda :: Lens s s -> PLens s s")
+
+`L.fromRamda(lens)` converts the given Ramda lens to a partial lens.  Note that
+this does not change the behavior of the lens on undefined values.
+
+#### [`L.toRamda(plens)`](#ltoramdaplens "L.toRamda :: PLens s s -> Lens s s")
+
+`L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
+this does not change the behavior of the lens on undefined values.
+
 ## Background
 
 ### Motivation

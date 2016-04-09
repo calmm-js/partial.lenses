@@ -13,6 +13,22 @@ const deprecated = message => {
 
 //
 
+const id = x => x
+const snd = (_, c) => c
+
+//
+
+const check = (expected, predicate) => x => {
+  if (predicate(x))
+    return x
+  else
+    throw new Error(`Expected ${expected}, but got ${x}.`)
+}
+
+const assert = process.env.NODE_ENV === "production" ? () => id : check
+
+//
+
 const empty = {}
 
 const deleteKey = (k, o) => {
@@ -57,24 +73,22 @@ const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
 
 //
 
-const snd = (_, c) => c
+const seemsLens = x => typeof x === "function" && x.length === 1
 
-//
+export const fromRamda = assert("a lens", seemsLens)
 
-const lift = l => {
-  switch (typeof l) {
-  case "string": return prop(l)
-  case "number": return index(l)
-  default:       return l
-  }
+export const toRamda = l => {
+  if (isProp(l))  return toRamdaProp(l)
+  if (isIndex(l)) return toRamdaIndex(l)
+  return fromRamda(l)
 }
 
 export const compose = (...ls) =>
   ls.length === 0 ? identity :
   ls.length === 1 ? ls[0] :
-  R.compose(...ls.map(lift))
+  R.compose(...ls.map(toRamda))
 
-export const remove = R.curry((l, s) => R.set(lift(l), undefined, s))
+export const remove = R.curry((l, s) => R.set(toRamda(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
   while (get(lens, data) !== undefined)
@@ -83,12 +97,12 @@ export const removeAll = R.curry((lens, data) => {
 })
 
 export const lens = R.lens
-export const modify = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
-export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
-export const get = R.curry((l, s) => R.view(lift(l), s))
+export const modify = R.curry((l, x2x, s) => R.over(toRamda(l), x2x, s))
+export const set = R.curry((l, x, s) => R.set(toRamda(l), x, s))
+export const get = R.curry((l, s) => R.view(toRamda(l), s))
 
 export const choose = x2yL => toFunctor => target => {
-  const l = lift(x2yL(target))
+  const l = toRamda(x2yL(target))
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
 
@@ -117,9 +131,13 @@ export const define = v => R.compose(required(v), defaults(v))
 export const normalize = transform =>
   lens(toPartial(transform), toConserve(toPartial(transform)))
 
-export const prop = k =>
-  R.lens(o => o && o[k],
-         (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
+const isProp = x => typeof x === "string"
+
+export const prop = assert("a string", isProp)
+
+const toRamdaProp = k =>
+  lens(o => o && o[k],
+       (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
 
 export const find = predicate => choose(xs => {
   if (xs === undefined)
@@ -129,11 +147,15 @@ export const find = predicate => choose(xs => {
 })
 
 export const findWith = (l, ...ls) => {
-  const lls = lift(compose(l, ...ls))
+  const lls = toRamda(compose(l, ...ls))
   return compose(find(x => R.view(lls, x) !== undefined), lls)
 }
 
-export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
+const isIndex = x => Number.isInteger(x) && 0 <= x
+
+export const index = assert("a non-negative integer", isIndex)
+
+const toRamdaIndex = i => lens(xs => xs && xs[i], (x, xs) => {
   if (x === undefined) {
     if (xs === undefined)
       return undefined
@@ -203,7 +225,7 @@ export const pick = template => lens(
     return c
   })
 
-export const identity = lens(R.identity, conserve)
+export const identity = lens(id, conserve)
 
 export const props = (k, ...ks) => {
   const kks = [k, ...ks]

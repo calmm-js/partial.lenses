@@ -12,10 +12,26 @@ function show(x) {
   }
 }
 
+const run = expr => eval(`(P, L, R) => ${expr}`)(P, L, R)
+
 const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
-  const actual = eval(`(P, L, R) => ${expr}`)(P, L, R)
+  const actual = run(expr)
   if (!R.equals(actual, expect))
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+})
+
+const testThrows = expr => it(`${expr} => throws`, () => {
+  let raised
+  let result
+  try {
+    result = run(expr)
+    raised = false
+  } catch (e) {
+    result = e
+    raised = true
+  }
+  if (!raised)
+    throw new Error(`Expected ${expr} to throw, returned ${show(result)}`)
 })
 
 describe("compose", () => {
@@ -34,6 +50,7 @@ describe("arities", () => {
   testEq('L.filter.length', 1)
   testEq('L.find.length', 1)
   testEq('L.findWith.length', 1)
+  testEq('L.fromRamda.length', 1)
   testEq('L.get.length', 2)
   testEq('L.index.length', 1)
   testEq('L.lens.length', 2)
@@ -47,6 +64,12 @@ describe("arities", () => {
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
   testEq('L.set.length', 3)
+  testEq('L.toRamda.length', 1)
+})
+
+describe("interop", () => {
+  testEq('R.set(L.toRamda(0), "a", ["b"])', ["a"])
+  testEq('L.get(L.fromRamda(R.lensProp("x")), {x: "b"})', "b")
 })
 
 describe('L.find', () => {
@@ -61,6 +84,11 @@ describe('L.find', () => {
 })
 
 describe('L.index', () => {
+  if (process.env.NODE_ENV !== "production") {
+    testThrows('L.index("x")')
+    testThrows('L.index(-1)')
+    testThrows('L.index()')
+  }
   testEq('L.set(P(1), undefined, [,,])', undefined)
   testEq('L.set(P(L.required([]), 1), undefined, [,,])', [])
   testEq('L.set(P(1), 4, [1, 2, 3])', [1, 4, 3])
@@ -76,6 +104,11 @@ describe('L.index', () => {
 })
 
 describe('L.prop', () => {
+  if (process.env.NODE_ENV !== "production") {
+    testThrows('L.prop(2)')
+    testThrows('L.prop(x => x)')
+    testThrows('L.prop()')
+  }
   testEq('L.set(P("x"), undefined, {x: 1})', undefined)
   testEq('L.set(P("x", L.required(null)), undefined, {x: 1})', {x: null})
   testEq('L.set(P("x", L.required(null)), 2, {x: 1})', {x: 2})
