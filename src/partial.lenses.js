@@ -1,15 +1,20 @@
-import R from "ramda"
+import * as R from "ramda"
 
 //
 
-const warned = {}
+const id = x => x
+const snd = (_, c) => c
 
-const deprecated = message => {
-  if (!(message in warned)) {
-    warned[message] = message
-    console.warn("partial.lenses:", message)
-  }
+//
+
+const check = (expected, predicate) => x => {
+  if (predicate(x))
+    return x
+  else
+    throw new Error(`Expected ${expected}, but got ${x}.`)
 }
+
+const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 //
 
@@ -57,24 +62,22 @@ const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
 
 //
 
-const snd = (_, c) => c
+const seemsLens = x => typeof x === "function" && x.length === 1
 
-//
+export const fromRamda = assert("a lens", seemsLens)
 
-export const lift = l => {
-  switch (typeof l) {
-  case "string": return prop(l)
-  case "number": return index(l)
-  default:       return l
-  }
+export const toRamda = l => {
+  if (isProp(l))  return toRamdaProp(l)
+  if (isIndex(l)) return toRamdaIndex(l)
+  return fromRamda(l)
 }
 
 export const compose = (...ls) =>
-  ls.length === 0 ? identity    :
-  ls.length === 1 ? lift(ls[0]) :
-  R.compose(...ls.map(lift))
+  ls.length === 0 ? identity :
+  ls.length === 1 ? ls[0] :
+  R.compose(...ls.map(toRamda))
 
-export const remove = R.curry((l, s) => R.set(lift(l), undefined, s))
+export const remove = R.curry((l, s) => R.set(toRamda(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
   while (get(lens, data) !== undefined)
@@ -83,18 +86,12 @@ export const removeAll = R.curry((lens, data) => {
 })
 
 export const lens = R.lens
-export const modify = R.curry((l, x2x, s) => R.over(lift(l), x2x, s))
-export const over = R.curry((l, x2x, s) =>
-  deprecated("`over` has been deprecated --- use `modify`") ||
-  R.over(lift(l), x2x, s))
-export const set = R.curry((l, x, s) => R.set(lift(l), x, s))
-export const get = R.curry((l, s) => R.view(lift(l), s))
-export const view = R.curry((l, s) =>
-  deprecated("`view` has been deprecated --- use `get`") ||
-  R.view(lift(l), s))
+export const modify = R.curry((l, x2x, s) => R.over(toRamda(l), x2x, s))
+export const set = R.curry((l, x, s) => R.set(toRamda(l), x, s))
+export const get = R.curry((l, s) => R.view(toRamda(l), s))
 
 export const choose = x2yL => toFunctor => target => {
-  const l = lift(x2yL(target))
+  const l = toRamda(x2yL(target))
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
 }
 
@@ -108,24 +105,24 @@ export const choice = (...ls) => choose(x => {
   return 0 <= i ? ls[i] : nothing
 })
 
-export const firstOf = (l, ...ls) =>
-  deprecated("`firstOf` has been deprecated --- use `choice` and `orElse`") ||
-  orElse(l, choice(l, ...ls))
-
 export const replace = R.curry((inn, out) =>
-  R.lens(x => R.equals(x, inn) ? out : x,
-         toConserve(y => R.equals(y, out) ? inn : y)))
+  lens(x => R.equals(x, inn) ? out : x,
+       toConserve(y => R.equals(y, out) ? inn : y)))
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
 export const define = v => R.compose(required(v), defaults(v))
 
 export const normalize = transform =>
-  R.lens(toPartial(transform), toConserve(toPartial(transform)))
+  lens(toPartial(transform), toConserve(toPartial(transform)))
 
-export const prop = k =>
-  R.lens(o => o && o[k],
-         (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
+const isProp = x => typeof x === "string"
+
+export const prop = assert("a string", isProp)
+
+const toRamdaProp = k =>
+  lens(o => o && o[k],
+       (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
 
 export const find = predicate => choose(xs => {
   if (xs === undefined)
@@ -134,12 +131,16 @@ export const find = predicate => choose(xs => {
   return i < 0 ? append : i
 })
 
-export const findWith = (l, ...ls) => {
-  const lls = compose(l, ...ls)
+export const findWith = (...ls) => {
+  const lls = toRamda(compose(...ls))
   return compose(find(x => R.view(lls, x) !== undefined), lls)
 }
 
-export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
+const isIndex = x => Number.isInteger(x) && 0 <= x
+
+export const index = assert("a non-negative integer", isIndex)
+
+const toRamdaIndex = i => lens(xs => xs && xs[i], (x, xs) => {
   if (x === undefined) {
     if (xs === undefined)
       return undefined
@@ -157,13 +158,13 @@ export const index = i => R.lens(xs => xs && xs[i], (x, xs) => {
   }
 })
 
-export const append = R.lens(snd, (x, xs) =>
+export const append = lens(snd, (x, xs) =>
   x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
 
-export const filter = p => R.lens(xs => xs && xs.filter(p), (ys, xs) =>
+export const filter = p => lens(xs => xs && xs.filter(p), (ys, xs) =>
   conserve(dropped(R.concat(ys || [], (xs || []).filter(R.complement(p)))), xs))
 
-export const augment = template => R.lens(
+export const augment = template => lens(
   toPartial(x => {
     const z = {...x}
     for (const k in template)
@@ -189,7 +190,7 @@ export const augment = template => R.lens(
     return z
   }))
 
-export const pick = template => R.lens(
+export const pick = template => lens(
   c => {
     let r
     for (const k in template) {
@@ -209,11 +210,8 @@ export const pick = template => R.lens(
     return c
   })
 
-export const identity = R.lens(R.identity, conserve)
+export const identity = lens(id, conserve)
 
-export const props = (k, ...ks) => {
-  const kks = [k, ...ks]
-  return pick(R.zipObj(kks, kks))
-}
+export const props = (...ks) => pick(R.zipObj(ks, ks))
 
 export default compose

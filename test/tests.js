@@ -1,4 +1,4 @@
-import R from "ramda"
+import * as R from "ramda"
 
 import P, * as L from "../src/partial.lenses"
 
@@ -12,17 +12,33 @@ function show(x) {
   }
 }
 
+const run = expr => eval(`(P, L, R) => ${expr}`)(P, L, R)
+
 const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
-  const actual = eval(`(P, L, R) => ${expr}`)(P, L, R)
+  const actual = run(expr)
   if (!R.equals(actual, expect))
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 })
 
-describe("default === compose", () => {
-  it("P === L.compose", () => {
-     if (P !== L.compose)
-       throw new Error("Not the same")
-  })
+const testThrows = expr => it(`${expr} => throws`, () => {
+  let raised
+  let result
+  try {
+    result = run(expr)
+    raised = false
+  } catch (e) {
+    result = e
+    raised = true
+  }
+  if (!raised)
+    throw new Error(`Expected ${expr} to throw, returned ${show(result)}`)
+})
+
+describe("compose", () => {
+  testEq("P === L.compose", true)
+  testEq('P() === L.identity', true)
+  testEq('P("x")', "x")
+  testEq('P(101)', 101)
 })
 
 describe("arities", () => {
@@ -33,7 +49,8 @@ describe("arities", () => {
   testEq('L.define.length', 1)
   testEq('L.filter.length', 1)
   testEq('L.find.length', 1)
-  testEq('L.findWith.length', 1)
+  testEq('L.findWith.length', 0)
+  testEq('L.fromRamda.length', 1)
   testEq('L.get.length', 2)
   testEq('L.index.length', 1)
   testEq('L.lens.length', 2)
@@ -42,11 +59,17 @@ describe("arities", () => {
   testEq('L.orElse.length', 2)
   testEq('L.pick.length', 1)
   testEq('L.prop.length', 1)
-  testEq('L.props.length', 1)
+  testEq('L.props.length', 0)
   testEq('L.remove.length', 2)
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
   testEq('L.set.length', 3)
+  testEq('L.toRamda.length', 1)
+})
+
+describe("interop", () => {
+  testEq('R.set(L.toRamda(0), "a", ["b"])', ["a"])
+  testEq('L.get(L.fromRamda(R.lensProp("x")), {x: "b"})', "b")
 })
 
 describe('L.find', () => {
@@ -61,6 +84,11 @@ describe('L.find', () => {
 })
 
 describe('L.index', () => {
+  if (process.env.NODE_ENV !== "production") {
+    testThrows('L.index("x")')
+    testThrows('L.index(-1)')
+    testThrows('L.index()')
+  }
   testEq('L.set(P(1), undefined, [,,])', undefined)
   testEq('L.set(P(L.required([]), 1), undefined, [,,])', [])
   testEq('L.set(P(1), 4, [1, 2, 3])', [1, 4, 3])
@@ -76,6 +104,11 @@ describe('L.index', () => {
 })
 
 describe('L.prop', () => {
+  if (process.env.NODE_ENV !== "production") {
+    testThrows('L.prop(2)')
+    testThrows('L.prop(x => x)')
+    testThrows('L.prop()')
+  }
   testEq('L.set(P("x"), undefined, {x: 1})', undefined)
   testEq('L.set(P("x", L.required(null)), undefined, {x: 1})', {x: null})
   testEq('L.set(P("x", L.required(null)), 2, {x: 1})', {x: 2})
@@ -134,19 +167,6 @@ describe("L.choice", () => {
   testEq('L.set(L.choice("x", "y"), "C", {z: "c"})', {z: "c"})
 })
 
-describe("L.firstOf", () => {
-  testEq('L.get(L.firstOf("x", "y"), {x: 11, y: 12})', 11)
-  testEq('L.get(L.firstOf("y", "x"), {x: 11, y: 12})', 12)
-  testEq('L.get(L.firstOf("x", "y"), {z: 13})', undefined)
-  testEq('L.modify(L.firstOf("x", "y"), x => x-2, {x: 11, y: 12})', {x: 9, y: 12})
-  testEq('L.modify(L.firstOf("y", "x"), x => x-2, {x: 11, y: 12})', {x: 11, y: 10})
-  testEq('L.set(L.firstOf("x", "y"), 12, {z: 13})', {x: 12, z: 13})
-  testEq('L.set(L.firstOf("y", "x"), 12, {z: 13})', {y: 12, z: 13})
-  testEq('L.remove(L.firstOf("x", "y"), {z: 13})', {z: 13})
-  testEq('L.remove(L.firstOf("x", "y"), {x: 11, y: 12})', {y: 12})
-  testEq('L.remove(L.firstOf("y", "x"), {x: 11, y: 12})', {x: 11})
-})
-
 describe("L.findWith", () => {
   testEq('L.get(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])', "c")
   testEq('L.set(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])', [{x: ["a"]},{x: ["b","d"]}])
@@ -183,7 +203,7 @@ describe("L.pick", () => {
   testEq('L.set(P(L.pick({x: "b", y: "a"}), "x"), 3, {a: [2], b: 1})', {a: [2], b: 3})
   testEq('L.remove(P(L.pick({x: "b", y: "a"}), "y"), {a: [2], b: 1})', {b: 1})
   testEq('L.remove(P(L.pick({x: "b"}), "x"), {a: [2], b: 1})', {a: [2]})
-  testEq('L.removeAll(P(L.pick({x: "b", y: "a"}), L.firstOf("y", "x")), {a: [2], b: 1})', undefined)
+  testEq('L.removeAll(P(L.pick({x: "b", y: "a"}), L.choice("y", "x")), {a: [2], b: 1})', undefined)
 })
 
 describe("L.props", () => {

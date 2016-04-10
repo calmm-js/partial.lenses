@@ -1,7 +1,7 @@
 {
   "name": "partial.lenses",
-  "version": "2.2.1",
-  "description": "Ramda compatible partial lenses",
+  "version": "3.0.0",
+  "description": "Partial lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
     "dist": "babel src --source-maps inline --out-dir lib",
@@ -14,10 +14,10 @@
     "url": "git+https://github.com/calmm-js/partial.lenses.git"
   },
   "keywords": [
-    "ramda",
+    "json",
     "lens",
     "partial",
-    "json"
+    "ramda"
   ],
   "license": "MIT",
   "bugs": {
