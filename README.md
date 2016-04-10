@@ -10,8 +10,8 @@ In JavaScript, missing data can be mapped to `undefined`, which is what partial
 lenses also do.  When a part of a data structure is missing, an attempt to view
 it returns `undefined`.  When a part is missing, setting it to a defined value
 inserts the new part.  Setting an existing part to `undefined` removes it.
-Partial lenses are defined in such a way that operations compose and one can
-conveniently and robustly operate on deeply nested data structures.
+Partial lenses are defined in such a way that operations [compose](#lcomposels)
+and one can conveniently and robustly operate on deeply nested data structures.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses#info=devDependencies) [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg?style=flat-square)](https://gitter.im/calmm-js/chat)
 
@@ -473,7 +473,7 @@ lenses, `...ls`, whose view is not undefined on the given target.  When the
 views of all of the given lenses are undefined, the returned lens acts like
 `L.nothing`, which is the identity element of `L.choice`.
 
-#### [`L.compose(l, ...ls)`](#lcomposel-ls "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
+#### [`L.compose(...ls)`](#lcomposels "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
 The default import `P` and `L.compose` refer to the one and same function, which
 performs lens composition.  The following equations characterize lens
@@ -548,11 +548,11 @@ L.removeAll(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 // [ 3, 4, 5, 9 ]
 ```
 
-#### [`L.findWith(l, ...ls)`](#lfindwithl-ls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
+#### [`L.findWith(...ls)`](#lfindwithls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
-`L.findWith(l, ...ls)` chooses an index from an array through which the given
-lens, `P(l, ...ls)`, focuses on a defined item and then returns a lens that
-focuses on that item.
+`L.findWith(...ls)` chooses an index from an array through which the given lens,
+`P(...ls)`, focuses on a defined item and then returns a lens that focuses on
+that item.
 
 For example:
 
@@ -742,7 +742,7 @@ be an object.
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
-#### [`L.props(key, ...keys)`](#lpropskey-keys "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
+#### [`L.props(...strings)`](#lpropsstrings "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
 
 `L.props(k1, ..., kN)` is equivalent to `L.pick({[k1]: k1, ..., [kN]: kN})` and
 focuses on a subset of properties of an object, allowing one to treat the subset

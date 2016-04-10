@@ -131,8 +131,8 @@ export const find = predicate => choose(xs => {
   return i < 0 ? append : i
 })
 
-export const findWith = (l, ...ls) => {
-  const lls = toRamda(compose(l, ...ls))
+export const findWith = (...ls) => {
+  const lls = toRamda(compose(...ls))
   return compose(find(x => R.view(lls, x) !== undefined), lls)
 }
 
@@ -212,9 +212,6 @@ export const pick = template => lens(
 
 export const identity = lens(id, conserve)
 
-export const props = (k, ...ks) => {
-  const kks = [k, ...ks]
-  return pick(R.zipObj(kks, kks))
-}
+export const props = (...ks) => pick(R.zipObj(ks, ks))
 
 export default compose
