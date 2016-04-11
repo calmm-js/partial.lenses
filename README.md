@@ -484,8 +484,8 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 #### [`L.choice(...ls)`](#lchoicels "L.choice :: (...PLens s a) -> PLens s a")
 
 `L.choice(...ls)` returns a partial lens that acts like the first of the given
-lenses, `...ls`, whose view is not undefined on the given target.  When the
-views of all of the given lenses are undefined, the returned lens acts like
+lenses, `ls`, whose view is not undefined on the given target.  When the views
+of all of the given lenses are undefined, the returned lens acts like
 `L.nothing`, which is the identity element of `L.choice`.
 
 #### [`L.compose(...ls)`](#lcomposels "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
