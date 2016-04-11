@@ -151,6 +151,18 @@ describe("L.nothing", () => {
   testEq('L.set(L.nothing, "anything", "original")', "original")
 })
 
+describe("L.just", () => {
+  testEq('L.get(L.just("always"), "anything")', "always")
+  testEq('L.set(L.just("always"), "anything", "original")', "original")
+})
+
+describe("L.chain", () => {
+  testEq('L.get(L.chain(elems => elems instanceof Array ? 0 : L.identity, "elems"), {elems: ["x"]})', "x")
+  testEq('L.set(L.chain(elems => elems instanceof Array ? 0 : L.identity, "elems"), "y", {elems: ["x"]})', {elems: ["y"]})
+  testEq('L.get(L.chain(elems => elems instanceof Array ? 0 : L.identity, "elems"), {notit: true})', undefined)
+  testEq('L.set(L.chain(elems => elems instanceof Array ? 0 : L.identity, "elems"), false, {notit: true})', {notit: true})
+})
+
 describe("L.orElse", () => {
   testEq('L.get(L.orElse("b", "a"), {a: 2, b: 1})', 2)
   testEq('L.get(L.orElse("b", "a"), {b: 2})', 2)
