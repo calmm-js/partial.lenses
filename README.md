@@ -467,8 +467,7 @@ combinators, one could view partial lenses roughly as subsuming the maybe monad.
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
 the given function that maps the underlying view, which can be undefined, to a
 lens.  In other words, the `L.choose` combinator allows a lens to be constructed
-*after* examining the data structure being manipulated.  The lens returned by
-the function given to `L.choose` will be lifted.
+*after* examining the data structure being manipulated.
 
 For example, given:
 
