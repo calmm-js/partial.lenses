@@ -440,7 +440,7 @@ L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y})
 // { x: 3, z: -1 }
 ```
 
-#### [`L.chain`](a2bPLens, aPLens)(#lchaina2bplens-aplens "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
+#### [`L.chain(a2bPLens, aPLens)`](#lchaina2bplens-aplens "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
 
 `L.chain(a2bPLens, aPLens)` is equivalent to
 
