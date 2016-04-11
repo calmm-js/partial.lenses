@@ -440,6 +440,28 @@ L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y})
 // { x: 3, z: -1 }
 ```
 
+#### [`L.chain`](a2bPLens, aPLens)(#lchaina2bplens-aplens "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
+
+`L.chain(a2bPLens, aPLens)` is equivalent to
+
+```js
+L.compose(aPLens, L.choose(aMaybe =>
+  aMaybe === undefined
+  ? L.nothing
+  : a2bPLens(aMaybe)))
+```
+
+One could also define an `of` combinator:
+
+```js
+const of = x => L.compose(L.nothing, L.defaults(x))
+```
+
+However, such a combinator doesn't seem to be really useful with partial lenses,
+because the point of lenses is to be bidirectional, which the above `of` isn't.
+Nevertheless, with the `of` and `chain` combinators, one could view partial
+lenses roughly as subsuming the maybe monad.
+
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
