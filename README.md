@@ -451,16 +451,16 @@ L.compose(aPLens, L.choose(aMaybe =>
   : a2bPLens(aMaybe)))
 ```
 
-One could also define an `of` combinator:
+One could also define a `just` combinator:
 
 ```js
-const of = x => L.compose(L.nothing, L.defaults(x))
+const just = x => L.compose(L.nothing, L.defaults(x))
 ```
 
 However, such a combinator doesn't seem to be really useful with partial lenses,
-because the point of lenses is to be bidirectional, which the above `of` isn't.
-Nevertheless, with the `of` and `chain` combinators, one could view partial
-lenses roughly as subsuming the maybe monad.
+because the point of lenses is to be bidirectional, which the above `just`
+isn't.  Nevertheless, with the `just` and `chain` combinators, one could view
+partial lenses roughly as subsuming the maybe monad.
 
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
