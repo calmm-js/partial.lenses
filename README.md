@@ -413,10 +413,10 @@ In alphabetical order.
 
 #### [`L.append`](#lappend "L.append :: PLens [a] a")
 
-`L.append` is a special lens that operates on arrays.  The view of `L.append` is
-always undefined.  Setting `L.append` to undefined has no effect by itself.
-Setting `L.append` to a defined value appends the value to the end of the
-focused array.
+`L.append` is a special semi-degenerate lens that operates on arrays.  The view
+of `L.append` is always undefined.  Setting `L.append` to undefined has no
+effect by itself.  Setting `L.append` to a defined value appends the value to
+the end of the focused array.
 
 For example:
 
@@ -451,16 +451,10 @@ L.compose(aPLens, L.choose(aMaybe =>
   : a2bPLens(aMaybe)))
 ```
 
-One could also define a `just` combinator:
-
-```js
-const just = x => L.compose(L.nothing, L.defaults(x))
-```
-
-However, such a combinator doesn't seem to be really useful with partial lenses,
-because the point of lenses is to be bidirectional, which the above `just`
-isn't.  Nevertheless, with the `just`, `chain`, `choice` and `nothing`
-combinators, one could view partial lenses roughly as subsuming the maybe monad.
+With the `just`, `chain`, `choice` and `nothing` combinators, one can view
+partial lenses as subsuming the maybe monad.  Of course, the whole point of
+lenses is that they are bidirectional and the special lenses `just` and
+`nothing` are essentially degenerate.
 
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
@@ -634,6 +628,19 @@ L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
 // { elems: [], some: 'thing' }
 ```
 
+#### [`L.just(value)`](#ljustvalue "L.just :: a -> PLens s a")
+
+`L.just(x)` is equivalent to `L.compose(L.nothing, L.defaults(x))` and is a
+special degenerate lens whose view is always `x` and writing through the lens
+has no effect.  In other words, for all `x`, `y` and `z`:
+
+```js
+   L.get(L.just(z), x) = z
+L.set(L.just(z), y, x) = x
+```
+
+`L.just` can be seen as the unit function of the monad formed with `L.chain`.
+
 #### [`L.lens(get, set)`](#llensget-set "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
 
 `L.lens(get, set)` creates a new primitive lens.  One should think twice before
@@ -688,8 +695,8 @@ simple `R.equals` comparison will do.
 
 #### [`L.nothing`](#lnothing "L.nothing :: PLens s s")
 
-`L.nothing` is a special lens whose view is always undefined and setting through
-`L.nothing` has no effect.  In other words, for all `x` and `y`:
+`L.nothing` is a special degenerate lens whose view is always undefined and
+setting through `L.nothing` has no effect.  In other words, for all `x` and `y`:
 
 ```js
    L.get(L.nothing, x) = undefined

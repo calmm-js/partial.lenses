@@ -93,6 +93,8 @@ export const get = R.curry((l, s) => R.view(toRamda(l), s))
 export const chain = R.curry((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
 
+export const just = x => lens(R.always(x), snd)
+
 export const choose = x2yL => toFunctor => target => {
   const l = toRamda(x2yL(target))
   return R.map(focus => R.set(l, focus, target), toFunctor(R.view(l, target)))
