@@ -459,8 +459,8 @@ const just = x => L.compose(L.nothing, L.defaults(x))
 
 However, such a combinator doesn't seem to be really useful with partial lenses,
 because the point of lenses is to be bidirectional, which the above `just`
-isn't.  Nevertheless, with the `just` and `chain` combinators, one could view
-partial lenses roughly as subsuming the maybe monad.
+isn't.  Nevertheless, with the `just`, `chain`, `choice` and `nothing`
+combinators, one could view partial lenses roughly as subsuming the maybe monad.
 
 #### [`L.choose(maybeValue => PLens)`](#lchoosemaybevalue--plens "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
