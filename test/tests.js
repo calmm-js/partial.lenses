@@ -41,6 +41,12 @@ describe("compose", () => {
   testEq('P(101)', 101)
 })
 
+describe("L.identity", () => {
+  testEq('L.get(L.identity, "any")', "any")
+  testEq('L.modify(L.identity, R.add(1), 2)', 3)
+  testEq('L.remove(P("x", L.identity), {x: 1, y: 2})', {y: 2})
+})
+
 describe("arities", () => {
   testEq('L.augment.length', 1)
   testEq('L.choice.length', 0)
