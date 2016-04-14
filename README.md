@@ -837,7 +837,7 @@ this does not change the behavior of the lens on undefined values.
 
 ### Debugging
 
-#### [`L.log(...labels)](#loglabels "L.log :: (...Any) -> Lens s a")
+#### [`L.log(...labels)`](#lloglabels "L.log :: (...Any) -> Lens s a")
 
 `L.log(...labels)` is an identity lens that outputs `console.log` messages with
 the given labels (or format in Node.js) when data flows in either direction,
