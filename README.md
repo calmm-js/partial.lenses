@@ -152,8 +152,9 @@ actually rerunning the examples.
 For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
 * [`L.compose(...)`](#lcomposels) can be abbreviated to use the default import,
-  e.g. `P(...)`,
-* [`L.prop(string)`](#lpropstring) can be abbreviated as `string`, and
+  e.g. [`P(...)`](#lcomposels),
+* [`L.prop(string)`](#lpropstring) can be abbreviated as
+  [`string`](#lpropstring), and
 * [`L.set(l, undefined, s)`](#lsetl-x-s) can be abbreviated as
   [`L.remove(l, s)`](#lremovel-s).
 
