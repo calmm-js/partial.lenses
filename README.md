@@ -350,7 +350,7 @@ The lenses and operations on lenses are accessed via the default import:
 import P, * as L from "partial.lenses"
 ```
 
-Use of the default import, `P`, is optional and is an alias for
+Use of the default import, [`P`](#lcomposels), is optional and is an alias for
 [`L.compose`](#lcomposels).
 
 ### Operations on lenses
@@ -562,7 +562,7 @@ combine arrays when set.  For example, an algorithm based on
 [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
-`normalize` would be preferable.
+[`L.normalize`](#lnormalizevalue--value) would be preferable.
 
 #### [`L.find(predicate)`](#lfindpredicate "L.find :: (a -> Boolean) -> PLens [a] a")
 
@@ -717,9 +717,10 @@ L.set(L.nothing, y, x) = x
 
 `L.orElse(backup, primary)` acts like `primary` when its view is not undefined
 and otherwise like `backup`.  You can use `L.orElse` on its own with
-`R.reduceRight` (and `R.reduce`) to create an associative choice over lenses or
-use `L.orElse` to specify a default or backup lens for [`L.choice`](#lchoicels),
-for example.
+[`R.reduceRight`](http://ramdajs.com/0.21.0/docs/#reduceRight) (and
+[`R.reduce`](http://ramdajs.com/0.21.0/docs/#reduce)) to create an associative
+choice over lenses or use `L.orElse` to specify a default or backup lens for
+[`L.choice`](#lchoicels), for example.
 
 #### [`L.pick({p1: l1, ...pls})`](#lpickp1-l1-pls "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 
@@ -891,8 +892,10 @@ R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
 // { x: { y: undefined } }
 ```
 
-One might assume that `R.lensPath([p0, ...ps])` is equivalent to
-`R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
+One might assume that
+[`R.lensPath([p0, ...ps])`](http://ramdajs.com/0.21.0/docs/#lensPath) is
+equivalent to `R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is
+not the case.
 
 With partial lenses you can robustly compose a path lens from prop lenses
 `L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
