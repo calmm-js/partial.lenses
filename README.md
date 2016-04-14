@@ -45,13 +45,14 @@ const textIn = language =>
 ```
 
 Take a moment to read through the above definition line by line.  Each line has
-a specific purpose.  The purpose of the `L.prop(...)` lines is probably obvious.
-The other lines we will mention below.
+a specific purpose.  The purpose of the [`L.prop(...)`](#lpropstring) lines is
+probably obvious.  The other lines we will mention below.
 
 ### Querying data
 
-Thanks to the parameterized search part, `L.find(R.whereEq({language}))`, of the
-lens composition, we can use it to query texts:
+Thanks to the parameterized search part,
+[`L.find(R.whereEq({language}))`](#lfindpredicate), of the lens composition, we
+can use it to query texts:
 
 ```js
 L.get(textIn("sv"), data)
@@ -69,8 +70,8 @@ L.get(textIn("fi"), data)
 ```
 
 We get this default, rather than undefined, thanks to the last part,
-`L.defaults("")`, of our lens composition.  We get the default even if we query
-from `undefined`:
+[`L.defaults("")`](#ldefaultsout), of our lens composition.  We get the default
+even if we query from `undefined`:
 
 ```js
 L.get(textIn("fi"), undefined)
@@ -101,7 +102,8 @@ L.set(textIn("fi"), "Otsikko", data)
 ```
 
 Note the position into which the new text was inserted.  The array of texts is
-kept sorted thanks to the `L.normalize(R.sortBy(R.prop("language")))` part of
+kept sorted thanks to the
+[`L.normalize(R.sortBy(R.prop("language")))`](#lnormalizevalue--value) part of
 our lens.
 
 ### Removing data
@@ -115,9 +117,10 @@ L.set(textIn("sv"), undefined, data)
 
 Note that a single text is actually a part of an object.  The key to having the
 whole object vanish, rather than just the `text` property, is the
-`L.defaults({language})` part of our lens composition.  A `L.defaults(value)` lens
-works *symmetrically*.  When set with `value`, the result is `undefined`, which
-means that the focus of the lens is to be removed.
+[`L.defaults({language})`](#ldefaultsout) part of our lens composition.  A
+[`L.defaults(value)`](#ldefaultsout) lens works *symmetrically*.  When set with
+`value`, the result is `undefined`, which means that the focus of the lens is to
+be removed.
 
 If we remove all of the texts, we get the required value:
 
@@ -127,10 +130,11 @@ R.pipe(L.set(textIn("sv"), undefined),
 // { contents: [] }
 ```
 
-The `contents` property is not removed thanks to the `L.required([])` part of
-our lens composition.  `L.required` is the dual of `L.defaults`.  `L.defaults`
-replaces undefined values when viewed and `L.required` replaces undefined values
-when set.
+The `contents` property is not removed thanks to the
+[`L.required([])`](#lrequiredinn) part of our lens composition.
+[`L.required`](#lrequiredinn) is the dual of [`L.defaults`](#ldefaultsout).
+[`L.defaults`](#ldefaultsout) replaces undefined values when viewed and
+[`L.required`](#lrequiredinn) replaces undefined values when set.
 
 Note that unless defaults and required values are explicitly specified as part
 of the lens, they will both be undefined.
