@@ -219,4 +219,8 @@ export const identity = lens(id, conserve)
 
 export const props = (...ks) => pick(R.zipObj(ks, ks))
 
+const show = (...labels) => x => console.log(...labels, x) || x
+
+export const log = (...labels) => lens(show(...labels, "get"), show(...labels, "set"))
+
 export default compose

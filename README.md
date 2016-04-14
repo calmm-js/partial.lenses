@@ -835,6 +835,30 @@ this does not change the behavior of the lens on undefined values.
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on undefined values.
 
+### Debugging
+
+#### [`L.log(...labels)](#loglabels "L.log :: (...Any) -> Lens s a")
+
+`L.log(...labels)` is an identity lens that outputs `console.log` messages with
+the given labels (or format in Node.js) when data flows in either direction,
+`get` or `set`, through the lens.
+
+For example:
+
+```js
+L.get(P("x", L.log()), {x: 10})
+// get 10
+// 10
+L.set(P("x", L.log("x")), "11", {x: 10})
+// x get 10
+// x set 11
+// { x: '11' }
+L.set(P("x", L.log("%s x: %j")), "11", {x: 10})
+// get x: 10
+// set x: "11"
+// { x: '11' }
+```
+
 ## Background
 
 ### Motivation
