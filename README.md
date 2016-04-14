@@ -142,10 +142,11 @@ of the lens, they will both be undefined.
 
 ### Exercise
 
-Take out one (or more) `L.required(...)`, `L.normalize(...)` or `L.defaults(...)`
-part(s) from the lens composition and try to predict what happens when you rerun
-the examples with the modified lens composition.  Verify your reasoning by
-actually rerunning the examples.
+Take out one (or more) [`L.required(...)`](#lrequiredinn),
+[`L.normalize(...)`](#lnormalizevalue--value) or
+[`L.defaults(...)`](#ldefaultsout) part(s) from the lens composition and try to
+predict what happens when you rerun the examples with the modified lens
+composition.  Verify your reasoning by actually rerunning the examples.
 
 ### Shorthands
 
