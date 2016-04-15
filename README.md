@@ -877,6 +877,69 @@ L.set(P("x", L.log("%s x: %j")), "11", {x: 10})
 
 ## Background
 
+### Should I use lenses for...?
+
+As said in the first sentence of this document, lenses are convenient for
+performing updates on "individual elements".  Having the ability to flexibly
+search, filter and restructure data using lenses makes the notion of an
+individual element quite flexible, which makes it all the more important to
+understand that lenses are just one of many functional abstractions for working
+with data structures.
+
+One case which we've ran into multiple times and falls out of the sweet spot of
+lenses is performing transforms over data structure.  For example, we've run
+into the following uses cases:
+
+* Eliminating all reference to an object with a particular id.
+* Transforming all instances of certain objects over many paths.
+* Filtering out extra fields from objects of varying shapes and paths.
+
+One approach to making such whole data structure spanning updates is to use a
+simple bottom-up transform.  Here is a simple implementation for JSON based on
+ideas from the [Uniplate](https://github.com/ndmitchell/uniplate) library:
+
+``` js
+const isObject = x => x && x.constructor === Object
+const isArray = x => x && x.constructor === Array
+const isAggregate = R.anyPass([isObject, isArray])
+
+const descend = (w2w, w) => isAggregate(w) ? R.map(w2w, w) : w
+const substUp = (h2h, w) => descend(h2h, descend(w => substUp(h2h, w), w))
+
+const transform = (w2w, w) => w2w(substUp(w2w, w))
+```
+
+`transform(w2w, w)` basically just performs a single-pass bottom-up transform
+using the given function `w2w` over the given data structure `w`.  Suppose we
+are given the following data:
+
+``` js
+const data = {
+  just: "some",
+  extra: "crap",
+  that: [
+    "we",
+    {want: "to",
+     filter: ["out"],
+     including: {the: "following",
+                 extra: true,
+                 fields: 1}}]
+}
+```
+
+We can now remove the `extra` `field` like this:
+
+``` js
+transform(R.ifElse(isObject,
+                   L.remove(L.props("extra", "fields")),
+                   R.identity),
+          data)
+// { just: 'some',
+//   that: [ 'we', { want: 'to',
+//                   filter: ["out"],
+//                   including: {the: 'following'} } ] }
+```
+
 ### Motivation
 
 Consider the following REPL session using Ramda 0.19.1:
