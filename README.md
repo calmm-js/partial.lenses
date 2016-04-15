@@ -881,9 +881,10 @@ L.set(P("x", L.log("%s x: %j")), "11", {x: 10})
 ### Should I use lenses for...?
 
 As said in the first sentence of this document, lenses are convenient for
-performing updates on "individual elements".  Having the ability to flexibly
-search, filter and restructure data using lenses makes the notion of an
-individual element quite flexible, which makes it all the more important to
+performing updates on "individual elements".  Having abilities such as
+[searching](#lfindpredicate), [filtering](#lfilterpredicate) and
+[restructuring](#lpickp1-l1-pls) data using lenses makes the notion of an
+individual element quite flexible and makes it all the more important to
 understand that lenses are just one of many functional abstractions for working
 with data structures.
 
