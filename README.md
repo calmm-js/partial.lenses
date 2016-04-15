@@ -395,6 +395,8 @@ L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
 
 #### [`L.removeAll(l, s)`](#lremovealll-s "L.removeAll :: PLens s a -> Maybe s -> Maybe s")
 
+**`L.removeAll` is deprecated and will be removed.  Use a different approach.**
+
 `L.removeAll(l, s)` removes all the non `undefined` items targeted by the lens
 `l` from `s`.  This only makes sense for a lens that
 * can potentially focus on more than one item and
@@ -572,8 +574,8 @@ array that matches the given predicate.  When no matching element is found the
 effect is same as with [`L.append`](#lappend).
 
 ```js
-L.removeAll(L.find(x => x <= 2), [3,1,4,1,5,9,2])
-// [ 3, 4, 5, 9 ]
+L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
+// [ 3, 4, 1, 5, 9, 2 ]
 ```
 
 #### [`L.findWith(...ls)`](#lfindwithls "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")

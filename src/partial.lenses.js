@@ -2,6 +2,17 @@ import * as R from "ramda"
 
 //
 
+const warned = {}
+
+const deprecated = message => {
+  if (!(message in warned)) {
+    warned[message] = message
+    console.warn("partial.lenses:", message)
+  }
+}
+
+//
+
 const id = x => x
 const snd = (_, c) => c
 
@@ -80,6 +91,7 @@ export const compose = (...ls) =>
 export const remove = R.curry((l, s) => R.set(toRamda(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
+  deprecated("`removeAll` is deprecated and there is no planned replacement --- use a different approach.")
   while (get(lens, data) !== undefined)
     data = remove(lens, data)
   return data
