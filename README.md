@@ -890,7 +890,7 @@ with data structures.
 
 One type of use case which we've ran into multiple times and falls out of the
 sweet spot of lenses is performing uniform transforms over data structures.  For
-example, we've run into the following uses cases:
+example, we've run into the following use cases:
 
 * Eliminate all references to an object with a particular id.
 * Transform all instances of certain objects over many paths.
