@@ -395,7 +395,8 @@ L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
 
 #### [`L.removeAll(l, s)`](#lremovealll-s "L.removeAll :: PLens s a -> Maybe s -> Maybe s")
 
-**`L.removeAll` is deprecated and will be removed.  Use a different approach.**
+**`L.removeAll` is deprecated and will be removed.  Use a different
+[approach](#should-i-use-lenses-for).**
 
 `L.removeAll(l, s)` removes all the non `undefined` items targeted by the lens
 `l` from `s`.  This only makes sense for a lens that
