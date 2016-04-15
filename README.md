@@ -888,12 +888,12 @@ understand that lenses are just one of many functional abstractions for working
 with data structures.
 
 One case which we've ran into multiple times and falls out of the sweet spot of
-lenses is performing transforms over data structure.  For example, we've run
-into the following uses cases:
+lenses is performing uniform transforms over data structures.  For example,
+we've run into the following uses cases:
 
-* Eliminating all reference to an object with a particular id.
-* Transforming all instances of certain objects over many paths.
-* Filtering out extra fields from objects of varying shapes and paths.
+* Eliminate all reference to an object with a particular id.
+* Transform all instances of certain objects over many paths.
+* Filter out extra fields from objects of varying shapes and paths.
 
 One approach to making such whole data structure spanning updates is to use a
 simple bottom-up transform.  Here is a simple implementation for JSON based on
