@@ -262,7 +262,7 @@ a more involved example: BST, binary search tree, as a lens.
 Binary search might initially seem to be outside the scope of definable lenses.
 However, given basic BST operations, one could easily wrap them as a primitive
 partial lens.  But could we leverage lens combinators to build a BST lens more
-directly?  We can.  The [`L.choose`](#lchoosemaybevalue--plens) lens combinator
+directly?  We can.  The [`L.choose`](#lchoosemaybevalue--plens) combinator
 allows for dynamic construction of lenses based on examining the data structure
 being manipulated.  Inside [`L.choose`](#lchoosemaybevalue--plens) we can write
 the ordinary BST logic to pick the correct branch based on the key in the
@@ -295,8 +295,8 @@ t
 //   key: 'c' }
 ```
 
-However, the above `search` lens constructor does not maintain the BST
-structure when values are being removed:
+However, the above `search` lens constructor does not maintain the BST structure
+when values are being removed:
 
 ```js
 L.remove(valueOf('c'), t)
@@ -307,8 +307,8 @@ L.remove(valueOf('c'), t)
 ```
 
 How do we fix this?  We could check and transform the data structure to a BST
-after changes.  The [`L.normalize`](#lnormalizevalue--value) lens can be used
-for that purpose.  Here is the updated `search` definition:
+after changes.  The [`L.normalize`](#lnormalizevalue--value) combinator can be
+used for that purpose.  Here is the updated `search` definition:
 
 ```js
 const search = key =>
@@ -851,9 +851,11 @@ this does not change the behavior of the lens on undefined values.
 
 #### [`L.log(...labels)`](#lloglabels "L.log :: (...Any) -> Lens s s")
 
-`L.log(...labels)` is an identity lens that outputs `console.log` messages with
-the given labels (or format in Node.js) when data flows in either direction,
-`get` or `set`, through the lens.
+`L.log(...labels)` is an identity lens that outputs
+[`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
+messages with the given labels (or
+[format in Node.js](https://nodejs.org/api/console.html#console_console_log_data))
+when data flows in either direction, `get` or `set`, through the lens.
 
 For example:
 
