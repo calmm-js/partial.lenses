@@ -891,7 +891,7 @@ One type of use case which we've ran into multiple times and falls out of the
 sweet spot of lenses is performing uniform transforms over data structures.  For
 example, we've run into the following uses cases:
 
-* Eliminate all reference to an object with a particular id.
+* Eliminate all references to an object with a particular id.
 * Transform all instances of certain objects over many paths.
 * Filter out extra fields from objects of varying shapes and paths.
 
