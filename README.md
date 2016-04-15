@@ -928,7 +928,7 @@ const data = {
 }
 ```
 
-We can now remove the `extra` `field` like this:
+We can now remove the `extra` `fields` like this:
 
 ``` js
 transform(R.ifElse(isObject,
