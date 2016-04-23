@@ -340,7 +340,8 @@ approximate types as tooltips.
 
 ### Usage
 
-The lenses and operations on lenses are accessed via the default import:
+The lens combinators are available as named imports.  Typically one just imports
+the library as:
 
 ```js
 import P, * as L from "partial.lenses"
