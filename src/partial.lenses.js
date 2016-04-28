@@ -18,7 +18,7 @@ Constant.prototype.of = Const
 
 const warned = {}
 
-const deprecated = message => {
+const warn = message => {
   if (!(message in warned)) {
     warned[message] = message
     console.warn("partial.lenses:", message)
@@ -105,7 +105,7 @@ export const compose = (...ls) =>
 export const remove = R.curry((l, s) => setI(toRamda(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
-  deprecated("`removeAll` is deprecated and there is no planned replacement --- use a different approach.")
+  warn("`removeAll` is deprecated and there is no planned replacement --- use a different approach.")
   while (get(lens, data) !== undefined)
     data = remove(lens, data)
   return data
