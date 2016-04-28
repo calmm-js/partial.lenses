@@ -105,7 +105,7 @@ export const compose = (...ls) =>
 export const remove = R.curry((l, s) => setI(toRamda(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
-  warn("`removeAll` is deprecated and there is no planned replacement --- use a different approach.")
+  warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
   while (get(lens, data) !== undefined)
     data = remove(lens, data)
   return data
