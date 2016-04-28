@@ -846,6 +846,29 @@ this does not change the behavior of the lens on undefined values.
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on undefined values.
 
+### Traversal combinators
+
+Aside from lenses, there is experimental support for traversals.  Traversals and
+lenses can be composed and the result is a traversal.  A traversal operates over
+a collection of focuses and for this reason traversals cannot be viewed
+([`get`](#get) does not work on a traversal), but they can be modified, set and
+removed.  Traversals (and lenses) can also be folded over (or reduced), but such
+an operation is currently not provided.
+
+#### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: Traversal s s")
+
+**`L.sequence` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.sequence` is a traversal (rather than a lens) over an array.
+
+For example:
+
+```js
+L.modify(P("xs", L.sequence, "x"), R.add(1), {xs: [{x: 1}, {x: 2}]})
+// { xs: [ { x: 2 }, { x: 3 } ] }
+```
+
 ### Debugging
 
 #### <a name="log"></a>[`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")

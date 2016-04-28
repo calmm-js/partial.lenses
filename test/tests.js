@@ -214,6 +214,13 @@ describe("L.augment", () => {
   testEq('L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
 })
 
+describe("L.sequence", () => {
+  testEq('L.modify(P("xs", L.sequence, "x", L.sequence), R.add(1), {xs: [{x: [1]}, {x: [2,3,4]}]})', {xs: [{x: [2]}, {x: [3,4,5]}]})
+  testEq('L.set(P("xs", L.sequence, "x", L.sequence), 101, {xs: [{x: [1]}, {x: [2,3,4]}]})', {xs: [{x: [101]}, {x: [101,101,101]}]})
+  testEq('L.remove(P("xs", L.sequence, "x", L.sequence), {ys: "hip", xs: [{x: [1]}, {x: [2,3,4]}]})', {ys: "hip"})
+  testEq('L.modify(P("xs", L.sequence, "x"), x => x < 2 ? undefined : x, {xs: [{x:3},{x:1},{x:4},{x:1,y:0},{x:5},{x:9},{x:2}]})', {xs:[{x:3},{x:4},{y:0},{x:5},{x:9},{x:2}]})
+})
+
 describe("L.pick", () => {
   testEq('L.get(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
   testEq('L.set(P(L.pick({x: "c"}), "x"), 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})
