@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.4.0
+
+Added minimalistic *experimental* traversal support in the form of the
+`sequence` traversal.
+
 ## 3.0.0
 
 Dropped *implicit* Ramda compatibility.  To interop with Ramda, one must now
