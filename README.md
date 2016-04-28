@@ -855,7 +855,7 @@ a collection of focuses and for this reason traversals cannot be viewed
 removed.  Traversals (and lenses) can also be folded over (or reduced), but such
 an operation is currently not provided.
 
-#### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: Traversal s s")
+#### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
 
 **`L.sequence` is experimental and might be removed, renamed or changed
 semantically before next major release.**
