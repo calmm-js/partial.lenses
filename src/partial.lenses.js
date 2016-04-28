@@ -6,6 +6,7 @@ function Identity(value) {this.value = value}
 const Ident = x => new Identity(x)
 Identity.prototype.map = function (x2y) {return new Identity(x2y(this.value))}
 Identity.prototype.of = Ident
+Identity.prototype.ap = function (x) {return new Identity(this.value(x.value))}
 
 //
 
@@ -255,5 +256,10 @@ const show = (...labels) => x => console.log(...labels, x) || x
 
 export const log = (...labels) =>
   lensI(show(...labels, "get"), show(...labels, "set"))
+
+export const sequence = toApplicative => target =>
+  warn("`sequence` is experimental and might be removed, renamed or changed semantically before next major release") ||
+  R.sequence(Ident, R.map(toApplicative, target))
+  .map(R.pipe(R.filter(x => x !== undefined), dropped))
 
 export default compose
