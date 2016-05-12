@@ -1,5 +1,20 @@
 # Changelog
 
+## 3.4.1
+
+Fixed bugs when removing a non-existing property from an object or a
+non-existent index from an array.  Previously `L.remove("x", {})` returned `{}`.
+Now it returns `undefined` as it was previously documented.  Similarly
+`L.remove(index, [])` now returns `undefined` as was documented.
+
+Tightened the semantics of combinators, including `L.index`, `L.filter`,
+`L.prop` and `L.augment` (and other combinators whose semantics are defined in
+terms of those), that specifically work on objects or arrays.  Previously such
+combinators worked asymmetrically when operating on values not in their domain.
+Now they consistently treat values that are not in their domain as `undefined`.
+For example, `L.get("x", null)` now returns `undefined` (previously `null`) and,
+consistently, `L.set("x", 1, null)` now returns `{x: 1}` (previously error).
+
 ## 3.4.0
 
 Added minimalistic *experimental* traversal support in the form of the
