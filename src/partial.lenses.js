@@ -54,9 +54,7 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 const empty = {}
 
-const deleteKey = (k, o) => {
-  if (o === undefined || !(k in o))
-    return o
+const deleteKey = (k, o = {}) => {
   let r
   for (const p in o) {
     if (p !== k) {
@@ -68,9 +66,7 @@ const deleteKey = (k, o) => {
   return r
 }
 
-const setKey = (k, v, o) => {
-  if (o === undefined)
-    return {[k]: v}
+const setKey = (k, v, o = {}) => {
   if (k in o && R.equals(v, o[k]))
     return o
   const r = {[k]: v}
@@ -195,7 +191,7 @@ const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
       return undefined
     if (i < xs.length)
       return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
-    return xs
+    return dropped(xs)
   } else {
     if (!isArray(xs))
       return Array(i).concat([x])
@@ -208,7 +204,7 @@ const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
 })
 
 export const append = lensI(snd, (x, xs) =>
-  x === undefined ? xs : isArray(xs) ? xs.concat([x]) : [x])
+  x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
   conserve(dropped(R.concat(ys || [], (unArray(xs) || []).filter(R.complement(p)))), xs))

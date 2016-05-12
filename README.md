@@ -424,10 +424,9 @@ In alphabetical order.
 
 #### <a name="append"></a>[`L.append`](#append "L.append :: PLens [a] a")
 
-`L.append` is a special semi-degenerate lens that operates on arrays.  The view
-of `L.append` is always undefined.  Setting `L.append` to undefined has no
-effect by itself.  Setting `L.append` to a defined value appends the value to
-the end of the focused array.
+`L.append` is a special semi-degenerate lens that operates on arrays and is
+equivalent to `L.index(i)` with the index `i` set to the length of the focused
+array or 0 in case the focus is not a defined array.
 
 For example:
 
