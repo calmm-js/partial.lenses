@@ -544,11 +544,11 @@ required value for an element.
 
 #### <a name="filter"></a>[`L.filter(predicate)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
-`L.filter(predicate)` operates on arrays.  When viewed, only elements matching
-the given predicate will be returned.  When set, the resulting array will be
-formed by concatenating the set array and the complement of the filtered
-context.  If the resulting array would be empty, the whole result will be
-undefined.
+`L.filter(predicate)` operates on arrays.  When not viewing an array, the result
+is undefined.  When viewing an array, only elements matching the given predicate
+will be returned.  When set, the resulting array will be formed by concatenating
+the set array and the complement of the filtered context.  If the resulting
+array would be empty, the whole result will be undefined.
 
 For example:
 
