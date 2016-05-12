@@ -28,8 +28,11 @@ const warn = message => {
 
 //
 
-const unArray  = x => x && x.constructor === Array  ? x : undefined
-const unObject = x => x && x.constructor === Object ? x : undefined
+const isArray  = x => x && x.constructor === Array
+const isObject = x => x && x.constructor === Object
+
+const unArray  = x =>  isArray(x) ? x : undefined
+const unObject = x => isObject(x) ? x : undefined
 
 //
 
@@ -169,7 +172,7 @@ const toRamdaProp = k => lensI(o => unObject(o) && o[k], (v, oIn) => {
 })
 
 export const find = predicate => choose(xs => {
-  if (unArray(xs)) {
+  if (isArray(xs)) {
     const i = xs.findIndex(predicate)
     return i < 0 ? append : i
   } else {
@@ -186,16 +189,15 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
-const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xsIn) => {
-  const xs = unArray(xsIn)
+const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
   if (x === undefined) {
-    if (xs === undefined)
+    if (!isArray(xs))
       return undefined
     if (i < xs.length)
       return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
     return xs
   } else {
-    if (xs === undefined)
+    if (!isArray(xs))
       return Array(i).concat([x])
     if (xs.length <= i)
       return xs.concat(Array(i - xs.length), [x])
@@ -206,16 +208,14 @@ const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xsIn) => {
 })
 
 export const append = lensI(snd, (x, xs) =>
-  x === undefined ? xs : unArray(xs) ? xs.concat([x]) : [x])
+  x === undefined ? xs : isArray(xs) ? xs.concat([x]) : [x])
 
-export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xsIn) => {
-  const xs = unArray(xsIn)
-  return conserve(dropped(R.concat(ys || [], (xs || []).filter(R.complement(p)))), xs)
-})
+export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
+  conserve(dropped(R.concat(ys || [], (unArray(xs) || []).filter(R.complement(p)))), xs))
 
 export const augment = template => lensI(
   x => {
-    if (unObject(x)) {
+    if (isObject(x)) {
       const z = {...x}
       for (const k in template)
         z[k] = template[k](x)
@@ -225,7 +225,7 @@ export const augment = template => lensI(
     }
   },
   toConserve((y, cIn) => {
-    if (unObject(y)) {
+    if (isObject(y)) {
       const c = unObject(cIn) || {}
       let z
       const set = (k, v) => {
