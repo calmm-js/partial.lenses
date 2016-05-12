@@ -112,6 +112,8 @@ describe('L.index', () => {
   empties.forEach(invalid => testEq(`L.get(0, ${show(invalid)})`, undefined))
   empties.forEach(invalid => testEq(`L.set(0, "f", ${show(invalid)})`, ["f"]))
   testEq('L.set(L.index(0), "Hello", "x, world!")', ["Hello"])
+  testEq('L.remove(0, [])', undefined)
+  testEq('L.remove(1, [])', undefined)
 })
 
 describe('L.prop', () => {
@@ -131,6 +133,7 @@ describe('L.prop', () => {
   testEq('L.get(P("z"), {x: 1})', undefined)
   empties.forEach(invalid => testEq(`L.get("x", ${show(invalid)})`, undefined))
   empties.forEach(invalid => testEq(`L.set("ex", true, ${show(invalid)})`, {ex: true}))
+  testEq('L.remove("x", {})', undefined)
 })
 
 describe("L.replace", () => {
