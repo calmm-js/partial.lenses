@@ -439,10 +439,10 @@ L.set(L.append, "x", undefined)
 #### <a name="augment"></a>[`L.augment({prop: obj => val, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
 
 `L.augment({prop: obj => val, ...props})` is given a template of functions to
-compute new properties.  When viewing or setting undefined, the result is
-undefined.  When viewing a defined object, the object is extended with the
-computed properties.  When set with a defined object, the extended properties
-are removed.
+compute new properties.  When not viewing or setting a defined object, the
+result is undefined.  When viewing a defined object, the object is extended with
+the computed properties.  When set with a defined object, the extended
+properties are removed.
 
 For example:
 
