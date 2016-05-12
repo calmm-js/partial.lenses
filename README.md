@@ -424,10 +424,9 @@ In alphabetical order.
 
 #### <a name="append"></a>[`L.append`](#append "L.append :: PLens [a] a")
 
-`L.append` is a special semi-degenerate lens that operates on arrays.  The view
-of `L.append` is always undefined.  Setting `L.append` to undefined has no
-effect by itself.  Setting `L.append` to a defined value appends the value to
-the end of the focused array.
+`L.append` is a special semi-degenerate lens that operates on arrays and is
+equivalent to `L.index(i)` with the index `i` set to the length of the focused
+array or 0 in case the focus is not a defined array.
 
 For example:
 
@@ -439,10 +438,10 @@ L.set(L.append, "x", undefined)
 #### <a name="augment"></a>[`L.augment({prop: obj => val, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
 
 `L.augment({prop: obj => val, ...props})` is given a template of functions to
-compute new properties.  When viewing or setting undefined, the result is
-undefined.  When viewing a defined object, the object is extended with the
-computed properties.  When set with a defined object, the extended properties
-are removed.
+compute new properties.  When not viewing or setting a defined object, the
+result is undefined.  When viewing a defined object, the object is extended with
+the computed properties.  When set with a defined object, the extended
+properties are removed.
 
 For example:
 
@@ -544,11 +543,11 @@ required value for an element.
 
 #### <a name="filter"></a>[`L.filter(predicate)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
-`L.filter(predicate)` operates on arrays.  When viewed, only elements matching
-the given predicate will be returned.  When set, the resulting array will be
-formed by concatenating the set array and the complement of the filtered
-context.  If the resulting array would be empty, the whole result will be
-undefined.
+`L.filter(predicate)` operates on arrays.  When not viewing an array, the result
+is undefined.  When viewing an array, only elements matching the given predicate
+will be returned.  When set, the resulting array will be formed by concatenating
+the set array and the complement of the filtered context.  If the resulting
+array would be empty, the whole result will be undefined.
 
 For example:
 
@@ -607,8 +606,7 @@ L.modify(L.identity, f, x) = f(x)
 
 `L.index(integer)` or `integer` focuses on the specified array index.
 
-* When viewing an undefined array index or an undefined array, the result is
-  undefined.
+* When not viewing a defined array index, the result is undefined.
 * When setting to undefined, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an array
   without indices (ignoring length), the whole result will be undefined.
@@ -775,8 +773,7 @@ be an object.
 
 `L.prop(string)` or `string` focuses on the specified object property.
 
-* When viewing an undefined property or an undefined object, the result is
-  undefined.
+* When not viewing a defined object property, the result is undefined.
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 

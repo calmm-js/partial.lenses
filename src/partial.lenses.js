@@ -28,6 +28,14 @@ const warn = message => {
 
 //
 
+const isArray  = x => x && x.constructor === Array
+const isObject = x => x && x.constructor === Object
+
+const unArray  = x =>  isArray(x) ? x : undefined
+const unObject = x => isObject(x) ? x : undefined
+
+//
+
 const id = x => x
 const snd = (_, c) => c
 
@@ -46,9 +54,7 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 const empty = {}
 
-const deleteKey = (k, o) => {
-  if (o === undefined || !(k in o))
-    return o
+const deleteKey = (k, o = {}) => {
   let r
   for (const p in o) {
     if (p !== k) {
@@ -60,9 +66,7 @@ const deleteKey = (k, o) => {
   return r
 }
 
-const setKey = (k, v, o) => {
-  if (o === undefined)
-    return {[k]: v}
+const setKey = (k, v, o = {}) => {
   if (k in o && R.equals(v, o[k]))
     return o
   const r = {[k]: v}
@@ -158,15 +162,18 @@ const isProp = x => typeof x === "string"
 
 export const prop = assert("a string", isProp)
 
-const toRamdaProp = k =>
-  lensI(o => o && o[k],
-        (v, o) => v === undefined ? deleteKey(k, o) : setKey(k, v, o))
+const toRamdaProp = k => lensI(o => unObject(o) && o[k], (v, oIn) => {
+  const o = unObject(oIn)
+  return v === undefined ? deleteKey(k, o) : setKey(k, v, o)
+})
 
 export const find = predicate => choose(xs => {
-  if (xs === undefined)
+  if (isArray(xs)) {
+    const i = xs.findIndex(predicate)
+    return i < 0 ? append : i
+  } else {
     return append
-  const i = xs.findIndex(predicate)
-  return i < 0 ? append : i
+  }
 })
 
 export const findWith = (...ls) => {
@@ -178,15 +185,15 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
-const toRamdaIndex = i => lensI(xs => xs && xs[i], (x, xs) => {
+const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
   if (x === undefined) {
-    if (xs === undefined)
+    if (!isArray(xs))
       return undefined
     if (i < xs.length)
       return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
-    return xs
+    return dropped(xs)
   } else {
-    if (xs === undefined)
+    if (!isArray(xs))
       return Array(i).concat([x])
     if (xs.length <= i)
       return xs.concat(Array(i - xs.length), [x])
@@ -197,35 +204,42 @@ const toRamdaIndex = i => lensI(xs => xs && xs[i], (x, xs) => {
 })
 
 export const append = lensI(snd, (x, xs) =>
-  x === undefined ? xs : xs === undefined ? [x] : xs.concat([x]))
+  x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
 
-export const filter = p => lensI(xs => xs && xs.filter(p), (ys, xs) =>
-  conserve(dropped(R.concat(ys || [], (xs || []).filter(R.complement(p)))), xs))
+export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
+  conserve(dropped(R.concat(ys || [], (unArray(xs) || []).filter(R.complement(p)))), xs))
 
 export const augment = template => lensI(
-  toPartial(x => {
-    const z = {...x}
-    for (const k in template)
-      z[k] = template[k](x)
-    return z
-  }),
-  toConserve((y, c) => {
-    if (y === undefined)
+  x => {
+    if (isObject(x)) {
+      const z = {...x}
+      for (const k in template)
+        z[k] = template[k](x)
+      return z
+    } else {
       return undefined
-    let z
-    const set = (k, v) => {
-      if (undefined === z)
-        z = {}
-      z[k] = v
     }
-    for (const k in y) {
-      if (!(k in template))
-        set(k, y[k])
-      else
-        if (k in c)
-          set(k, c[k])
+  },
+  toConserve((y, cIn) => {
+    if (isObject(y)) {
+      const c = unObject(cIn) || {}
+      let z
+      const set = (k, v) => {
+        if (undefined === z)
+          z = {}
+        z[k] = v
+      }
+      for (const k in y) {
+        if (!(k in template))
+          set(k, y[k])
+        else
+          if (k in c)
+            set(k, c[k])
+      }
+      return z
+    } else {
+      return undefined
     }
-    return z
   }))
 
 export const pick = template => lensI(
