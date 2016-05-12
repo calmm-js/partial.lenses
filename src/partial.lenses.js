@@ -205,10 +205,8 @@ const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xsIn) => {
   }
 })
 
-export const append = lensI(snd, (x, xsIn) => {
-  const xs = unArray(xsIn)
-  return x === undefined ? xs : xs ? xs.concat([x]) : [x]
-})
+export const append = lensI(snd, (x, xs) =>
+  x === undefined ? xs : unArray(xs) ? xs.concat([x]) : [x])
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xsIn) => {
   const xs = unArray(xsIn)
