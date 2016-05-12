@@ -215,6 +215,7 @@ describe("L.removeAll", () => {
 })
 
 describe("L.append", () => {
+  testEq('L.remove(L.append, "anything")', undefined)
   empties.forEach(invalid => testEq(`L.set(L.append, "a", ${show(invalid)})`, ["a"]))
 })
 
