@@ -607,8 +607,7 @@ L.modify(L.identity, f, x) = f(x)
 
 `L.index(integer)` or `integer` focuses on the specified array index.
 
-* When viewing an undefined array index or an undefined array, the result is
-  undefined.
+* When not viewing a defined array index, the result is undefined.
 * When setting to undefined, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an array
   without indices (ignoring length), the whole result will be undefined.
@@ -775,8 +774,7 @@ be an object.
 
 `L.prop(string)` or `string` focuses on the specified object property.
 
-* When viewing an undefined property or an undefined object, the result is
-  undefined.
+* When not viewing a defined object property, the result is undefined.
 * When setting property to undefined, the property is removed from the result.
   If the result would be an empty object, the whole result will be undefined.
 
