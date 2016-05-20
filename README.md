@@ -845,6 +845,8 @@ L.remove(P("items", L.required([]), 0), {items: [1]})
 the focus is undefined or `null`.  When set, `L.valueOr` behaves like the
 identity lens.
 
+For example:
+
 ```js
 L.get(L.valueOr(0), null)
 // 0
