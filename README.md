@@ -846,6 +846,8 @@ the focus is undefined or `null`.  When set, `L.valueOr` behaves like the
 identity lens.
 
 ```js
+L.get(L.valueOr(0), null)
+// 0
 L.set(L.valueOr(0), 0, 1)
 // 0
 L.remove(L.valueOr(0), 1)
