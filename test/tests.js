@@ -73,6 +73,7 @@ describe("arities", () => {
   testEq('L.required.length', 1)
   testEq('L.set.length', 3)
   testEq('L.toRamda.length', 1)
+  testEq('L.valueOr.length', 1)
 })
 
 describe("interop", () => {
@@ -148,6 +149,17 @@ describe("L.defaults", () => {
   testEq('L.get(L.defaults(""), "defined")', "defined")
   testEq('L.set(L.defaults(""), "", "anything")', undefined)
   testEq('L.set(L.defaults(""), "defined", "anything")', "defined")
+})
+
+describe("L.valueOr", () => {
+  for (const v of [0, false, true, "", [], {}]) {
+    testEq(`L.get(L.valueOr(1), ${show(v)})`, v)
+    testEq(`L.set(L.valueOr(1), 1, ${show(v)})`, 1)
+  }
+  for (const v of [null, undefined]) {
+    testEq(`L.get(L.valueOr(1), ${show(v)})`, 1)
+    testEq(`L.set(L.valueOr(1), 1, ${show(v)})`, 1)
+  }
 })
 
 describe("L.normalize", () => {

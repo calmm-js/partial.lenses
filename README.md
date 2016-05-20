@@ -41,7 +41,7 @@ const textIn = language =>
             L.find(R.whereEq({language})),
             L.defaults({language}),
             L.prop("text"),
-            L.defaults(""))
+            L.valueOr(""))
 ```
 
 Take a moment to read through the above definition line by line.  Each line has
@@ -69,8 +69,9 @@ L.get(textIn("fi"), data)
 // ""
 ```
 
-We get this default, rather than undefined, thanks to the last part,
-[`L.defaults("")`](#defaults), of our lens composition.  We get the default even
+We get this value, rather than undefined, thanks to the last part,
+[`L.valueOr("")`](#valueOr), of our lens composition, which ensures that we get
+the specified value rather than `null` or `undefined`.  We get the default even
 if we query from `undefined`:
 
 ```js
@@ -135,16 +136,21 @@ The `contents` property is not removed thanks to the
 [`L.defaults`](#defaults) replaces undefined values when viewed and
 [`L.required`](#required) replaces undefined values when set.
 
-Note that unless defaults and required values are explicitly specified as part
-of the lens, they will both be undefined.
+Note that unless default and required values are explicitly specified as part of
+the lens, they will both be undefined.
 
-### Exercise
+### Exercises
 
 Take out one (or more) [`L.required(...)`](#required),
-[`L.normalize(...)`](#normalize) or [`L.defaults(...)`](#defaults) part(s) from
-the lens composition and try to predict what happens when you rerun the examples
-with the modified lens composition.  Verify your reasoning by actually rerunning
-the examples.
+[`L.normalize(...)`](#normalize), [`L.defaults(...)`](#defaults) or
+[`L.valueOr(...)`](#valueOr) part(s) from the lens composition and try to
+predict what happens when you rerun the examples with the modified lens
+composition.  Verify your reasoning by actually rerunning the examples.
+
+Replace [`L.defaults(...)`](#defaults) with [`L.valueOr(...)`](#valueOr) or vice
+verse and try to predict what happens when you rerun the examples with the
+modified lens composition.  Verify your reasoning by actually rerunning the
+examples.
 
 ### Shorthands
 
@@ -170,7 +176,7 @@ const textIn = language =>
             L.find(R.whereEq({language})),
             L.defaults({language}),
             L.prop("text"),
-            L.defaults(""))
+            L.valueOr(""))
 ```
 
 Following the structure or schema of the JSON, we could break this into three
@@ -194,7 +200,7 @@ const M = {
                              L.defaults({language}))
   },
   content: {
-    text: P("text", L.defaults(""))
+    text: P("text", L.valueOr(""))
   }
 }
 ```
@@ -522,9 +528,11 @@ L.get(P("a", 1), {a: ["b", "c"]})
 #### <a name="defaults"></a>[`L.defaults(out)`](#defaults "L.defaults :: s -> PLens s s")
 
 `L.defaults(out)` is the same as [`L.replace(undefined, out)`](#replace).
-`L.defaults` is used to specify a default value for an element in case it is
-missing.  This can be useful to avoid having to check for and provide default
-behavior elsewhere.
+`L.defaults` is used to specify a default context or value for an element in
+case it is missing.  When set with the default value, the effect is to remove
+the element.  This can be useful for both making partial lenses with propagating
+removal and for avoiding having to check for and provide default values
+elsewhere.
 
 For example:
 
@@ -533,6 +541,8 @@ L.get(P("items", L.defaults([])), {})
 // []
 L.get(P("items", L.defaults([])), {items: [1, 2, 3]})
 // [ 1, 2, 3 ]
+L.set(P("items", L.defaults([])), [], {items: [1, 2, 3]})
+// undefined
 ```
 
 #### <a name="define"></a>[`L.define(value)`](#define "L.define :: s -> PLens s s")
@@ -827,6 +837,21 @@ L.remove(P(L.required({}), "items", 0), {items: [1]})
 // {}
 L.remove(P("items", L.required([]), 0), {items: [1]})
 // { items: [] }
+```
+
+#### <a name="valueOr"></a>[`L.valueOr(out)`](#valueOr "L.valueOr :: s -> PLens s s")
+
+`L.valueOr(out)` is an asymmetric lens used to specify a default value in case
+the focus is undefined or `null`.  When set, `L.valueOr` behaves like the
+identity lens.
+
+```js
+L.get(L.valueOr(0), null)
+// 0
+L.set(L.valueOr(0), 0, 1)
+// 0
+L.remove(L.valueOr(0), 1)
+// undefined
 ```
 
 ### Interop
