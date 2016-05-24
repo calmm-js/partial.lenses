@@ -254,6 +254,14 @@ describe("L.sequence", () => {
   testEq('L.modify(P(L.sequence, "x", L.sequence), R.add(1), [{x: [1]}, {y: "keep"}, {x: [], z: "these"}, {x: [2, 3]}])', [{x: [2]}, {y: "keep"}, {z: "these"}, {x: [3, 4]}])
 })
 
+describe("L.collect", () => {
+  testEq('L.collect(P("xs", L.sequence, "x", L.sequence), {xs: [{x:[3,1]},{x:[4,1]},{x:[5,9,2]}]})', [3,1,4,1,5,9,2])
+  testEq('L.collect(P(L.sequence, "x", L.sequence), [{x: [1]}, {}, {x: []}, {x: [2, 3]}])', [1, 2, 3])
+  testEq('L.collect(L.sequence, [])', [])
+  testEq('L.collect("x", {x: 101})', [101])
+  testEq('L.collect("y", {x: 101})', [])
+})
+
 describe("L.pick", () => {
   testEq('L.get(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
   testEq('L.set(P(L.pick({x: "c"}), "x"), 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})

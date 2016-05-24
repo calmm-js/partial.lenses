@@ -12,8 +12,10 @@ Identity.prototype.ap = function (x) {return new Identity(this.value(x.value))}
 
 function Constant(value) {this.value = value}
 const Const = x => new Constant(x)
+const Collect = x => new Constant([x])
 Constant.prototype.map = function () {return this}
 Constant.prototype.of = Const
+Constant.prototype.ap = function (x) {return new Const(R.concat(this.value, x.value))}
 
 //
 
@@ -128,11 +130,15 @@ const getI = (l, s) => l(Const)(s).value
 const modifyI = (l, x2x, s) => l(y => Ident(x2x(y)))(s).value
 const lensI = (getter, setter) => toFn => target =>
   toFn(getter(target)).map(focus => setter(focus, target))
+const collectI = (l, s) => l(Collect)(s).value
 
 export const lens = R.curry(lensI)
 export const modify = R.curry((l, x2x, s) => modifyI(toRamda(l), x2x, s))
 export const set = R.curry((l, x, s) => setI(toRamda(l), x, s))
 export const get = R.curry((l, s) => getI(toRamda(l), s))
+export const collect = R.curry((l, s) =>
+  warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
+  mkArray(filtered(collectI(toRamda(l), s))))
 
 export const chain = R.curry((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
