@@ -879,7 +879,7 @@ a collection of focuses and for this reason traversals cannot be viewed
 removed.  Traversals (and lenses) can also be folded over (or reduced), but such
 an operation is currently not provided.
 
-#### <a name="collect"></a>[`L.collect(t, s)`](#get "L.collect :: PTraversal s a -> Maybe s -> [a]")
+#### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
 
 **`L.collect` is experimental and might be removed, renamed or changed
 semantically before next major release.**
