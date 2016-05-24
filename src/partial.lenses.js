@@ -34,6 +34,8 @@ const isObject = x => x && x.constructor === Object
 const unArray  = x =>  isArray(x) ? x : undefined
 const unObject = x => isObject(x) ? x : undefined
 
+const mkArray = x => isArray(x) ? x : []
+
 //
 
 const id = x => x
@@ -210,7 +212,7 @@ export const append = lensI(snd, (x, xs) =>
   x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
-  conserve(dropped(R.concat(ys || [], (unArray(xs) || []).filter(R.complement(p)))), xs))
+  conserve(dropped(R.concat(mkArray(ys), mkArray(xs).filter(R.complement(p)))), xs))
 
 export const augment = template => lensI(
   x => {
