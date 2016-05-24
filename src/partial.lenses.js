@@ -88,6 +88,11 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
+const filtered =
+  toPartial(R.pipe(R.filter(x => x !== undefined), dropped))
+
+//
+
 const conserve = (c1, c0) => R.equals(c1, c0) ? c0 : c1
 
 const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
@@ -278,7 +283,7 @@ export const log = (...labels) =>
 
 export const sequence = toApplicative => target =>
   warn("`sequence` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  R.sequence(Ident, R.map(toApplicative, target))
-  .map(R.pipe(R.filter(x => x !== undefined), dropped))
+  R.traverse(Ident, toApplicative, mkArray(target))
+  .map(filtered)
 
 export default compose
