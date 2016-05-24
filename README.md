@@ -870,7 +870,7 @@ this does not change the behavior of the lens on undefined values.
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on undefined values.
 
-### Traversal combinators
+### Traversal combinators and operations
 
 Aside from lenses, there is experimental support for traversals.  Traversals and
 lenses can be composed and the result is a traversal.  A traversal operates over
@@ -878,6 +878,23 @@ a collection of focuses and for this reason traversals cannot be viewed
 ([`get`](#get) does not work on a traversal), but they can be modified, set and
 removed.  Traversals (and lenses) can also be folded over (or reduced), but such
 an operation is currently not provided.
+
+#### <a name="collect"></a>[`L.collect(t, s)`](#get "L.collect :: PTraversal s a -> Maybe s -> [a]")
+
+**`L.collect` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.collect(t, s)` returns an array of the elements focused on by the given
+traversal or lens from a data structure.  Given a lens, there will be 0 or 1
+elements in the returned array.  Given a traversal, there can be any number of
+elements in the returned array.
+
+For example:
+
+```js
+L.collect(P("xs", L.sequence, "x"), {xs: [{x: 1}, {x: 2}]})
+// [ 1, 2 ]
+```
 
 #### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
 
