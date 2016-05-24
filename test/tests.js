@@ -253,7 +253,6 @@ describe("L.sequence", () => {
   testEq('L.modify(P(L.sequence, "x", L.sequence), R.add(1), [{x: [1]}, {}, {x: []}, {x: [2, 3]}])', [{x: [2]}, {x: [3, 4]}])
   testEq('L.modify(P(L.sequence, "x", L.sequence), R.add(1), [{x: [1]}, {y: "keep"}, {x: [], z: "these"}, {x: [2, 3]}])', [{x: [2]}, {y: "keep"}, {z: "these"}, {x: [3, 4]}])
 })
-})
 
 describe("L.pick", () => {
   testEq('L.get(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
