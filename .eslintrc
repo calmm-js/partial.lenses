@@ -7,6 +7,7 @@
     "no-const-assign": 2,
     "no-sparse-arrays": 0,
     "no-unneeded-ternary": 2,
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-var": 2,
     "prefer-arrow-callback": 2,
     "semi": [2, "never"]

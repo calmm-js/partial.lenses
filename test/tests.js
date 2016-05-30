@@ -260,6 +260,7 @@ describe("L.collect", () => {
   testEq('L.collect(L.sequence, [])', [])
   testEq('L.collect("x", {x: 101})', [101])
   testEq('L.collect("y", {x: 101})', [])
+  testEq('L.collect(P("a",L.sequence,"b",L.sequence,"c",L.sequence), {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})', [1,2])
 })
 
 describe("L.pick", () => {

@@ -12,7 +12,6 @@ Identity.prototype.ap = function (x) {return new Identity(this.value(x.value))}
 
 function Constant(value) {this.value = value}
 const Const = x => new Constant(x)
-const Collect = x => new Constant([x])
 Constant.prototype.map = function () {return this}
 Constant.prototype.of = Const
 Constant.prototype.ap = function (x) {return new Const(R.concat(this.value, x.value))}
@@ -103,20 +102,20 @@ const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
 
 const seemsLens = x => typeof x === "function" && x.length === 1
 
-export const fromRamda = assert("a lens", seemsLens)
+const lifted = assert("a lens", seemsLens)
 
-export const toRamda = l => {
-  if (isProp(l))  return toRamdaProp(l)
-  if (isIndex(l)) return toRamdaIndex(l)
-  return fromRamda(l)
+const lift = l => {
+  if (isProp(l))  return liftProp(l)
+  if (isIndex(l)) return liftIndex(l)
+  return lifted(l)
 }
 
 export const compose = (...ls) =>
   ls.length === 0 ? identity :
   ls.length === 1 ? ls[0] :
-  R.compose(...ls.map(toRamda))
+  (toCat => R.compose(...ls.map(l => lift(l)(toCat))))
 
-export const remove = R.curry((l, s) => setI(toRamda(l), undefined, s))
+export const remove = R.curry((l, s) => setI(lift(l), undefined, s))
 
 export const removeAll = R.curry((lens, data) => {
   warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
@@ -125,38 +124,38 @@ export const removeAll = R.curry((lens, data) => {
   return data
 })
 
-const setI = (l, x, s) => l(() => Ident(x))(s).value
-const getI = (l, s) => l(Const)(s).value
-const modifyI = (l, x2x, s) => l(y => Ident(x2x(y)))(s).value
-const lensI = (getter, setter) => toFn => target =>
-  toFn(getter(target)).map(focus => setter(focus, target))
-const collectI = (l, s) => l(Collect)(s).value
+const setI = (l, x, s) => l(Ident)(() => Ident(x))(s).value
+const getI = (l, s) => l(Const)(Const)(s).value
+const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
+const lensI = (getter, setter) => _constructor => inner => target =>
+  inner(getter(target)).map(focus => setter(focus, target))
+const collectI = (l, s) => l(Const)(x => Const([x]))(s).value
 
 export const lens = R.curry(lensI)
-export const modify = R.curry((l, x2x, s) => modifyI(toRamda(l), x2x, s))
-export const set = R.curry((l, x, s) => setI(toRamda(l), x, s))
-export const get = R.curry((l, s) => getI(toRamda(l), s))
+export const modify = R.curry((l, x2x, s) => modifyI(lift(l), x2x, s))
+export const set = R.curry((l, x, s) => setI(lift(l), x, s))
+export const get = R.curry((l, s) => getI(lift(l), s))
 export const collect = R.curry((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  mkArray(filtered(collectI(toRamda(l), s))))
+  mkArray(filtered(collectI(lift(l), s))))
 
 export const chain = R.curry((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
 
 export const just = x => lensI(R.always(x), snd)
 
-export const choose = x2yL => toFunctor => target => {
-  const l = toRamda(x2yL(target))
-  return R.map(focus => setI(l, focus, target), toFunctor(getI(l, target)))
+export const choose = x2yL => _constructor => inner => target => {
+  const l = lift(x2yL(target))
+  return R.map(focus => setI(l, focus, target), inner(getI(l, target)))
 }
 
 export const nothing = lensI(snd, snd)
 
 export const orElse =
-  R.curry((d, l) => choose(x => getI(toRamda(l), x) !== undefined ? l : d))
+  R.curry((d, l) => choose(x => getI(lift(l), x) !== undefined ? l : d))
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => getI(toRamda(l), x) !== undefined)
+  const i = ls.findIndex(l => getI(lift(l), x) !== undefined)
   return 0 <= i ? ls[i] : nothing
 })
 
@@ -178,7 +177,7 @@ const isProp = x => typeof x === "string"
 
 export const prop = assert("a string", isProp)
 
-const toRamdaProp = k => lensI(o => unObject(o) && o[k], (v, oIn) => {
+const liftProp = k => lensI(o => unObject(o) && o[k], (v, oIn) => {
   const o = unObject(oIn)
   return v === undefined ? deleteKey(k, o) : setKey(k, v, o)
 })
@@ -193,7 +192,7 @@ export const find = predicate => choose(xs => {
 })
 
 export const findWith = (...ls) => {
-  const lls = toRamda(compose(...ls))
+  const lls = lift(compose(...ls))
   return compose(find(x => getI(lls, x) !== undefined), lls)
 }
 
@@ -201,7 +200,7 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
-const toRamdaIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
+const liftIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
@@ -262,7 +261,7 @@ export const pick = template => lensI(
   c => {
     let r
     for (const k in template) {
-      const v = getI(toRamda(template[k]), c)
+      const v = getI(lift(template[k]), c)
       if (v !== undefined) {
         if (r === undefined)
           r = {}
@@ -274,7 +273,7 @@ export const pick = template => lensI(
   (o = empty, cIn) => {
     let c = cIn
     for (const k in template)
-      c = setI(toRamda(template[k]), o[k], c)
+      c = setI(lift(template[k]), o[k], c)
     return c
   })
 
@@ -287,9 +286,13 @@ const show = (...labels) => x => console.log(...labels, x) || x
 export const log = (...labels) =>
   lensI(show(...labels, "get"), show(...labels, "set"))
 
-export const sequence = toApplicative => target =>
+export const sequence = constructor => inner => target =>
   warn("`sequence` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  R.traverse(Ident, toApplicative, mkArray(target))
+  R.traverse(constructor, inner, mkArray(target))
   .map(filtered)
+
+export const fromRamda = l => _constructor => l
+export const toRamda = l =>
+  lift(l)(() => {throw new Error("Sorry, `toRamda` is only fantasy!")})
 
 export default compose
