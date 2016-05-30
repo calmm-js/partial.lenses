@@ -875,9 +875,8 @@ this does not change the behavior of the lens on undefined values.
 Aside from lenses, there is experimental support for traversals.  Traversals and
 lenses can be composed and the result is a traversal.  A traversal operates over
 a collection of focuses and for this reason traversals cannot be viewed
-([`get`](#get) does not work on a traversal), but they can be modified, set and
-removed.  Traversals (and lenses) can also be folded over (or reduced), but such
-an operation is currently not provided.
+([`get`](#get) does not work on a traversal), but they can be collected,
+modified, set and removed.
 
 #### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
 
