@@ -530,7 +530,7 @@ L.get(P("a", 1), {a: ["b", "c"]})
 *Note:* In versions of this library before 3.6.1 `L.compose` happened to be
 almost equivalent to `R.compose` and partial lenses were internally nearly
 directly compatible with Ramda's lenses.  Implicit Ramda compatibility was
-already dropped in version 3.0.0 (see [CHANGELOG](CHANGELOG.md#3.0.0).  In
+already dropped in version 3.0.0 (see [CHANGELOG](CHANGELOG.md#300)).  In
 version 3.6.1 the internal implementation was changed to make it possible to
 support traversals properly.
 
