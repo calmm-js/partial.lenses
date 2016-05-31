@@ -144,10 +144,8 @@ export const chain = R.curry((x2yL, xL) =>
 
 export const just = x => lensI(R.always(x), snd)
 
-export const choose = x2yL => _constructor => inner => target => {
-  const l = lift(x2yL(target))
-  return R.map(focus => setI(l, focus, target), inner(getI(l, target)))
-}
+export const choose = x2yL => constructor => inner => target =>
+  lift(x2yL(target))(constructor)(inner)(target)
 
 export const nothing = lensI(snd, snd)
 
