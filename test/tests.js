@@ -151,6 +151,10 @@ describe("L.defaults", () => {
   testEq('L.set(L.defaults(""), "defined", "anything")', "defined")
 })
 
+describe("L.define", () => {
+  testEq('L.get(P("related", L.define([])), {})', [])
+})
+
 describe("L.valueOr", () => {
   for (const v of [0, false, true, "", [], {}]) {
     testEq(`L.get(L.valueOr(1), ${show(v)})`, v)
