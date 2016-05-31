@@ -163,7 +163,7 @@ export const replace = R.curry((inn, out) =>
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
-export const define = v => R.compose(required(v), defaults(v))
+export const define = v => compose(required(v), defaults(v))
 
 export const valueOr = v =>
   lensI(x => x === undefined || x === null ? v : x, conserve)
