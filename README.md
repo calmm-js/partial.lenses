@@ -358,7 +358,8 @@ Use of the default import, [`P`](#compose), is optional and is an alias for
 
 ### Operations on lenses
 
-In alphabetical order.
+In alphabetical order.  Operations on lenses take lenses as parameters, but do
+not return lenses.
 
 #### <a name="get"></a>[`L.get(l, s)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
 
@@ -426,7 +427,8 @@ L.set(P("a", 0, "x"), 11, {id: "z"})
 
 ### Lens combinators
 
-In alphabetical order.
+In alphabetical order.  Lens combinators are either lenses or functions that
+return lenses.
 
 #### <a name="append"></a>[`L.append`](#append "L.append :: PLens [a] a")
 
