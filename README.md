@@ -877,7 +877,8 @@ this does not change the behavior of the lens on undefined values.
 #### <a name="toRamda"></a>[`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
 
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
-this does not change the behavior of the lens on undefined values.
+this does not change the behavior of the lens on undefined values.  Also note
+that traverals are not compatible with Ramda.
 
 ### Traversal combinators and operations
 
