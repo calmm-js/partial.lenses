@@ -878,7 +878,7 @@ this does not change the behavior of the lens on undefined values.
 
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on undefined values.  Also note
-that traverals are not compatible with Ramda.
+that traversals are not compatible with Ramda.
 
 ### Traversal combinators and operations
 
