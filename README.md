@@ -905,6 +905,29 @@ L.collect(P("xs", L.sequence, "x"), {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
+#### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
+
+**`L.optional` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.optional` is a traversal (rather than a lens) over an optional element.  When
+the focus of `L.optional` is undefined, the traversal is empty.  Otherwise the
+traversal is over the focused element.
+
+As an example, consider the difference between:
+
+```js
+L.set(P(L.sequence, "x"), 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { x: 3, y: 2 } ]
+```
+
+and:
+
+```js
+L.set(P(L.sequence, "x", L.optional), 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { y: 2 } ]
+```
+
 #### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
 
 **`L.sequence` is experimental and might be removed, renamed or changed
