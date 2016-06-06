@@ -914,18 +914,18 @@ semantically before next major release.**
 the focus of `L.optional` is undefined, the traversal is empty.  Otherwise the
 traversal is over the focused element.
 
-For example, consider the difference between:
+As an example, consider the difference between:
 
 ```js
 L.set(P(L.sequence, "x"), 3, [{x: 1}, {y: 2}])
-> [ { x: 3 }, { x: 3, y: 2 } ]
+// [ { x: 3 }, { x: 3, y: 2 } ]
 ```
 
 and:
 
 ```js
 L.set(P(L.sequence, "x", L.optional), 3, [{x: 1}, {y: 2}])
-> [ { x: 3 }, { y: 2 } ]
+// [ { x: 3 }, { y: 2 } ]
 ```
 
 #### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
