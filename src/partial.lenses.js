@@ -289,6 +289,11 @@ export const sequence = constructor => inner => target =>
   R.traverse(constructor, inner, mkArray(target))
   .map(filtered)
 
+export const optional =
+  compose(lensI(toPartial(x => [x]),
+                toPartial(([x]) => x)),
+          sequence)
+
 export const fromRamda = l => _constructor => l
 export const toRamda = l =>
   lift(l)(() => {throw new Error("Sorry, `toRamda` is only fantasy!")})
