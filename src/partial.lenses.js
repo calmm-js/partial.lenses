@@ -227,7 +227,7 @@ export const augment = template => lensI(
     if (isObject(x)) {
       const z = {...x}
       for (const k in template)
-        z[k] = template[k](x)
+        z[k] = template[k](z)
       return z
     } else {
       return undefined

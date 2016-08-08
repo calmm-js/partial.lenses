@@ -243,6 +243,7 @@ describe("L.augment", () => {
   testEq('L.get(L.augment({y: c => c.x+1}), {x: 2, y: -1})', {x: 2, y: 3})
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})', {x: 1})
   testEq('L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})', {x: 2, y: -1})
+  testEq('L.get(L.augment({y: c => c.x+1, z: c => c.y+1}), {x: 1})', {x: 1, y: 2, z: 3})
   testEq('L.remove(P(L.augment({y: () => 1}), "x"), {x:0})', undefined)
   testEq('L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
   empties.filter(x => !R.equals(x, {})).forEach(invalid => testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined))
