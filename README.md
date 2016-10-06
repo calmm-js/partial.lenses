@@ -716,7 +716,7 @@ viewed and set and implicitly maps undefined to undefined.
 
 The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
-simple [`R.equals`](http://ramdajs.com/0.21.0/docs/#equals) comparison will do.
+simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
 #### <a name="nothing"></a>[`L.nothing`](#nothing "L.nothing :: PLens s s")
 
@@ -733,11 +733,11 @@ L.set(L.nothing, y, x) = x
 #### <a name="orElse"></a>[`L.orElse(backup, primary)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
 
 `L.orElse(backup, primary)` acts like `primary` when its view is not undefined
-and otherwise like `backup`.  You can use `L.orElse` on its own with
-[`R.reduceRight`](http://ramdajs.com/0.21.0/docs/#reduceRight) (and
-[`R.reduce`](http://ramdajs.com/0.21.0/docs/#reduce)) to create an associative
-choice over lenses or use `L.orElse` to specify a default or backup lens for
-[`L.choice`](#choice), for example.
+and otherwise like `backup`.  You can use `L.orElse` on its own
+with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
+(and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
+choice over lenses or use `L.orElse` to specify a default or backup lens
+for [`L.choice`](#choice), for example.
 
 #### <a name="pick"></a>[`L.pick({p1: l1, ...pls})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 
@@ -815,8 +815,8 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 #### <a name="replace"></a>[`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
-versa when set.  Values are compared using
-[`R.equals`](http://ramdajs.com/0.21.0/docs/#equals).
+versa when set.  Values are compared
+using [`R.equals`](http://ramdajs.com/docs/#equals).
 
 For example:
 
@@ -1052,10 +1052,9 @@ R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
 // { x: { y: undefined } }
 ```
 
-One might assume that
-[`R.lensPath([p0, ...ps])`](http://ramdajs.com/0.21.0/docs/#lensPath) is
-equivalent to `R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is
-not the case.
+One might assume that [`R.lensPath([p0,
+...ps])`](http://ramdajs.com/docs/#lensPath) is equivalent to
+`R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
 
 With partial lenses you can robustly compose a path lens from prop lenses
 `L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
@@ -1085,5 +1084,5 @@ type PLens s a = Lens (Maybe s) (Maybe a)
 This means that partial lenses can be composed, viewed, mapped over and set
 using the same operations as with ordinary lenses.  However, primitive partial
 lenses (e.g. [`L.prop`](#prop)) are not necessarily the same as primitive
-ordinary lenses (e.g. Ramda's
-[`R.lensProp`](http://ramdajs.com/0.21.0/docs/#lensProp)).
+ordinary lenses
+(e.g. Ramda's [`R.lensProp`](http://ramdajs.com/docs/#lensProp)).
