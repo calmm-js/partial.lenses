@@ -12,6 +12,7 @@ Identity.prototype.ap = function (x) {return new Identity(this.value(x.value))}
 
 function Constant(value) {this.value = value}
 const Const = x => new Constant(x)
+const Single = x => Const([x])
 Constant.prototype.map = function () {return this}
 Constant.prototype.of = Const
 Constant.prototype.ap = function (x) {return new Const(R.concat(this.value, x.value))}
@@ -129,7 +130,7 @@ const getI = (l, s) => l(Const)(Const)(s).value
 const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
 const lensI = (getter, setter) => _constructor => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
-const collectI = (l, s) => l(Const)(x => Const([x]))(s).value
+const collectI = (l, s) => l(Const)(Single)(s).value
 
 export const lens = R.curry(lensI)
 export const modify = R.curry((l, x2x, s) => modifyI(lift(l), x2x, s))
@@ -157,19 +158,20 @@ export const choice = (...ls) => choose(x => {
   return 0 <= i ? ls[i] : nothing
 })
 
+const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
+const normalizer = fn => lensI(fn, toConserve(fn))
+
 export const replace = R.curry((inn, out) =>
-  lensI(x => R.equals(x, inn) ? out : x,
-        toConserve(y => R.equals(y, out) ? inn : y)))
+  lensI(replacer(inn, out), toConserve(replacer(out, inn))))
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
-export const define = v => compose(required(v), defaults(v))
+export const define = v => normalizer(replacer(undefined, v))
 
 export const valueOr = v =>
   lensI(x => x === undefined || x === null ? v : x, conserve)
 
-export const normalize = transform =>
-  lensI(toPartial(transform), toConserve(toPartial(transform)))
+export const normalize = transform => normalizer(toPartial(transform))
 
 const isProp = x => typeof x === "string"
 
@@ -295,7 +297,7 @@ export const optional =
           sequence)
 
 export const fromRamda = l => _constructor => l
-export const toRamda = l =>
-  lift(l)(() => {throw new Error("Sorry, `toRamda` is only fantasy!")})
+const fantasy = () => {throw new Error("Sorry, `toRamda` is only fantasy!")}
+export const toRamda = l => lift(l)(fantasy)
 
 export default compose
