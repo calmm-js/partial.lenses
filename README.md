@@ -904,7 +904,7 @@ this does not change the behavior of the lens on undefined values.
 this does not change the behavior of the lens on undefined values.  Also note
 that traversals are not compatible with Ramda.
 
-### Traversal combinators and operations
+### <a name="traversals"></a>Traversal combinators and operations
 
 Aside from lenses, there is experimental support for traversals.  Traversals and
 lenses can be composed and the result is a traversal.  A traversal operates over
@@ -997,11 +997,17 @@ L.set(P("x", L.log("%s x: %j")), "11", {x: 10})
 ### Should I use lenses for...?
 
 As said in the first sentence of this document, lenses are convenient for
-performing updates on "individual elements".  Having abilities such as
-[searching](#find), [filtering](#filter) and [restructuring](#pick) data using
-lenses makes the notion of an individual element quite flexible and makes it all
-the more important to understand that lenses are just one of many functional
-abstractions for working with data structures.
+performing updates on "individual elements".  Having abilities such
+as [searching](#find), [filtering](#filter) and [restructuring](#pick) data
+using lenses makes the notion of an individual element quite flexible and, even
+further, [traversals](#traversals) make it possible to target zero or more than
+one element in a single operation.  It can be tempting to try to do everything
+with lenses, but that will likely only lead to misery.  It is important to
+understand that lenses are just one of many functional abstractions for working
+with data structures and sometimes other approaches can lead to simpler or
+easier solutions.  [Zippers](https://github.com/polytypic/fastener), for
+example, are, in some ways, less principled and can implement queries and
+transforms that are outside the scope of lenses and traversals.
 
 One type of use case which we've ran into multiple times and falls out of the
 sweet spot of lenses is performing uniform transforms over data structures.  For
