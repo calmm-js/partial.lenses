@@ -634,9 +634,8 @@ L.modify(L.identity, f, x) = f(x)
 when the last element is removed, the result is `undefined` rather than an empty
 array.  This is by design, because this allows the removal to propagate upwards.
 It is not uncommon, however, to have cases where removing the last element from
-an array must not remove the array itself.  In such cases you want to use
-[`L.required([])`](#required) to access the array.  Consider the following
-examples without [`L.required([])`](#required):
+an array must not remove the array itself.  Consider the following examples
+without [`L.required([])`](#required):
 
 ```js
 L.remove(0, ["a", "b"])
@@ -657,6 +656,21 @@ L.remove(P(L.required([]), 0), ["b"])
 L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
 // { elems: [], some: 'thing' }
 ```
+
+There is a related gotcha with [`L.required`](#required).  Consider the
+following example:
+
+```js
+L.remove(L.required([]), [])
+// []
+L.get(L.required([]), [])
+// undefined
+```
+
+In other words, [`L.required`](#required) works in both directions.  Thanks to
+the handling of `undefined` within partial lenses, this is often not a problem,
+but sometimes you need the "default" value both ways.  In that case you can
+use [`L.define`](#define).
 
 #### <a name="just"></a>[`L.just(value)`](#just "L.just :: a -> PLens s a")
 
