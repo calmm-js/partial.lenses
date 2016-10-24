@@ -411,7 +411,16 @@ For example:
 
 ```js
 L.removeAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
-// [{x: 1}, {y: 4}, {z: 5}]
+// [ { x: 1 }, { y: 4 }, { z: 5 } ]
+```
+
+Although traversals are still considered experimental, one alternative to
+`L.removeAll` is to use the [`L.sequence`](#sequence) traversal
+and [`L.remove`](#remove):
+
+```js
+L.remove(P(L.sequence, "a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
+// [ { x: 1 }, { y: 4 }, { z: 5 } ]
 ```
 
 #### <a name="set"></a>[`L.set(l, x, s)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
