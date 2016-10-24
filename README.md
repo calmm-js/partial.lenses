@@ -829,7 +829,8 @@ L.set(L.replace(1, 2), 2, 0)
 
 The main use case for `replace` is to handle optional and required properties
 and elements.  In most cases, rather than using `replace`, you will make
-selective use of `defaults` and `required`.
+selective use of [`defaults`](#defaults), [`required`](#required)
+and [`define`](#define).
 
 #### <a name="required"></a>[`L.required(inn)`](#required "L.required :: s -> PLens s s")
 
