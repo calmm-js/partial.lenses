@@ -132,6 +132,7 @@ const getI = (l, s) => l(Const)(Const)(s).value
 const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
 const lensI = (getter, setter) => _constructor => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
+const isoI = (to, from) => lensI(to, toConserve(from))
 const collectI = (l, s) => l(Const)(Single)(s).value
 
 export const lens = R.curry(lensI)
@@ -161,10 +162,10 @@ export const choice = (...ls) => choose(x => {
 })
 
 const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
-const normalizer = fn => lensI(fn, toConserve(fn))
+const normalizer = fn => isoI(fn, fn)
 
 export const replace = R.curry((inn, out) =>
-  lensI(replacer(inn, out), toConserve(replacer(out, inn))))
+  isoI(replacer(inn, out), replacer(out, inn)))
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
