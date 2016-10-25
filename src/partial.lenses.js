@@ -19,14 +19,16 @@ Constant.prototype.ap = function (x) {return new Const(R.concat(this.value, x.va
 
 //
 
-const warned = {}
+const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
+  const warned = {}
 
-const warn = message => {
-  if (!(message in warned)) {
-    warned[message] = message
-    console.warn("partial.lenses:", message)
+  return message => {
+    if (!(message in warned)) {
+      warned[message] = message
+      console.warn("partial.lenses:", message)
+    }
   }
-}
+})()
 
 //
 
