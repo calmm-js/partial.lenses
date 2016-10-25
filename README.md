@@ -623,7 +623,7 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
 semantically before next major release.**
 
-`L.fromArrayBy(id)` (is an isomorphism) that converts an array of objects
+`L.fromArrayBy(id)` (is an isomorphism that) converts an array of objects
 containing `id` properties into an object with the `id`s as keys and the array
 elements as values.
 
