@@ -303,4 +303,18 @@ export const fromRamda = l => _constructor => l
 const fantasy = () => {throw new Error("Sorry, `toRamda` is only fantasy!")}
 export const toRamda = l => lift(l)(fantasy)
 
+export const fromArrayBy = id =>
+  warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
+  isoI(xs => {
+    if (isArray(xs)) {
+      const o = {}
+      for (let i=0, n=xs.length; i<n; ++i) {
+        const x = xs[i]
+        o[x[id]] = x
+      }
+      return o
+    }
+  },
+  o => unObject(o) && R.values(o))
+
 export default compose

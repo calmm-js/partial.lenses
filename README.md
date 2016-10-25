@@ -618,6 +618,24 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
 
+#### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PLens [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
+
+**`L.fromArrayBy` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.fromArrayBy(id)` (is an isomorphism) that converts an array of objects
+containing `id` properties into an object with the `id`s as keys and the array
+elements as values.
+
+For example:
+
+```js
+L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
+// { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
+L.set(P(L.fromArrayBy("id"), "3", "value"), 5, [{id: 1, value: 2}, {id: 3, value: 4}])
+// [ { id: 1, value: 2 }, { value: 5, id: 3 } ]
+```
+
 #### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PLens s s")
 
 `L.identity` is the identity element of lens composition.  The following

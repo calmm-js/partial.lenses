@@ -300,6 +300,15 @@ describe("L.props", () => {
   testEq('L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
 })
 
+describe("L.fromArrayBy", () => {
+  testEq('L.get(L.fromArrayBy(""), undefined)', undefined)
+  testEq('L.get(L.fromArrayBy("id"), [{id: 1}, {id: 2}, {id: 3}])', {"1":{"id":1},"2":{"id":2},"3":{"id":3}})
+  testEq('L.set(P(L.fromArrayBy("id"), "2", "x"), 1, [{id: 1}, {id: 2}, {id: 3}])', [{id: 1}, {id: 2, x: 1}, {id: 3}])
+  testEq('L.remove(P(L.fromArrayBy("id"), "1"), [{id: 1}, {id: 2}, {id: 3}])', [{id: 2}, {id: 3}])
+  testEq('L.remove(P(L.fromArrayBy("id"), "3"), [{id: 1}, {id: 2}, {id: 3}])', [{id: 1}, {id: 2}])
+  testEq('L.remove(P(L.fromArrayBy("id"), "3"), [{id: 3}])', undefined)
+})
+
 const BST = {
   search: key => {
     const rec =
