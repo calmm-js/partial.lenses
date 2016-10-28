@@ -207,9 +207,11 @@ const liftIndex = i => _c => inner => xs => inner(isArray(xs) ? xs[i] : undefine
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
-    if (i < xs.length)
-      return dropped(xs.slice(0, i).concat(xs.slice(i+1)))
-    return dropped(xs)
+    if (xs.length <= i)
+      return dropped(xs)
+    const ys = xs.slice(0)
+    ys.splice(i, 1)
+    return dropped(ys)
   } else {
     if (!isArray(xs))
       return Array(i).concat([x])
