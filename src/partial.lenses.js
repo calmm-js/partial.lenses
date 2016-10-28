@@ -180,9 +180,9 @@ const isProp = x => typeof x === "string"
 
 export const prop = assert("a string", isProp)
 
-const liftProp = k => lensI(o => unObject(o) && o[k], (v, oIn) => {
-  const o = unObject(oIn)
-  return v === undefined ? deleteKey(k, o) : setKey(k, v, o)
+const liftProp = k => _c => inner => o => inner(isObject(o) ? o[k] : undefined).map(v => {
+  const oOut = unObject(o)
+  return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
 })
 
 export const find = predicate => choose(xs => {
@@ -203,7 +203,7 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
-const liftIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
+const liftIndex = i => _c => inner => xs => inner(isArray(xs) ? xs[i] : undefined).map(x => {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
