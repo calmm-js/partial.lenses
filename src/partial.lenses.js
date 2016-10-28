@@ -60,7 +60,7 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 const empty = {}
 
-const deleteKey = (k, o = {}) => {
+const deleteKey = (k, o = empty) => {
   let r
   for (const p in o) {
     if (p !== k) {
@@ -72,7 +72,7 @@ const deleteKey = (k, o = {}) => {
   return r
 }
 
-const setKey = (k, v, o = {}) => {
+const setKey = (k, v, o = empty) => {
   if (k in o && R.equals(v, o[k]))
     return o
   const r = {[k]: v}
@@ -244,7 +244,7 @@ export const augment = template => lensI(
   },
   toConserve((y, cIn) => {
     if (isObject(y)) {
-      const c = unObject(cIn) || {}
+      const c = unObject(cIn) || empty
       let z
       const set = (k, v) => {
         if (undefined === z)
