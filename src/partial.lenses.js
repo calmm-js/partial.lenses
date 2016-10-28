@@ -217,7 +217,9 @@ const liftIndex = i => lensI(xs => unArray(xs) && xs[i], (x, xs) => {
       return xs.concat(Array(i - xs.length), [x])
     if (R.equals(x, xs[i]))
       return xs
-    return xs.slice(0, i).concat([x], xs.slice(i+1))
+    const ys = xs.slice(0)
+    ys[i] = x
+    return ys
   }
 })
 
