@@ -203,8 +203,6 @@ const liftIndex = i => _c => inner => xs => inner(isArray(xs) ? xs[i] : undefine
       return Array(i).concat([x])
     if (xs.length <= i)
       return xs.concat(Array(i - xs.length), [x])
-    if (R.equals(x, xs[i]))
-      return xs
     const ys = xs.slice(0)
     ys[i] = x
     return ys
