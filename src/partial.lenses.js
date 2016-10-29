@@ -32,6 +32,23 @@ const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
 
 //
 
+const curry2 = fn => function (a, b) {
+  switch (arguments.length) {
+    case 1:  return b => fn(a, b)
+    default: return fn(a, b)
+  }
+}
+
+const curry3 = fn => function (a, b, c) {
+  switch (arguments.length) {
+    case 1:  return curry2((b, c) => fn(a, b, c))
+    case 2:  return c => fn(a, b, c)
+    default: return fn(a, b, c)
+  }
+}
+
+//
+
 const isArray  = x => x && x.constructor === Array
 const isObject = x => x && x.constructor === Object
 
@@ -104,9 +121,9 @@ export const compose = (...ls) =>
   ls.length === 1 ? ls[0] :
   (toCat => R.compose(...ls.map(l => lift(l)(toCat))))
 
-export const remove = R.curry((l, s) => setI(lift(l), undefined, s))
+export const remove = curry2((l, s) => setI(lift(l), undefined, s))
 
-export const removeAll = R.curry((lens, data) => {
+export const removeAll = curry2((lens, data) => {
   warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
   while (get(lens, data) !== undefined)
     data = remove(lens, data)
@@ -120,15 +137,15 @@ const lensI = (getter, setter) => _constructor => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
 const collectI = (l, s) => l(Const)(Single)(s).value
 
-export const lens = R.curry(lensI)
-export const modify = R.curry((l, x2x, s) => modifyI(lift(l), x2x, s))
-export const set = R.curry((l, x, s) => setI(lift(l), x, s))
-export const get = R.curry((l, s) => getI(lift(l), s))
-export const collect = R.curry((l, s) =>
+export const lens = curry2(lensI)
+export const modify = curry3((l, x2y, s) => modifyI(lift(l), x2y, s))
+export const set = curry3((l, x, s) => setI(lift(l), x, s))
+export const get = curry2((l, s) => getI(lift(l), s))
+export const collect = curry2((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
   mkArray(filtered(collectI(lift(l), s))))
 
-export const chain = R.curry((x2yL, xL) =>
+export const chain = curry2((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
 
 export const just = x => lensI(R.always(x), snd)
@@ -139,7 +156,7 @@ export const choose = x2yL => constructor => inner => target =>
 export const nothing = lensI(snd, snd)
 
 export const orElse =
-  R.curry((d, l) => choose(x => getI(lift(l), x) !== undefined ? l : d))
+  curry2((d, l) => choose(x => getI(lift(l), x) !== undefined ? l : d))
 
 export const choice = (...ls) => choose(x => {
   const i = ls.findIndex(l => getI(lift(l), x) !== undefined)
@@ -149,7 +166,7 @@ export const choice = (...ls) => choose(x => {
 const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
 const normalizer = fn => lensI(fn, fn)
 
-export const replace = R.curry((inn, out) =>
+export const replace = curry2((inn, out) =>
   lensI(replacer(inn, out), replacer(out, inn)))
 
 export const defaults = replace(undefined)

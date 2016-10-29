@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.9.2
+
+Although never explicitly specified in documentation, many of the operations and
+combinators were curried using Ramda's `curry`.  Unfortunately Ramda's `curry`
+is very slow.  From this version forward partial lenses no longer supports the
+special features of Ramda's `curry` like placeholders.
+
 ## 3.4.1
 
 Fixed bugs when removing a non-existing property from an object or a
