@@ -36,7 +36,6 @@ const isArray  = x => x && x.constructor === Array
 const isObject = x => x && x.constructor === Object
 
 const unArray  = x =>  isArray(x) ? x : undefined
-const unObject = x => isObject(x) ? x : undefined
 
 const mkArray = x => isArray(x) ? x : []
 
@@ -167,7 +166,7 @@ const isProp = x => typeof x === "string"
 export const prop = assert("a string", isProp)
 
 const liftProp = k => _c => inner => o => inner(isObject(o) ? o[k] : undefined).map(v => {
-  const oOut = unObject(o)
+  const oOut = isObject(o) ? o : empty
   return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
 })
 
@@ -228,7 +227,7 @@ export const augment = template => lensI(
   },
   (y, cIn) => {
     if (isObject(y)) {
-      const c = unObject(cIn) || empty
+      const c = isObject(cIn) ? cIn : empty
       let z
       const set = (k, v) => {
         if (undefined === z)
@@ -303,6 +302,6 @@ export const fromArrayBy = id =>
       return o
     }
   },
-  o => unObject(o) && R.values(o))
+  o => isObject(o) ? R.values(o) : undefined)
 
 export default compose
