@@ -83,9 +83,9 @@ describe("interop", () => {
 
 describe('L.find', () => {
   testEq('L.set(L.find(R.equals(2)), undefined, [,,2])', undefined)
-  testEq('L.set(L.find(R.equals(2)), undefined, [1, 2, 3])', [1, 3])
-  testEq('L.set(L.find(R.equals(2)), 4, [1, 2, 3])', [1, 4, 3])
-  testEq('L.set(L.find(R.equals(2)), 2, [1, 4, 3])', [1, 4, 3, 2])
+  testEq('L.set(L.find(R.equals(2)))(undefined, [1, 2, 3])', [1, 3])
+  testEq('L.set(L.find(R.equals(2)))(4)([1, 2, 3])', [1, 4, 3])
+  testEq('L.set(L.find(R.equals(2)), 2)([1, 4, 3])', [1, 4, 3, 2])
   testEq('L.set(L.find(R.equals(2)), 2, undefined)', [2])
   testEq('L.set(L.find(R.equals(2)), 2, [])', [2])
   testEq('L.get(L.find(R.equals(2)), undefined)', undefined)
