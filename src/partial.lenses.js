@@ -86,14 +86,7 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
-const filtered =
-  toPartial(R.pipe(R.filter(x => x !== undefined), dropped))
-
-//
-
-const conserve = (c1, c0) => R.equals(c1, c0) ? c0 : c1
-
-const toConserve = f => (y, c0) => conserve(f(y, c0), c0)
+const filtered = toPartial(xs => dropped(xs.filter(x => x !== undefined)))
 
 //
 
@@ -126,7 +119,6 @@ const getI = (l, s) => l(Const)(Const)(s).value
 const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
 const lensI = (getter, setter) => _constructor => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
-const isoI = (to, from) => lensI(to, toConserve(from))
 const collectI = (l, s) => l(Const)(Single)(s).value
 
 export const lens = R.curry(lensI)
@@ -156,17 +148,17 @@ export const choice = (...ls) => choose(x => {
 })
 
 const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
-const normalizer = fn => isoI(fn, fn)
+const normalizer = fn => lensI(fn, fn)
 
 export const replace = R.curry((inn, out) =>
-  isoI(replacer(inn, out), replacer(out, inn)))
+  lensI(replacer(inn, out), replacer(out, inn)))
 
 export const defaults = replace(undefined)
 export const required = inn => replace(inn, undefined)
 export const define = v => normalizer(replacer(undefined, v))
 
 export const valueOr = v =>
-  lensI(x => x === undefined || x === null ? v : x, conserve)
+  lensI(x => x === undefined || x === null ? v : x, id)
 
 export const normalize = transform => normalizer(toPartial(transform))
 
@@ -223,7 +215,7 @@ export const append = lensI(snd, (x, xs) =>
   x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
-  conserve(dropped(R.concat(mkArray(ys), mkArray(xs).filter(R.complement(p)))), xs))
+  dropped(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
 
 export const augment = template => lensI(
   x => {
@@ -236,7 +228,7 @@ export const augment = template => lensI(
       return undefined
     }
   },
-  toConserve((y, cIn) => {
+  (y, cIn) => {
     if (isObject(y)) {
       const c = unObject(cIn) || empty
       let z
@@ -278,7 +270,7 @@ export const pick = template => lensI(
     return c
   })
 
-export const identity = lensI(id, conserve)
+export const identity = lensI(id, id)
 
 export const props = (...ks) => pick(R.zipObj(ks, ks))
 
@@ -303,7 +295,7 @@ export const toRamda = l => lift(l)(fantasy)
 
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  isoI(xs => {
+  lensI(xs => {
     if (isArray(xs)) {
       const o = {}
       for (let i=0, n=xs.length; i<n; ++i) {
