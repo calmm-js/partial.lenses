@@ -245,7 +245,7 @@ export const augment = template => lensI(
     } else {
       return undefined
     }
-  }))
+  })
 
 export const pick = template => lensI(
   c => {
