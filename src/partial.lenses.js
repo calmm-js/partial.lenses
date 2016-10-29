@@ -58,6 +58,14 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 //
 
+const dropped = xs => {
+  for (const _ in xs)
+    return xs
+  return undefined
+}
+
+//
+
 const empty = {}
 
 const deleteKey = (k, o = empty) => {
@@ -81,10 +89,6 @@ const setKey = (k, v, o = empty) => {
       r[p] = o[p]
   return r
 }
-
-//
-
-const dropped = xs => Object.keys(xs).length === 0 ? undefined : xs
 
 //
 
