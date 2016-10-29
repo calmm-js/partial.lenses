@@ -68,25 +68,15 @@ const dropped = xs => {
 
 const empty = {}
 
-const deleteKey = (k, o = empty) => {
-  let r
-  for (const p in o) {
-    if (p !== k) {
-      if (undefined === r)
-        r = {}
-      r[p] = o[p]
-    }
-  }
-  return r
+const deleteKey = (k, o) => {
+  const r = Object.assign({}, o)
+  delete r[k]
+  return dropped(r)
 }
 
-const setKey = (k, v, o = empty) => {
-  if (k in o && R.equals(v, o[k]))
-    return o
-  const r = {[k]: v}
-  for (const p in o)
-    if (p !== k)
-      r[p] = o[p]
+const setKey = (k, v, o) => {
+  const r = Object.assign({}, o)
+  r[k] = v
   return r
 }
 
