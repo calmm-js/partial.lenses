@@ -123,8 +123,6 @@ export const compose = (...ls) =>
   ls.length === 1 ? ls[0] :
   (toCat => R.compose(...ls.map(l => lift(l)(toCat))))
 
-export const remove = curry2((l, s) => setI(lift(l), undefined, s))
-
 export const removeAll = curry2((lens, data) => {
   warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
   while (get(lens, data) !== undefined)
@@ -132,7 +130,13 @@ export const removeAll = curry2((lens, data) => {
   return data
 })
 
-const setI = (l, x, s) => l(Ident)(() => Ident(x))(s).value
+const setI = (l, x, s) => {
+  switch (typeof l) {
+    case "string": return setProp(l, x, s)
+    case "number": return setIndex(l, x, s)
+    default:       return lifted(l)(Ident)(() => Ident(x))(s).value
+  }
+}
 const getI = (l, s) => {
   switch (typeof l) {
     case "string": return getProp(l, s)
@@ -140,14 +144,21 @@ const getI = (l, s) => {
     default:       return lifted(l)(Const)(Const)(s).value
   }
 }
-const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
+const modifyI = (l, x2x, s) => {
+  switch (typeof l) {
+    case "string": return setProp(l, x2x(getProp(l, s)), s)
+    case "number": return setIndex(l, x2x(getIndex(l, s)), s)
+    default:       return lifted(l)(Ident)(y => Ident(x2x(y)))(s).value
+  }
+}
 const lensI = (getter, setter) => _c => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
 const collectI = (l, s) => l(Const)(Single)(s).value
 
+export const remove = curry2((l, s) => setI(l, undefined, s))
 export const lens = curry2(lensI)
-export const modify = curry3((l, x2y, s) => modifyI(lift(l), x2y, s))
-export const set = curry3((l, x, s) => setI(lift(l), x, s))
+export const modify = curry3(modifyI)
+export const set = curry3(setI)
 export const get = curry2(getI)
 export const collect = curry2((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
@@ -164,10 +175,10 @@ export const choose = x2yL => constructor => inner => target =>
 export const nothing = lensI(snd, snd)
 
 export const orElse =
-  curry2((d, l) => choose(x => getI(lift(l), x) !== undefined ? l : d))
+  curry2((d, l) => choose(x => getI(l, x) !== undefined ? l : d))
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => getI(lift(l), x) !== undefined)
+  const i = ls.findIndex(l => getI(l, x) !== undefined)
   return 0 <= i ? ls[i] : nothing
 })
 
@@ -192,10 +203,12 @@ const isProp = x => typeof x === "string"
 export const prop = assert("a string", isProp)
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
-const liftProp = k => _c => inner => o => inner(getProp(k, o)).map(v => {
+const setProp = (k, v, o) => {
   const oOut = isObject(o) ? o : empty
   return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
-})
+}
+const liftProp = k => _c => inner => o =>
+  inner(getProp(k, o)).map(v => setProp(k, v, o))
 
 export const find = predicate => choose(xs => {
   if (isArray(xs)) {
@@ -216,7 +229,7 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 export const index = assert("a non-negative integer", isIndex)
 
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
-const liftIndex = i => _c => inner => xs => inner(getIndex(i, xs)).map(x => {
+const setIndex = (i, x, xs) => {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
@@ -234,7 +247,9 @@ const liftIndex = i => _c => inner => xs => inner(getIndex(i, xs)).map(x => {
     ys[i] = x
     return ys
   }
-})
+}
+const liftIndex = i => _c => inner => xs =>
+  inner(getIndex(i, xs)).map(x => setIndex(i, x, xs))
 
 export const append = lensI(snd, (x, xs) =>
   x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
@@ -279,7 +294,7 @@ export const pick = template => lensI(
   c => {
     let r
     for (const k in template) {
-      const v = getI(lift(template[k]), c)
+      const v = getI(template[k], c)
       if (v !== undefined) {
         if (r === undefined)
           r = {}
@@ -291,7 +306,7 @@ export const pick = template => lensI(
   (o = empty, cIn) => {
     let c = cIn
     for (const k in template)
-      c = setI(lift(template[k]), o[k], c)
+      c = setI(template[k], o[k], c)
     return c
   })
 
