@@ -5,6 +5,13 @@ const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
 
 const bs = [
+  'L.get(L.defaults(1), undefined)',
+  'L.get(L.defaults(1), 2)',
+  'L.get(L.define(1), undefined)',
+  'L.get(L.define(1), 2)',
+  'L.get(L.valueOr(1), undefined)',
+  'L.get(L.valueOr(1), null)',
+  'L.get(L.valueOr(1), 2)',
   'L.remove(1, xs)',
   'L.remove("y", xyz)',
   'L.get(1, xs)',
