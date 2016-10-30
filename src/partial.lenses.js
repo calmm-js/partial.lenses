@@ -284,7 +284,7 @@ export const pick = template => lensI(
     return c
   })
 
-export const identity = lensI(id, id)
+export const identity = _c => inner => inner
 
 export const props = (...ks) => pick(R.zipObj(ks, ks))
 
