@@ -98,6 +98,7 @@ describe('L.index', () => {
     testThrows('L.index(-1)')
     testThrows('L.index()')
   }
+  testEq('L.modify(1, x => x + 1, [1, 2])', [1, 3])
   testEq('L.set(P(1), undefined, [,,])', undefined)
   testEq('L.set(P(L.required([]), 1), undefined, [,,])', [])
   testEq('L.set(P(1), 4, [1, 2, 3])', [1, 4, 3])
@@ -123,6 +124,7 @@ describe('L.prop', () => {
     testThrows('L.prop(x => x)')
     testThrows('L.prop()')
   }
+  testEq('L.modify("x", x => x + 1, {x: 1})', {x: 2})
   testEq('L.set(P("x"), undefined, {x: 1})', undefined)
   testEq('L.set(P("x", L.required(null)), undefined, {x: 1})', {x: null})
   testEq('L.set(P("x", L.required(null)), 2, {x: 1})', {x: 2})
