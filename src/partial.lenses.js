@@ -164,17 +164,18 @@ export const choice = (...ls) => choose(x => {
 })
 
 const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
-const normalizer = fn => lensI(fn, fn)
+const normalizer = fn => _c => inner => x => inner(fn(x)).map(fn)
 
-export const replace = curry2((inn, out) =>
-  lensI(replacer(inn, out), replacer(out, inn)))
+export const replace = curry2((inn, out) => _c => inner => x =>
+  inner(replacer(inn, out)(x)).map(replacer(out, inn)))
 
-export const defaults = replace(undefined)
+export const defaults = out => _c => inner => x =>
+  inner(x === undefined ? out : x).map(replacer(out, undefined))
 export const required = inn => replace(inn, undefined)
-export const define = v => normalizer(replacer(undefined, v))
+export const define = v => normalizer(x => x === undefined ? v : x)
 
-export const valueOr = v =>
-  lensI(x => x === undefined || x === null ? v : x, id)
+export const valueOr = v => _c => inner => x =>
+  inner(x === undefined || x === null ? v : x)
 
 export const normalize = transform => normalizer(toPartial(transform))
 
