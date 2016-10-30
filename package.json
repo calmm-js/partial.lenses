@@ -4,7 +4,7 @@
   "description": "Partial lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
-    "bench": "node bench/bench.js",
+    "bench": "NODE_ENV=production node bench/bench.js",
     "dist": "babel src --source-maps inline --out-dir lib",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
