@@ -142,7 +142,13 @@ const collectI = (l, s) => l(Const)(Single)(s).value
 export const lens = curry2(lensI)
 export const modify = curry3((l, x2y, s) => modifyI(lift(l), x2y, s))
 export const set = curry3((l, x, s) => setI(lift(l), x, s))
-export const get = curry2((l, s) => getI(lift(l), s))
+export const get = curry2((l, s) => {
+  switch (typeof l) {
+    case "string": return getProp(l, s)
+    case "number": return getIndex(l, s)
+    default:       return getI(lifted(l), s)
+  }
+})
 export const collect = curry2((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
   mkArray(filtered(collectI(lift(l), s))))
@@ -185,7 +191,8 @@ const isProp = x => typeof x === "string"
 
 export const prop = assert("a string", isProp)
 
-const liftProp = k => _c => inner => o => inner(isObject(o) ? o[k] : undefined).map(v => {
+const getProp = (k, o) => isObject(o) ? o[k] : undefined
+const liftProp = k => _c => inner => o => inner(getProp(k, o)).map(v => {
   const oOut = isObject(o) ? o : empty
   return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
 })
@@ -208,7 +215,8 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
-const liftIndex = i => _c => inner => xs => inner(isArray(xs) ? xs[i] : undefined).map(x => {
+const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
+const liftIndex = i => _c => inner => xs => inner(getIndex(i, xs)).map(x => {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
