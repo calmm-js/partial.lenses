@@ -111,9 +111,11 @@ const seemsLens = x => typeof x === "function" && x.length === 1
 const lifted = assert("a lens", seemsLens)
 
 const lift = l => {
-  if (isProp(l))  return liftProp(l)
-  if (isIndex(l)) return liftIndex(l)
-  return lifted(l)
+  switch (typeof l) {
+    case "string": return liftProp(l)
+    case "number": return liftIndex(l)
+    default:       return lifted(l)
+  }
 }
 
 export const compose = (...ls) =>
