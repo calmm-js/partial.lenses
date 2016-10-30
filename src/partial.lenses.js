@@ -133,7 +133,7 @@ export const removeAll = curry2((lens, data) => {
 const setI = (l, x, s) => l(Ident)(() => Ident(x))(s).value
 const getI = (l, s) => l(Const)(Const)(s).value
 const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
-const lensI = (getter, setter) => _constructor => inner => target =>
+const lensI = (getter, setter) => _c => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
 const collectI = (l, s) => l(Const)(Single)(s).value
 
@@ -303,7 +303,7 @@ export const optional =
                 toPartial(([x]) => x)),
           sequence)
 
-export const fromRamda = l => _constructor => l
+export const fromRamda = l => _c => l
 const fantasy = () => {throw new Error("Sorry, `toRamda` is only fantasy!")}
 export const toRamda = l => lift(l)(fantasy)
 
