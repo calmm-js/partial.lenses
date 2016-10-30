@@ -3,8 +3,11 @@ const R = require("ramda")
 
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
+const nested = [{x: 1}]
 
 const bs = [
+  'L.get(L.compose(0, "x"), nested)',
+  'L.set(L.compose(0, "x"), 2, nested)',
   'L.get(L.defaults(1), undefined)',
   'L.get(L.defaults(1), 2)',
   'L.get(L.define(1), undefined)',
