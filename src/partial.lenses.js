@@ -133,7 +133,13 @@ export const removeAll = curry2((lens, data) => {
 })
 
 const setI = (l, x, s) => l(Ident)(() => Ident(x))(s).value
-const getI = (l, s) => l(Const)(Const)(s).value
+const getI = (l, s) => {
+  switch (typeof l) {
+    case "string": return getProp(l, s)
+    case "number": return getIndex(l, s)
+    default:       return lifted(l)(Const)(Const)(s).value
+  }
+}
 const modifyI = (l, x2x, s) => l(Ident)(y => Ident(x2x(y)))(s).value
 const lensI = (getter, setter) => _c => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
@@ -142,13 +148,7 @@ const collectI = (l, s) => l(Const)(Single)(s).value
 export const lens = curry2(lensI)
 export const modify = curry3((l, x2y, s) => modifyI(lift(l), x2y, s))
 export const set = curry3((l, x, s) => setI(lift(l), x, s))
-export const get = curry2((l, s) => {
-  switch (typeof l) {
-    case "string": return getProp(l, s)
-    case "number": return getIndex(l, s)
-    default:       return getI(lifted(l), s)
-  }
-})
+export const get = curry2(getI)
 export const collect = curry2((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
   mkArray(filtered(collectI(lift(l), s))))
