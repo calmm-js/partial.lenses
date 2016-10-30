@@ -118,10 +118,20 @@ const lift = l => {
   }
 }
 
-export const compose = (...ls) =>
-  ls.length === 0 ? identity :
-  ls.length === 1 ? ls[0] :
-  (toCat => R.compose(...ls.map(l => lift(l)(toCat))))
+export function compose() {
+  switch (arguments.length) {
+    case 0:  return identity
+    case 1:  return arguments[0]
+    default: return toCat => x => {
+      let i = arguments.length
+      let r = lift(arguments[--i])(toCat)(x)
+      do {
+        r = lift(arguments[--i])(toCat)(r)
+      } while (0 < i)
+      return r
+    }
+  }
+}
 
 export const removeAll = curry2((lens, data) => {
   warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
