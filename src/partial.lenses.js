@@ -110,26 +110,35 @@ const seemsLens = x => typeof x === "function" && x.length === 1
 
 const lifted = assert("a lens", seemsLens)
 
-const lift = l => {
-  switch (typeof l) {
-    case "string": return liftProp(l)
-    case "number": return liftIndex(l)
-    default:       return lifted(l)
-  }
-}
-
-export function compose() {
-  switch (arguments.length) {
+const composed = lenses => {
+  switch (lenses.length) {
     case 0:  return identity
-    case 1:  return arguments[0]
-    default: return toCat => x => {
-      let i = arguments.length
-      let r = lift(arguments[--i])(toCat)(x)
+    case 1:  return lift(lenses[0])
+    default: return constructor => x => {
+      let i = lenses.length
+      let r = lift(lenses[--i])(constructor)(x)
       do {
-        r = lift(arguments[--i])(toCat)(r)
+        r = lift(lenses[--i])(constructor)(r)
       } while (0 < i)
       return r
     }
+  }
+}
+
+const lift = l => {
+  switch (typeof l) {
+    case "string":   return liftProp(l)
+    case "number":   return liftIndex(l)
+    case "function": return lifted(l)
+    default:         return composed(l)
+  }
+}
+
+export function compose(...lenses) {
+  switch (lenses.length) {
+    case 0:  return identity
+    case 1:  return lenses[0]
+    default: return lenses
   }
 }
 
@@ -142,25 +151,36 @@ export const removeAll = curry2((lens, data) => {
 
 const setI = (l, x, s) => {
   switch (typeof l) {
-    case "string": return setProp(l, x, s)
-    case "number": return setIndex(l, x, s)
-    default:       return lifted(l)(Ident)(() => Ident(x))(s).value
+    case "string":   return setProp(l, x, s)
+    case "number":   return setIndex(l, x, s)
+    case "function": return lifted(l)(Ident)(() => Ident(x))(s).value
+    default:         return composed(l)(Ident)(() => Ident(x))(s).value
   }
 }
+
 const getI = (l, s) => {
   switch (typeof l) {
-    case "string": return getProp(l, s)
-    case "number": return getIndex(l, s)
-    default:       return lifted(l)(Const)(Const)(s).value
+    case "string":   return getProp(l, s)
+    case "number":   return getIndex(l, s)
+    case "function": return lifted(l)(Const)(Const)(s).value
+    default: {
+      let r = s
+      for (let i=0, n=l.length; i<n; ++i)
+        r = getI(l[i], r)
+      return r
+    }
   }
 }
+
 const modifyI = (l, x2x, s) => {
   switch (typeof l) {
-    case "string": return setProp(l, x2x(getProp(l, s)), s)
-    case "number": return setIndex(l, x2x(getIndex(l, s)), s)
-    default:       return lifted(l)(Ident)(y => Ident(x2x(y)))(s).value
+    case "string":   return setProp(l, x2x(getProp(l, s)), s)
+    case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
+    case "function": return lifted(l)(Ident)(y => Ident(x2x(y)))(s).value
+    default:         return composed(l)(Ident)(y => Ident(x2x(y)))(s).value
   }
 }
+
 const lensI = (getter, setter) => _c => inner => target =>
   inner(getter(target)).map(focus => setter(focus, target))
 const collectI = (l, s) => l(Const)(Single)(s).value
