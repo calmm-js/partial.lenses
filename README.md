@@ -156,8 +156,8 @@ examples.
 
 For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
-* [`L.compose(...)`](#compose) can be abbreviated to use the default import,
-  e.g. [`P(...)`](#compose),
+* [`L.compose(...)`](#compose) can be abbreviated as an array
+  [`[...]`](#compose),
 * [`L.prop(string)`](#prop) can be abbreviated as [`string`](#prop), and
 * [`L.set(l, undefined, s)`](#set) can be abbreviated as
   [`L.remove(l, s)`](#remove).
@@ -191,16 +191,16 @@ of the JSON:
 ```js
 const M = {
   data: {
-    contents: P("contents",
-                L.required([]),
-                L.normalize(R.sortBy(R.prop("language"))))
+    contents: ["contents",
+               L.required([]),
+               L.normalize(R.sortBy(R.prop("language")))]
   },
   contents: {
-    contentIn: language => P(L.find(R.whereEq({language})),
-                             L.defaults({language}))
+    contentIn: language => [L.find(R.whereEq({language})),
+                            L.defaults({language})]
   },
   content: {
-    text: P("text", L.valueOr(""))
+    text: ["text", L.valueOr("")]
   }
 }
 ```
@@ -208,9 +208,9 @@ const M = {
 Using the above object, we could rewrite the parameterized `textIn` lens as:
 
 ```js
-const textIn = language => P(M.data.contents,
-                             M.contents.contentIn(language),
-                             M.content.text)
+const textIn = language => [M.data.contents,
+                            M.contents.contentIn(language),
+                            M.content.text]
 ```
 
 This style of organizing lenses is overkill for our toy example.  In a more
@@ -233,10 +233,10 @@ a parameterized lens that does just that:
 
 ```js
 const flag = id =>
-  P(L.normalize(R.sortBy(R.identity)),
-    L.find(R.equals(id)),
-    L.replace(undefined, false),
-    L.replace(id, true))
+  [L.normalize(R.sortBy(R.identity)),
+   L.find(R.equals(id)),
+   L.replace(undefined, false),
+   L.replace(id, true)]
 ```
 
 Now we can treat individual constants as boolean flags:
@@ -273,12 +273,12 @@ we are looking for.  So, here is our first attempt at a BST lens:
 
 ```js
 const search = key =>
-  P(L.defaults({key}),
-    L.choose(n => key < n.key ? P("smaller", search(key)) :
-                  n.key < key ? P("greater", search(key)) :
-                                L.identity))
+  [L.defaults({key}),
+   L.choose(n => key < n.key ? ["smaller", search(key)] :
+                 n.key < key ? ["greater", search(key)] :
+                               L.identity)]
 
-const valueOf = key => P(search(key), "value")
+const valueOf = key => [search(key), "value"]
 ```
 
 This actually works to a degree.  We can use the `valueOf` lens constructor to
@@ -314,15 +314,15 @@ purpose.  Here is the updated `search` definition:
 
 ```js
 const search = key =>
-  P(L.normalize(n =>
-      undefined !== n.value   ? n         :
-      n.smaller && !n.greater ? n.smaller :
-      !n.smaller && n.greater ? n.greater :
-      L.set(search(n.smaller.key), n.smaller, n.greater)),
-    L.defaults({key}),
-    L.choose(n => key < n.key ? P("smaller", search(key)) :
-                  n.key < key ? P("greater", search(key)) :
-                                L.identity))
+  [L.normalize(n =>
+     undefined !== n.value   ? n         :
+     n.smaller && !n.greater ? n.smaller :
+     !n.smaller && n.greater ? n.greater :
+     L.set(search(n.smaller.key), n.smaller, n.greater)),
+   L.defaults({key}),
+   L.choose(n => key < n.key ? ["smaller", search(key)] :
+                 n.key < key ? ["greater", search(key)] :
+                               L.identity)]
 ```
 
 Now we can also remove values from a binary tree:
@@ -350,11 +350,17 @@ The lens combinators are available as named imports.  Typically one just imports
 the library as:
 
 ```js
-import P, * as L from "partial.lenses"
+import * as L from "partial.lenses"
 ```
 
-Use of the default import, [`P`](#compose), is optional and is an alias for
-[`L.compose`](#compose).
+The default import
+
+``` js
+import P from "partial.lenses"
+```
+
+is an alias for [`L.compose`](#compose).  Typical one just uses the shorthand
+array notation [`[...]`](#compose) to denote composition.
 
 ### Operations on lenses
 
@@ -393,7 +399,7 @@ focused element.
 For example:
 
 ```js
-L.remove(P("a", "b"), {a: {b: 1}, x: {y: 2}})
+L.remove(["a", "b"], {a: {b: 1}, x: {y: 2}})
 // {x: {y: 2}}
 ```
 
@@ -419,7 +425,7 @@ Although traversals are still considered experimental, one alternative to
 and [`L.remove`](#remove):
 
 ```js
-L.remove(P(L.sequence, "a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
+L.remove([L.sequence, "a"], [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
 // [ { x: 1 }, { y: 4 }, { z: 5 } ]
 ```
 
@@ -430,7 +436,7 @@ L.remove(P(L.sequence, "a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
 For example:
 
 ```js
-L.set(P("a", 0, "x"), 11, {id: "z"})
+L.set(["a", 0, "x"], 11, {id: "z"})
 // {a: [{x: 11}], id: "z"}
 ```
 
@@ -529,10 +535,21 @@ composition:
 L.modify(L.compose(l, ...ls)) = R.pipe(L.modify(l), ...ls.map(L.modify))
 ```
 
+Furthermore, an array of lenses `[...lenses]` is treated as a composition of
+lenses `L.compose(...lenses)`.  Using the array notation, the above equations
+can be written as:
+
+```js
+                  [] = L.identity
+                 [l] = l
+   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
+L.modify([l, ...ls]) = R.pipe(L.modify(l), ...ls.map(L.modify))
+```
+
 For example:
 
 ```js
-L.get(P("a", 1), {a: ["b", "c"]})
+L.get(["a", 1], {a: ["b", "c"]})
 // "c"
 ```
 
@@ -555,17 +572,17 @@ elsewhere.
 For example:
 
 ```js
-L.get(P("items", L.defaults([])), {})
+L.get(["items", L.defaults([])], {})
 // []
-L.get(P("items", L.defaults([])), {items: [1, 2, 3]})
+L.get(["items", L.defaults([])], {items: [1, 2, 3]})
 // [ 1, 2, 3 ]
-L.set(P("items", L.defaults([])), [], {items: [1, 2, 3]})
+L.set(["items", L.defaults([])], [], {items: [1, 2, 3]})
 // undefined
 ```
 
 #### <a name="define"></a>[`L.define(value)`](#define "L.define :: s -> PLens s s")
 
-`L.define(value)` is the same as `P(L.required(value), L.defaults(value))`.
+`L.define(value)` is the same as `[L.required(value), L.defaults(value)]`.
 `L.define` is used to specify a value to act as both the default value and the
 required value for an element.
 
@@ -606,7 +623,7 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 #### <a name="findWith"></a>[`L.findWith(...ls)`](#findWith "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
 `L.findWith(...ls)` chooses an index from an array through which the given lens,
-[`P(...ls)`](#compose), focuses on a defined item and then returns a lens that
+[`[...ls]`](#compose), focuses on a defined item and then returns a lens that
 focuses on that item.
 
 For example:
@@ -632,7 +649,7 @@ For example:
 ```js
 L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
 // { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
-L.set(P(L.fromArrayBy("id"), "3", "value"), 5, [{id: 1, value: 2}, {id: 3, value: 4}])
+L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
 // [ { id: 1, value: 2 }, { value: 5, id: 3 } ]
 ```
 
@@ -669,18 +686,18 @@ L.remove(0, ["a", "b"])
 // [ 'b' ]
 L.remove(0, ["b"])
 // undefined
-L.remove(P("elems", 0), {elems: ["b"], some: "thing"})
+L.remove(["elems", 0], {elems: ["b"], some: "thing"})
 // { some: 'thing' }
 ```
 
 Then consider the same examples with [`L.required([])`](#required):
 
 ```js
-L.remove(P(L.required([]), 0), ["a", "b"])
+L.remove([L.required([]), 0], ["a", "b"])
 // [ 'b' ]
-L.remove(P(L.required([]), 0), ["b"])
+L.remove([L.required([]), 0], ["b"])
 // []
-L.remove(P("elems", L.required([]), 0), {elems: ["b"], some: "thing"})
+L.remove(["elems", L.required([]), 0], {elems: ["b"], some: "thing"})
 // { elems: [], some: 'thing' }
 ```
 
@@ -815,7 +832,7 @@ L.get(sanitize, data)
 That works in both directions:
 
 ```js
-L.modify(P(sanitize, "pos", "x"), R.add(5), data)
+L.modify([sanitize, "pos", "x"], R.add(5), data)
 // { px: 6, py: 2, vx: 1, vy: 0 }
 ```
 
@@ -882,11 +899,11 @@ is removed, the given value will be substituted instead.
 For example:
 
 ```js
-L.remove(P("items", 0), {items: [1]})
+L.remove(["items", 0], {items: [1]})
 // undefined
-L.remove(P(L.required({}), "items", 0), {items: [1]})
+L.remove([L.required({}), "items", 0], {items: [1]})
 // {}
-L.remove(P("items", L.required([]), 0), {items: [1]})
+L.remove(["items", L.required([]), 0], {items: [1]})
 // { items: [] }
 ```
 
@@ -943,7 +960,7 @@ elements in the returned array.
 For example:
 
 ```js
-L.collect(P("xs", L.sequence, "x"), {xs: [{x: 1}, {x: 2}]})
+L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
@@ -959,14 +976,14 @@ traversal is over the focused element.
 As an example, consider the difference between:
 
 ```js
-L.set(P(L.sequence, "x"), 3, [{x: 1}, {y: 2}])
+L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { x: 3, y: 2 } ]
 ```
 
 and:
 
 ```js
-L.set(P(L.sequence, "x", L.optional), 3, [{x: 1}, {y: 2}])
+L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
@@ -980,7 +997,7 @@ semantically before next major release.**
 For example:
 
 ```js
-L.modify(P("xs", L.sequence, "x"), R.add(1), {xs: [{x: 1}, {x: 2}]})
+L.modify(["xs", L.sequence, "x"], R.add(1), {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 
@@ -997,14 +1014,14 @@ when data flows in either direction, `get` or `set`, through the lens.
 For example:
 
 ```js
-L.get(P("x", L.log()), {x: 10})
+L.get(["x", L.log()], {x: 10})
 // get 10
 // 10
-L.set(P("x", L.log("x")), "11", {x: 10})
+L.set(["x", L.log("x")], "11", {x: 10})
 // x get 10
 // x set 11
 // { x: '11' }
-L.set(P("x", L.log("%s x: %j")), "11", {x: 10})
+L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // get x: 10
 // set x: "11"
 // { x: '11' }
@@ -1106,7 +1123,7 @@ One might assume that [`R.lensPath([p0,
 
 With partial lenses you can robustly compose a path lens from prop lenses
 `L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
-`P(p0, ...ps)`.
+`[p0, ...ps]`.
 
 ### Types
 
