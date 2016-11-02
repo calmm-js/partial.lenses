@@ -359,7 +359,7 @@ The default import
 import P from "partial.lenses"
 ```
 
-is an alias for [`L.compose`](#compose).  Typical one just uses the shorthand
+is an alias for [`L.compose`](#compose).  Typically one just uses the shorthand
 array notation [`[...]`](#compose) to denote composition.
 
 ### Operations on lenses
