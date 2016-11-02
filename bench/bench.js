@@ -25,6 +25,7 @@ const bs = [
   'L.get("y")(xyz)',
   'L.set("y", 0, xs)',
   'R.prop("y", xyz)',
+  'R.path([0, "x", 0, "y"], nested)',
   'R.view(R.lensIndex(1), xs)',
   'R.over(R.lensIndex(1), () => 0, xs)',
   'R.view(R.lensIndex("y"), xyz)',
