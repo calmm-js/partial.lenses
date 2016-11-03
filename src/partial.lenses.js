@@ -74,7 +74,7 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 //
 
-const dropped = xs => {
+function dropped(xs) {
   for (const _ in xs)
     return xs
   return undefined
@@ -84,13 +84,13 @@ const dropped = xs => {
 
 const empty = {}
 
-const deleteKey = (k, o) => {
+function deleteKey(k, o) {
   const r = Object.assign({}, o)
   delete r[k]
   return dropped(r)
 }
 
-const setKey = (k, v, o) => {
+function setKey(k, v, o) {
   const r = Object.assign({}, o)
   r[k] = v
   return r
@@ -110,7 +110,7 @@ const seemsLens = x => typeof x === "function" && x.length === 1
 
 const lifted = assert("a lens", seemsLens)
 
-const composed = lenses => {
+function composed(lenses) {
   switch (lenses.length) {
     case 0:  return identity
     case 1:  return lift(lenses[0])
@@ -125,7 +125,7 @@ const composed = lenses => {
   }
 }
 
-const lift = l => {
+function lift(l) {
   switch (typeof l) {
     case "string":   return liftProp(l)
     case "number":   return liftIndex(l)
@@ -149,7 +149,7 @@ export const removeAll = curry2((lens, data) => {
   return data
 })
 
-const setI = (l, x, s) => {
+function setI(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
@@ -174,7 +174,7 @@ function getI(l, s) {
   }
 }
 
-const modifyI = (l, x2x, s) => {
+function modifyI(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
@@ -235,7 +235,7 @@ const isProp = x => typeof x === "string"
 export const prop = assert("a string", isProp)
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
-const setProp = (k, v, o) => {
+function setProp(k, v, o) {
   const oOut = isObject(o) ? o : empty
   return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
 }
@@ -251,7 +251,7 @@ export const find = predicate => choose(xs => {
   }
 })
 
-export const findWith = (...ls) => {
+export function findWith(...ls) {
   const lls = compose(...ls)
   return compose(find(x => getI(lls, x) !== undefined), lls)
 }
@@ -261,7 +261,7 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 export const index = assert("a non-negative integer", isIndex)
 
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
-const setIndex = (i, x, xs) => {
+function setIndex(i, x, xs) {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
@@ -362,7 +362,7 @@ export const optional =
           sequence)
 
 export const fromRamda = l => _c => l
-const fantasy = () => {throw new Error("Sorry, `toRamda` is only fantasy!")}
+function fantasy() {throw new Error("Sorry, `toRamda` is only fantasy!")}
 export const toRamda = l => lift(l)(fantasy)
 
 export const fromArrayBy = id =>
