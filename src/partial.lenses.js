@@ -158,17 +158,19 @@ const setI = (l, x, s) => {
   }
 }
 
-const getI = (l, s) => {
+function getComposedI(ls, s0)  {
+  let s = s0
+  for (let i=0, n=ls.length; i<n; ++i)
+    s = getI(ls[i], s)
+  return s
+}
+
+function getI(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
     case "function": return lifted(l)(Const)(Const)(s).value
-    default: {
-      let r = s
-      for (let i=0, n=l.length; i<n; ++i)
-        r = getI(l[i], r)
-      return r
-    }
+    default:         return getComposedI(l, s)
   }
 }
 
