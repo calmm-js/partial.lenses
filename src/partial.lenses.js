@@ -250,7 +250,7 @@ export const find = predicate => choose(xs => {
 })
 
 export const findWith = (...ls) => {
-  const lls = lift(compose(...ls))
+  const lls = compose(...ls)
   return compose(find(x => getI(lls, x) !== undefined), lls)
 }
 
