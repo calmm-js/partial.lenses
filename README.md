@@ -2,16 +2,18 @@
 
 Lenses are primarily a convenient abstraction for performing updates on
 individual elements of immutable data structures.  This library provides a
-collection of *partial* lenses.  A partial lens can *view* optional data,
-*insert* new data, *update* existing data and *remove* existing data and can,
-for example, provide *defaults* and maintain *required* data structure parts.
+collection of *partial* lenses for manipulating JSON.  A partial lens can *view*
+optional data, *insert* new data, *update* existing data and *remove* existing
+data and can, for example, provide *defaults* and maintain *required* data
+structure parts.
 
 In JavaScript, missing data can be mapped to `undefined`, which is what partial
-lenses also do.  When a part of a data structure is missing, an attempt to view
-it returns `undefined`.  When a part is missing, setting it to a defined value
-inserts the new part.  Setting an existing part to `undefined` removes it.
-Partial lenses are defined in such a way that operations [`compose`](#compose)
-and one can conveniently and robustly operate on deeply nested data structures.
+lenses also do, because `undefined` is not a valid JSON value.  When a part of a
+data structure is missing, an attempt to view it returns `undefined`.  When a
+part is missing, setting it to a defined value inserts the new part.  Setting an
+existing part to `undefined` removes it.  Partial lenses are defined in such a
+way that operations [`compose`](#compose) and one can conveniently and robustly
+operate on deeply nested data structures.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -69,10 +71,10 @@ L.get(textIn("fi"), data)
 // ""
 ```
 
-We get this value, rather than undefined, thanks to the last part,
-[`L.valueOr("")`](#valueOr), of our lens composition, which ensures that we get
-the specified value rather than `null` or `undefined`.  We get the default even
-if we query from `undefined`:
+We get this value, rather than `undefined`, thanks to the last
+part, [`L.valueOr("")`](#valueOr), of our lens composition, which ensures that
+we get the specified value rather than `null` or `undefined`.  We get the
+default even if we query from `undefined`:
 
 ```js
 L.get(textIn("fi"), undefined)
@@ -131,13 +133,14 @@ R.pipe(L.set(textIn("sv"), undefined),
 ```
 
 The `contents` property is not removed thanks to the
-[`L.required([])`](#required) part of our lens composition.
-[`L.required`](#required) is the dual of [`L.defaults`](#defaults).
-[`L.defaults`](#defaults) replaces undefined values when viewed and
-[`L.required`](#required) replaces undefined values when set.
+[`L.required([])`](#required) part of our lens
+composition.  [`L.required`](#required) is the dual
+of [`L.defaults`](#defaults).  [`L.defaults`](#defaults) replaces `undefined`
+values when viewed and [`L.required`](#required) replaces `undefined` values
+when set.
 
 Note that unless default and required values are explicitly specified as part of
-the lens, they will both be undefined.
+the lens, they will both be `undefined`.
 
 ### Exercises
 
@@ -393,7 +396,7 @@ L.modify("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 #### <a name="remove"></a>[`L.remove(l, s)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
 `L.remove(l, s)` is equivalent to [`L.set(l, undefined, s)`](#set).  With
-partial lenses, setting to undefined typically has the effect of removing the
+partial lenses, setting to `undefined` typically has the effect of removing the
 focused element.
 
 For example:
@@ -436,8 +439,8 @@ L.set(L.append, "x", undefined)
 
 `L.augment({prop: obj => val, ...props})` is given a template of functions to
 compute new properties.  When not viewing or setting a defined object, the
-result is undefined.  When viewing a defined object, the object is extended with
-the computed properties.  When set with a defined object, the extended
+result is `undefined`.  When viewing a defined object, the object is extended
+with the computed properties.  When set with a defined object, the extended
 properties are removed.
 
 For example:
@@ -467,7 +470,7 @@ bidirectional and the special lenses [`L.just`](#just) and
 #### <a name="choose"></a>[`L.choose(maybeValue => PLens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
 
 `L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
-the given function that maps the underlying view, which can be undefined, to a
+the given function that maps the underlying view, which can be `undefined`, to a
 lens.  In other words, the `L.choose` combinator allows a lens to be constructed
 *after* examining the data structure being manipulated.
 
@@ -492,9 +495,9 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 #### <a name="choice"></a>[`L.choice(...ls)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
 
 `L.choice(...ls)` returns a partial lens that acts like the first of the given
-lenses, `ls`, whose view is not undefined on the given target.  When the views
-of all of the given lenses are undefined, the returned lens acts like
-[`L.nothing`](#nothing), which is the identity element of `L.choice`.
+lenses, `ls`, whose view is not `undefined` on the given target.  When the views
+of all of the given lenses are `undefined`, the returned lens acts
+like [`L.nothing`](#nothing), which is the identity element of `L.choice`.
 
 #### <a name="compose"></a>[`L.compose(...ls)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
@@ -563,10 +566,10 @@ required value for an element.
 #### <a name="filter"></a>[`L.filter(predicate)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
 
 `L.filter(predicate)` operates on arrays.  When not viewing an array, the result
-is undefined.  When viewing an array, only elements matching the given predicate
-will be returned.  When set, the resulting array will be formed by concatenating
-the set array and the complement of the filtered context.  If the resulting
-array would be empty, the whole result will be undefined.
+is `undefined`.  When viewing an array, only elements matching the given
+predicate will be returned.  When set, the resulting array will be formed by
+concatenating the set array and the complement of the filtered context.  If the
+resulting array would be empty, the whole result will be `undefined`.
 
 For example:
 
@@ -643,10 +646,10 @@ L.modify(L.identity, f, x) = f(x)
 
 `L.index(integer)` or `integer` focuses on the specified array index.
 
-* When not viewing a defined array index, the result is undefined.
-* When setting to undefined, the element is removed from the resulting array,
-  shifting all higher indices down by one.  If the result would be an array
-  without indices (ignoring length), the whole result will be undefined.
+* When not viewing a defined array index, the result is `undefined`.
+* When setting to `undefined`, the element is removed from the resulting array,
+  shifting all higher indices down by one.  If the result would be an empty
+  array, the whole result will be `undefined`.
 
 **NOTE:** There is a gotcha related to removing elements from an array.  Namely,
 when the last element is removed, the result is `undefined` rather than an empty
@@ -744,7 +747,7 @@ adding dependency to [Moment.js](http://momentjs.com/).
 #### <a name="normalize"></a>[`L.normalize(value => value)`](#normalize "L.normalize :: (s -> s) -> PLens s s")
 
 `L.normalize(value => value)` maps the value with same given transform when
-viewed and set and implicitly maps undefined to undefined.
+viewed and set and implicitly maps `undefined` to `undefined`.
 
 The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
@@ -752,7 +755,7 @@ simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
 #### <a name="nothing"></a>[`L.nothing`](#nothing "L.nothing :: PLens s s")
 
-`L.nothing` is a special degenerate lens whose view is always undefined and
+`L.nothing` is a special degenerate lens whose view is always `undefined` and
 setting through `L.nothing` has no effect.  In other words, for all `x` and `y`:
 
 ```js
@@ -764,7 +767,7 @@ L.set(L.nothing, y, x) = x
 
 #### <a name="orElse"></a>[`L.orElse(backup, primary)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
 
-`L.orElse(backup, primary)` acts like `primary` when its view is not undefined
+`L.orElse(backup, primary)` acts like `primary` when its view is not `undefined`
 and otherwise like `backup`.  You can use `L.orElse` on its own
 with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
 (and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
@@ -824,18 +827,18 @@ be an object.
 
 `L.prop(string)` or `string` focuses on the specified object property.
 
-* When not viewing a defined object property, the result is undefined.
-* When setting property to undefined, the property is removed from the result.
-  If the result would be an empty object, the whole result will be undefined.
+* When not viewing a defined object property, the result is `undefined`.
+* When setting property to `undefined`, the property is removed from the result.
+  If the result would be an empty object, the whole result will be `undefined`.
 
 #### <a name="props"></a>[`L.props(...strings)`](#props "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
 
 `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
-kN})`](#pick) and focuses on a subset of properties of an object,
-allowing one to treat the subset of properties as a unit.  The view of `L.props`
-is undefined when none of the properties is defined.  Otherwise the view is an
+kN})`](#pick) and focuses on a subset of properties of an object, allowing one
+to treat the subset of properties as a unit.  The view of `L.props` is
+`undefined` when none of the properties is defined.  Otherwise the view is an
 object containing a subset of the properties.  Setting through `L.props` updates
-the whole subset of properties, which means that any undefined properties are
+the whole subset of properties, which means that any missing properties are
 removed if they did exists previously.  When set, any extra properties are
 ignored.
 
@@ -884,7 +887,7 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 #### <a name="valueOr"></a>[`L.valueOr(out)`](#valueOr "L.valueOr :: s -> PLens s s")
 
 `L.valueOr(out)` is an asymmetric lens used to specify a default value in case
-the focus is undefined or `null`.  When set, `L.valueOr` behaves like the
+the focus is `undefined` or `null`.  When set, `L.valueOr` behaves like the
 identity lens.
 
 For example:
@@ -905,12 +908,12 @@ Conversions between lens libraries.
 #### <a name="fromRamda"></a>[`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
 
 `L.fromRamda(lens)` converts the given Ramda lens to a partial lens.  Note that
-this does not change the behavior of the lens on undefined values.
+this does not change the behavior of the lens on `undefined` values.
 
 #### <a name="toRamda"></a>[`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
 
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
-this does not change the behavior of the lens on undefined values.  Also note
+this does not change the behavior of the lens on `undefined` values.  Also note
 that traversals are not compatible with Ramda.
 
 ### <a name="traversals"></a>Traversal combinators and operations
@@ -944,7 +947,7 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 semantically before next major release.**
 
 `L.optional` is a traversal (rather than a lens) over an optional element.  When
-the focus of `L.optional` is undefined, the traversal is empty.  Otherwise the
+the focus of `L.optional` is `undefined`, the traversal is empty.  Otherwise the
 traversal is over the focused element.
 
 As an example, consider the difference between:
