@@ -1106,38 +1106,41 @@ With partial lenses you can robustly compose a path lens from prop lenses
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (3.9.4) and some roughly equivalent
+Here are a few benchmarks on partial lenses (4.0.0) and some roughly equivalent
 operations using Ramda (0.22.1).
 
 ```js
-L.get(1, xs)                       x 33,742,994 ops/sec ±0.50% (91 runs sampled)
-R.nth(1, xs)                       x  3,760,353 ops/sec ±0.74% (89 runs sampled)
-R.view(r_1, xs)                    x  1,951,008 ops/sec ±0.85% (95 runs sampled)
+L.get(1, xs)                            x 34,189,836 ops/sec ±0.30% (95 runs sampled)
+R.nth(1, xs)                            x  3,822,326 ops/sec ±0.57% (93 runs sampled)
+R.view(r_1, xs)                         x  1,934,824 ops/sec ±0.64% (93 runs sampled)
 
-L.set(1, 0, xs)                    x  7,905,590 ops/sec ±0.63% (92 runs sampled)
-R.update(1, 0, xs)                 x  7,405,862 ops/sec ±1.41% (93 runs sampled)
-R.set(r_1, 0, xs)                  x  1,318,939 ops/sec ±0.79% (90 runs sampled)
+L.set(1, 0, xs)                         x  7,921,501 ops/sec ±0.90% (93 runs sampled)
+R.update(1, 0, xs)                      x  6,544,164 ops/sec ±0.64% (96 runs sampled)
+R.set(r_1, 0, xs)                       x  1,209,223 ops/sec ±0.65% (87 runs sampled)
 
-L.get("y", xyz)                    x 32,785,383 ops/sec ±0.80% (90 runs sampled)
-R.prop("y", xyz)                   x 21,509,165 ops/sec ±0.82% (94 runs sampled)
-R.view(r_y, xyz)                   x  3,693,416 ops/sec ±0.41% (93 runs sampled)
+L.get("y", xyz)                         x 33,169,386 ops/sec ±2.02% (90 runs sampled)
+R.prop("y", xyz)                        x 21,117,296 ops/sec ±1.36% (91 runs sampled)
+R.view(r_y, xyz)                        x  3,719,568 ops/sec ±0.64% (89 runs sampled)
 
-L.set("y", 0, xyz)                 x  2,104,387 ops/sec ±0.80% (96 runs sampled)
-R.assoc("y", 0, xyz)               x  7,771,260 ops/sec ±0.79% (92 runs sampled)
-R.set(r_y, 0, xyz)                 x  1,850,900 ops/sec ±0.67% (96 runs sampled)
+L.set("y", 0, xyz)                      x  7,114,601 ops/sec ±0.62% (87 runs sampled)
+R.assoc("y", 0, xyz)                    x 11,556,449 ops/sec ±0.82% (91 runs sampled)
+R.set(r_y, 0, xyz)                      x  2,024,095 ops/sec ±0.90% (87 runs sampled)
 
-L.get([0, "x", 0, "y"], nested)    x 10,724,330 ops/sec ±0.77% (93 runs sampled)
-R.view(r_0_x_0_y, nested)          x    672,626 ops/sec ±0.58% (94 runs sampled)
+L.get([0, "x", 0, "y"], nested)         x 10,726,543 ops/sec ±0.81% (93 runs sampled)
+R.view(r_0_x_0_y, nested)               x    689,393 ops/sec ±0.44% (94 runs sampled)
 
-L.set([0, "x", 0, "y"], 0, nested) x    732,999 ops/sec ±0.49% (93 runs sampled)
-R.set(r_0_x_0_y, 0, nested)        x    431,987 ops/sec ±0.55% (91 runs sampled)
+L.set([0, "x", 0, "y"], 0, nested)      x  1,840,558 ops/sec ±0.87% (93 runs sampled)
+R.set(r_0_x_0_y, 0, nested)             x    444,007 ops/sec ±0.85% (95 runs sampled)
 
-L.remove("y", xyz)                 x    932,559 ops/sec ±0.75% (93 runs sampled)
-R.dissoc("y", xyz)                 x 11,774,099 ops/sec ±0.57% (95 runs sampled)
+L.modify([0, "x", 0, "y"], inc, nested) x  1,895,807 ops/sec ±0.91% (93 runs sampled)
+R.over(r_0_x_0_y, inc, nested)          x    456,882 ops/sec ±0.60% (95 runs sampled)
+
+L.remove("y", xyz)                      x  7,887,816 ops/sec ±0.93% (91 runs sampled)
+R.dissoc("y", xyz)                      x 12,281,113 ops/sec ±0.85% (90 runs sampled)
 ```
 
-At the time of writing, partial lenses `get` operation has been optimized, while
-`set`, `modify` and `remove` have not and there is clearly room for improvement.
+At the time of writing, various operations on *partial lenses have been
+optimized for common cases*, but there is definitely still room for improvement.
 
 The above benchmarks use the following definitions:
 
@@ -1149,6 +1152,8 @@ const nested = [{x: [{y: 1}]}]
 const r_1 = R.lensIndex(1)
 const r_y = R.lensProp("y")
 const r_0_x_0_y = R.compose(R.lensIndex(0), R.lensProp("x"), R.lensIndex(0), R.lensProp("y"))
+
+const inc = x => x + 1
 ```
 
 ### Types
