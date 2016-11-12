@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.0.0
+
+* Removed previously deprecated functionality: `removeAll`.
+
 ## 3.9.2
 
 Although never explicitly specified in documentation, many of the operations and

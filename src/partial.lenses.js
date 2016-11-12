@@ -142,13 +142,6 @@ export function compose(...lenses) {
   }
 }
 
-export const removeAll = curry2((lens, data) => {
-  warn("`removeAll` is deprecated and will be removed in next major version --- use a different approach.")
-  while (get(lens, data) !== undefined)
-    data = remove(lens, data)
-  return data
-})
-
 function setI(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)

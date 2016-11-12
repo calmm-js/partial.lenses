@@ -241,10 +241,6 @@ describe("L.filter", () => {
   empties.filter(x => !(x instanceof Array)).forEach(invalid => testEq(`L.set(L.filter(R.always(true)), [1,"2",3], ${show(invalid)})`, [1,"2",3]))
 })
 
-describe("L.removeAll", () => {
-  testEq('L.removeAll(L.find(x => x < 2), [3,1,4,1,5,9,2])', [3,4,5,9,2])
-})
-
 describe("L.append", () => {
   testEq('L.remove(L.append, "anything")', undefined)
   empties.forEach(invalid => testEq(`L.set(L.append, "a", ${show(invalid)})`, ["a"]))
@@ -296,7 +292,6 @@ describe("L.pick", () => {
   testEq('L.set([L.pick({x: "b", y: "a"}), "x"], 3, {a: [2], b: 1})', {a: [2], b: 3})
   testEq('L.remove([L.pick({x: "b", y: "a"}), "y"], {a: [2], b: 1})', {b: 1})
   testEq('L.remove([L.pick({x: "b"}), "x"], {a: [2], b: 1})', {a: [2]})
-  testEq('L.removeAll([L.pick({x: "b", y: "a"}), L.choice("y", "x")], {a: [2], b: 1})', undefined)
   testEq('L.get(L.pick({x: 0, y: 1}), ["a", "b"])', {x: "a", y: "b"})
 })
 
