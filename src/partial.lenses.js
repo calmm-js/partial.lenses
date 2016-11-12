@@ -84,15 +84,25 @@ function dropped(xs) {
 
 const empty = {}
 
-function deleteKey(k, o) {
-  const r = Object.assign({}, o)
-  delete r[k]
-  return dropped(r)
+function deleteKey(kx, o) {
+  let notEmpty = empty
+  const r = {}
+  for (const k in o)
+    if (k !== kx)
+      notEmpty = r[k] = o[k]
+  return notEmpty === empty ? undefined : r
 }
 
-function setKey(k, v, o) {
-  const r = Object.assign({}, o)
-  r[k] = v
+function setKey(kx, v, o) {
+  let notSet = empty
+  const r = {}
+  for (const k in o)
+    if (k !== kx)
+      r[k] = o[k]
+    else
+      notSet = r[k] = v
+  if (notSet === empty)
+    r[kx] = v
   return r
 }
 
