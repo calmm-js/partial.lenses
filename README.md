@@ -1140,7 +1140,8 @@ R.dissoc("y", xyz)                      x 12,281,113 ops/sec ±0.85% (90 runs sa
 ```
 
 At the time of writing, various operations on *partial lenses have been
-optimized for common cases*, but there is definitely still room for improvement.
+optimized for common cases*, but there is definitely a lot of room for
+improvement.
 
 The above benchmarks use the following definitions:
 
