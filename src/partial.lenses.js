@@ -153,7 +153,7 @@ function setI(l, x, s) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
     case "function": return lifted(l)(Ident)(() => Ident(x))(s).value
-    default:         return composed(l)(Ident)(() => Ident(x))(s).value
+    default:         return modifyComposedI(l, () => x, s)
   }
 }
 
@@ -173,12 +173,49 @@ function getI(l, s) {
   }
 }
 
+function modifyComposedI(ls, x2x, s0) {
+  let n = ls.length
+
+  let r = s0
+  const ss = []
+
+  for (let i=0; i<n; ++i) {
+    ss.push(r)
+    const l = ls[i]
+    switch (typeof l) {
+      case "string":
+        r = getProp(l, r)
+        break
+      case "number":
+        r = getIndex(l, r)
+        break
+      default:
+        r = composed(ls.slice(i))(Ident)(y => Ident(x2x(y)))(r).value
+        n = i
+        break
+    }
+  }
+
+  if (n === ls.length)
+    r = x2x(r)
+
+  while (0 <= --n) {
+    const l = ls[n]
+    switch (typeof l) {
+      case "string": r = setProp(l, r, ss[n]); break
+      case "number": r = setIndex(l, r, ss[n]); break
+    }
+  }
+
+  return r
+}
+
 function modifyI(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
     case "function": return lifted(l)(Ident)(y => Ident(x2x(y)))(s).value
-    default:         return composed(l)(Ident)(y => Ident(x2x(y)))(s).value
+    default:         return modifyComposedI(l, x2x, s)
   }
 }
 
