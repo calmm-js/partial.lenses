@@ -1104,6 +1104,33 @@ With partial lenses you can robustly compose a path lens from prop lenses
 `L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
 `[p0, ...ps]`.
 
+### Types
+
+To illustrate the idea we could give lenses the naive type definition
+
+```haskell
+type Lens s a = (s -> a, a -> s -> s)
+```
+
+defining a lens as a pair of a getter and a setter.  The type of a partial lens
+would then be
+
+```haskell
+type PLens s a = (Maybe s -> Maybe a, Maybe a -> Maybe s -> Maybe s)
+```
+
+which we can simplify to
+
+```haskell
+type PLens s a = Lens (Maybe s) (Maybe a)
+```
+
+This means that partial lenses can be composed, viewed, mapped over and set
+using the same operations as with ordinary lenses.  However, primitive partial
+lenses (e.g. [`L.prop`](#prop)) are not necessarily the same as primitive
+ordinary lenses
+(e.g. Ramda's [`R.lensProp`](http://ramdajs.com/docs/#lensProp)).
+
 ### Performance
 
 Here are a few benchmarks on partial lenses (4.0.0) and some roughly equivalent
@@ -1156,30 +1183,3 @@ const r_0_x_0_y = R.compose(R.lensIndex(0), R.lensProp("x"), R.lensIndex(0), R.l
 
 const inc = x => x + 1
 ```
-
-### Types
-
-To illustrate the idea we could give lenses the naive type definition
-
-```haskell
-type Lens s a = (s -> a, a -> s -> s)
-```
-
-defining a lens as a pair of a getter and a setter.  The type of a partial lens
-would then be
-
-```haskell
-type PLens s a = (Maybe s -> Maybe a, Maybe a -> Maybe s -> Maybe s)
-```
-
-which we can simplify to
-
-```haskell
-type PLens s a = Lens (Maybe s) (Maybe a)
-```
-
-This means that partial lenses can be composed, viewed, mapped over and set
-using the same operations as with ordinary lenses.  However, primitive partial
-lenses (e.g. [`L.prop`](#prop)) are not necessarily the same as primitive
-ordinary lenses
-(e.g. Ramda's [`R.lensProp`](http://ramdajs.com/docs/#lensProp)).
