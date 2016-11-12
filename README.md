@@ -403,32 +403,6 @@ L.remove(["a", "b"], {a: {b: 1}, x: {y: 2}})
 // {x: {y: 2}}
 ```
 
-#### <a name="removeAll"></a>[`L.removeAll(l, s)`](#removeAll "L.removeAll :: PLens s a -> Maybe s -> Maybe s")
-
-**`L.removeAll` is deprecated and will be removed.  Use a different
-[approach](#should-i-use-lenses-for).**
-
-`L.removeAll(l, s)` removes all the non `undefined` items targeted by the lens
-`l` from `s`.  This only makes sense for a lens that
-* can potentially focus on more than one item and
-* will focus on `undefined` when it doesn't find an item to focus on.
-
-For example:
-
-```js
-L.removeAll(L.findWith("a"), [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
-// [ { x: 1 }, { y: 4 }, { z: 5 } ]
-```
-
-Although traversals are still considered experimental, one alternative to
-`L.removeAll` is to use the [`L.sequence`](#sequence) traversal
-and [`L.remove`](#remove):
-
-```js
-L.remove([L.sequence, "a"], [{x: 1}, {a: 2}, {a: 3, y: 4}, {z: 5}])
-// [ { x: 1 }, { y: 4 }, { z: 5 } ]
-```
-
 #### <a name="set"></a>[`L.set(l, x, s)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
 `L.set(l, x, s)` is equivalent to [`L.modify(l, () => x, s)`](#modify).
