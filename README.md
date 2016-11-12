@@ -1130,7 +1130,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 Here are a few benchmarks on partial lenses (3.9.4) and some roughly equivalent
 operations using Ramda (0.22.1).
 
-```
+```js
 L.get(1, xs)                       x 33,742,994 ops/sec ±0.50% (91 runs sampled)
 R.nth(1, xs)                       x  3,760,353 ops/sec ±0.74% (89 runs sampled)
 R.view(r_1, xs)                    x  1,951,008 ops/sec ±0.85% (95 runs sampled)
