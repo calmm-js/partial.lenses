@@ -650,6 +650,8 @@ L.modify(L.identity, f, x) = f(x)
 * When setting to `undefined`, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
+* When setting a defined value to an index that is higher than the length of the
+  array, the missing elements will be filled with `null`.
 
 **NOTE:** There is a gotcha related to removing elements from an array.  Namely,
 when the last element is removed, the result is `undefined` rather than an empty

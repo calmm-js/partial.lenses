@@ -74,11 +74,7 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 
 //
 
-function dropped(xs) {
-  for (const _ in xs)
-    return xs
-  return undefined
-}
+const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 //
 
@@ -112,7 +108,7 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
-const filtered = toPartial(xs => dropped(xs.filter(x => x !== undefined)))
+const filtered = toPartial(xs => emptyArrayToUndefined(xs.filter(x => x !== undefined)))
 
 //
 
@@ -269,15 +265,15 @@ function setIndex(i, x, xs) {
     if (!isArray(xs))
       return undefined
     if (xs.length <= i)
-      return dropped(xs)
+      return emptyArrayToUndefined(xs)
     const ys = xs.slice(0)
     ys.splice(i, 1)
-    return dropped(ys)
+    return emptyArrayToUndefined(ys)
   } else {
     if (!isArray(xs))
-      return Array(i).concat([x])
+      return Array(i).fill(null).concat([x])
     if (xs.length <= i)
-      return xs.concat(Array(i - xs.length), [x])
+      return xs.concat(Array(i - xs.length).fill(null), [x])
     const ys = xs.slice(0)
     ys[i] = x
     return ys
@@ -290,7 +286,7 @@ export const append = lensI(snd, (x, xs) =>
   x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
-  dropped(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
+  emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
 
 export const augment = template => lensI(
   x => {

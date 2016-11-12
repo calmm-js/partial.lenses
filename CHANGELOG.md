@@ -3,6 +3,7 @@
 ## 4.0.0
 
 * Removed previously deprecated functionality: `removeAll`.
+* Sparse arrays are no longer supported.
 
 ## 3.9.2
 

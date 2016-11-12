@@ -84,7 +84,7 @@ describe("interop", () => {
 })
 
 describe('L.find', () => {
-  testEq('L.set(L.find(R.equals(2)), undefined, [,,2])', undefined)
+  testEq('L.set(L.find(R.equals(2)), undefined, [2])', undefined)
   testEq('L.set(L.find(R.equals(2)))(undefined, [1, 2, 3])', [1, 3])
   testEq('L.set(L.find(R.equals(2)))(4)([1, 2, 3])', [1, 4, 3])
   testEq('L.set(L.find(R.equals(2)), 2)([1, 4, 3])', [1, 4, 3, 2])
@@ -108,11 +108,11 @@ describe('L.index', () => {
     testThrows('L.index()')
   }
   testEq('L.modify(1, x => x + 1, [1, 2])', [1, 3])
-  testEq('L.set([1], undefined, [,,])', undefined)
-  testEq('L.set([L.required([]), 1], undefined, [,,])', [])
+  testEq('L.set([0], undefined, [null])', undefined)
+  testEq('L.set([L.required([]), 0], undefined, [null])', [])
   testEq('L.set([1], 4, [1, 2, 3])', [1, 4, 3])
-  testEq('L.set(2, 4, undefined)', [,, 4])
-  testEq('L.set([2], 4, [1])', [1,, 4])
+  testEq('L.set(2, 4, undefined)', [null, null, 4])
+  testEq('L.set([2], 4, [1])', [1, null, 4])
   testEq('L.remove([0], [1, 2, 3])', [2, 3])
   testEq('L.set([1], undefined, [1, 2, 3])', [1, 3])
   testEq('L.set(2, undefined, [1, 2, 3])', [1, 2])
