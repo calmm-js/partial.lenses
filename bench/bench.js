@@ -9,6 +9,8 @@ const r_1 = R.lensIndex(1)
 const r_y = R.lensProp("y")
 const r_0_x_0_y = R.compose(R.lensIndex(0), R.lensProp("x"), R.lensIndex(0), R.lensProp("y"))
 
+const inc = x => x + 1
+
 const bs = [
   'L.get(1, xs)',
   'R.nth(1, xs)',
@@ -31,6 +33,9 @@ const bs = [
 
   'L.set([0, "x", 0, "y"], 0, nested)',
   'R.set(r_0_x_0_y, 0, nested)',
+
+  'L.modify([0, "x", 0, "y"], inc, nested)',
+  'R.over(r_0_x_0_y, inc, nested)',
 
   'L.remove("y", xyz)',
   'R.dissoc("y", xyz)',
