@@ -15,10 +15,9 @@ existing part to `undefined` removes it.  Partial lenses are defined in such a
 way that operations [`compose`](#compose) and one can conveniently and robustly
 operate on deeply nested data structures.
 
-Aside from partial lenses, this library also
-supports [isomorphisms](#isomorphisms) and [traversals](#traversals).
-Isomorphisms have an [`inverse`](#inverse) and traversals can target multiple
-elements.
+Aside from partial lenses, this library also provides experimental support
+for [isomorphisms](#isomorphisms) and [traversals](#traversals).  Isomorphisms
+have an [`inverse`](#inverse) and traversals can target multiple elements.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
