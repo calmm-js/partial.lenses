@@ -1,4 +1,6 @@
-[ [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
+[ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
+
+[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
 Lenses are primarily a convenient abstraction for performing updates on
 individual elements of immutable data structures.  This library provides a
@@ -15,7 +17,72 @@ existing part to `undefined` removes it.  Partial lenses are defined in such a
 way that operations [`compose`](#compose) and one can conveniently and robustly
 operate on deeply nested data structures.
 
-[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
+Aside from partial lenses, this library also
+supports [isomorphisms](#isomorphisms) and [traversals](#traversals).
+Isomorphisms have an [`inverse`](#inverse) and traversals can target multiple
+elements.
+
+## Contents
+
+* [Tutorial](#tutorial)
+  * [Querying data](#querying-data)
+  * [Updating data](#updating-data)
+  * [Inserting data](#inserting-data)
+  * [Removing data](#removing-data)
+  * [Exercises](#exercises)
+  * [Shorthands](#shorthands)
+  * [Systematic decomposition](#systematic-decomposition)
+  * [Example: An array of ids as boolean flags](#example-an-array-of-ids-as-boolean-flags)
+  * [Food for thought: BST as a lens](#food-for-thought-bst-as-a-lens)
+* [Reference](#reference)
+  * [Usage](#usage)
+  * [Operations on lenses](#operations-on-lenses)
+    * [`L.get(l, s)`](#get)
+    * [`L.modify(l, x2x, s)`](#modify)
+    * [`L.remove(l, s)`](#remove)
+    * [`L.set(l, x, s)`](#set)
+  * [Lens combinators](#lens-combinators)
+    * [`L.append`](#append)
+    * [`L.augment({prop: obj => val, ...props})`](#augment)
+    * [`L.chain(a2bPLens, aPLens)`](#chain)
+    * [`L.choose(maybeValue => PLens)`](#choose)
+    * [`L.choice(...ls)`](#choice)
+    * [`L.compose(...ls)`](#compose)
+    * [`L.defaults(out)`](#defaults)
+    * [`L.define(value)`](#define)
+    * [`L.filter(predicate)`](#filter)
+    * [`L.find(predicate)`](#find)
+    * [`L.findWith(...ls)`](#findWith)
+    * [`L.index(integer)`](#indes)
+    * [`L.just(value)`](#just)
+    * [`L.lens(get, set)`](#lens)
+    * [`L.normalize(value => value)`](#normalize)
+    * [`L.nothing`](#nothing)
+    * [`L.orElse(backup, primary)`](#orElse)
+    * [`L.pick({p1: l1, ...pls})`](#pick)
+    * [`L.prop(string)`](#prop)
+    * [`L.props(...strings)`](#props)
+    * [`L.replace(inn, out)`](#replace)
+    * [`L.required(inn)`](#required)
+    * [`L.valueOr(out)`](#valueOr)
+  * [Interop](#interop)
+    * [`L.fromRamda(lens)`](#fromRamda)
+    * [`L.toRamda(plens)`](#toRamda)
+  * [Isomorphism combinators and operations](#isomorphisms)
+    * [`L.fromArrayBy(id)`](#fromArrayBy)
+    * [`L.identity`](#identity)
+    * [`L.inverse`](#inverse)
+  * [Traversal combinators and operations](#traversals)
+    * [`L.collect(t, s)`](#collect)
+    * [`L.optional`](#optional)
+    * [`L.sequence`](#sequence)
+  * [Debugging](#debugging)
+    * [`L.log(...labels)`](#log)
+* [Background](#background)
+  * [Should I use lenses for...?](#should-i-use-lenses-for)
+  * [Motivation](#motivation)
+  * [Types](#types)
+  * [Performance](#performance)
 
 ## Tutorial
 
