@@ -268,7 +268,7 @@ function setProp(k, v, o) {
         if (l !== k)
           r[l] = o[l]
         else {
-          r[l] = v
+          r[k] = v
           k = undefined
         }
     if (k !== undefined)
