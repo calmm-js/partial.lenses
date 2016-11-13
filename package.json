@@ -1,7 +1,7 @@
 {
   "name": "partial.lenses",
   "version": "4.1.0",
-  "description": "Partial lenses",
+  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON",
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node bench/bench.js",
@@ -17,6 +17,8 @@
   "keywords": [
     "json",
     "lens",
+    "isomorphism",
+    "traversal",
     "partial",
     "ramda"
   ],
