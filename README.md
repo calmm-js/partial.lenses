@@ -891,7 +891,21 @@ that traversals are not compatible with Ramda.
 
 ### <a name="isomorphisms"></a>Isomorphism combinators and operations
 
-Aside from lenses, there is experimental support for isomorphisms.
+Aside from lenses, there is experimental support for isomorphisms.  A lens is an
+isomorphism iff the following equation holds for all `x` and `y` in the domain
+and range, respectively, of the lens:
+
+```js
+x === L.set(iso, L.get(iso, x), undefined)
+y === L.get(iso, L.set(iso, y, undefined))
+```
+
+The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
+undefined)` are each others inverses.
+
+You can create new isomorphisms using [`L.lens`](#lens) and by composing
+existing isomorphism, because the composition of two isomorphisms is also an
+isomorphism.
 
 #### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
 
