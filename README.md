@@ -611,37 +611,6 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
 
-#### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PLens [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
-
-**`L.fromArrayBy` is experimental and might be removed, renamed or changed
-semantically before next major release.**
-
-`L.fromArrayBy(id)` (is an isomorphism that) converts an array of objects
-containing `id` properties into an object with the `id`s as keys and the array
-elements as values.
-
-For example:
-
-```js
-L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
-// { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
-L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
-// [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
-
-```
-
-#### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PLens s s")
-
-`L.identity` is the identity element of lens composition.  The following
-equations characterize `L.identity`:
-
-```js
-      L.get(L.identity, x) = x
-L.modify(L.identity, f, x) = f(x)
-  L.compose(L.identity, l) = l
-  L.compose(l, L.identity) = l
-```
-
 #### <a name="index"></a>[`L.index(integer)`](#index "L.index :: Integer -> PLens [a] a")
 
 `L.index(integer)` or `integer` focuses on the specified array index.
@@ -919,6 +888,69 @@ this does not change the behavior of the lens on `undefined` values.
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on `undefined` values.  Also note
 that traversals are not compatible with Ramda.
+
+### <a name="isomorphisms"></a>Isomorphism combinators and operations
+
+Aside from lenses, there is experimental support for isomorphisms.  A lens is an
+isomorphism iff the following equation holds for all `x` and `y` in the domain
+and range, respectively, of the lens:
+
+```js
+x === L.set(iso, L.get(iso, x), undefined)
+y === L.get(iso, L.set(iso, y, undefined))
+```
+
+The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
+undefined)` are inverses of each other.
+
+You can create new isomorphisms using [`L.lens`](#lens) and by composing
+existing isomorphism, because the composition of two isomorphisms is also an
+isomorphism.
+
+#### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
+
+**`L.fromArrayBy` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.fromArrayBy(id)` is an isomorphism that converts an array of objects
+containing `id` properties into an object with the `id`s as keys and the array
+elements as values.
+
+For example:
+
+```js
+L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
+// { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
+L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
+// [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
+```
+
+#### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PIso s s")
+
+`L.identity` is the identity element of lens composition and also the identity
+isomorphism.  The following equations characterize `L.identity`:
+
+```js
+      L.get(L.identity, x) = x
+L.modify(L.identity, f, x) = f(x)
+  L.compose(L.identity, l) = l
+  L.compose(l, L.identity) = l
+```
+
+#### <a name="inverse"></a>[`L.inserse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+
+**`L.inverse` is experimental and might be removed, renamed or changed
+semantically before next major release.**
+
+`L.inverse(iso)` returns the inverse of the given isomorphism.  Note that this
+operation only works on isomorphisms.
+
+For example:
+
+```js
+L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, {id: "b", x: 2}])
+// [ { id: 'a', x: 1 }, { id: 'b', x: 2 } ]
+```
 
 ### <a name="traversals"></a>Traversal combinators and operations
 

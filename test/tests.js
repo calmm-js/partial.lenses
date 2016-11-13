@@ -63,6 +63,7 @@ describe("arities", () => {
   testEq('L.fromRamda.length', 1)
   testEq('L.get.length', 2)
   testEq('L.index.length', 1)
+  testEq('L.inverse.length', 1)
   testEq('L.lens.length', 2)
   testEq('L.modify.length', 3)
   testEq('L.normalize.length', 1)
@@ -320,6 +321,14 @@ describe("L.fromArrayBy", () => {
   testEq('L.remove([L.fromArrayBy("id"), "1"], [{id: 1}, {id: 2}, {id: 3}])', [{id: 2}, {id: 3}])
   testEq('L.remove([L.fromArrayBy("id"), "3"], [{id: 1}, {id: 2}, {id: 3}])', [{id: 1}, {id: 2}])
   testEq('L.remove([L.fromArrayBy("id"), "3"], [{id: 3}])', undefined)
+})
+
+describe("L.inverse", () => {
+  testEq('L.get(L.inverse(L.fromArrayBy("id")), undefined)', undefined)
+  testEq('L.get(L.inverse(L.fromArrayBy("id")), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})', [{id: "a", x: 1}, {id: "b", x: 2}])
+  testEq('L.set([L.inverse(L.fromArrayBy("id")), 2], {id: "c", x: 3}, {a: {id: "a", x: 1}, b: {id: "b", x: 2}})', {a: {id: "a", x: 1}, b: {id: "b", x: 2}, c: {id: "c", x: 3}})
+  testEq('L.remove([L.inverse(L.fromArrayBy("id")), 0], {a: {id: "a", x: 1}, b: {id: "b", x: 2}})', {b: {id: "b", x: 2}})
+  testEq('L.remove([L.inverse(L.fromArrayBy("id")), 0], {a: {id: "a", x: 1}})', undefined)
 })
 
 const BST = {
