@@ -999,7 +999,7 @@ operation only works on isomorphisms.
 For example:
 
 ```js
-L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, {id: "b", x: 2}])
+L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
 // [ { id: 'a', x: 1 }, { id: 'b', x: 2 } ]
 ```
 
