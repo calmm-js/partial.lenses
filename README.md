@@ -941,6 +941,24 @@ L.remove(L.valueOr(0), 1)
 // undefined
 ```
 
+### <a name="isomorphisms"></a>Isomorphism combinators and operations
+
+Aside from lenses, there is experimental support for isomorphisms.  A lens is an
+isomorphism iff the following equations hold for all `x` and `y` in the domain
+and range, respectively, of the lens:
+
+```js
+L.set(iso, L.get(iso, x), undefined) = x
+L.get(iso, L.set(iso, y, undefined)) = y
+```
+
+The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
+undefined)` are inverses of each other.
+
+You can create new isomorphisms using [`L.lens`](#lens) and by composing
+existing isomorphism, because the composition of two isomorphisms is also an
+isomorphism.
+
 #### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
 
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
@@ -1089,24 +1107,6 @@ this does not change the behavior of the lens on `undefined` values.
 `L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
 this does not change the behavior of the lens on `undefined` values.  Also note
 that traversals are not compatible with Ramda.
-
-### <a name="isomorphisms"></a>Isomorphism combinators and operations
-
-Aside from lenses, there is experimental support for isomorphisms.  A lens is an
-isomorphism iff the following equations hold for all `x` and `y` in the domain
-and range, respectively, of the lens:
-
-```js
-L.set(iso, L.get(iso, x), undefined) = x
-L.get(iso, L.set(iso, y, undefined)) = y
-```
-
-The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
-undefined)` are inverses of each other.
-
-You can create new isomorphisms using [`L.lens`](#lens) and by composing
-existing isomorphism, because the composition of two isomorphisms is also an
-isomorphism.
 
 ## Background
 
