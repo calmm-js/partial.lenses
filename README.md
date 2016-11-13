@@ -937,7 +937,7 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 ```
 
-#### <a name="inverse"></a>[`L.inserse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+#### <a name="inverse"></a>[`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
 
 **`L.inverse` is experimental and might be removed, renamed or changed
 semantically before next major release.**
