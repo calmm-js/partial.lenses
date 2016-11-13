@@ -295,9 +295,9 @@ const t = R.reduce(
    {key: "a", value: 2},
    {key: "b", value: 3}])
 t
-// { smaller: { greater: { value: 3, key: 'b' }, value: 2, key: 'a' },
+// { key: 'c',
 //   value: 1,
-//   key: 'c' }
+//   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
 ```
 
 However, the above `search` lens constructor does not maintain the BST structure
@@ -305,10 +305,8 @@ when values are being removed:
 
 ```js
 L.remove(valueOf('c'), t)
-// { smaller: { greater: { value: 3, key: 'b' },
-//              value: 2,
-//              key: 'a' },
-//   key: 'c' }
+// { key: 'c',
+//   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
 ```
 
 How do we fix this?  We could check and transform the data structure to a BST
@@ -332,7 +330,7 @@ Now we can also remove values from a binary tree:
 
 ```js
 L.remove(valueOf('c'), t)
-// { greater: { value: 3, key: 'b' }, value: 2, key: 'a' }
+// { key: 'a', value: 2, greater: { key: 'b', value: 3 } }
 ```
 
 As an exercise, you could improve the normalization to better maintain balance.
@@ -489,7 +487,8 @@ L.get(majorAxis, {x: 1, y: 2})
 L.get(majorAxis, {x: -3, y: 1})
 // -3
 L.modify(majorAxis, R.negate, {x: 2, y: -3})
-// { y: 3, x: 2 }
+// { x: 2, y: 3 }
+
 ```
 
 #### <a name="choice"></a>[`L.choice(...ls)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
@@ -627,7 +626,8 @@ For example:
 L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
 // { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
 L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
-// [ { id: 1, value: 2 }, { value: 5, id: 3 } ]
+// [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
+
 ```
 
 #### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PLens s s")
@@ -833,6 +833,8 @@ be an object.
 * When setting property to `undefined`, the property is removed from the result.
   If the result would be an empty object, the whole result will be `undefined`.
 
+When setting or removing properties, the order of keys is preserved.
+
 #### <a name="props"></a>[`L.props(...strings)`](#props "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
 
 `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
@@ -846,7 +848,7 @@ ignored.
 
 ```js
 L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
-// { z: 3, x: 4 }
+// { x: 4, z: 3 }
 ```
 
 #### <a name="replace"></a>[`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
@@ -956,7 +958,8 @@ As an example, consider the difference between:
 
 ```js
 L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
-// [ { x: 3 }, { x: 3, y: 2 } ]
+// [ { x: 3 }, { y: 2, x: 3 } ]
+
 ```
 
 and:
