@@ -5,9 +5,11 @@ const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
 const nested = [{x: [{y: 1}]}]
 
+const r_0 = R.lensIndex(0)
 const r_1 = R.lensIndex(1)
+const r_x = R.lensProp("x")
 const r_y = R.lensProp("y")
-const r_0_x_0_y = R.compose(R.lensIndex(0), R.lensProp("x"), R.lensIndex(0), R.lensProp("y"))
+const r_0_x_0_y = R.compose(r_0, r_x, r_0, r_y)
 
 const inc = x => x + 1
 
@@ -36,6 +38,9 @@ const bs = [
 
   'L.modify([0, "x", 0, "y"], inc, nested)',
   'R.over(r_0_x_0_y, inc, nested)',
+
+  'L.remove(1, xs)',
+  'R.remove(1, 1, xs)',
 
   'L.remove("y", xyz)',
   'R.dissoc("y", xyz)',
