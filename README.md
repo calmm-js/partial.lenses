@@ -77,7 +77,7 @@ elements.
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
   * [Interop](#interop)
     * [`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
-    * [`L.toRamda(plens)`](#toRamda"L.toRamda :: PLens s a -> Lens s a")
+    * [`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
 * [Background](#background)
   * [Should I use lenses for...?](#should-i-use-lenses-for)
   * [Motivation](#motivation)
