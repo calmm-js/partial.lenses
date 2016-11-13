@@ -47,8 +47,10 @@ const bs = [
 
   'L.get(L.defaults(1), undefined)',
   'L.get(L.defaults(1), 2)',
+
   'L.get(L.define(1), undefined)',
   'L.get(L.define(1), 2)',
+
   'L.get(L.valueOr(1), undefined)',
   'L.get(L.valueOr(1), null)',
   'L.get(L.valueOr(1), 2)',
