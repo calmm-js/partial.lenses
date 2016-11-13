@@ -896,8 +896,8 @@ isomorphism iff the following equations hold for all `x` and `y` in the domain
 and range, respectively, of the lens:
 
 ```js
-x === L.set(iso, L.get(iso, x), undefined)
-y === L.get(iso, L.set(iso, y, undefined))
+L.set(iso, L.get(iso, x), undefined) = x
+L.get(iso, L.set(iso, y, undefined)) = y
 ```
 
 The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
