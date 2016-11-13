@@ -1188,13 +1188,18 @@ The above benchmarks use the following definitions:
 ```js
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
-const nested = [{x: [{y: 1}]}]
+const axay = [{x: [{y: 1}]}]
 
-const r_0 = R.lensIndex(0)
-const r_1 = R.lensIndex(1)
-const r_x = R.lensProp("x")
-const r_y = R.lensProp("y")
-const r_0_x_0_y = R.compose(r_0, r_x, r_0, r_y)
+const xyzn = {x: {y: {z: 1}}}
+
+const l_0 = R.lensIndex(0)
+const l_1 = R.lensIndex(1)
+const l_x = R.lensProp("x")
+const l_y = R.lensProp("y")
+const l_z = R.lensProp("z")
+const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
+const l_xyz = R.lensPath(["x", "y", "z"])
+const l_x_y_z = R.compose(l_x, l_y, l_z)
 
 const inc = x => x + 1
 ```
