@@ -107,6 +107,10 @@ describe('L.index', () => {
     testThrows('L.index(-1)')
     testThrows('L.index()')
   }
+  testEq('L.remove(1, "lol")', undefined)
+  testEq('L.set(-11, 0, [])', undefined)
+  testEq('L.set(-11, 0, [1])', [1])
+  testEq('L.set(-1, 0, "lol")', undefined)
   testEq('L.modify(1, x => x + 1, [1, 2])', [1, 3])
   testEq('L.set([0], undefined, [null])', undefined)
   testEq('L.set([L.required([]), 0], undefined, [null])', [])
