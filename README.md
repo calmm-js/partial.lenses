@@ -892,7 +892,7 @@ that traversals are not compatible with Ramda.
 ### <a name="isomorphisms"></a>Isomorphism combinators and operations
 
 Aside from lenses, there is experimental support for isomorphisms.  A lens is an
-isomorphism iff the following equation holds for all `x` and `y` in the domain
+isomorphism iff the following equations hold for all `x` and `y` in the domain
 and range, respectively, of the lens:
 
 ```js
