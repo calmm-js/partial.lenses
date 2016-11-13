@@ -108,7 +108,8 @@ const toPartial = transform => x => undefined === x ? x : transform(x)
 
 //
 
-const filtered = toPartial(xs => emptyArrayToUndefined(xs.filter(x => x !== undefined)))
+const isDefined = x => x !== undefined
+const filtered = toPartial(xs => emptyArrayToUndefined(xs.filter(isDefined)))
 
 //
 
