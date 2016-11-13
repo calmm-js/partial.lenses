@@ -898,7 +898,7 @@ Aside from lenses, there is experimental support for isomorphisms.
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
 semantically before next major release.**
 
-`L.fromArrayBy(id)` (is an isomorphism that) converts an array of objects
+`L.fromArrayBy(id)` is an isomorphism that converts an array of objects
 containing `id` properties into an object with the `id`s as keys and the array
 elements as values.
 
@@ -913,8 +913,8 @@ L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value:
 
 #### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PIso s s")
 
-`L.identity` is the identity element of lens composition.  The following
-equations characterize `L.identity`:
+`L.identity` is the identity element of lens composition and also the identity
+isomorphism.  The following equations characterize `L.identity`:
 
 ```js
       L.get(L.identity, x) = x
@@ -929,7 +929,7 @@ L.modify(L.identity, f, x) = f(x)
 semantically before next major release.**
 
 `L.inverse(iso)` returns the inverse of the given isomorphism.  Note that this
-operation does not work on lenses.
+operation only works on isomorphisms.
 
 For example:
 
