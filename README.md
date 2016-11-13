@@ -65,9 +65,6 @@ elements.
     * [`L.replace(inn, out)`](#replace)
     * [`L.required(inn)`](#required)
     * [`L.valueOr(out)`](#valueOr)
-  * [Interop](#interop)
-    * [`L.fromRamda(lens)`](#fromRamda)
-    * [`L.toRamda(plens)`](#toRamda)
   * [Isomorphism combinators and operations](#isomorphisms)
     * [`L.fromArrayBy(id)`](#fromArrayBy)
     * [`L.identity`](#identity)
@@ -78,6 +75,9 @@ elements.
     * [`L.sequence`](#sequence)
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log)
+  * [Interop](#interop)
+    * [`L.fromRamda(lens)`](#fromRamda)
+    * [`L.toRamda(plens)`](#toRamda)
 * [Background](#background)
   * [Should I use lenses for...?](#should-i-use-lenses-for)
   * [Motivation](#motivation)
@@ -941,39 +941,6 @@ L.remove(L.valueOr(0), 1)
 // undefined
 ```
 
-### Interop
-
-Conversions between lens libraries.
-
-#### <a name="fromRamda"></a>[`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
-
-`L.fromRamda(lens)` converts the given Ramda lens to a partial lens.  Note that
-this does not change the behavior of the lens on `undefined` values.
-
-#### <a name="toRamda"></a>[`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
-
-`L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
-this does not change the behavior of the lens on `undefined` values.  Also note
-that traversals are not compatible with Ramda.
-
-### <a name="isomorphisms"></a>Isomorphism combinators and operations
-
-Aside from lenses, there is experimental support for isomorphisms.  A lens is an
-isomorphism iff the following equations hold for all `x` and `y` in the domain
-and range, respectively, of the lens:
-
-```js
-L.set(iso, L.get(iso, x), undefined) = x
-L.get(iso, L.set(iso, y, undefined)) = y
-```
-
-The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
-undefined)` are inverses of each other.
-
-You can create new isomorphisms using [`L.lens`](#lens) and by composing
-existing isomorphism, because the composition of two isomorphisms is also an
-isomorphism.
-
 #### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
 
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
@@ -1107,6 +1074,39 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // set x: "11"
 // { x: '11' }
 ```
+
+### Interop
+
+Conversions between lens libraries.
+
+#### <a name="fromRamda"></a>[`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
+
+`L.fromRamda(lens)` converts the given Ramda lens to a partial lens.  Note that
+this does not change the behavior of the lens on `undefined` values.
+
+#### <a name="toRamda"></a>[`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
+
+`L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
+this does not change the behavior of the lens on `undefined` values.  Also note
+that traversals are not compatible with Ramda.
+
+### <a name="isomorphisms"></a>Isomorphism combinators and operations
+
+Aside from lenses, there is experimental support for isomorphisms.  A lens is an
+isomorphism iff the following equations hold for all `x` and `y` in the domain
+and range, respectively, of the lens:
+
+```js
+L.set(iso, L.get(iso, x), undefined) = x
+L.get(iso, L.set(iso, y, undefined)) = y
+```
+
+The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
+undefined)` are inverses of each other.
+
+You can create new isomorphisms using [`L.lens`](#lens) and by composing
+existing isomorphism, because the composition of two isomorphisms is also an
+isomorphism.
 
 ## Background
 
