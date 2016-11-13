@@ -80,28 +80,6 @@ const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 const empty = {}
 
-function deleteKey(kx, o) {
-  let notEmpty = empty
-  const r = {}
-  for (const k in o)
-    if (k !== kx)
-      notEmpty = r[k] = o[k]
-  return notEmpty === empty ? undefined : r
-}
-
-function setKey(kx, v, o) {
-  let notSet = empty
-  const r = {}
-  for (const k in o)
-    if (k !== kx)
-      r[k] = o[k]
-    else
-      notSet = r[k] = v
-  if (notSet === empty)
-    r[kx] = v
-  return r
-}
-
 //
 
 const toPartial = transform => x => undefined === x ? x : transform(x)
@@ -273,9 +251,32 @@ export const prop = assert("a string", isProp)
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
 function setProp(k, v, o) {
-  const oOut = isObject(o) ? o : empty
-  return v === undefined ? deleteKey(k, oOut) : setKey(k, v, oOut)
+  if (v === undefined) {
+    let r
+    if (isObject(o))
+      for (const l in o)
+        if (l !== k) {
+          if (!r)
+            r = {}
+          r[l] = o[l]
+        }
+    return r
+  } else {
+    const r = {}
+    if (isObject(o))
+      for (const l in o)
+        if (l !== k)
+          r[l] = o[l]
+        else {
+          r[l] = v
+          v = undefined
+        }
+    if (v !== undefined)
+      r[k] = v
+    return r
+  }
 }
+
 const liftProp = k => _c => inner => o =>
   inner(getProp(k, o)).map(v => setProp(k, v, o))
 
