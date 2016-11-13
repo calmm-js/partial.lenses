@@ -137,6 +137,9 @@ describe('L.prop', () => {
     testThrows('L.prop(x => x)')
     testThrows('L.prop()')
   }
+  testEq('Object.keys(L.set("y", 1, {x: 2, z: 3}))', ["x", "z", "y"])
+  testEq('Object.keys(L.set("y", 1, {x: 2, y: 0, z: 3}))', ["x", "y", "z"])
+  testEq('Object.keys(L.remove("y", {z: 2, y: 0, x: 3}))', ["z", "x"])
   testEq('L.modify("x", x => x + 1, {x: 1})', {x: 2})
   testEq('L.set(["x"], undefined, {x: 1})', undefined)
   testEq('L.set(["x", L.required(null)], undefined, {x: 1})', {x: null})
