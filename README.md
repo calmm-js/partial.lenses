@@ -1133,37 +1133,40 @@ ordinary lenses
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (4.0.0) and some roughly equivalent
+Here are a few benchmarks on partial lenses (4.0.1) and some roughly equivalent
 operations using Ramda (0.22.1).
 
 ```js
-L.get(1, xs)                            x 34,189,836 ops/sec ±0.30% (95 runs sampled)
-R.nth(1, xs)                            x  3,822,326 ops/sec ±0.57% (93 runs sampled)
-R.view(r_1, xs)                         x  1,934,824 ops/sec ±0.64% (93 runs sampled)
+L.get(1, xs)                            x 33,476,521 ops/sec ±0.84% (92 runs sampled)
+R.nth(1, xs)                            x  3,792,202 ops/sec ±0.65% (94 runs sampled)
+R.view(r_1, xs)                         x  1,940,186 ops/sec ±0.85% (90 runs sampled)
 
-L.set(1, 0, xs)                         x  7,921,501 ops/sec ±0.90% (93 runs sampled)
-R.update(1, 0, xs)                      x  6,544,164 ops/sec ±0.64% (96 runs sampled)
-R.set(r_1, 0, xs)                       x  1,209,223 ops/sec ±0.65% (87 runs sampled)
+L.set(1, 0, xs)                         x 20,383,995 ops/sec ±0.65% (91 runs sampled)
+R.update(1, 0, xs)                      x  7,540,215 ops/sec ±0.54% (93 runs sampled)
+R.set(r_1, 0, xs)                       x  1,265,505 ops/sec ±0.81% (88 runs sampled)
 
-L.get("y", xyz)                         x 33,169,386 ops/sec ±2.02% (90 runs sampled)
-R.prop("y", xyz)                        x 21,117,296 ops/sec ±1.36% (91 runs sampled)
-R.view(r_y, xyz)                        x  3,719,568 ops/sec ±0.64% (89 runs sampled)
+L.get("y", xyz)                         x 33,081,075 ops/sec ±0.74% (96 runs sampled)
+R.prop("y", xyz)                        x 21,380,715 ops/sec ±1.00% (95 runs sampled)
+R.view(r_y, xyz)                        x  3,568,554 ops/sec ±0.60% (95 runs sampled)
 
-L.set("y", 0, xyz)                      x  7,114,601 ops/sec ±0.62% (87 runs sampled)
-R.assoc("y", 0, xyz)                    x 11,556,449 ops/sec ±0.82% (91 runs sampled)
-R.set(r_y, 0, xyz)                      x  2,024,095 ops/sec ±0.90% (87 runs sampled)
+L.set("y", 0, xyz)                      x  7,086,728 ops/sec ±0.72% (93 runs sampled)
+R.assoc("y", 0, xyz)                    x 12,424,316 ops/sec ±0.66% (90 runs sampled)
+R.set(r_y, 0, xyz)                      x  1,971,150 ops/sec ±0.91% (89 runs sampled)
 
-L.get([0, "x", 0, "y"], nested)         x 10,726,543 ops/sec ±0.81% (93 runs sampled)
-R.view(r_0_x_0_y, nested)               x    689,393 ops/sec ±0.44% (94 runs sampled)
+L.get([0, "x", 0, "y"], nested)         x 10,302,776 ops/sec ±0.89% (93 runs sampled)
+R.view(r_0_x_0_y, nested)               x    640,812 ops/sec ±0.62% (93 runs sampled)
 
-L.set([0, "x", 0, "y"], 0, nested)      x  1,840,558 ops/sec ±0.87% (93 runs sampled)
-R.set(r_0_x_0_y, 0, nested)             x    444,007 ops/sec ±0.85% (95 runs sampled)
+L.set([0, "x", 0, "y"], 0, nested)      x  2,626,447 ops/sec ±0.98% (90 runs sampled)
+R.set(r_0_x_0_y, 0, nested)             x    423,754 ops/sec ±0.76% (93 runs sampled)
 
-L.modify([0, "x", 0, "y"], inc, nested) x  1,895,807 ops/sec ±0.91% (93 runs sampled)
-R.over(r_0_x_0_y, inc, nested)          x    456,882 ops/sec ±0.60% (95 runs sampled)
+L.modify([0, "x", 0, "y"], inc, nested) x  2,862,422 ops/sec ±1.08% (93 runs sampled)
+R.over(r_0_x_0_y, inc, nested)          x    440,145 ops/sec ±0.49% (93 runs sampled)
 
-L.remove("y", xyz)                      x  7,887,816 ops/sec ±0.93% (91 runs sampled)
-R.dissoc("y", xyz)                      x 12,281,113 ops/sec ±0.85% (90 runs sampled)
+L.remove(1, xs)                         x 18,434,663 ops/sec ±0.62% (93 runs sampled)
+R.remove(1, 1, xs)                      x  7,621,388 ops/sec ±0.41% (94 runs sampled)
+
+L.remove("y", xyz)                      x  7,820,604 ops/sec ±0.71% (93 runs sampled)
+R.dissoc("y", xyz)                      x 12,145,128 ops/sec ±0.88% (91 runs sampled)
 ```
 
 At the time of writing, various operations on *partial lenses have been
@@ -1177,9 +1180,11 @@ const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
 const nested = [{x: [{y: 1}]}]
 
+const r_0 = R.lensIndex(0)
 const r_1 = R.lensIndex(1)
+const r_x = R.lensProp("x")
 const r_y = R.lensProp("y")
-const r_0_x_0_y = R.compose(R.lensIndex(0), R.lensProp("x"), R.lensIndex(0), R.lensProp("y"))
+const r_0_x_0_y = R.compose(r_0, r_x, r_0, r_y)
 
 const inc = x => x + 1
 ```
