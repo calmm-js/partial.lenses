@@ -901,7 +901,7 @@ y === L.get(iso, L.set(iso, y, undefined))
 ```
 
 The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
-undefined)` are each others inverses.
+undefined)` are inverses of each other.
 
 You can create new isomorphisms using [`L.lens`](#lens) and by composing
 existing isomorphism, because the composition of two isomorphisms is also an
