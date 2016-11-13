@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "4.0.2",
+  "version": "4.1.0",
   "description": "Partial lenses",
   "main": "lib/partial.lenses.js",
   "scripts": {
