@@ -942,9 +942,9 @@ L.remove(L.valueOr(0), 1)
 
 ### <a name="isomorphisms"></a>Isomorphism combinators and operations
 
-Aside from lenses, there is experimental support for isomorphisms.  A lens is an
-isomorphism iff the following equations hold for all `x` and `y` in the domain
-and range, respectively, of the lens:
+Aside from lenses, there is experimental support for isomorphisms.  A lens,
+`iso`, is an isomorphism iff the following equations hold for all `x` and `y` in
+the domain and range, respectively, of the lens:
 
 ```js
 L.set(iso, L.get(iso, x), undefined) = x
