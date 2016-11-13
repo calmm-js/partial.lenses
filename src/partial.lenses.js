@@ -297,22 +297,43 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 export const index = assert("a non-negative integer", isIndex)
 
+const nulls = n => Array(n).fill(null)
+
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
 function setIndex(i, x, xs) {
   if (x === undefined) {
     if (!isArray(xs))
       return undefined
-    if (xs.length <= i)
-      return emptyArrayToUndefined(xs)
-    const ys = xs.slice(0)
-    ys.splice(i, 1)
-    return emptyArrayToUndefined(ys)
+    const n = xs.length
+    if (!n)
+      return undefined
+    if (i < 0 || n <= i)
+      return xs
+    if (n === 1)
+      return undefined
+    const ys = Array(n-1)
+    for (let j=0; j<i; ++j)
+      ys[j] = xs[j]
+    for (let j=i+1; j<n; ++j)
+      ys[j-1] = xs[j]
+    return ys
   } else {
-    if (!isArray(xs))
-      return Array(i).fill(null).concat([x])
-    if (xs.length <= i)
-      return xs.concat(Array(i - xs.length).fill(null), [x])
-    const ys = xs.slice(0)
+    if (!isArray(xs)) {
+      if (i < 0)
+        return undefined
+      return nulls(i).concat([x])
+    }
+    const n = xs.length
+    if (n <= i)
+      return xs.concat(nulls(i - n), [x])
+    if (i < 0)
+      if (!n)
+        return undefined
+      else
+        return xs
+    const ys = Array(n)
+    for (let j=0; j<n; ++j)
+      ys[j] = xs[j]
     ys[i] = x
     return ys
   }
