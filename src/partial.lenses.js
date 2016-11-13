@@ -211,6 +211,10 @@ export const collect = curry2((l, s) =>
   warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
   mkArray(filtered(collectI(lift(l), s))))
 
+export const inverse = iso => _c => inner => x =>
+  warn("`inverse` is experimental and might be removed, renamed or changed semantically before next major release") ||
+  inner(setI(iso, x, undefined)).map(x => getI(iso, x))
+
 export const chain = curry2((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
 
