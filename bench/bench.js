@@ -54,8 +54,6 @@ const bs = [
   'L.get(L.valueOr(1), undefined)',
   'L.get(L.valueOr(1), null)',
   'L.get(L.valueOr(1), 2)',
-
-  'L.remove(1, xs)',
 ]
 
 const s = new require("benchmark").Suite()
