@@ -1,7 +1,5 @@
 [ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
 
-[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
-
 Lenses are primarily a convenient abstraction for performing updates on
 individual elements of immutable data structures.  This library provides a
 collection of *partial* lenses for manipulating JSON.  A partial lens can *view*
@@ -21,6 +19,8 @@ Aside from partial lenses, this library also
 supports [isomorphisms](#isomorphisms) and [traversals](#traversals).
 Isomorphisms have an [`inverse`](#inverse) and traversals can target multiple
 elements.
+
+[![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
 ## Contents
 
