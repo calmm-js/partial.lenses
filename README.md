@@ -82,6 +82,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
   * [Motivation](#motivation)
   * [Types](#types)
   * [Performance](#performance)
+  * [Related work](#related-work)
 
 ## Tutorial
 
@@ -1304,3 +1305,17 @@ const l_x_y_z = R.compose(l_x, l_y, l_z)
 
 const inc = x => x + 1
 ```
+
+## Related work
+
+Lenses are an old concept and there are dozens of academic papers on lenses and
+dozens of lens libraries for various languages.  Here are just a few links:
+
+* [Polymorphic Update with van Laarhoven Lenses](http://r6.ca/blog/20120623T104901Z.html)
+* [A clear picture of lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf)
+* [ramda/ramda-lens](https://github.com/ramda/ramda-lens)
+* [ekmett/lens](https://github.com/ekmett/lens)
+* [julien-truffaut/Monocle](https://github.com/julien-truffaut/Monocle)
+* [xyncro/aether](https://github.com/xyncro/aether)
+
+Feel free to suggest more links!
