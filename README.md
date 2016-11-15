@@ -64,10 +64,11 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
     * [`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
     * [`L.required(inn)`](#required "L.required :: s -> PLens s s")
     * [`L.valueOr(out)`](#valueOr "L.valueOr :: s -> PLens s s")
-  * [Isomorphism combinators and operations](#isomorphisms)
-    * [`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
-    * [`L.identity`](#identity "L.identity :: PIso s s")
-    * [`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+  * [Isomorphisms](#isomorphisms)
+    * [Isomorphisms and combinators](#isomorphisms-and-combinators)
+      * [`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
+      * [`L.identity`](#identity "L.identity :: PIso s s")
+      * [`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
@@ -943,7 +944,7 @@ L.remove(L.valueOr(0), 1)
 // undefined
 ```
 
-### <a name="isomorphisms"></a>Isomorphism combinators and operations
+### Isomorphisms
 
 Aside from lenses, there is experimental support for isomorphisms.  A lens,
 `iso`, is an isomorphism iff the following equations hold for all `x` and `y` in
@@ -961,7 +962,9 @@ You can create new isomorphisms using [`L.lens`](#lens) and by composing
 existing isomorphism, because the composition of two isomorphisms is also an
 isomorphism.
 
-#### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
+#### Isomorphisms and combinators
+
+##### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
 
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
 semantically before next major release.**
@@ -979,7 +982,7 @@ L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value:
 // [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
 ```
 
-#### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PIso s s")
+##### <a name="identity"></a>[`L.identity`](#identity "L.identity :: PIso s s")
 
 `L.identity` is the identity element of lens composition and also the identity
 isomorphism.  The following equations characterize `L.identity`:
@@ -991,7 +994,7 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 ```
 
-#### <a name="inverse"></a>[`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+##### <a name="inverse"></a>[`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
 
 **`L.inverse` is experimental and might be removed, renamed or changed
 semantically before next major release.**
