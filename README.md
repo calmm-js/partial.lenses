@@ -23,6 +23,8 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
 
 ## Contents
 
+**Protip:** Code link headings have naive approximate types as tooltips.
+
 * [Tutorial](#tutorial)
   * [Querying data](#querying-data)
   * [Updating data](#updating-data)
@@ -34,7 +36,6 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
   * [Example: An array of ids as boolean flags](#example-an-array-of-ids-as-boolean-flags)
   * [Food for thought: BST as a lens](#food-for-thought-bst-as-a-lens)
 * [Reference](#reference)
-  * [Usage](#usage)
   * [Operations on lenses](#operations-on-lenses)
     * [`L.get(l, s)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
     * [`L.modify(l, x2x, s)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
@@ -411,11 +412,6 @@ worthy exercise would be to make it so that the empty binary tree is `null`
 rather than `undefined`.
 
 ## Reference
-
-**Protip:** The link headings for functions in this reference have naive
-approximate types as tooltips.
-
-### Usage
 
 The lens combinators are available as named imports.  Typically one just imports
 the library as:
