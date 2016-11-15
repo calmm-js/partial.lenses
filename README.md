@@ -68,10 +68,12 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
     * [`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
     * [`L.identity`](#identity "L.identity :: PIso s s")
     * [`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
-  * [Traversal combinators and operations](#traversals)
-    * [`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
-    * [`L.optional`](#optional "L.optional :: PTraversal a a")
-    * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
+  * [Traversals](#traversals)
+    * [Operations on traversals](#operations-on-traversals)
+      * [`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+    * [Traversals and combinators](#traversals-and-combinators)
+      * [`L.optional`](#optional "L.optional :: PTraversal a a")
+      * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
   * [Interop](#interop)
@@ -1004,7 +1006,7 @@ L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
 // [ { id: 'a', x: 1 }, { id: 'b', x: 2 } ]
 ```
 
-### <a name="traversals"></a>Traversal combinators and operations
+### Traversals
 
 Aside from lenses, there is experimental support for traversals.  Traversals and
 lenses can be composed and the result is a traversal.  A traversal operates over
@@ -1012,7 +1014,9 @@ a collection of focuses and for this reason traversals cannot be viewed
 ([`get`](#get) does not work on a traversal), but they can be collected,
 modified, set and removed.
 
-#### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+#### Operations on traversals
+
+##### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
 
 **`L.collect` is experimental and might be removed, renamed or changed
 semantically before next major release.**
@@ -1029,7 +1033,9 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
-#### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
+#### Traversals and combinators
+
+##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
 
 **`L.optional` is experimental and might be removed, renamed or changed
 semantically before next major release.**
@@ -1053,7 +1059,7 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
-#### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
+##### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
 
 **`L.sequence` is experimental and might be removed, renamed or changed
 semantically before next major release.**
