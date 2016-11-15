@@ -1040,9 +1040,9 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 **`L.optional` is experimental and might be removed, renamed or changed
 semantically before next major release.**
 
-`L.optional` is a traversal (rather than a lens) over an optional element.  When
-the focus of `L.optional` is `undefined`, the traversal is empty.  Otherwise the
-traversal is over the focused element.
+`L.optional` is a traversal over an optional element.  When the focus of
+`L.optional` is `undefined`, the traversal is empty.  Otherwise the traversal is
+over the focused element.
 
 As an example, consider the difference between:
 
@@ -1064,7 +1064,7 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 **`L.sequence` is experimental and might be removed, renamed or changed
 semantically before next major release.**
 
-`L.sequence` is a traversal (rather than a lens) over an array.
+`L.sequence` is a traversal over an array.
 
 For example:
 
