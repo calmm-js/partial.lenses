@@ -1,4 +1,5 @@
 import * as R from "ramda"
+import {id} from "infestines"
 
 import P, * as L from "../src/partial.lenses"
 
@@ -12,7 +13,7 @@ function show(x) {
   }
 }
 
-const run = expr => eval(`(P, L, R) => ${expr}`)(P, L, R)
+const run = expr => eval(`(P, L, R, id) => ${expr}`)(P, L, R, id)
 
 const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
   const actual = run(expr)
@@ -60,8 +61,8 @@ describe("arities", () => {
   testEq('L.filter.length', 1)
   testEq('L.find.length', 1)
   testEq('L.findWith.length', 0)
-  testEq('L.fromRamda.length', 1)
   testEq('L.get.length', 2)
+  testEq('L.getInverse.length', 2)
   testEq('L.index.length', 1)
   testEq('L.inverse.length', 1)
   testEq('L.lens.length', 2)
@@ -75,13 +76,7 @@ describe("arities", () => {
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
   testEq('L.set.length', 3)
-  testEq('L.toRamda.length', 1)
   testEq('L.valueOr.length', 1)
-})
-
-describe("interop", () => {
-  testEq('R.set(L.toRamda(0), "a", ["b"])', ["a"])
-  testEq('L.get(L.fromRamda(R.lensProp("x")), {x: "b"})', "b")
 })
 
 describe('L.find', () => {
@@ -293,6 +288,15 @@ describe("L.collect", () => {
   testEq('L.collect(["a",L.sequence,"b",L.sequence,"c",L.sequence], {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})', [1,2])
 })
 
+export const Sum = {empty: 0, concat: (x, y) => x + y}
+
+describe("L.foldMapOf", () => {
+  testEq('L.foldMapOf(Sum, L.sequence, id, null)', 0)
+  testEq('L.foldMapOf(Sum, [L.sequence], id, [])', 0)
+  testEq('L.foldMapOf(Sum, L.sequence, id, [1, 2, 3])', 6)
+  testEq('L.foldMapOf(Sum, [L.sequence, "x", L.optional], id, [{x:1}, {y:2}, {x:3}])', 4)
+})
+
 describe("L.pick", () => {
   testEq('L.get(L.pick({x: "c"}), {a: [2], b: 1})', undefined)
   testEq('L.set([L.pick({x: "c"}), "x"], 4, {a: [2], b: 1})', {a: [2], b: 1, c: 4})
@@ -321,6 +325,11 @@ describe("L.fromArrayBy", () => {
   testEq('L.remove([L.fromArrayBy("id"), "1"], [{id: 1}, {id: 2}, {id: 3}])', [{id: 2}, {id: 3}])
   testEq('L.remove([L.fromArrayBy("id"), "3"], [{id: 1}, {id: 2}, {id: 3}])', [{id: 1}, {id: 2}])
   testEq('L.remove([L.fromArrayBy("id"), "3"], [{id: 3}])', undefined)
+})
+
+describe("L.getInverse", () => {
+  testEq('L.getInverse(L.fromArrayBy(""), undefined)', undefined)
+  testEq('L.getInverse(L.fromArrayBy("id"), {"1":{"id":1},"2":{"id":2},"3":{"id":3}})', [{id: 1}, {id: 2}, {id: 3}])
 })
 
 describe("L.inverse", () => {

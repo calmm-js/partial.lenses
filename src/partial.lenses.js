@@ -1,21 +1,78 @@
-import * as R from "ramda"
+import {
+  acyclicEqualsU,
+  assocPartialU,
+  curry2,
+  curry3,
+  curry4,
+  dissocPartialU,
+  id,
+  isArray,
+  isObject,
+  mapPartialU,
+  values
+} from "infestines"
 
 //
 
-function Identity(value) {this.value = value}
-const Ident = x => new Identity(x)
-Identity.prototype.map = function (x2y) {return new Identity(x2y(this.value))}
-Identity.prototype.of = Ident
-Identity.prototype.ap = function (x) {return new Identity(this.value(x.value))}
+const apply = (x2y, x) => x2y(x)
+const always = x => _ => x
+const snd = (_, c) => c
 
 //
 
-function Constant(value) {this.value = value}
-const Const = x => new Constant(x)
-const Single = x => Const([x])
-Constant.prototype.map = function () {return this}
-Constant.prototype.of = Const
-Constant.prototype.ap = function (x) {return new Const(R.concat(this.value, x.value))}
+const Ident = {
+  map: apply,
+  of: id,
+  ap: apply
+}
+
+const Const = {
+  map: snd,
+  of: id
+}
+
+const ConstOf = Monoid => ({
+  map: snd,
+  of: always(Monoid.empty),
+  ap: (x2yA, xA) => Monoid.concat(xA, x2yA)
+})
+
+const PartialList = {
+  of: x => x !== undefined ? [x, null] : null,
+  empty: null,
+  cons: (h, t) => h !== undefined ? [h, t] : t,
+  revConcat: (xs, ys) => {
+    while (xs) {
+      ys = [xs[0], ys]
+      xs = xs[1]
+    }
+    return ys
+  },
+  reverse: xs => PartialList.revConcat(xs, null),
+  concat: (xs, ys) => PartialList.revConcat(PartialList.reverse(xs), ys),
+  toArray: xs => {
+    const ys = []
+    while (xs) {
+      ys.push(xs[0])
+      xs = xs[1]
+    }
+    return ys
+  }
+}
+
+const Collect = ConstOf(PartialList)
+
+const csnoc = t => h => PartialList.cons(h, t)
+
+const PartialArray = {
+  traverse: (A, x2yA, xs) => {
+    let s = A.of(PartialList.empty)
+    let i = xs.length
+    while (i)
+      s = A.ap(A.map(csnoc, s), x2yA(xs[--i]))
+    return A.map(PartialList.toArray, s)
+  }
+}
 
 //
 
@@ -32,34 +89,9 @@ const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
 
 //
 
-const curry2 = fn => function (a, b) {
-  switch (arguments.length) {
-    case 1:  return b => fn(a, b)
-    default: return fn(a, b)
-  }
-}
-
-const curry3 = fn => function (a, b, c) {
-  switch (arguments.length) {
-    case 1:  return curry2((b, c) => fn(a, b, c))
-    case 2:  return c => fn(a, b, c)
-    default: return fn(a, b, c)
-  }
-}
-
-//
-
-const isArray  = x => x && x.constructor === Array
-const isObject = x => x && x.constructor === Object
-
-const unArray  = x =>  isArray(x) ? x : undefined
+const unArray  = x => isArray(x) ? x : undefined
 
 const mkArray = x => isArray(x) ? x : []
-
-//
-
-const id = x => x
-const snd = (_, c) => c
 
 //
 
@@ -83,11 +115,6 @@ const empty = {}
 //
 
 const toPartial = transform => x => undefined === x ? x : transform(x)
-
-//
-
-const isDefined = x => x !== undefined
-const filtered = toPartial(xs => emptyArrayToUndefined(xs.filter(isDefined)))
 
 //
 
@@ -131,7 +158,7 @@ function setI(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident)(() => Ident(x))(s).value
+    case "function": return lifted(l)(Ident)(() => Ident.of(x))(s)
     default:         return modifyComposedI(l, () => x, s)
   }
 }
@@ -147,10 +174,12 @@ function getI(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const)(Const)(s).value
+    case "function": return lifted(l)(Const)(Const.of)(s)
     default:         return getComposedI(l, s)
   }
 }
+
+const getInverseI = (l, x) => setI(l, x, undefined)
 
 function modifyComposedI(ls, x2x, s0) {
   let n = ls.length
@@ -169,7 +198,7 @@ function modifyComposedI(ls, x2x, s0) {
         r = getIndex(l, r)
         break
       default:
-        r = composed(ls.slice(i))(Ident)(y => Ident(x2x(y)))(r).value
+        r = composed(ls.slice(i))(Ident)(y => Ident.of(x2x(y)))(r)
         n = i
         break
     }
@@ -193,32 +222,36 @@ function modifyI(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
-    case "function": return lifted(l)(Ident)(y => Ident(x2x(y)))(s).value
+    case "function": return lifted(l)(Ident)(y => Ident.of(x2x(y)))(s)
     default:         return modifyComposedI(l, x2x, s)
   }
 }
 
-const lensI = (getter, setter) => _c => inner => target =>
-  inner(getter(target)).map(focus => setter(focus, target))
-const collectI = (l, s) => l(Const)(Single)(s).value
+const lensI = (getter, setter) => c => inner => target =>
+  c.map(focus => setter(focus, target), inner(getter(target)))
+const collectI = (l, s) =>
+  PartialList.toArray(lift(l)(Collect)(PartialList.of)(s))
 
 export const remove = curry2((l, s) => setI(l, undefined, s))
 export const lens = curry2(lensI)
 export const modify = curry3(modifyI)
 export const set = curry3(setI)
 export const get = curry2(getI)
-export const collect = curry2((l, s) =>
-  warn("`collect` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  mkArray(filtered(collectI(lift(l), s))))
+export const getInverse = curry2(getInverseI)
+export const collect = curry2(collectI)
 
-export const inverse = iso => _c => inner => x =>
-  warn("`inverse` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  inner(setI(iso, x, undefined)).map(x => getI(iso, x))
+export const foldMapOf = curry4((m, l, to, s) => {
+  const Const = ConstOf(m)
+  return lift(l)(Const)(to)(s)
+})
+
+export const inverse = iso => c => inner => x =>
+  c.map(x => getI(iso, x), inner(getInverseI(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
   compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
 
-export const just = x => lensI(R.always(x), snd)
+export const just = x => lensI(always(x), snd)
 
 export const choose = x2yL => constructor => inner => target =>
   lift(x2yL(target))(constructor)(inner)(target)
@@ -233,14 +266,14 @@ export const choice = (...ls) => choose(x => {
   return 0 <= i ? ls[i] : nothing
 })
 
-const replacer = (inn, out) => x => R.equals(x, inn) ? out : x
-const normalizer = fn => _c => inner => x => inner(fn(x)).map(fn)
+const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
+const normalizer = fn => c => inner => x => c.map(fn, inner(fn(x)))
 
-export const replace = curry2((inn, out) => _c => inner => x =>
-  inner(replacer(inn, out)(x)).map(replacer(out, inn)))
+export const replace = curry2((inn, out) => c => inner => x =>
+  c.map(replacer(out, inn), inner(replacer(inn, out)(x))))
 
-export const defaults = out => _c => inner => x =>
-  inner(x === undefined ? out : x).map(replacer(out, undefined))
+export const defaults = out => c => inner => x =>
+  c.map(replacer(out, undefined), inner(x === undefined ? out : x))
 export const required = inn => replace(inn, undefined)
 export const define = v => normalizer(x => x === undefined ? v : x)
 
@@ -254,35 +287,11 @@ const isProp = x => typeof x === "string"
 export const prop = assert("a string", isProp)
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
-function setProp(k, v, o) {
-  if (v === undefined) {
-    let r
-    if (isObject(o))
-      for (const l in o)
-        if (l !== k) {
-          if (!r)
-            r = {}
-          r[l] = o[l]
-        }
-    return r
-  } else {
-    const r = {}
-    if (isObject(o))
-      for (const l in o)
-        if (l !== k)
-          r[l] = o[l]
-        else {
-          r[k] = v
-          k = undefined
-        }
-    if (k !== undefined)
-      r[k] = v
-    return r
-  }
-}
+const setProp = (k, v, o) =>
+  v === undefined ? dissocPartialU(k, o) : assocPartialU(k, v, o)
 
-const liftProp = k => _c => inner => o =>
-  inner(getProp(k, o)).map(v => setProp(k, v, o))
+const liftProp = k => c => inner => o =>
+  c.map(v => setProp(k, v, o), inner(getProp(k, o)))
 
 export const find = predicate => choose(xs => {
   if (isArray(xs)) {
@@ -343,8 +352,8 @@ function setIndex(i, x, xs) {
     return ys
   }
 }
-const liftIndex = i => _c => inner => xs =>
-  inner(getIndex(i, xs)).map(x => setIndex(i, x, xs))
+const liftIndex = i => c => inner => xs =>
+  c.map(x => setIndex(i, x, xs), inner(getIndex(i, xs)))
 
 export const append = lensI(snd, (x, xs) =>
   x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
@@ -407,26 +416,21 @@ export const pick = template => lensI(
 
 export const identity = _c => inner => inner
 
-export const props = (...ks) => pick(R.zipObj(ks, ks))
+export const props = (...ks) =>
+  pick(ks.reduce((o, k) => {o[k] = k; return o}, {}))
 
 const show = (...labels) => x => console.log(...labels, x) || x
 
 export const log = (...labels) =>
   lensI(show(...labels, "get"), show(...labels, "set"))
 
-export const sequence = constructor => inner => target =>
-  warn("`sequence` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  R.traverse(constructor, inner, mkArray(target))
-  .map(filtered)
+export const sequence = c => inner => target =>
+  c === Ident
+  ? emptyArrayToUndefined(mapPartialU(inner, mkArray(target)))
+  : c.map(emptyArrayToUndefined, PartialArray.traverse(c, inner, mkArray(target)))
 
-export const optional =
-  compose(lensI(toPartial(x => [x]),
-                toPartial(([x]) => x)),
-          sequence)
-
-export const fromRamda = l => _c => l
-function fantasy() {throw new Error("Sorry, `toRamda` is only fantasy!")}
-export const toRamda = l => lift(l)(fantasy)
+export const optional = c => inner => target =>
+  target !== undefined ? inner(target) : c.of(undefined)
 
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
@@ -440,6 +444,6 @@ export const fromArrayBy = id =>
       return o
     }
   },
-  o => isObject(o) ? R.values(o) : undefined)
+  o => isObject(o) ? values(o) : undefined)
 
 export default compose

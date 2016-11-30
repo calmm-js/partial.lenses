@@ -1,5 +1,25 @@
 # Changelog
 
+## 5.0.0
+
+Reimplemented traversals, switched to using `infernals` and dropped Ramda
+dependency and interop.  These changes were made for the following reasons:
+
+* `infernals` is, and is supposed to remain, a tiny library.  This is an
+  advantage if one wishes to use lenses, but does not wish to use Ramda.
+
+* Performance of traversals is and can now be significantly improved.
+
+To interop with Ramda, you can write:
+
+```js
+import * as L from "partial.lenses"
+import * as R from "ramda"
+
+const fromRamda = ramdaLens => L.lens(R.view(ramdaLens), R.set(ramdaLens))
+const toRamda = partialLens => R.lens(L.get(partialLens), L.set(partialLens))
+```
+
 ## 4.0.0
 
 * Removed previously deprecated functionality: `removeAll`.
