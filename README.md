@@ -75,6 +75,8 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.pick({p1: l1, ...pls})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
       * [`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
   * [Isomorphisms](#isomorphisms)
+    * [Operations on isomorphisms](#operations-on-isomorphisms)
+      * [`L.getInverse`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
       * [`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
       * [`L.identity`](#identity "L.identity :: PIso s s")
@@ -972,6 +974,19 @@ undefined)` are inverses of each other.
 You can create new isomorphisms using [`L.lens`](#lens) and by composing
 existing isomorphism, because the composition of two isomorphisms is also an
 isomorphism.
+
+#### Operations on isomorphisms
+
+##### <a name="getInverse"></a>[`L.getInverse`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
+
+`L.getInverse(i, b)` is equivalent to `L.set(i, b, undefined)`.
+
+For example:
+
+```js
+L.getInverse(L.fromArrayBy("id"), {'1': {id: 1, value: 2}, '3': {id: 3, value: 4}})
+// [ { id: 1, value: 2 }, { id: 3, value: 4 } ]
+```
 
 #### Isomorphisms and combinators
 
