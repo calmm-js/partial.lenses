@@ -1309,7 +1309,7 @@ At the time of writing, various operations on *partial lenses have been
 optimized for common cases*, but there is definitely a lot of room for
 improvement.
 
-See [bench.js](src/bench/bench.js) for details.
+See [bench.js](bench/bench.js) for details.
 
 ## Related work
 
