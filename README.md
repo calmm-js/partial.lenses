@@ -1047,7 +1047,7 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 `aM2r`, and fold, using the given `concat` operation and `empty` element, over
 the elements focused on by the given traversal or lens `t` from the given data
 structure `s`.  The `concat` and `empty` parameters should form a monoid over
-the elements returned by `aM2r` elements.
+the values returned by `aM2r`.
 
 For example:
 
