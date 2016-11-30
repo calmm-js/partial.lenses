@@ -1247,6 +1247,61 @@ Here are a few benchmarks on partial lenses (5.0.0) and some roughly equivalent
 operations using Ramda (0.22.1) and Ramda Lens (0.1.1).
 
 ```js
+L.foldMapOf(Sum, L.sequence, id, xs100) x    476,650 ops/sec ±0.69% (93 runs sampled)
+P.sumOf(P.traversed, xs100)             x     23,730 ops/sec ±0.98% (91 runs sampled)
+
+L.collect(L.sequence, xs100)            x    162,072 ops/sec ±0.75% (89 runs sampled)
+
+L.modify(L.sequence, inc, xs100)        x    554,178 ops/sec ±0.74% (88 runs sampled)
+P.over(P.traversed, inc, xs100)         x     14,063 ops/sec ±0.43% (95 runs sampled)
+R.map(inc, xs100)                       x  1,925,839 ops/sec ±0.77% (94 runs sampled)
+
+L.get(1, xs)                            x 28,630,115 ops/sec ±0.95% (91 runs sampled)
+R.nth(1, xs)                            x  3,962,883 ops/sec ±0.74% (94 runs sampled)
+R.view(l_1, xs)                         x  1,979,334 ops/sec ±0.85% (95 runs sampled)
+
+L.set(1, 0, xs)                         x 20,338,633 ops/sec ±1.89% (90 runs sampled)
+R.update(1, 0, xs)                      x  7,175,808 ops/sec ±0.76% (95 runs sampled)
+R.set(l_1, 0, xs)                       x  1,245,769 ops/sec ±0.94% (89 runs sampled)
+
+L.get("y", xyz)                         x 29,322,470 ops/sec ±0.68% (96 runs sampled)
+R.prop("y", xyz)                        x 26,971,832 ops/sec ±0.89% (90 runs sampled)
+R.view(l_y, xyz)                        x  3,942,860 ops/sec ±0.83% (95 runs sampled)
+
+L.set("y", 0, xyz)                      x  7,682,454 ops/sec ±0.74% (88 runs sampled)
+R.assoc("y", 0, xyz)                    x 11,704,102 ops/sec ±0.86% (88 runs sampled)
+R.set(l_y, 0, xyz)                      x  2,106,427 ops/sec ±0.82% (90 runs sampled)
+
+L.get([0,"x",0,"y"], axay)              x 11,900,830 ops/sec ±0.74% (92 runs sampled)
+R.view(l_0_x_0_y, axay)                 x    648,984 ops/sec ±0.70% (93 runs sampled)
+
+L.set([0,"x",0,"y"], 0, axay)           x  2,799,434 ops/sec ±0.65% (95 runs sampled)
+R.set(l_0_x_0_y, 0, axay)               x    422,281 ops/sec ±0.57% (92 runs sampled)
+
+L.modify([0,"x",0,"y"], inc, axay)      x  2,967,180 ops/sec ±0.86% (91 runs sampled)
+R.over(l_0_x_0_y, inc, axay)            x    434,968 ops/sec ±0.60% (92 runs sampled)
+
+L.remove(1, xs)                         x 20,004,526 ops/sec ±0.77% (93 runs sampled)
+R.remove(1, 1, xs)                      x  7,829,732 ops/sec ±0.53% (92 runs sampled)
+
+L.remove("y", xyz)                      x 12,373,802 ops/sec ±0.77% (93 runs sampled)
+R.dissoc("y", xyz)                      x 14,886,320 ops/sec ±0.75% (90 runs sampled)
+
+L.get(["x","y","z"], xyzn)              x 12,819,570 ops/sec ±0.87% (92 runs sampled)
+R.path(["x","y","z"], xyzn)             x 15,507,068 ops/sec ±1.13% (92 runs sampled)
+R.view(l_xyz, xyzn)                     x  3,592,506 ops/sec ±0.60% (94 runs sampled)
+R.view(l_x_y_z, xyzn)                   x  1,344,448 ops/sec ±0.82% (88 runs sampled)
+
+L.set(["x","y","z"], 0, xyzn)           x  2,744,031 ops/sec ±0.83% (89 runs sampled)
+R.assocPath(["x","y","z"], 0, xyzn)     x  2,441,257 ops/sec ±1.47% (91 runs sampled)
+R.set(l_xyz, 0, xyzn)                   x  1,194,376 ops/sec ±0.90% (92 runs sampled)
+R.set(l_x_y_z, 0, xyzn)                 x    822,212 ops/sec ±0.97% (88 runs sampled)
+
+L.remove(50, xs100)                     x  4,781,696 ops/sec ±0.77% (91 runs sampled)
+R.remove(50, 1, xs100)                  x  1,000,885 ops/sec ±0.64% (94 runs sampled)
+
+L.set(50, 2, xs100)                     x  4,576,625 ops/sec ±0.60% (91 runs sampled)
+R.update(50, 2, xs100)                  x  1,662,070 ops/sec ±0.70% (92 runs sampled)
 ```
 
 At the time of writing, various operations on *partial lenses have been
