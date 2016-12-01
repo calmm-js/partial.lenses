@@ -1276,8 +1276,9 @@ ordinary lenses
 ### Performance
 
 Here are a few benchmarks on partial lenses (as `L` version 5.0.0) and some
-roughly equivalent operations using Ramda (as `R` version 0.22.1) and Ramda Lens
-(as `P` version 0.1.1).
+roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R` version
+0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P` version
+0.1.1).
 
 ```js
 L.foldMapOf(Sum, L.sequence, id, xs100) x    476,650 ops/sec ±0.69% (93 runs sampled)
