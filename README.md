@@ -23,7 +23,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
 
 ## Contents
 
-**Protip:** Code link headings have naive approximate types as tooltips.
+**Protip:** Code link headings have naïve approximate types as tooltips.
 
 * [Tutorial](#tutorial)
   * [Querying data](#querying-data)
@@ -1234,7 +1234,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 
 ### Types
 
-To illustrate the idea we could give lenses the naive type definition
+To illustrate the idea we could give lenses the naïve type definition
 
 ```haskell
 type Lens s a = (s -> a, a -> s -> s)
