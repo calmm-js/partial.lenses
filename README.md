@@ -84,7 +84,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
-      * [`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+      * [`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
@@ -1056,18 +1056,21 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
-##### <a name="foldMapOf"></a>[`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+##### <a name="foldMapOf"></a>[`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
 
 `L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
-`aM2r`, and fold, using the given `concat` operation and `empty` element, over
-the elements focused on by the given traversal or lens `t` from the given data
-structure `s`.  The `concat` and `empty` parameters should form a monoid over
+`aM2r`, and fold, using the given `concat` and `empty` operations, over the
+elements focused on by the given traversal or lens `t` from the given data
+structure `s`.  The `concat` operation and the constant returned by `empty()`
+should form
+a
+[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
 the values returned by `aM2r`.
 
 For example:
 
 ```js
-L.foldMapOf({empty: 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,3])
+L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,3])
 // 6
 ```
 

@@ -29,7 +29,7 @@ const id = x => x
 const inc = x => x + 1
 const add = (x, y) => x+y
 
-const Sum = {empty: 0, concat: add}
+const Sum = {empty: () => 0, concat: add}
 
 const bs = [
   'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',

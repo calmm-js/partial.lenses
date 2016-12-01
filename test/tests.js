@@ -288,7 +288,7 @@ describe("L.collect", () => {
   testEq('L.collect(["a",L.sequence,"b",L.sequence,"c",L.sequence], {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})', [1,2])
 })
 
-export const Sum = {empty: 0, concat: (x, y) => x + y}
+export const Sum = {empty: () => 0, concat: (x, y) => x + y}
 
 describe("L.foldMapOf", () => {
   testEq('L.foldMapOf(Sum, L.sequence, x => x+1, null)', 0)

@@ -33,13 +33,13 @@ const Const = {
 
 const ConstOf = Monoid => ({
   map: snd,
-  of: always(Monoid.empty),
+  of: always(Monoid.empty()),
   ap: (x2yA, xA) => Monoid.concat(xA, x2yA)
 })
 
 const PartialList = {
   of: x => x !== undefined ? [x, null] : null,
-  empty: null,
+  empty: () => null,
   cons: (h, t) => h !== undefined ? [h, t] : t,
   revConcat: (xs, ys) => {
     while (xs) {
@@ -66,7 +66,7 @@ const csnoc = t => h => PartialList.cons(h, t)
 
 const PartialArray = {
   traverse: (A, x2yA, xs) => {
-    let s = A.of(PartialList.empty)
+    let s = A.of(PartialList.empty())
     let i = xs.length
     while (i)
       s = A.ap(A.map(csnoc, s), x2yA(xs[--i]))
