@@ -291,10 +291,10 @@ describe("L.collect", () => {
 export const Sum = {empty: 0, concat: (x, y) => x + y}
 
 describe("L.foldMapOf", () => {
-  testEq('L.foldMapOf(Sum, L.sequence, id, null)', 0)
-  testEq('L.foldMapOf(Sum, [L.sequence], id, [])', 0)
-  testEq('L.foldMapOf(Sum, L.sequence, id, [1, 2, 3])', 6)
-  testEq('L.foldMapOf(Sum, [L.sequence, "x", L.optional], id, [{x:1}, {y:2}, {x:3}])', 4)
+  testEq('L.foldMapOf(Sum, L.sequence, x => x+1, null)', 0)
+  testEq('L.foldMapOf(Sum, [L.sequence], x => x+1, [])', 0)
+  testEq('L.foldMapOf(Sum, L.sequence, x => x+1, [1, 2, 3])', 9)
+  testEq('L.foldMapOf(Sum, [L.sequence, "x", L.optional], x => x+1, [{x:1}, {y:2}, {x:3}])', 6)
 })
 
 describe("L.pick", () => {
