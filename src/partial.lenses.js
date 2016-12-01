@@ -159,7 +159,7 @@ function setI(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident)(() => Ident.of(x))(s)
+    case "function": return lifted(l)(Ident)(() => x)(s)
     default:         return modifyComposedI(l, () => x, s)
   }
 }
@@ -199,7 +199,7 @@ function modifyComposedI(ls, x2x, s0) {
         r = getIndex(l, r)
         break
       default:
-        r = composed(ls.slice(i))(Ident)(y => Ident.of(x2x(y)))(r)
+        r = composed(ls.slice(i))(Ident)(x2x)(r)
         n = i
         break
     }
@@ -223,7 +223,7 @@ function modifyI(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
-    case "function": return lifted(l)(Ident)(y => Ident.of(x2x(y)))(s)
+    case "function": return lifted(l)(Ident)(x2x)(s)
     default:         return modifyComposedI(l, x2x, s)
   }
 }
