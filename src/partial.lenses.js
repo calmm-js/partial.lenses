@@ -42,7 +42,7 @@ const PartialList = {
   of: x => x !== undefined ? [x, null] : null,
   empty: () => null,
   cons: (h, t) => h !== undefined ? [h, t] : t,
-  revConcat: (xs, ys) => {
+  revConcat(xs, ys) {
     while (xs) {
       ys = [xs[0], ys]
       xs = xs[1]
@@ -51,7 +51,7 @@ const PartialList = {
   },
   reverse: xs => PartialList.revConcat(xs, null),
   concat: (xs, ys) => PartialList.revConcat(PartialList.reverse(xs), ys),
-  toArray: xs => {
+  toArray(xs) {
     const ys = []
     while (xs) {
       ys.push(xs[0])
@@ -66,7 +66,7 @@ const Collect = ConstOf(PartialList)
 const csnoc = t => h => PartialList.cons(h, t)
 
 const PartialArray = {
-  traverse: (A, x2yA, xs) => {
+  traverse(A, x2yA, xs) {
     let s = A.of(PartialList.empty())
     let i = xs.length
     while (i)
@@ -250,7 +250,7 @@ export const inverse = iso => c => inner => x =>
   c.map(x => getI(iso, x), inner(getInverseI(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
-  compose(xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)))
+  [xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)])
 
 export const just = x => lensI(always(x), snd)
 
@@ -305,7 +305,7 @@ export const find = predicate => choose(xs => {
 
 export function findWith(...ls) {
   const lls = compose(...ls)
-  return compose(find(x => getI(lls, x) !== undefined), lls)
+  return [find(x => getI(lls, x) !== undefined), lls]
 }
 
 const isIndex = x => Number.isInteger(x) && 0 <= x
