@@ -990,6 +990,14 @@ L.getInverse(L.fromArrayBy("id"), {'1': {id: 1, value: 2}, '3': {id: 3, value: 4
 // [ { id: 1, value: 2 }, { id: 3, value: 4 } ]
 ```
 
+Note that, while `L.getInverse` makes most sense when used with an isomorphism,
+it is valid to use `L.getInverse` with lenses in general.  For example:
+
+```js
+L.getInverse([0, "meaning"], 42)
+// [ { meaning: 42 } ]
+```
+
 #### Isomorphisms and combinators
 
 ##### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
