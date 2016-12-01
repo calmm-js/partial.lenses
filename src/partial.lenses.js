@@ -317,19 +317,13 @@ const nulls = n => Array(n).fill(null)
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
 function setIndex(i, x, xs) {
   if (x !== undefined) {
-    if (!isArray(xs)) {
-      if (i < 0)
-        return undefined
-      return nulls(i).concat([x])
-    }
+    if (!isArray(xs))
+      return i < 0 ? undefined : nulls(i).concat([x])
     const n = xs.length
     if (n <= i)
       return xs.concat(nulls(i - n), [x])
     if (i < 0)
-      if (!n)
-        return undefined
-      else
-        return xs
+      return !n ? undefined : xs
     const ys = Array(n)
     for (let j=0; j<n; ++j)
       ys[j] = xs[j]
