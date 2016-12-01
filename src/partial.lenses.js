@@ -9,7 +9,8 @@ import {
   isArray,
   isObject,
   mapPartialU,
-  values
+  values,
+  zipObjPartialU
 } from "infestines"
 
 //
@@ -418,8 +419,7 @@ export const pick = template => c => inner => target =>
 
 export const identity = _c => inner => inner
 
-export const props = (...ks) =>
-  pick(ks.reduce((o, k) => {o[k] = k; return o}, {}))
+export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 
 const show = (...labels) => x => console.log(...labels, x) || x
 
