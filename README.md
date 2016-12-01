@@ -1341,7 +1341,8 @@ R.update(50, 2, xs100)                  x  1,662,070 ops/sec ±0.70% (92 runs sa
 
 At the time of writing, various operations on *partial lenses have been
 optimized for common cases*, but there is definitely a lot of room for
-improvement.
+improvement.  The goal is to make partial lenses fast enough that performance
+isn't the reason why you might not want to use them.
 
 See [bench.js](bench/bench.js) for details.
 
