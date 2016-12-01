@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "4.1.1",
+  "version": "5.0.0",
   "description": "Partial lenses, isomorphisms and traversals for manipulating JSON",
   "main": "lib/partial.lenses.js",
   "scripts": {
@@ -19,8 +19,7 @@
     "lens",
     "isomorphism",
     "traversal",
-    "partial",
-    "ramda"
+    "partial"
   ],
   "license": "MIT",
   "bugs": {
@@ -28,7 +27,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "ramda": ">=0.20.1 <0.23.0"
+    "infestines": "^0.1.2"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -38,8 +37,10 @@
     "babel-preset-stage-2": "^6.18.0",
     "babel-register": "^6.18.0",
     "benchmark": "^2.1.2",
-    "eslint": "^3.10.2",
-    "mocha": "^3.1.2",
-    "nyc": "^10.0.0"
+    "eslint": "^3.11.1",
+    "mocha": "^3.2.0",
+    "nyc": "^10.0.0",
+    "ramda": "^0.22.1",
+    "ramda-lens": "^0.1.1"
   }
 }

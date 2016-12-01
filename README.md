@@ -15,7 +15,7 @@ existing part to `undefined` removes it.  Partial lenses are defined in such a
 way that operations [`compose`](#compose) and one can conveniently and robustly
 operate on deeply nested data structures.
 
-Aside from partial lenses, this library also provides experimental support
+Aside from partial lenses, this library also provides support
 for [isomorphisms](#isomorphisms) and [traversals](#traversals).  Isomorphisms
 have an [`inverse`](#inverse) and traversals can target multiple elements.
 
@@ -23,7 +23,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
 
 ## Contents
 
-**Protip:** Code link headings have naive approximate types as tooltips.
+**Protip:** Code link headings have naïve approximate types as tooltips.
 
 * [Tutorial](#tutorial)
   * [Querying data](#querying-data)
@@ -75,6 +75,8 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.pick({p1: l1, ...pls})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
       * [`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
   * [Isomorphisms](#isomorphisms)
+    * [Operations on isomorphisms](#operations-on-isomorphisms)
+      * [`L.getInverse`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
       * [`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
       * [`L.identity`](#identity "L.identity :: PIso s s")
@@ -82,14 +84,12 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+      * [`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
-  * [Interop](#interop)
-    * [`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
-    * [`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
 * [Background](#background)
   * [Should I use lenses for...?](#should-i-use-lenses-for)
   * [Motivation](#motivation)
@@ -781,13 +781,6 @@ L.get(["a", 1], {a: ["b", "c"]})
 // "c"
 ```
 
-*Note:* In versions of this library before 3.6.1 `L.compose` happened to be
-almost equivalent to `R.compose` and partial lenses were internally nearly
-directly compatible with Ramda's lenses.  Implicit Ramda compatibility was
-already dropped in version [3.0.0](CHANGELOG.md#300).  In version 3.6.1 the
-internal implementation was changed to make it possible to support traversals
-properly.
-
 #### Providing defaults
 
 ##### <a name="valueOr"></a>[`L.valueOr(out)`](#valueOr "L.valueOr :: s -> PLens s s")
@@ -948,8 +941,7 @@ be an object.
 ##### <a name="replace"></a>[`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
 `L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
-versa when set.  Values are compared
-using [`R.equals`](http://ramdajs.com/docs/#equals).
+versa when set.
 
 For example:
 
@@ -967,9 +959,9 @@ and [`define`](#define).
 
 ### Isomorphisms
 
-Aside from lenses, there is experimental support for isomorphisms.  A lens,
-`iso`, is an isomorphism iff the following equations hold for all `x` and `y` in
-the domain and range, respectively, of the lens:
+Aside from lenses, there is support for isomorphisms.  A lens, `iso`, is an
+isomorphism iff the following equations hold for all `x` and `y` in the domain
+and range, respectively, of the lens:
 
 ```js
 L.set(iso, L.get(iso, x), undefined) = x
@@ -982,6 +974,19 @@ undefined)` are inverses of each other.
 You can create new isomorphisms using [`L.lens`](#lens) and by composing
 existing isomorphism, because the composition of two isomorphisms is also an
 isomorphism.
+
+#### Operations on isomorphisms
+
+##### <a name="getInverse"></a>[`L.getInverse`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
+
+`L.getInverse(i, b)` is equivalent to `L.set(i, b, undefined)`.
+
+For example:
+
+```js
+L.getInverse(L.fromArrayBy("id"), {'1': {id: 1, value: 2}, '3': {id: 3, value: 4}})
+// [ { id: 1, value: 2 }, { id: 3, value: 4 } ]
+```
 
 #### Isomorphisms and combinators
 
@@ -1017,9 +1022,6 @@ L.modify(L.identity, f, x) = f(x)
 
 ##### <a name="inverse"></a>[`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
 
-**`L.inverse` is experimental and might be removed, renamed or changed
-semantically before next major release.**
-
 `L.inverse(iso)` returns the inverse of the given isomorphism.  Note that this
 operation only works on isomorphisms.
 
@@ -1032,18 +1034,15 @@ L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
 
 ### Traversals
 
-Aside from lenses, there is experimental support for traversals.  Traversals and
-lenses can be composed and the result is a traversal.  A traversal operates over
-a collection of focuses and for this reason traversals cannot be viewed
+Aside from lenses, there is support for traversals.  Traversals and lenses can
+be composed and the result is a traversal.  A traversal operates over a
+collection of focuses and for this reason traversals cannot be viewed
 ([`get`](#get) does not work on a traversal), but they can be collected,
 modified, set and removed.
 
 #### Operations on traversals
 
 ##### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
-
-**`L.collect` is experimental and might be removed, renamed or changed
-semantically before next major release.**
 
 `L.collect(t, s)` returns an array of the elements focused on by the given
 traversal or lens from a data structure.  Given a lens, there will be 0 or 1
@@ -1057,12 +1056,39 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
+`L.collect(t, s)` is equivalent
+to [`L.foldMapOf(List, t, toList, s)`](#foldMapOf) where `List` and `toList` are
+defined as follows:
+
+```js
+const List = {empty: R.always([]), concat: R.concat}
+const toList = x => x !== undefined ? [x] : []
+```
+
+The internal implementation of `L.collect` is optimized and faster than the
+above naïve implementation.
+
+##### <a name="foldMapOf"></a>[`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+
+`L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
+`aM2r`, and fold, using the given `concat` and `empty` operations, over the
+elements focused on by the given traversal or lens `t` from the given data
+structure `s`.  The `concat` operation and the constant returned by `empty()`
+should form
+a
+[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
+the values returned by `aM2r`.
+
+For example:
+
+```js
+L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,3])
+// 6
+```
+
 #### Traversals and combinators
 
 ##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
-
-**`L.optional` is experimental and might be removed, renamed or changed
-semantically before next major release.**
 
 `L.optional` is a traversal over an optional element.  When the focus of
 `L.optional` is `undefined`, the traversal is empty.  Otherwise the traversal is
@@ -1084,9 +1110,6 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 ```
 
 ##### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
-
-**`L.sequence` is experimental and might be removed, renamed or changed
-semantically before next major release.**
 
 `L.sequence` is a traversal over an array.
 
@@ -1122,21 +1145,6 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // set x: "11"
 // { x: '11' }
 ```
-
-### Interop
-
-Conversions between lens libraries.
-
-#### <a name="fromRamda"></a>[`L.fromRamda(lens)`](#fromRamda "L.fromRamda :: Lens s a -> PLens s a")
-
-`L.fromRamda(lens)` converts the given Ramda lens to a partial lens.  Note that
-this does not change the behavior of the lens on `undefined` values.
-
-#### <a name="toRamda"></a>[`L.toRamda(plens)`](#toRamda "L.toRamda :: PLens s a -> Lens s a")
-
-`L.toRamda(plens)` converts the given partial lens to a Ramda lens.  Note that
-this does not change the behavior of the lens on `undefined` values.  Also note
-that traversals are not compatible with Ramda.
 
 ## Background
 
@@ -1238,7 +1246,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 
 ### Types
 
-To illustrate the idea we could give lenses the naive type definition
+To illustrate the idea we could give lenses the naïve type definition
 
 ```haskell
 type Lens s a = (s -> a, a -> s -> s)
@@ -1265,76 +1273,74 @@ ordinary lenses
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (4.0.2) and some roughly equivalent
-operations using Ramda (0.22.1).
+Here are a few benchmarks on partial lenses (as `L` version 5.0.0) and some
+roughly equivalent operations using Ramda (as `R` version 0.22.1) and Ramda Lens
+(as `P` version 0.1.1).
 
 ```js
-L.get(1, xs)                        x 33,197,342 ops/sec ±0.71% (89 runs sampled)
-R.nth(1, xs)                        x  3,687,870 ops/sec ±0.54% (95 runs sampled)
-R.view(l_1, xs)                     x  1,884,878 ops/sec ±0.99% (91 runs sampled)
+L.foldMapOf(Sum, L.sequence, id, xs100) x    476,650 ops/sec ±0.69% (93 runs sampled)
+P.sumOf(P.traversed, xs100)             x     23,730 ops/sec ±0.98% (91 runs sampled)
+R.sum(xs100)                            x    139,960 ops/sec ±0.50% (89 runs sampled)
 
-L.set(1, 0, xs)                     x 20,196,650 ops/sec ±0.60% (92 runs sampled)
-R.update(1, 0, xs)                  x  7,451,175 ops/sec ±0.64% (92 runs sampled)
-R.set(l_1, 0, xs)                   x  1,237,890 ops/sec ±1.01% (93 runs sampled)
+L.collect(L.sequence, xs100)            x    162,072 ops/sec ±0.75% (89 runs sampled)
 
-L.get("y", xyz)                     x 33,212,455 ops/sec ±0.58% (88 runs sampled)
-R.prop("y", xyz)                    x 21,205,434 ops/sec ±1.03% (92 runs sampled)
-R.view(l_y, xyz)                    x  3,690,735 ops/sec ±0.62% (90 runs sampled)
+L.modify(L.sequence, inc, xs100)        x    554,178 ops/sec ±0.74% (88 runs sampled)
+P.over(P.traversed, inc, xs100)         x     14,063 ops/sec ±0.43% (95 runs sampled)
+R.map(inc, xs100)                       x  1,925,839 ops/sec ±0.77% (94 runs sampled)
 
-L.set("y", 0, xyz)                  x  7,324,621 ops/sec ±1.01% (93 runs sampled)
-R.assoc("y", 0, xyz)                x 12,340,336 ops/sec ±0.88% (89 runs sampled)
-R.set(l_y, 0, xyz)                  x  2,105,233 ops/sec ±0.54% (92 runs sampled)
+L.get(1, xs)                            x 28,630,115 ops/sec ±0.95% (91 runs sampled)
+R.nth(1, xs)                            x  3,962,883 ops/sec ±0.74% (94 runs sampled)
+R.view(l_1, xs)                         x  1,979,334 ops/sec ±0.85% (95 runs sampled)
 
-L.get([0,"x",0,"y"], axay)          x 10,628,233 ops/sec ±1.00% (91 runs sampled)
-R.view(l_0_x_0_y, axay)             x    679,789 ops/sec ±0.73% (94 runs sampled)
+L.set(1, 0, xs)                         x 20,338,633 ops/sec ±1.89% (90 runs sampled)
+R.update(1, 0, xs)                      x  7,175,808 ops/sec ±0.76% (95 runs sampled)
+R.set(l_1, 0, xs)                       x  1,245,769 ops/sec ±0.94% (89 runs sampled)
 
-L.set([0,"x",0,"y"], 0, axay)       x  2,863,228 ops/sec ±1.43% (87 runs sampled)
-R.set(l_0_x_0_y, 0, axay)           x    448,515 ops/sec ±0.62% (94 runs sampled)
+L.get("y", xyz)                         x 29,322,470 ops/sec ±0.68% (96 runs sampled)
+R.prop("y", xyz)                        x 26,971,832 ops/sec ±0.89% (90 runs sampled)
+R.view(l_y, xyz)                        x  3,942,860 ops/sec ±0.83% (95 runs sampled)
 
-L.modify([0,"x",0,"y"], inc, axay)  x  2,982,206 ops/sec ±0.73% (88 runs sampled)
-R.over(l_0_x_0_y, inc, axay)        x    454,774 ops/sec ±0.44% (92 runs sampled)
+L.set("y", 0, xyz)                      x  7,682,454 ops/sec ±0.74% (88 runs sampled)
+R.assoc("y", 0, xyz)                    x 11,704,102 ops/sec ±0.86% (88 runs sampled)
+R.set(l_y, 0, xyz)                      x  2,106,427 ops/sec ±0.82% (90 runs sampled)
 
-L.remove(1, xs)                     x 17,315,121 ops/sec ±0.77% (89 runs sampled)
-R.remove(1, 1, xs)                  x  7,944,715 ops/sec ±0.44% (94 runs sampled)
+L.get([0,"x",0,"y"], axay)              x 11,900,830 ops/sec ±0.74% (92 runs sampled)
+R.view(l_0_x_0_y, axay)                 x    648,984 ops/sec ±0.70% (93 runs sampled)
 
-L.remove("y", xyz)                  x 12,951,081 ops/sec ±0.68% (94 runs sampled)
-R.dissoc("y", xyz)                  x 12,131,727 ops/sec ±0.46% (93 runs sampled)
+L.set([0,"x",0,"y"], 0, axay)           x  2,799,434 ops/sec ±0.65% (95 runs sampled)
+R.set(l_0_x_0_y, 0, axay)               x    422,281 ops/sec ±0.57% (92 runs sampled)
 
-L.get(["x","y","z"], xyzn)          x 11,338,312 ops/sec ±1.05% (90 runs sampled)
-R.path(["x","y","z"], xyzn)         x 11,393,543 ops/sec ±0.82% (93 runs sampled)
-R.view(l_xyz, xyzn)                 x  3,368,974 ops/sec ±0.64% (92 runs sampled)
-R.view(l_x_y_z, xyzn)               x  1,334,741 ops/sec ±0.90% (94 runs sampled)
+L.modify([0,"x",0,"y"], inc, axay)      x  2,967,180 ops/sec ±0.86% (91 runs sampled)
+R.over(l_0_x_0_y, inc, axay)            x    434,968 ops/sec ±0.60% (92 runs sampled)
 
-L.set(["x","y","z"], 0, xyzn)       x  2,700,494 ops/sec ±0.77% (88 runs sampled)
-R.assocPath(["x","y","z"], 0, xyzn) x  2,563,891 ops/sec ±0.68% (87 runs sampled)
-R.set(l_xyz, 0, xyzn)               x  1,254,548 ops/sec ±0.83% (92 runs sampled)
-R.set(l_x_y_z, 0, xyzn)             x    815,592 ops/sec ±0.60% (94 runs sampled)
+L.remove(1, xs)                         x 20,004,526 ops/sec ±0.77% (93 runs sampled)
+R.remove(1, 1, xs)                      x  7,829,732 ops/sec ±0.53% (92 runs sampled)
+
+L.remove("y", xyz)                      x 12,373,802 ops/sec ±0.77% (93 runs sampled)
+R.dissoc("y", xyz)                      x 14,886,320 ops/sec ±0.75% (90 runs sampled)
+
+L.get(["x","y","z"], xyzn)              x 12,819,570 ops/sec ±0.87% (92 runs sampled)
+R.path(["x","y","z"], xyzn)             x 15,507,068 ops/sec ±1.13% (92 runs sampled)
+R.view(l_xyz, xyzn)                     x  3,592,506 ops/sec ±0.60% (94 runs sampled)
+R.view(l_x_y_z, xyzn)                   x  1,344,448 ops/sec ±0.82% (88 runs sampled)
+
+L.set(["x","y","z"], 0, xyzn)           x  2,744,031 ops/sec ±0.83% (89 runs sampled)
+R.assocPath(["x","y","z"], 0, xyzn)     x  2,441,257 ops/sec ±1.47% (91 runs sampled)
+R.set(l_xyz, 0, xyzn)                   x  1,194,376 ops/sec ±0.90% (92 runs sampled)
+R.set(l_x_y_z, 0, xyzn)                 x    822,212 ops/sec ±0.97% (88 runs sampled)
+
+L.remove(50, xs100)                     x  4,781,696 ops/sec ±0.77% (91 runs sampled)
+R.remove(50, 1, xs100)                  x  1,000,885 ops/sec ±0.64% (94 runs sampled)
+
+L.set(50, 2, xs100)                     x  4,576,625 ops/sec ±0.60% (91 runs sampled)
+R.update(50, 2, xs100)                  x  1,662,070 ops/sec ±0.70% (92 runs sampled)
 ```
 
 At the time of writing, various operations on *partial lenses have been
 optimized for common cases*, but there is definitely a lot of room for
 improvement.
 
-The above benchmarks use the following definitions:
-
-```js
-const xyz = {x: 1, y: 2, z: 3}
-const xs = [1,2,3]
-const axay = [{x: [{y: 1}]}]
-
-const xyzn = {x: {y: {z: 1}}}
-
-const l_0 = R.lensIndex(0)
-const l_1 = R.lensIndex(1)
-const l_x = R.lensProp("x")
-const l_y = R.lensProp("y")
-const l_z = R.lensProp("z")
-const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
-const l_xyz = R.lensPath(["x", "y", "z"])
-const l_x_y_z = R.compose(l_x, l_y, l_z)
-
-const inc = x => x + 1
-```
+See [bench.js](bench/bench.js) for details.
 
 ## Related work
 
