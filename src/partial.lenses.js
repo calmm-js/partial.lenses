@@ -372,7 +372,7 @@ export const augment = template => lensI(
       const c = isObject(cIn) ? cIn : empty
       let z
       const set = (k, v) => {
-        if (undefined === z)
+        if (!z)
           z = {}
         z[k] = v
       }
