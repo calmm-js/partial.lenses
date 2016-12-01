@@ -1056,6 +1056,18 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
+`L.collect(t, s)` is equivalent
+to [`L.foldMapOf(List, t, toList, s)`](#foldMapOf) where `List` and `toList` are
+defined as follows:
+
+```js
+const List = {empty: R.always([]), concat: R.concat}
+const toList = x => x !== undefined ? [x] : []
+```
+
+The internal implementation of `L.collect` is optimized and faster than the
+above naïve implementation.
+
 ##### <a name="foldMapOf"></a>[`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
 
 `L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
