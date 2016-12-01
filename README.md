@@ -453,6 +453,8 @@ L.get("y", {x: 112, y: 101})
 // 101
 ```
 
+Note that `L.get` does not work on traversals.
+
 #### <a name="modify"></a>[`L.modify(l, x2x, s)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
 `L.modify(l, x2x, s)` allows one to map over the focused element of a data
