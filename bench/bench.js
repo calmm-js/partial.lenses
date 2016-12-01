@@ -37,6 +37,7 @@ const bs = [
 
   'L.foldMapOf(Sum, L.sequence, id, xs100)',
   'P.sumOf(P.traversed, xs100)',
+  'R.sum(xs100)',
 
   'L.collect(L.sequence, xs100)',
 
