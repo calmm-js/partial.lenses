@@ -90,7 +90,7 @@ const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
 
 //
 
-const unArray  = x => isArray(x) ? x : undefined
+const unArray = x => isArray(x) ? x : undefined
 
 const mkArray = x => isArray(x) ? x : []
 
@@ -115,7 +115,7 @@ const empty = {}
 
 //
 
-const toPartial = transform => x => undefined === x ? x : transform(x)
+const toPartial = transform => x => x !== undefined ? transform(x) : x
 
 //
 
