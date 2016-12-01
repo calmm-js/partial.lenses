@@ -2,13 +2,18 @@
 
 ## 5.0.0
 
-Reimplemented traversals, switched to using `infernals` and dropped Ramda
-dependency and interop.  These changes were made for the following reasons:
+Reimplemented library internals using
+on [Static Land](https://github.com/rpominov/static-land) style dictionaries,
+switched to using `infernals` and dropped Ramda dependency and interop.  These
+changes were made for the following reasons:
 
 * `infernals` is, and is supposed to remain, a tiny library.  This is an
   advantage if one wishes to use lenses, but does not wish to use Ramda.
 
-* Performance of traversals is and can now be significantly improved.
+* Performance of traversals, and folds over traversals in particular, is and can
+  now be significantly improved, because Static Land does not
+  require [wrapping](https://github.com/rpominov/static-land#pros) or boxing
+  primitive values.
 
 To interop with Ramda, you can write:
 
