@@ -1265,6 +1265,7 @@ roughly equivalent operations using Ramda (as `R` version 0.22.1) and Ramda Lens
 ```js
 L.foldMapOf(Sum, L.sequence, id, xs100) x    476,650 ops/sec ±0.69% (93 runs sampled)
 P.sumOf(P.traversed, xs100)             x     23,730 ops/sec ±0.98% (91 runs sampled)
+R.sum(xs100)                            x    139,960 ops/sec ±0.50% (89 runs sampled)
 
 L.collect(L.sequence, xs100)            x    162,072 ops/sec ±0.75% (89 runs sampled)
 
