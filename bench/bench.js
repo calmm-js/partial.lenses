@@ -26,10 +26,13 @@ const l_xyz = R.lensPath(["x", "y", "z"])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
 
 const id = x => x
+const always = x => _ => x
 const inc = x => x + 1
 const add = (x, y) => x+y
 
 const Sum = {empty: () => 0, concat: add}
+const List = {empty: always([]), concat: (x, y) => x.concat(y)}
+const toList = x => x !== undefined ? [x] : []
 
 const bs = [
   'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
@@ -40,6 +43,7 @@ const bs = [
   'R.sum(xs100)',
 
   'L.collect(L.sequence, xs100)',
+  'L.foldMapOf(List, L.sequence, toList, xs100)',
 
   'L.modify(L.sequence, inc, xs100)',
   'P.over(P.traversed, inc, xs100)',
