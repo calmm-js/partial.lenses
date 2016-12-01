@@ -2,8 +2,8 @@
 
 ## 5.0.0
 
-Reimplemented library internals using
-on [Static Land](https://github.com/rpominov/static-land) style dictionaries,
+Reimplemented library internals
+using [Static Land](https://github.com/rpominov/static-land) style dictionaries,
 switched to using `infernals` and dropped Ramda dependency and interop.  These
 changes were made for the following reasons:
 
