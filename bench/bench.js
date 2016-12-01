@@ -35,6 +35,8 @@ const List = {empty: always([]), concat: (x, y) => x.concat(y)}
 const toList = x => x !== undefined ? [x] : []
 
 const bs = [
+  'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
+
   'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
   'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
 

@@ -394,25 +394,27 @@ export const augment = template => lensI(
     }
   })
 
-export const pick = template => lensI(
-  c => {
-    let r
-    for (const k in template) {
-      const v = getI(template[k], c)
-      if (v !== undefined) {
-        if (r === undefined)
-          r = {}
-        r[k] = v
-      }
+function getPick(template, target) {
+  let r
+  for (const k in template) {
+    const v = getI(template[k], target)
+    if (v !== undefined) {
+      if (!r)
+        r = {}
+      r[k] = v
     }
-    return r
-  },
-  (o = empty, cIn) => {
-    let c = cIn
-    for (const k in template)
-      c = setI(template[k], o[k], c)
-    return c
-  })
+  }
+  return r
+}
+const setPick = (template, target) => value => {
+  const o = value || empty
+  let c = target
+  for (const k in template)
+    c = setI(template[k], o[k], c)
+  return c
+}
+export const pick = template => c => inner => target =>
+  c.map(setPick(template, target), inner(getPick(template, target)))
 
 export const identity = _c => inner => inner
 
