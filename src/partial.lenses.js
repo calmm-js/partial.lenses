@@ -250,7 +250,7 @@ export const inverse = iso => c => inner => x =>
   c.map(x => getI(iso, x), inner(getInverseI(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
-  compose(xL, choose(xO => xO === undefined ? nothing : x2yL(xO))))
+  compose(xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)))
 
 export const just = x => lensI(always(x), snd)
 
@@ -274,12 +274,12 @@ export const replace = curry2((inn, out) => c => inner => x =>
   c.map(replacer(out, inn), inner(replacer(inn, out)(x))))
 
 export const defaults = out => c => inner => x =>
-  c.map(replacer(out, undefined), inner(x === undefined ? out : x))
+  c.map(replacer(out, undefined), inner(x !== undefined ? x : out))
 export const required = inn => replace(inn, undefined)
-export const define = v => normalizer(x => x === undefined ? v : x)
+export const define = v => normalizer(x => x !== undefined ? x : v)
 
 export const valueOr = v => _c => inner => x =>
-  inner(x === undefined || x === null ? v : x)
+  inner(x !== undefined && x !== null ? x : v)
 
 export const normalize = transform => normalizer(toPartial(transform))
 
@@ -289,7 +289,7 @@ export const prop = assert("a string", isProp)
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
 const setProp = (k, v, o) =>
-  v === undefined ? dissocPartialU(k, o) : assocPartialU(k, v, o)
+  v !== undefined ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
 const liftProp = k => c => inner => o =>
   c.map(v => setProp(k, v, o), inner(getProp(k, o)))
@@ -316,23 +316,7 @@ const nulls = n => Array(n).fill(null)
 
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
 function setIndex(i, x, xs) {
-  if (x === undefined) {
-    if (!isArray(xs))
-      return undefined
-    const n = xs.length
-    if (!n)
-      return undefined
-    if (i < 0 || n <= i)
-      return xs
-    if (n === 1)
-      return undefined
-    const ys = Array(n-1)
-    for (let j=0; j<i; ++j)
-      ys[j] = xs[j]
-    for (let j=i+1; j<n; ++j)
-      ys[j-1] = xs[j]
-    return ys
-  } else {
+  if (x !== undefined) {
     if (!isArray(xs)) {
       if (i < 0)
         return undefined
@@ -351,13 +335,29 @@ function setIndex(i, x, xs) {
       ys[j] = xs[j]
     ys[i] = x
     return ys
+  } else {
+    if (!isArray(xs))
+      return undefined
+    const n = xs.length
+    if (!n)
+      return undefined
+    if (i < 0 || n <= i)
+      return xs
+    if (n === 1)
+      return undefined
+    const ys = Array(n-1)
+    for (let j=0; j<i; ++j)
+      ys[j] = xs[j]
+    for (let j=i+1; j<n; ++j)
+      ys[j-1] = xs[j]
+    return ys
   }
 }
 const liftIndex = i => c => inner => xs =>
   c.map(x => setIndex(i, x, xs), inner(getIndex(i, xs)))
 
 export const append = lensI(snd, (x, xs) =>
-  x === undefined ? unArray(xs) : isArray(xs) ? xs.concat([x]) : [x])
+  x !== undefined ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
 
 export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
   emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
