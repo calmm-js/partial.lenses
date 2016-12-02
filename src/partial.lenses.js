@@ -116,7 +116,7 @@ const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 //
 
-const toPartial = transform => x => x !== undefined ? transform(x) : x
+const toPartial = x2y => x => x !== undefined ? x2y(x) : x
 
 //
 
@@ -124,18 +124,18 @@ const seemsLens = x => typeof x === "function" && x.length === 3
 
 const lifted = assert("a lens", seemsLens)
 
-const close = (l, A, i) => x => l(A, i, x)
+const close = (l, F, x2yF) => x => l(F, x2yF, x)
 
 function composed(ls) {
   switch (ls.length) {
     case 0:  return identity
     case 1:  return lift(ls[0])
-    default: return (F, i, t) => {
+    default: return (F, x2yF, x) => {
       let n = ls.length
-      i = close(lift(ls[--n]), F, i)
+      x2yF = close(lift(ls[--n]), F, x2yF)
       while (1 < n)
-        i = close(lift(ls[--n]), F, i)
-      return lift(ls[0])(F, i, t)
+        x2yF = close(lift(ls[--n]), F, x2yF)
+      return lift(ls[0])(F, x2yF, x)
     }
   }
 }
@@ -166,8 +166,7 @@ function setI(l, x, s) {
   }
 }
 
-function getComposedI(ls, s0)  {
-  let s = s0
+function getComposedI(ls, s)  {
   for (let i=0, n=ls.length; i<n; ++i)
     s = getI(ls[i], s)
   return s
@@ -184,41 +183,40 @@ function getI(l, s) {
 
 const getInverseI = (l, x) => setI(l, x, undefined)
 
-function modifyComposedI(ls, x2x, s0) {
+function modifyComposedI(ls, x2x, x) {
   let n = ls.length
 
-  let r = s0
-  const ss = []
+  const xs = []
 
   for (let i=0; i<n; ++i) {
-    ss.push(r)
+    xs.push(x)
     const l = ls[i]
     switch (typeof l) {
       case "string":
-        r = getProp(l, r)
+        x = getProp(l, x)
         break
       case "number":
-        r = getIndex(l, r)
+        x = getIndex(l, x)
         break
       default:
-        r = composed(ls.slice(i))(Ident, x2x, r)
+        x = composed(ls.slice(i))(Ident, x2x, x)
         n = i
         break
     }
   }
 
   if (n === ls.length)
-    r = x2x(r)
+    x = x2x(x)
 
   while (0 <= --n) {
     const l = ls[n]
     switch (typeof l) {
-      case "string": r = setProp(l, r, ss[n]); break
-      case "number": r = setIndex(l, r, ss[n]); break
+      case "string": x = setProp(l, x, xs[n]); break
+      case "number": x = setIndex(l, x, xs[n]); break
     }
   }
 
-  return r
+  return x
 }
 
 function modifyI(l, x2x, s) {
@@ -230,8 +228,7 @@ function modifyI(l, x2x, s) {
   }
 }
 
-const lensI = (getter, setter) => (F, inner, target) =>
-  F.map(focus => setter(focus, target), inner(getter(target)))
+const lensI = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
 const collectI = (l, s) =>
   PartialList.toArray(lift(l)(Collect, PartialList.of, s))
 
@@ -256,8 +253,7 @@ export const chain = curry2((x2yL, xL) =>
 
 export const just = x => lensI(always(x), snd)
 
-export const choose = x2yL => (F, inner, target) =>
-  lift(x2yL(target))(F, inner, target)
+export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 
 export const nothing = lensI(snd, snd)
 
@@ -272,16 +268,16 @@ export const choice = (...ls) => choose(x => {
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
 const normalizer = fn => (F, inner, x) => F.map(fn, inner(fn(x)))
 
-export const replace = curry2((inn, out) => (F, inner, x) =>
-  F.map(replacer(out, inn), inner(replacer(inn, out)(x))))
+export const replace = curry2((inn, out) => (F, x2yF, x) =>
+  F.map(replacer(out, inn), x2yF(replacer(inn, out)(x))))
 
-export const defaults = out => (F, inner, x) =>
-  F.map(replacer(out, undefined), inner(x !== undefined ? x : out))
+export const defaults = out => (F, x2yF, x) =>
+  F.map(replacer(out, undefined), x2yF(x !== undefined ? x : out))
 export const required = inn => replace(inn, undefined)
 export const define = v => normalizer(x => x !== undefined ? x : v)
 
-export const valueOr = v => (_F, inner, x) =>
-  inner(x !== undefined && x !== null ? x : v)
+export const valueOr = v => (_F, x2yF, x) =>
+  x2yF(x !== undefined && x !== null ? x : v)
 
 export const normalize = transform => normalizer(toPartial(transform))
 
@@ -293,8 +289,8 @@ const getProp = (k, o) => isObject(o) ? o[k] : undefined
 const setProp = (k, v, o) =>
   v !== undefined ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
-const liftProp = k => (F, inner, o) =>
-  F.map(v => setProp(k, v, o), inner(getProp(k, o)))
+const liftProp = k => (F, x2yF, x) =>
+  F.map(v => setProp(k, v, x), x2yF(getProp(k, x)))
 
 export const find = predicate => choose(xs => {
   if (isArray(xs)) {
@@ -349,8 +345,8 @@ function setIndex(i, x, xs) {
     return ys
   }
 }
-const liftIndex = i => (F, inner, xs) =>
-  F.map(x => setIndex(i, x, xs), inner(getIndex(i, xs)))
+const liftIndex = i => (F, x2yF, xs) =>
+  F.map(y => setIndex(i, y, xs), x2yF(getIndex(i, xs)))
 
 export const append = lensI(snd, (x, xs) =>
   x !== undefined ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
@@ -369,9 +365,10 @@ export const augment = template => lensI(
       return undefined
     }
   },
-  (y, cIn) => {
+  (y, c) => {
     if (isObject(y)) {
-      const c = isObject(cIn) ? cIn : emptyObject
+      if (!isObject(c))
+        c = emptyObject
       let z
       const set = (k, v) => {
         if (!z)
@@ -391,10 +388,10 @@ export const augment = template => lensI(
     }
   })
 
-function getPick(template, target) {
+function getPick(template, x) {
   let r
   for (const k in template) {
-    const v = getI(template[k], target)
+    const v = getI(template[k], x)
     if (v !== undefined) {
       if (!r)
         r = {}
@@ -403,17 +400,16 @@ function getPick(template, target) {
   }
   return r
 }
-const setPick = (template, target) => value => {
+const setPick = (template, x) => value => {
   const o = value || emptyObject
-  let c = target
   for (const k in template)
-    c = setI(template[k], o[k], c)
-  return c
+    x = setI(template[k], o[k], x)
+  return x
 }
-export const pick = template => (F, inner, target) =>
-  F.map(setPick(template, target), inner(getPick(template, target)))
+export const pick = template => (F, x2yF, x) =>
+  F.map(setPick(template, x), x2yF(getPick(template, x)))
 
-export const identity = (_F, inner, t) => inner(t)
+export const identity = (_F, x2yF, x) => x2yF(x)
 
 export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 
@@ -422,13 +418,13 @@ const show = (labels, dir) => x => console.log(...labels, dir, x) || x
 export const log = (...labels) =>
   lensI(show(labels, "get"), show(labels, "set"))
 
-export const sequence = (A, inner, target) =>
+export const sequence = (A, x2yA, xs) =>
   A === Ident
-  ? emptyArrayToUndefined(mapPartialU(inner, mkArray(target)))
-  : A.map(emptyArrayToUndefined, PartialArray.traverse(A, inner, mkArray(target)))
+  ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
+  : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
 
-export const optional = (A, inner, target) =>
-  target !== undefined ? inner(target) : A.of(undefined)
+export const optional = (A, x2yA, x) =>
+  x !== undefined ? x2yA(x) : A.of(undefined)
 
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
