@@ -119,7 +119,7 @@ const toPartial = transform => x => x !== undefined ? transform(x) : x
 
 //
 
-const seemsLens = x => typeof x === "function" && x.length === 1
+const seemsLens = x => typeof x === "function" && x.length === 2
 
 const lifted = assert("a lens", seemsLens)
 
@@ -127,11 +127,11 @@ function composed(lenses) {
   switch (lenses.length) {
     case 0:  return identity
     case 1:  return lift(lenses[0])
-    default: return constructor => x => {
+    default: return (c, x) => {
       let i = lenses.length
-      let r = lift(lenses[--i])(constructor)(x)
+      let r = lift(lenses[--i])(c, x)
       do {
-        r = lift(lenses[--i])(constructor)(r)
+        r = lift(lenses[--i])(c, r)
       } while (0 < i)
       return r
     }
@@ -159,7 +159,7 @@ function setI(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident)(() => x)(s)
+    case "function": return lifted(l)(Ident, () => x)(s)
     default:         return modifyComposedI(l, () => x, s)
   }
 }
@@ -175,7 +175,7 @@ function getI(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const)(Const.of)(s)
+    case "function": return lifted(l)(Const, Const.of)(s)
     default:         return getComposedI(l, s)
   }
 }
@@ -199,7 +199,7 @@ function modifyComposedI(ls, x2x, s0) {
         r = getIndex(l, r)
         break
       default:
-        r = composed(ls.slice(i))(Ident)(x2x)(r)
+        r = composed(ls.slice(i))(Ident, x2x)(r)
         n = i
         break
     }
@@ -223,15 +223,15 @@ function modifyI(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
-    case "function": return lifted(l)(Ident)(x2x)(s)
+    case "function": return lifted(l)(Ident, x2x)(s)
     default:         return modifyComposedI(l, x2x, s)
   }
 }
 
-const lensI = (getter, setter) => c => inner => target =>
+const lensI = (getter, setter) => (c, inner) => target =>
   c.map(focus => setter(focus, target), inner(getter(target)))
 const collectI = (l, s) =>
-  PartialList.toArray(lift(l)(Collect)(PartialList.of)(s))
+  PartialList.toArray(lift(l)(Collect, PartialList.of)(s))
 
 export const remove = curry2((l, s) => setI(l, undefined, s))
 export const lens = curry2(lensI)
@@ -243,10 +243,10 @@ export const collect = curry2(collectI)
 
 export const foldMapOf = curry4((m, l, to, s) => {
   const Const = ConstOf(m)
-  return lift(l)(Const)(to)(s)
+  return lift(l)(Const, to)(s)
 })
 
-export const inverse = iso => c => inner => x =>
+export const inverse = iso => (c, inner) => x =>
   c.map(x => getI(iso, x), inner(getInverseI(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
@@ -254,8 +254,8 @@ export const chain = curry2((x2yL, xL) =>
 
 export const just = x => lensI(always(x), snd)
 
-export const choose = x2yL => constructor => inner => target =>
-  lift(x2yL(target))(constructor)(inner)(target)
+export const choose = x2yL => (c, inner) => target =>
+  lift(x2yL(target))(c, inner)(target)
 
 export const nothing = lensI(snd, snd)
 
@@ -268,17 +268,17 @@ export const choice = (...ls) => choose(x => {
 })
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
-const normalizer = fn => c => inner => x => c.map(fn, inner(fn(x)))
+const normalizer = fn => (c, inner) => x => c.map(fn, inner(fn(x)))
 
-export const replace = curry2((inn, out) => c => inner => x =>
+export const replace = curry2((inn, out) => (c, inner) => x =>
   c.map(replacer(out, inn), inner(replacer(inn, out)(x))))
 
-export const defaults = out => c => inner => x =>
+export const defaults = out => (c, inner) => x =>
   c.map(replacer(out, undefined), inner(x !== undefined ? x : out))
 export const required = inn => replace(inn, undefined)
 export const define = v => normalizer(x => x !== undefined ? x : v)
 
-export const valueOr = v => _c => inner => x =>
+export const valueOr = v => (_c, inner) => x =>
   inner(x !== undefined && x !== null ? x : v)
 
 export const normalize = transform => normalizer(toPartial(transform))
@@ -291,7 +291,7 @@ const getProp = (k, o) => isObject(o) ? o[k] : undefined
 const setProp = (k, v, o) =>
   v !== undefined ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
-const liftProp = k => c => inner => o =>
+const liftProp = k => (c, inner) => o =>
   c.map(v => setProp(k, v, o), inner(getProp(k, o)))
 
 export const find = predicate => choose(xs => {
@@ -347,7 +347,7 @@ function setIndex(i, x, xs) {
     return ys
   }
 }
-const liftIndex = i => c => inner => xs =>
+const liftIndex = i => (c, inner) => xs =>
   c.map(x => setIndex(i, x, xs), inner(getIndex(i, xs)))
 
 export const append = lensI(snd, (x, xs) =>
@@ -408,10 +408,10 @@ const setPick = (template, target) => value => {
     c = setI(template[k], o[k], c)
   return c
 }
-export const pick = template => c => inner => target =>
+export const pick = template => (c, inner) => target =>
   c.map(setPick(template, target), inner(getPick(template, target)))
 
-export const identity = _c => inner => inner
+export const identity = snd
 
 export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 
@@ -420,12 +420,12 @@ const show = (...labels) => x => console.log(...labels, x) || x
 export const log = (...labels) =>
   lensI(show(...labels, "get"), show(...labels, "set"))
 
-export const sequence = c => inner => target =>
+export const sequence = (c, inner) => target =>
   c === Ident
   ? emptyArrayToUndefined(mapPartialU(inner, mkArray(target)))
   : c.map(emptyArrayToUndefined, PartialArray.traverse(c, inner, mkArray(target)))
 
-export const optional = c => inner => target =>
+export const optional = (c, inner) => target =>
   target !== undefined ? inner(target) : c.of(undefined)
 
 export const fromArrayBy = id =>
