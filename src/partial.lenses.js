@@ -90,6 +90,11 @@ const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
 
 //
 
+const emptyArray = []
+const emptyObject = {}
+
+//
+
 const unArray = x => isArray(x) ? x : undefined
 
 const mkArray = x => isArray(x) ? x : emptyArray
@@ -108,11 +113,6 @@ const assert = process.env.NODE_ENV === "production" ? () => id : check
 //
 
 const emptyArrayToUndefined = xs => xs.length ? xs : undefined
-
-//
-
-const emptyArray = []
-const emptyObject = {}
 
 //
 
