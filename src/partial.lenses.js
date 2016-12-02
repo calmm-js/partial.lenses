@@ -434,8 +434,8 @@ export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
   lensI(xs => {
     if (isArray(xs)) {
-      const o = {}
-      for (let i=0, n=xs.length; i<n; ++i) {
+      const o = {}, n=xs.length
+      for (let i=0; i<n; ++i) {
         const x = xs[i]
         o[x[id]] = x
       }
