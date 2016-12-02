@@ -37,6 +37,10 @@ const toList = x => x !== undefined ? [x] : []
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
 const bs = [
+  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
+  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
+  'R.map(R.map(R.map(inc)), xsss100)',
+
   'L.get(d0x0y, axay)',
   'L.set(d0x0y, 1, undefined)',
 
