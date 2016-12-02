@@ -417,10 +417,10 @@ export const identity = (_F, inner, t) => inner(t)
 
 export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 
-const show = (...labels) => x => console.log(...labels, x) || x
+const show = (labels, dir) => x => console.log(...labels, dir, x) || x
 
 export const log = (...labels) =>
-  lensI(show(...labels, "get"), show(...labels, "set"))
+  lensI(show(labels, "get"), show(labels, "set"))
 
 export const sequence = (A, inner, target) =>
   A === Ident
