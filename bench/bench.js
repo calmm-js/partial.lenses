@@ -40,6 +40,8 @@ const bs = [
   'L.get(d0x0y, axay)',
   'L.set(d0x0y, 1, undefined)',
 
+  'L.set(L.findWith("x"), 2, axay)',
+
   'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
 
   'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
