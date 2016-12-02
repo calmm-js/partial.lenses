@@ -111,8 +111,8 @@ const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 //
 
-const empty = {}
 const emptyArray = []
+const emptyObject = {}
 
 //
 
@@ -370,7 +370,7 @@ export const augment = template => lensI(
   },
   (y, cIn) => {
     if (isObject(y)) {
-      const c = isObject(cIn) ? cIn : empty
+      const c = isObject(cIn) ? cIn : emptyObject
       let z
       const set = (k, v) => {
         if (!z)
@@ -403,7 +403,7 @@ function getPick(template, target) {
   return r
 }
 const setPick = (template, target) => value => {
-  const o = value || empty
+  const o = value || emptyObject
   let c = target
   for (const k in template)
     c = setI(template[k], o[k], c)
