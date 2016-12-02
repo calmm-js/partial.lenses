@@ -18,6 +18,7 @@ const xyzn = {x: {y: {z: 1}}}
 
 const l_0 = R.lensIndex(0)
 const l_1 = R.lensIndex(1)
+const l_50 = R.lensIndex(50)
 const l_x = R.lensProp("x")
 const l_y = R.lensProp("y")
 const l_z = R.lensProp("z")
@@ -115,6 +116,7 @@ const bs = [
 
   'L.remove(50, xs100)',
   'L.set(50, 2, xs100)',
+  'R.set(l_50, 2, xs100)',
   'R.remove(50, 1, xs100)',
   'R.update(50, 2, xs100)',
 
