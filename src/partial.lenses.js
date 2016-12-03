@@ -40,7 +40,7 @@ const ConstOf = Monoid => ({
 
 const PartialList = {
   of: x => x !== undefined ? [x, null] : null,
-  empty: () => null,
+  empty: always(null),
   cons: (h, t) => h !== undefined ? [h, t] : t,
   revConcat(xs, ys) {
     while (xs) {
@@ -108,7 +108,7 @@ const check = (expected, predicate) => x => {
     throw new Error(`Expected ${expected}, but got ${x}.`)
 }
 
-const assert = process.env.NODE_ENV === "production" ? () => id : check
+const assert = process.env.NODE_ENV === "production" ? always(id) : check
 
 //
 
@@ -157,33 +157,33 @@ export function compose(...lenses) {
   }
 }
 
-function setI(l, x, s) {
+function setU(l, x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x, s)
     case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident, () => x, s)
-    default:         return modifyComposedI(l, () => x, s)
+    case "function": return lifted(l)(Ident, always(x), s)
+    default:         return modifyComposed(l, always(x), s)
   }
 }
 
-function getComposedI(ls, s)  {
+function getComposed(ls, s)  {
   for (let i=0, n=ls.length; i<n; ++i)
-    s = getI(ls[i], s)
+    s = getU(ls[i], s)
   return s
 }
 
-function getI(l, s) {
+function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
     case "function": return lifted(l)(Const, Const.of, s)
-    default:         return getComposedI(l, s)
+    default:         return getComposed(l, s)
   }
 }
 
-const getInverseI = (l, x) => setI(l, x, undefined)
+const getInverseU = (l, x) => setU(l, x, undefined)
 
-function modifyComposedI(ls, x2x, x) {
+function modifyComposed(ls, x2x, x) {
   let n = ls.length
 
   const xs = []
@@ -219,26 +219,26 @@ function modifyComposedI(ls, x2x, x) {
   return x
 }
 
-function modifyI(l, x2x, s) {
+function modifyU(l, x2x, s) {
   switch (typeof l) {
     case "string":   return setProp(l, x2x(getProp(l, s)), s)
     case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
     case "function": return lifted(l)(Ident, x2x, s)
-    default:         return modifyComposedI(l, x2x, s)
+    default:         return modifyComposed(l, x2x, s)
   }
 }
 
-const lensI = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
-const collectI = (l, s) =>
+const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
+const collectU = (l, s) =>
   PartialList.toArray(lift(l)(Collect, PartialList.of, s))
 
-export const remove = curry2((l, s) => setI(l, undefined, s))
-export const lens = curry2(lensI)
-export const modify = curry3(modifyI)
-export const set = curry3(setI)
-export const get = curry2(getI)
-export const getInverse = curry2(getInverseI)
-export const collect = curry2(collectI)
+export const remove = curry2((l, s) => setU(l, undefined, s))
+export const lens = curry2(lensU)
+export const modify = curry3(modifyU)
+export const set = curry3(setU)
+export const get = curry2(getU)
+export const getInverse = curry2(getInverseU)
+export const collect = curry2(collectU)
 
 export const foldMapOf = curry4((m, l, to, s) => {
   const Const = ConstOf(m)
@@ -246,22 +246,22 @@ export const foldMapOf = curry4((m, l, to, s) => {
 })
 
 export const inverse = iso => (F, inner, x) =>
-  F.map(x => getI(iso, x), inner(getInverseI(iso, x)))
+  F.map(x => getU(iso, x), inner(getInverseU(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
   [xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)])
 
-export const just = x => lensI(always(x), snd)
+export const just = x => lensU(always(x), snd)
 
 export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 
-export const nothing = lensI(snd, snd)
+export const nothing = lensU(snd, snd)
 
 export const orElse =
-  curry2((d, l) => choose(x => getI(l, x) !== undefined ? l : d))
+  curry2((d, l) => choose(x => getU(l, x) !== undefined ? l : d))
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => getI(l, x) !== undefined)
+  const i = ls.findIndex(l => getU(l, x) !== undefined)
   return 0 <= i ? ls[i] : nothing
 })
 
@@ -303,7 +303,7 @@ export const find = predicate => choose(xs => {
 
 export function findWith(...ls) {
   const lls = compose(...ls)
-  return [find(x => getI(lls, x) !== undefined), lls]
+  return [find(x => getU(lls, x) !== undefined), lls]
 }
 
 const isIndex = x => Number.isInteger(x) && 0 <= x
@@ -348,13 +348,13 @@ function setIndex(i, x, xs) {
 const liftIndex = i => (F, x2yF, xs) =>
   F.map(y => setIndex(i, y, xs), x2yF(getIndex(i, xs)))
 
-export const append = lensI(snd, (x, xs) =>
+export const append = lensU(snd, (x, xs) =>
   x !== undefined ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
 
-export const filter = p => lensI(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
+export const filter = p => lensU(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
   emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
 
-export const augment = template => lensI(
+export const augment = template => lensU(
   x => {
     if (isObject(x)) {
       const z = {...x}
@@ -391,7 +391,7 @@ export const augment = template => lensI(
 function getPick(template, x) {
   let r
   for (const k in template) {
-    const v = getI(template[k], x)
+    const v = getU(template[k], x)
     if (v !== undefined) {
       if (!r)
         r = {}
@@ -403,7 +403,7 @@ function getPick(template, x) {
 const setPick = (template, x) => value => {
   const o = value || emptyObject
   for (const k in template)
-    x = setI(template[k], o[k], x)
+    x = setU(template[k], o[k], x)
   return x
 }
 export const pick = template => (F, x2yF, x) =>
@@ -416,7 +416,7 @@ export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 const show = (labels, dir) => x => console.log(...labels, dir, x) || x
 
 export const log = (...labels) =>
-  lensI(show(labels, "get"), show(labels, "set"))
+  lensU(show(labels, "get"), show(labels, "set"))
 
 export const sequence = (A, x2yA, xs) =>
   A === Ident
@@ -428,7 +428,7 @@ export const optional = (A, x2yA, x) =>
 
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  lensI(xs => {
+  lensU(xs => {
     if (isArray(xs)) {
       const o = {}, n=xs.length
       for (let i=0; i<n; ++i) {
