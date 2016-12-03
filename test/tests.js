@@ -199,6 +199,11 @@ describe("L.nothing", () => {
   testEq('L.set(L.nothing, "anything", "original")', "original")
 })
 
+describe("L.to", () => {
+  testEq('L.get([0, "x", L.to(R.negate)], [{x:-1}])', 1)
+  testEq('L.set([0, "x", L.to(R.negate)], 2, [{x:-1}])', [{x:-1}])
+})
+
 describe("L.just", () => {
   testEq('L.get(L.just("always"), "anything")', "always")
   testEq('L.set(L.just("always"), "anything", "original")', "original")

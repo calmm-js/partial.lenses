@@ -251,7 +251,8 @@ export const inverse = iso => (F, inner, x) =>
 export const chain = curry2((x2yL, xL) =>
   [xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)])
 
-export const just = x => lensU(always(x), snd)
+export const to = x2y => (F, y2zF, x) => F.map(always(x), y2zF(x2y(x)))
+export const just = x => to(always(x))
 
 export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 

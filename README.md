@@ -42,7 +42,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
     * [`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
     * [`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
   * [Creating new lenses](#creating-new-lenses)
-    * [`L.lens(get, set)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
+    * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
   * [Lenses and combinators](#lenses-and-combinators)
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
@@ -71,6 +71,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.just(value)`](#just "L.just :: a -> PLens s a")
       * [`L.nothing`](#nothing "L.nothing :: PLens s s")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
+      * [`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
@@ -442,9 +443,9 @@ array notation [`[...]`](#compose) to denote composition.
 
 Operations on lenses take lenses as parameters, but do not return lenses.
 
-#### <a name="get"></a>[`L.get(l, s)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
+#### <a name="get"></a>[`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
 
-`L.get(l, s)` returns the focused element from a data structure.
+`L.get` returns the focused element from a data structure.
 
 For example:
 
@@ -455,10 +456,9 @@ L.get("y", {x: 112, y: 101})
 
 Note that `L.get` does not work on traversals.
 
-#### <a name="modify"></a>[`L.modify(l, x2x, s)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+#### <a name="modify"></a>[`L.modify(lens, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
-`L.modify(l, x2x, s)` allows one to map over the focused element of a data
-structure.
+`L.modify` allows one to map over the focused element of a data structure.
 
 For example:
 
@@ -467,11 +467,9 @@ L.modify("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // {elems: [{y: 2}, {y: 4}]}
 ```
 
-#### <a name="remove"></a>[`L.remove(l, s)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
+#### <a name="remove"></a>[`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
-`L.remove(l, s)` is equivalent to [`L.set(l, undefined, s)`](#set).  With
-partial lenses, setting to `undefined` typically has the effect of removing the
-focused element.
+`L.remove` allows one to remove the focused element from a data structure.
 
 For example:
 
@@ -480,9 +478,13 @@ L.remove(["a", "b"], {a: {b: 1}, x: {y: 2}})
 // {x: {y: 2}}
 ```
 
-#### <a name="set"></a>[`L.set(l, x, s)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
+Note that `L.remove(lens, maybeData)` is equivalent
+to [`L.set(lens, undefined, maybeData)`](#set).  With partial lenses, setting to
+`undefined` typically has the effect of removing the focused element.
 
-`L.set(l, x, s)` is equivalent to [`L.modify(l, () => x, s)`](#modify).
+#### <a name="set"></a>[`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
+
+`L.set` allows one to replace the focused element of a data structure.
 
 For example:
 
@@ -491,17 +493,23 @@ L.set(["a", 0, "x"], 11, {id: "z"})
 // {a: [{x: 11}], id: "z"}
 ```
 
+Note that `L.set(lens, maybeValue, maybeData)` is equivalent
+to [`L.modify(lens, R.always(maybeValue), maybeData)`](#modify).
+
 ### Creating new lenses
 
-#### <a name="lens"></a>[`L.lens(get, set)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
+#### <a name="lens"></a>[`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
 
-`L.lens(get, set)` creates a new primitive lens.  One should think twice before
-introducing a new primitive lens&mdash;most of the combinators in this library
-have been introduced to reduce the need to write new primitive lenses.  With
-that said, there are still valid reasons to create new primitive lenses.  For
-example, here is a lens that we've used in production, written with the help of
-[Moment.js](http://momentjs.com/), to bidirectionally convert a pair of `start`
-and `end` times to a duration:
+`L.lens` creates a new primitive lens.  The first parameter is the *getter* and
+the second parameter is the *setter*.  The setter takes two parameters: the
+first is the value written and the second is the data structure to write into.
+
+One should think twice before introducing a new primitive lens&mdash;most of the
+combinators in this library have been introduced to reduce the need to write new
+primitive lenses.  With that said, there are still valid reasons to create new
+primitive lenses.  For example, here is a lens that we've used in production,
+written with the help of [Moment.js](http://momentjs.com/), to bidirectionally
+convert a pair of `start` and `end` times to a duration:
 
 ```js
 const timesAsDuration = L.lens(
@@ -536,13 +544,12 @@ Lens combinators are either lenses or functions that return lenses.
 
 #### Computing derived props
 
-##### <a name="augment"></a>[`L.augment({prop: obj => val, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
+##### <a name="augment"></a>[`L.augment({prop: object => value, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
 
-`L.augment({prop: obj => val, ...props})` is given a template of functions to
-compute new properties.  When not viewing or setting a defined object, the
-result is `undefined`.  When viewing a defined object, the object is extended
-with the computed properties.  When set with a defined object, the extended
-properties are removed.
+`L.augment` is given a template of functions to compute new properties.  When
+not viewing or setting a defined object, the result is `undefined`.  When
+viewing a defined object, the object is extended with the computed properties.
+When set with a defined object, the extended properties are removed.
 
 For example:
 
@@ -553,9 +560,8 @@ L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y})
 
 #### Enforcing invariants
 
-##### <a name="defaults"></a>[`L.defaults(out)`](#defaults "L.defaults :: s -> PLens s s")
+##### <a name="defaults"></a>[`L.defaults(valueOut)`](#defaults "L.defaults :: s -> PLens s s")
 
-`L.defaults(out)` is the same as [`L.replace(undefined, out)`](#replace).
 `L.defaults` is used to specify a default context or value for an element in
 case it is missing.  When set with the default value, the effect is to remove
 the element.  This can be useful for both making partial lenses with propagating
@@ -573,11 +579,23 @@ L.set(["items", L.defaults([])], [], {items: [1, 2, 3]})
 // undefined
 ```
 
+Note that `L.defaults(valueOut)` is equivalent
+to [`L.replace(undefined, valueOut)`](#replace).
+
 ##### <a name="define"></a>[`L.define(value)`](#define "L.define :: s -> PLens s s")
 
-`L.define(value)` is the same as `[L.required(value), L.defaults(value)]`.
 `L.define` is used to specify a value to act as both the default value and the
 required value for an element.
+
+```js
+L.get(["x", L.define(null)], {y: 10})
+// null
+L.set(["x", L.define(null)], undefined, {y: 10}))
+// { y: 10, x: null }
+```
+
+Note that `L.define(value)` is equivalent to `[L.required(value),
+L.defaults(value)]`.
 
 ##### <a name="normalize"></a>[`L.normalize(value => value)`](#normalize "L.normalize :: (s -> s) -> PLens s s")
 
@@ -588,9 +606,8 @@ The main use case for `normalize` is to make it easy to determine whether, after
 a change, the data has actually changed.  By keeping the data normalized, a
 simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
-##### <a name="required"></a>[`L.required(inn)`](#required "L.required :: s -> PLens s s")
+##### <a name="required"></a>[`L.required(valueIn)`](#required "L.required :: s -> PLens s s")
 
-`L.required(inn)` is the same as [`L.replace(inn, undefined)`](#replace).
 `L.required` is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.
 
@@ -605,28 +622,38 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 // { items: [] }
 ```
 
+Note that `L.required(valueIn)` is equivalent
+to [`L.replace(valueIn, undefined)`](#replace).
+
 #### Lensing arrays
 
 ##### <a name="append"></a>[`L.append`](#append "L.append :: PLens [a] a")
 
-`L.append` is a special semi-degenerate lens that operates on arrays and is
-equivalent to `L.index(i)` with the index `i` set to the length of the focused
-array or 0 in case the focus is not a defined array.
+`L.append` is a write-only lens that can be used to append values to an array.
+The view of `L.append` is always `undefined`.
 
 For example:
 
 ```js
+L.get(L.append, ["x"])
+// undefined
 L.set(L.append, "x", undefined)
 // [ 'x' ]
+L.set(L.append, "x", ["z", "y"])
+// [ 'z', 'y', 'x' ]
 ```
 
-##### <a name="filter"></a>[`L.filter(predicate)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
+Note that `L.append` is equivalent to [`L.index(i)`](#index) with the index `i`
+set to the length of the focused array or 0 in case the focus is not a defined
+array.
 
-`L.filter(predicate)` operates on arrays.  When not viewing an array, the result
-is `undefined`.  When viewing an array, only elements matching the given
-predicate will be returned.  When set, the resulting array will be formed by
-concatenating the set array and the complement of the filtered context.  If the
-resulting array would be empty, the whole result will be `undefined`.
+##### <a name="filter"></a>[`L.filter(value => testable)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
+
+`L.filter` operates on arrays.  When not viewing an array, the result is
+`undefined`.  When viewing an array, only elements matching the given predicate
+will be returned.  When set, the resulting array will be formed by concatenating
+the set array and the complement of the filtered context.  If the resulting
+array would be empty, the whole result will be `undefined`.
 
 For example:
 
@@ -642,23 +669,23 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use of
 [`L.normalize`](#normalize) would be preferable.
 
-##### <a name="find"></a>[`L.find(predicate)`](#find "L.find :: (a -> Boolean) -> PLens [a] a")
+##### <a name="find"></a>[`L.find(value => testable)`](#find "L.find :: (a -> Boolean) -> PLens [a] a")
 
-`L.find(predicate)` operates on arrays like [`L.index`](#index), but the index
-to be viewed is determined by finding the first element from the input array
-that matches the given predicate.  When no matching element is found the effect
-is same as with [`L.append`](#append).
+`L.find` operates on arrays like [`L.index`](#index), but the index to be viewed
+is determined by finding the first element from the input array that matches the
+given predicate.  When no matching element is found the effect is same as
+with [`L.append`](#append).
 
 ```js
 L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 // [ 3, 4, 1, 5, 9, 2 ]
 ```
 
-##### <a name="findWith"></a>[`L.findWith(...ls)`](#findWith "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
+##### <a name="findWith"></a>[`L.findWith(...lenses)`](#findWith "L.findWith :: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
-`L.findWith(...ls)` chooses an index from an array through which the given lens,
-[`[...ls]`](#compose), focuses on a defined item and then returns a lens that
-focuses on that item.
+`L.findWith(...lenses)` chooses an index from an array through which the given
+lens, [`[...lenses]`](#compose), focuses on a defined item and then returns a
+lens that focuses on that item.
 
 For example:
 
@@ -671,7 +698,7 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 
 ##### <a name="index"></a>[`L.index(integer)`](#index "L.index :: Integer -> PLens [a] a")
 
-`L.index(integer)` or `integer` focuses on the specified array index.
+`L.index(integer)` or just `integer` focuses on the specified array index.
 
 * When not viewing a defined array index, the result is `undefined`.
 * When setting to `undefined`, the element is removed from the resulting array,
@@ -724,7 +751,7 @@ use [`L.define`](#define).
 
 #### Lensing objects
 
-##### <a name="prop"></a>[`L.prop(string)`](#prop "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
+##### <a name="prop"></a>[`L.prop(propName)`](#prop "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
 
 `L.prop(string)` or `string` focuses on the specified object property.
 
@@ -734,25 +761,35 @@ use [`L.define`](#define).
 
 When setting or removing properties, the order of keys is preserved.
 
-##### <a name="props"></a>[`L.props(...strings)`](#props "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
+For example:
 
-`L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
-kN})`](#pick) and focuses on a subset of properties of an object, allowing one
-to treat the subset of properties as a unit.  The view of `L.props` is
-`undefined` when none of the properties is defined.  Otherwise the view is an
-object containing a subset of the properties.  Setting through `L.props` updates
-the whole subset of properties, which means that any missing properties are
-removed if they did exists previously.  When set, any extra properties are
-ignored.
+```js
+L.get("y", {x: 1, y: 2, z: 3})
+// 2
+L.set("y", -2, {x: 1, y: 2, z: 3})
+// { x: 1, y: -2, z: 3 }
+```
+
+##### <a name="props"></a>[`L.props(...propNames)`](#props "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
+
+`L.props` focuses on a subset of properties of an object, allowing one to treat
+the subset of properties as a unit.  The view of `L.props` is `undefined` when
+none of the properties is defined.  Otherwise the view is an object containing a
+subset of the properties.  Setting through `L.props` updates the whole subset of
+properties, which means that any missing properties are removed if they did
+exists previously.  When set, any extra properties are ignored.
 
 ```js
 L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 // { x: 4, z: 3 }
 ```
 
+Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
+kN})`](#pick).
+
 #### Nesting
 
-##### <a name="compose"></a>[`L.compose(...ls)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
+##### <a name="compose"></a>[`L.compose(...lenses)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
 The default import `P` and `L.compose` refer to the one and same function, which
 performs lens composition.  The following equations characterize lens
@@ -785,11 +822,11 @@ L.get(["a", 1], {a: ["b", "c"]})
 
 #### Providing defaults
 
-##### <a name="valueOr"></a>[`L.valueOr(out)`](#valueOr "L.valueOr :: s -> PLens s s")
+##### <a name="valueOr"></a>[`L.valueOr(valueOut)`](#valueOr "L.valueOr :: s -> PLens s s")
 
-`L.valueOr(out)` is an asymmetric lens used to specify a default value in case
-the focus is `undefined` or `null`.  When set, `L.valueOr` behaves like the
-identity lens.
+`L.valueOr` is an asymmetric lens used to specify a default value in case the
+focus is `undefined` or `null`.  When set, `L.valueOr` behaves like the identity
+lens.
 
 For example:
 
@@ -804,7 +841,7 @@ L.remove(L.valueOr(0), 1)
 
 #### Querying and adapting to data
 
-##### <a name="chain"></a>[`L.chain(a2bPLens, aPLens)`](#chain "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
+##### <a name="chain"></a>[`L.chain(value => lens, lens)`](#chain "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
 
 `L.chain(a2bPLens, aPLens)` is equivalent to
 
@@ -815,18 +852,25 @@ L.compose(aPLens, L.choose(aMaybe =>
   : a2bPLens(aMaybe)))
 ```
 
-With the [`L.just`](#just), `L.chain`, [`L.choice`](#choice) and
-[`L.nothing`](#nothing) combinators, one can view partial lenses as subsuming
-the maybe monad.  Of course, the whole point of lenses is that they are
-bidirectional and the special lenses [`L.just`](#just) and
-[`L.nothing`](#nothing) are essentially degenerate.
+With the [`L.just`](#just), `L.chain`, [`L.choice`](#choice)
+and [`L.nothing`](#nothing) combinators, one can view partial lenses as
+subsuming the maybe monad.  Of course, the whole point of lenses is that they
+are bidirectional and read-only [`L.just`](#just) and [`L.nothing`](#nothing)
+are essentially degenerate.
 
-##### <a name="choose"></a>[`L.choose(maybeValue => PLens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
+##### <a name="choice"></a>[`L.choice(...lenses)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
 
-`L.choose(maybeValue => PLens)` creates a lens whose operation is determined by
-the given function that maps the underlying view, which can be `undefined`, to a
-lens.  In other words, the `L.choose` combinator allows a lens to be constructed
-*after* examining the data structure being manipulated.
+`L.choice` returns a partial lens that acts like the first of the given lenses
+whose view is not `undefined` on the given data structure.  When the views of
+all of the given lenses are `undefined`, the returned lens acts
+like [`L.nothing`](#nothing), which is the identity element of `L.choice`.
+
+##### <a name="choose"></a>[`L.choose(maybeValue => lens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
+
+`L.choose` creates a lens whose operation is determined by the given function
+that maps the underlying view, which can be `undefined`, to a lens.  In other
+words, the `L.choose` combinator allows a lens to be constructed *after*
+examining the data structure being manipulated.
 
 For example, given:
 
@@ -847,31 +891,25 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 
 ```
 
-##### <a name="choice"></a>[`L.choice(...ls)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
-
-`L.choice(...ls)` returns a partial lens that acts like the first of the given
-lenses, `ls`, whose view is not `undefined` on the given target.  When the views
-of all of the given lenses are `undefined`, the returned lens acts
-like [`L.nothing`](#nothing), which is the identity element of `L.choice`.
-
 ##### <a name="just"></a>[`L.just(value)`](#just "L.just :: a -> PLens s a")
 
-`L.just(x)` is equivalent to `L.compose(L.nothing, L.defaults(x))` and is a
-special degenerate lens whose view is always `x` and writing through the lens
-has no effect.  In other words, for all `x`, `y` and `z`:
+`L.just` returns a read-only lens whose view is always the given value.  In
+other words, for all `x`, `y` and `z`:
 
 ```js
    L.get(L.just(z), x) = z
 L.set(L.just(z), y, x) = x
 ```
 
-`L.just` can be seen as the unit function of the monad formed with
-[`L.chain`](#chain).
+Note that `L.just(x)` is equivalent to [`L.to(_ => x)`](#to).
+
+`L.just` can be seen as the unit function of the monad formed
+with [`L.chain`](#chain).
 
 ##### <a name="nothing"></a>[`L.nothing`](#nothing "L.nothing :: PLens s s")
 
-`L.nothing` is a special degenerate lens whose view is always `undefined` and
-setting through `L.nothing` has no effect.  In other words, for all `x` and `y`:
+`L.nothing` is a read-only lens whose view is always `undefined`.  In other
+words, for all `x` and `y`:
 
 ```js
    L.get(L.nothing, x) = undefined
@@ -880,26 +918,38 @@ L.set(L.nothing, y, x) = x
 
 `L.nothing` is the identity element of [`L.choice`](#choice).
 
-##### <a name="orElse"></a>[`L.orElse(backup, primary)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
+##### <a name="orElse"></a>[`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
 
-`L.orElse(backup, primary)` acts like `primary` when its view is not `undefined`
-and otherwise like `backup`.  You can use `L.orElse` on its own
+`L.orElse(backupLens, primaryLens)` acts like `primaryLens` when its view is not
+`undefined` and otherwise like `backupLens`.  You can use `L.orElse` on its own
 with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
 (and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
 choice over lenses or use `L.orElse` to specify a default or backup lens
 for [`L.choice`](#choice), for example.
 
+##### <a name="to"></a>[`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
+
+`L.to` creates a read-only lens whose view is determined by the given function.
+
+For example:
+
+```js
+L.get(["x", L.to(x => x + 1)], {x: 1})
+// 2
+L.set(["x", L.to(x => x + 1)], 3, {x: 1})
+// { x: 1 }
+```
+
 #### Transforming data
 
-##### <a name="pick"></a>[`L.pick({p1: l1, ...pls})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
+##### <a name="pick"></a>[`L.pick({prop: lens, ...props})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
 
-`L.pick({p1: l1, ...pls})` creates a lens out of the given object template of
-lenses and allows one to pick apart a data structure and then put it back
-together.  When viewed, an object is created, whose properties are obtained by
-viewing through the lenses of the template.  When set with an object, the
-properties of the object are set to the context via the lenses of the template.
-`undefined` is treated as the equivalent of empty or non-existent in both
-directions.
+`L.pick` creates a lens out of the given object template of lenses and allows
+one to pick apart a data structure and then put it back together.  When viewed,
+an object is created, whose properties are obtained by viewing through the
+lenses of the template.  When set with an object, the properties of the object
+are set to the context via the lenses of the template.  `undefined` is treated
+as the equivalent of empty or non-existent in both directions.
 
 For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
@@ -940,10 +990,10 @@ Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Also note that the underlying data structure need not
 be an object.
 
-##### <a name="replace"></a>[`L.replace(inn, out)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
+##### <a name="replace"></a>[`L.replace(maybeValueIn, maybeValueOut)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
 
-`L.replace(inn, out)`, when viewed, replaces the value `inn` with `out` and vice
-versa when set.
+`L.replace(maybeValueIn, maybeValueOut)`, when viewed, replaces the value
+`maybeValueIn` with `maybeValueOut` and vice versa when set.
 
 For example:
 
@@ -979,9 +1029,9 @@ isomorphism.
 
 #### Operations on isomorphisms
 
-##### <a name="getInverse"></a>[`L.getInverse`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
+##### <a name="getInverse"></a>[`L.getInverse(isomorphism, maybeData)`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
 
-`L.getInverse(i, b)` is equivalent to `L.set(i, b, undefined)`.
+`L.getInverse` views through an isomorphism in the inverse direction.
 
 For example:
 
@@ -990,8 +1040,12 @@ L.getInverse(L.fromArrayBy("id"), {'1': {id: 1, value: 2}, '3': {id: 3, value: 4
 // [ { id: 1, value: 2 }, { id: 3, value: 4 } ]
 ```
 
-Note that, while `L.getInverse` makes most sense when used with an isomorphism,
-it is valid to use `L.getInverse` with lenses in general.  For example:
+Note that `L.getInverse(iso, data)` is equivalent to `L.set(iso, data,
+undefined)`.
+
+Also note that, while `L.getInverse` makes most sense when used with an
+isomorphism, it is valid to use `L.getInverse` with lenses in general.  For
+example:
 
 ```js
 L.getInverse([0, "meaning"], 42)
@@ -1000,7 +1054,7 @@ L.getInverse([0, "meaning"], 42)
 
 #### Isomorphisms and combinators
 
-##### <a name="fromArrayBy"></a>[`L.fromArrayBy(id)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
+##### <a name="fromArrayBy"></a>[`L.fromArrayBy(idPropName)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
 
 **`L.fromArrayBy` is experimental and might be removed, renamed or changed
 semantically before next major release.**
@@ -1052,12 +1106,12 @@ modified, set and removed.
 
 #### Operations on traversals
 
-##### <a name="collect"></a>[`L.collect(t, s)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+##### <a name="collect"></a>[`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
 
-`L.collect(t, s)` returns an array of the elements focused on by the given
-traversal or lens from a data structure.  Given a lens, there will be 0 or 1
-elements in the returned array.  Given a traversal, there can be any number of
-elements in the returned array.
+`L.collect` returns an array of the elements focused on by the given traversal
+or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
+the returned array.  Given a traversal, there can be any number of elements in
+the returned array.
 
 For example:
 
@@ -1066,9 +1120,9 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
-`L.collect(t, s)` is equivalent
-to [`L.foldMapOf(List, t, toList, s)`](#foldMapOf) where `List` and `toList` are
-defined as follows:
+`L.collect(traversal, maybeData)` is equivalent
+to [`L.foldMapOf(List, traversal, toList, maybeData)`](#foldMapOf) where `List`
+and `toList` are defined as follows:
 
 ```js
 const List = {empty: R.always([]), concat: R.concat}
@@ -1078,7 +1132,7 @@ const toList = x => x !== undefined ? [x] : []
 The internal implementation of `L.collect` is optimized and faster than the
 above naïve implementation.
 
-##### <a name="foldMapOf"></a>[`L.foldMapOf({empty, concat}, t, aM2r, s)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+##### <a name="foldMapOf"></a>[`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
 
 `L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
 `aM2r`, and fold, using the given `concat` and `empty` operations, over the
