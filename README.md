@@ -527,7 +527,7 @@ const timesAsDuration = L.lens(
       return {
         start,
         end: moment(start).add(moment.duration(duration)).toJSON()
-      };
+      }
     }
   }
 )
