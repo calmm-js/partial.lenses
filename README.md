@@ -42,7 +42,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
     * [`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
     * [`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
   * [Creating new lenses](#creating-new-lenses)
-    * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
+    * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
   * [Lenses and combinators](#lenses-and-combinators)
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
@@ -498,7 +498,7 @@ to [`L.modify(lens, R.always(maybeValue), maybeData)`](#modify).
 
 ### Creating new lenses
 
-#### <a name="lens"></a>[`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s -> Maybe s) -> PLens s a")
+#### <a name="lens"></a>[`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
 
 `L.lens` creates a new primitive lens.  The first parameter is the *getter* and
 the second parameter is the *setter*.  The setter takes two parameters: the
