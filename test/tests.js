@@ -1,3 +1,4 @@
+import * as I from "infestines"
 import * as R from "ramda"
 import {id} from "infestines"
 
@@ -13,11 +14,11 @@ function show(x) {
   }
 }
 
-const run = expr => eval(`(P, L, R, id) => ${expr}`)(P, L, R, id)
+const run = expr => eval(`(P, L, R, id, I) => ${expr}`)(P, L, R, id, I)
 
 const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
   const actual = run(expr)
-  if (!R.equals(actual, expect))
+  if (!I.acyclicEqualsU(actual, expect))
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 })
 
@@ -363,7 +364,21 @@ const BST = {
     && "value" in n
     && keyPred(n.key)
     && BST.isValid(n.smaller, key => key < n.key)
-    && BST.isValid(n.greater, key => n.key < key)
+    && BST.isValid(n.greater, key => n.key < key),
+
+  fromPairs: R.reduce((t, [k, v]) => L.set(BST.valueOf(k), v, t), undefined),
+
+  values: (A, fn, n) =>
+    undefined === n
+    ? A.of(undefined)
+    : A.ap(A.ap(A.map(value => smaller => greater =>
+                      I.seq(n,
+                            L.set("smaller", smaller),
+                            L.set("greater", greater),
+                            L.set(BST.valueOf(n.key), value)),
+                      fn(n.value)),
+                BST.values(A, fn, n.smaller)),
+            BST.values(A, fn, n.greater))
 }
 
 describe("BST", () => {
@@ -407,4 +422,10 @@ describe("BST", () => {
       before = after
     }
   })
+
+  testEq(`I.seq([["m", 1], ["a", 2], ["g", 3], ["i", 4], ["c", 5]],
+                BST.fromPairs,
+                L.modify(BST.values, x => -x))`,
+         I.seq([["m",-1], ["a",-2], ["g",-3], ["i",-4], ["c",-5]],
+               BST.fromPairs))
 })
