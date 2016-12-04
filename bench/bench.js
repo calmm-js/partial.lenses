@@ -133,6 +133,8 @@ const bs = [
   'L.get(L.fromArrayBy("id"), ids)'
 ]
 
-const s = new require("benchmark").Suite()
+const Benchmark = require("benchmark")
+Benchmark.options.maxTime = 10
+const s = new Benchmark.Suite()
 bs.forEach(b => s.add(b, eval("() => " + b)))
 s.on('cycle', e => console.log(String(e.target))).run()
