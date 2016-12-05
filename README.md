@@ -972,7 +972,7 @@ is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.
 
 For example, here is a traversal that targets all the non-arrays in a data
-structure of nested array:
+structure of nested arrays:
 
 ```js
 const flatten = L.lazy(rec => {
