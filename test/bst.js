@@ -1,4 +1,3 @@
-import * as I from "infestines"
 import * as L from "../src/partial.lenses"
 import * as R from "ramda"
 
