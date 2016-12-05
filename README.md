@@ -1249,7 +1249,6 @@ As an example, consider the difference between:
 ```js
 L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2, x: 3 } ]
-
 ```
 
 and:
