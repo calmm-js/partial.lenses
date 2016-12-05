@@ -427,6 +427,15 @@ export const sequence = (A, x2yA, xs) =>
 export const optional = (A, x2yA, x) =>
   x !== undefined ? x2yA(x) : A.of(undefined)
 
+export function lazy(toLens) {
+  let memo = (A, fn, x) => {
+    memo = lift(toLens(rec))
+    return memo(A, fn, x)
+  }
+  const rec = (A, fn, x) => memo(A, fn, x)
+  return rec
+}
+
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
   lensU(xs => {

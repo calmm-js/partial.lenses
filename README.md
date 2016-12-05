@@ -72,6 +72,8 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.nothing`](#nothing "L.nothing :: PLens s s")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
       * [`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
+    * [Recursion](#recursion)
+      * [`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
@@ -356,14 +358,17 @@ correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:
 
 ```js
-const search = key =>
+const search = key => L.lazy(rec =>
   [L.defaults({key}),
-   L.choose(n => key < n.key ? ["smaller", search(key)] :
-                 n.key < key ? ["greater", search(key)] :
-                               L.identity)]
+   L.choose(n => key < n.key ? ["smaller", rec] :
+                 n.key < key ? ["greater", rec] :
+                               L.identity)])
 
 const valueOf = key => [search(key), "value"]
 ```
+
+Note that we also make use of the [`L.lazy`](#lazy) combinator to create a
+recursive lens.
 
 This actually works to a degree.  We can use the `valueOf` lens constructor to
 build a binary tree:
@@ -395,16 +400,16 @@ after changes.  The [`L.normalize`](#normalize) combinator can be used for that
 purpose.  Here is the updated `search` definition:
 
 ```js
-const search = key =>
+const search = key => L.lazy(rec =>
   [L.normalize(n =>
      undefined !== n.value   ? n         :
      n.smaller && !n.greater ? n.smaller :
      !n.smaller && n.greater ? n.greater :
      L.set(search(n.smaller.key), n.smaller, n.greater)),
    L.defaults({key}),
-   L.choose(n => key < n.key ? ["smaller", search(key)] :
-                 n.key < key ? ["greater", search(key)] :
-                               L.identity)]
+   L.choose(n => key < n.key ? ["smaller", rec] :
+                 n.key < key ? ["greater", rec] :
+                               L.identity)])
 ```
 
 Now we can also remove values from a binary tree:
@@ -938,6 +943,33 @@ L.get(["x", L.to(x => x + 1)], {x: 1})
 // 2
 L.set(["x", L.to(x => x + 1)], 3, {x: 1})
 // { x: 1 }
+```
+
+#### Recursion
+
+##### <a name="lazy"></a>[`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
+
+`L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
+is passed a forwarding proxy to its return value and can also make forward
+references to other optics and possibly construct a recursive optic.
+
+For example, here is a traversal that targets all the non-arrays in a data
+structure of nested array:
+
+```js
+const flatten = L.lazy(rec => L.choose(x =>
+  R.is(Array, x) ? [L.sequence, rec] : L.identity))
+```
+
+Now, for example:
+
+```js
+L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
+// [ 1, 2, 3, 4, 5, 6 ]
+L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
+// [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
+L.modify(flatten, x => 3 <= x && x <= 5 ? undefined : x, [[[1], 2], 3, [4, [[5]], [6]]])
+// [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
 ```
 
 #### Transforming data
