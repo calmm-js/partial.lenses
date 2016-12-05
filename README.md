@@ -1228,10 +1228,10 @@ Given a binary tree `t` we can now:
 ```js
 L.collect(values, t)
 // [ 2, 3, 1 ]
-L.modify(values, x => x+1, t)
+L.modify(values, x => -x, t)
 // { key: 'c',
-//   value: 2,
-//   smaller: { key: 'a', value: 3, greater: { key: 'b', value: 4 } } }
+//   value: -1,
+//   smaller: { key: 'a', value: -2, greater: { key: 'b', value: -3 } } }
 L.modify(values, x => x <= 2 ? undefined : x, t)
 // { key: 'b', value: 3 }
 ```
