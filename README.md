@@ -963,6 +963,8 @@ const flatten = L.lazy(rec => {
 })
 ```
 
+Note that the above creates a cyclic representation of the traversal.
+
 Now, for example:
 
 ```js
