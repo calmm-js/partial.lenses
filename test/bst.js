@@ -1,5 +1,5 @@
 import * as I from "infestines"
-import * as L from "../lib/partial.lenses"
+import * as L from "../src/partial.lenses"
 import * as R from "ramda"
 
 const naiveFixBST = L.normalize(n =>
