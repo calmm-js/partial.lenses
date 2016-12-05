@@ -79,6 +79,7 @@ describe("arities", () => {
   testEq('L.remove.length', 2)
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
+  testEq('L.rewrite.length', 1)
   testEq('L.set.length', 3)
   testEq('L.to.length', 1)
   testEq('L.valueOr.length', 1)
@@ -196,6 +197,13 @@ describe("L.normalize", () => {
          undefined)
   testEq('L.set([L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))], undefined, [1,3,2,5])',
          [1,3,5])
+})
+
+describe("L.rewrite", () => {
+  testEq('L.get(L.rewrite(x => x-1), 1)', 1)
+  testEq('L.get(L.rewrite(x => x-1), undefined)', undefined)
+  testEq('L.set(L.rewrite(x => x-1), undefined, 1)', undefined)
+  testEq('L.set(L.rewrite(x => x-1), 3, 1)', 2)
 })
 
 describe("L.nothing", () => {

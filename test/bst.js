@@ -2,14 +2,14 @@ import * as I from "infestines"
 import * as L from "../src/partial.lenses"
 import * as R from "ramda"
 
-const naiveFixBST = L.normalize(n =>
+const naiveBST = L.rewrite(n =>
   undefined !== n.value   ? n         :
   n.smaller && !n.greater ? n.smaller :
   !n.smaller && n.greater ? n.greater :
   L.set(search(n.smaller.key), n.smaller, n.greater))
 
 const search = key => L.lazy(rec =>
-  [naiveFixBST,
+  [naiveBST,
    L.defaults({key}),
    L.choose(n => key < n.key ? ["smaller", rec] :
                  n.key < key ? ["greater", rec] :
@@ -36,7 +36,14 @@ export const values = (A, fn, n) =>
                           L.set("greater", greater),
                           L.set("value", value),
                           L.set("smaller", smaller),
-                          L.get(naiveFixBST)),
+                          L.get(naiveBST)),
                     values(A, fn, n.greater)),
               fn(n.value)),
           values(A, fn, n.smaller))
+
+export const values = L.lazy(rec => [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])

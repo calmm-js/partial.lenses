@@ -280,7 +280,9 @@ export const define = v => normalizer(x => x !== undefined ? x : v)
 export const valueOr = v => (_F, x2yF, x) =>
   x2yF(x !== undefined && x !== null ? x : v)
 
-export const normalize = transform => normalizer(toPartial(transform))
+export const normalize = x2x => normalizer(toPartial(x2x))
+
+export const rewrite = y2y => (F, x2yF, x) => F.map(toPartial(y2y), x2yF(x))
 
 const isProp = x => typeof x === "string"
 

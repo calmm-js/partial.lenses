@@ -51,6 +51,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.define(value)`](#define "L.define :: s -> PLens s s")
       * [`L.normalize(value => value)`](#normalize "L.normalize :: (s -> s) -> PLens s s")
       * [`L.required(valueIn)`](#required "L.required :: s -> PLens s s")
+      * [`L.rewrite(valueOut => valueOut)`](#rewrite "L.rewrite :: (s -> s) -> PLens s s")
     * [Lensing arrays](#lensing-arrays)
       * [`L.append`](#append "L.append :: PLens [a] a")
       * [`L.filter(value => testable)`](#filter "L.filter :: (a -> Boolean) -> PLens [a] [a]")
@@ -396,16 +397,22 @@ L.remove(valueOf('c'), t)
 ```
 
 How do we fix this?  We could check and transform the data structure to a BST
-after changes.  The [`L.normalize`](#normalize) combinator can be used for that
-purpose.  Here is the updated `search` definition:
+after changes.  The [`L.rewrite`](#rewrite) combinator can be used for that
+purpose.  Here is a naïve rewrite to fix a tree after value removal:
+
+```js
+const naiveBST = L.rewrite(n =>
+  undefined !== n.value   ? n         :
+  n.smaller && !n.greater ? n.smaller :
+  !n.smaller && n.greater ? n.greater :
+  L.set(search(n.smaller.key), n.smaller, n.greater))
+```
+
+Here is the updated `search` definition:
 
 ```js
 const search = key => L.lazy(rec =>
-  [L.normalize(n =>
-     undefined !== n.value   ? n         :
-     n.smaller && !n.greater ? n.smaller :
-     !n.smaller && n.greater ? n.greater :
-     L.set(search(n.smaller.key), n.smaller, n.greater)),
+  [naiveBST,
    L.defaults({key}),
    L.choose(n => key < n.key ? ["smaller", rec] :
                  n.key < key ? ["greater", rec] :
@@ -419,10 +426,10 @@ L.remove(valueOf('c'), t)
 // { key: 'a', value: 2, greater: { key: 'b', value: 3 } }
 ```
 
-As an exercise, you could improve the normalization to better maintain balance.
-Perhaps you might even enhance it to maintain a balance condition such as
-[AVL](https://en.wikipedia.org/wiki/AVL_tree) or
-[Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).  Another
+As an exercise, you could improve the rewrite to better maintain balance.
+Perhaps you might even enhance it to maintain a balance condition such
+as [AVL](https://en.wikipedia.org/wiki/AVL_tree)
+or [Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).  Another
 worthy exercise would be to make it so that the empty binary tree is `null`
 rather than `undefined`.
 
@@ -604,11 +611,11 @@ L.defaults(value)]`.
 
 ##### <a name="normalize"></a>[`L.normalize(value => value)`](#normalize "L.normalize :: (s -> s) -> PLens s s")
 
-`L.normalize(value => value)` maps the value with same given transform when
-viewed and set and implicitly maps `undefined` to `undefined`.
+`L.normalize` maps the value with same given transform when viewed and set and
+implicitly maps `undefined` to `undefined`.
 
-The main use case for `normalize` is to make it easy to determine whether, after
-a change, the data has actually changed.  By keeping the data normalized, a
+One use case for `normalize` is to make it easy to determine whether, after a
+change, the data has actually changed.  By keeping the data normalized, a
 simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
 ##### <a name="required"></a>[`L.required(valueIn)`](#required "L.required :: s -> PLens s s")
@@ -629,6 +636,12 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 
 Note that `L.required(valueIn)` is equivalent
 to [`L.replace(valueIn, undefined)`](#replace).
+
+##### <a name="rewrite"></a>[`L.rewrite(valueOut => valueOut)`](#rewrite "L.rewrite :: (s -> s) -> PLens s s")
+
+`L.rewrite` maps the value with the given transform when set and implicitly maps
+`undefined` to `undefined`.  One use case for `rewrite` is to re-establish data
+structure invariants after changes.
 
 #### Lensing arrays
 
