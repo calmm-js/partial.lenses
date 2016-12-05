@@ -372,15 +372,17 @@ Note that we also make use of the [`L.lazy`](#lazy) combinator to create a
 recursive lens.
 
 This actually works to a degree.  We can use the `valueOf` lens constructor to
-build a binary tree:
+build a binary tree.  Here is a little helper to build a tree from pairs:
 
 ```js
-const t = R.reduce(
-  (tree, {key, value}) => L.set(valueOf(key), value, tree),
-  undefined,
-  [{key: "c", value: 1},
-   {key: "a", value: 2},
-   {key: "b", value: 3}])
+const fromPairs =
+  R.reduce((t, [k, v]) => L.set(valueOf(k), v, t), undefined)
+```
+
+Now:
+
+```js
+const t = fromPairs([["c", 1], ["a", 2], ["b", 3]])
 t
 // { key: 'c',
 //   value: 1,
