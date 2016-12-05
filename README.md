@@ -90,8 +90,9 @@ elements.
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
       * [`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
-    * [Traversals and combinators](#traversals-and-combinators)
+    * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
+    * [Traversals and combinators](#traversals-and-combinators)
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
   * [Debugging](#debugging)
@@ -1203,7 +1204,7 @@ L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,
 // 6
 ```
 
-#### Traversals and combinators
+#### Creating new traversals
 
 ##### <a name="branch-op"></a>[`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
 
@@ -1234,6 +1235,8 @@ L.modify(values, x => x+1, t)
 L.modify(values, x => x <= 2 ? undefined : x, t)
 // { key: 'b', value: 3 }
 ```
+
+#### Traversals and combinators
 
 ##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
 
