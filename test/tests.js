@@ -68,6 +68,7 @@ describe("arities", () => {
   testEq('L.getInverse.length', 2)
   testEq('L.index.length', 1)
   testEq('L.inverse.length', 1)
+  testEq('L.lazy.length', 1)
   testEq('L.lens.length', 2)
   testEq('L.modify.length', 3)
   testEq('L.normalize.length', 1)
@@ -79,6 +80,7 @@ describe("arities", () => {
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
   testEq('L.set.length', 3)
+  testEq('L.to.length', 1)
   testEq('L.valueOr.length', 1)
 })
 
