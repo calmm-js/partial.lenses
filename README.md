@@ -1223,7 +1223,7 @@ const values = L.lazy(rec => [
             greater: rec})])
 ```
 
-Give a binary tree `t` we can now:
+Given a binary tree `t` we can now:
 
 ```js
 L.collect(values, t)
