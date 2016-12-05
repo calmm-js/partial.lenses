@@ -4,6 +4,8 @@ import {id} from "infestines"
 
 import P, * as L from "../src/partial.lenses"
 
+import * as BST from "./bst"
+
 function show(x) {
   switch (typeof x) {
   case "string":
@@ -345,46 +347,6 @@ describe("L.inverse", () => {
   testEq('L.remove([L.inverse(L.fromArrayBy("id")), 0], {a: {id: "a", x: 1}, b: {id: "b", x: 2}})', {b: {id: "b", x: 2}})
   testEq('L.remove([L.inverse(L.fromArrayBy("id")), 0], {a: {id: "a", x: 1}})', undefined)
 })
-
-const BST = {
-  search: key => {
-    const rec =
-      [L.normalize(n =>
-         undefined !== n.value   ? n         :
-         n.smaller && !n.greater ? n.smaller :
-         !n.smaller && n.greater ? n.greater :
-         L.set(BST.search(n.smaller.key), n.smaller, n.greater)),
-       L.defaults({key}),
-       L.choose(n => key < n.key ? ["smaller", rec] :
-                     n.key < key ? ["greater", rec] :
-                                   L.identity)]
-    return rec
-  },
-
-  valueOf: key => [BST.search(key), "value"],
-
-  isValid: (n, keyPred = () => true) =>
-    undefined === n
-    || "key" in n
-    && "value" in n
-    && keyPred(n.key)
-    && BST.isValid(n.smaller, key => key < n.key)
-    && BST.isValid(n.greater, key => n.key < key),
-
-  fromPairs: R.reduce((t, [k, v]) => L.set(BST.valueOf(k), v, t), undefined),
-
-  values: (A, fn, n) =>
-    undefined === n
-    ? A.of(undefined)
-    : A.ap(A.ap(A.map(value => smaller => greater =>
-                      I.seq(n,
-                            L.set("smaller", smaller),
-                            L.set("greater", greater),
-                            L.set(BST.valueOf(n.key), value)),
-                      fn(n.value)),
-                BST.values(A, fn, n.smaller)),
-            BST.values(A, fn, n.greater))
-}
 
 describe("BST", () => {
   const randomInt = (min, max) =>
