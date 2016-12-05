@@ -90,6 +90,7 @@ have an [`inverse`](#inverse) and traversals can target multiple elements.
       * [`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
       * [`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
     * [Traversals and combinators](#traversals-and-combinators)
+      * [`L.branch({prop: traversal, ...props})`](#branch "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
   * [Debugging](#debugging)
@@ -1202,6 +1203,36 @@ L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,
 ```
 
 #### Traversals and combinators
+
+##### <a name="branch"></a>[`L.branch({prop: traversal, ...props})`](#branch "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
+
+`L.branch` is given a template object of traversals and returns a traversal that
+visits all the properties of an object according to the template.
+
+For example, continuing on the [BST example](#food-for-thought-bst-as-a-lens),
+here is a traversal that visits all the values of a binary tree:
+
+```js
+const values = L.lazy(rec => [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+```
+
+Give a binary tree `t` we can now:
+
+```js
+L.collect(values, t)
+// [ 2, 3, 1 ]
+L.modify(values, x => x+1, t)
+// { key: 'c',
+//   value: 2,
+//   smaller: { key: 'a', value: 3, greater: { key: 'b', value: 4 } } }
+L.modify(values, x => x <= 2 ? undefined : x, t)
+// { key: 'b', value: 3 }
+```
 
 ##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
 
