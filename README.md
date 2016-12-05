@@ -1212,7 +1212,7 @@ L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,
 visits all the properties of an object according to the template.
 
 For example, continuing on the [BST example](#food-for-thought-bst-as-a-lens),
-here is a traversal that visits all the values of a binary tree:
+here is a traversal that visits all the values of a binary tree in order:
 
 ```js
 const values = L.lazy(rec => [
