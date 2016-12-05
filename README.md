@@ -406,11 +406,13 @@ after changes.  The [`L.rewrite`](#rewrite) combinator can be used for that
 purpose.  Here is a naïve rewrite to fix a tree after value removal:
 
 ```js
-const naiveBST = L.rewrite(n =>
-  undefined !== n.value   ? n         :
-  n.smaller && !n.greater ? n.smaller :
-  !n.smaller && n.greater ? n.greater :
-  L.set(search(n.smaller.key), n.smaller, n.greater))
+const naiveBST = L.rewrite(n => {
+  if (undefined !== n.value) return n
+  const s = n.smaller, g = n.greater
+  if (!s) return g
+  if (!g) return s
+  return L.set(search(s.key), s, g)
+})
 ```
 
 Here is the updated `search` definition:
