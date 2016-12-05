@@ -28,7 +28,7 @@ export const isValid = (n, keyPred = () => true) =>
 export const fromPairs =
   R.reduce((t, [k, v]) => L.set(valueOf(k), v, t), undefined)
 
-export const values = (A, fn, n) =>
+export const valuesA = (A, fn, n) =>
   undefined === n
   ? A.of(undefined)
   : A.ap(A.ap(A.map(greater => value => smaller =>
@@ -37,9 +37,9 @@ export const values = (A, fn, n) =>
                           L.set("value", value),
                           L.set("smaller", smaller),
                           L.get(naiveBST)),
-                    values(A, fn, n.greater)),
+                    valuesA(A, fn, n.greater)),
               fn(n.value)),
-          values(A, fn, n.smaller))
+          valuesA(A, fn, n.smaller))
 
 export const values = L.lazy(rec => [
   L.optional,

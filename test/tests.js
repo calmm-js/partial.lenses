@@ -57,6 +57,7 @@ describe("L.identity", () => {
 
 describe("arities", () => {
   testEq('L.augment.length', 1)
+  testEq('L.branch.length', 1)
   testEq('L.choice.length', 0)
   testEq('L.compose.length', 0)
   testEq('L.defaults.length', 1)

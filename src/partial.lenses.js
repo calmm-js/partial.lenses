@@ -9,6 +9,7 @@ import {
   isArray,
   isObject,
   mapPartialU,
+  unzipObjIntoU,
   values,
   zipObjPartialU
 } from "infestines"
@@ -436,6 +437,20 @@ export function lazy(toLens) {
   }
   const rec = (A, fn, x) => memo(A, fn, x)
   return rec
+}
+
+export const branch = template => {
+  const keys = []
+  const vals = []
+  unzipObjIntoU(template, keys, vals)
+  const n = keys.length
+  return (A, x2yA, x) => {
+    const wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
+    let r = A.of(wait(x, n-1))
+    for (let i=n-1; 0<=i; --i)
+      r = A.ap(r, vals[i](A, x2yA, getU(keys[i], x)))
+    return r
+  }
 }
 
 export const fromArrayBy = id =>
