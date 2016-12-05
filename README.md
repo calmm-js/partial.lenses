@@ -957,8 +957,10 @@ For example, here is a traversal that targets all the non-arrays in a data
 structure of nested array:
 
 ```js
-const flatten = L.lazy(rec => L.choose(x =>
-  R.is(Array, x) ? [L.sequence, rec] : L.identity))
+const flatten = L.lazy(rec => {
+  const nest = [L.sequence, rec]
+  return L.choose(x => R.is(Array, x) ? nest : L.identity)
+})
 ```
 
 Now, for example:

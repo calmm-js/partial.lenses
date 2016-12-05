@@ -340,8 +340,10 @@ describe("L.getInverse", () => {
   testEq('L.getInverse(L.fromArrayBy("id"), {"1":{"id":1},"2":{"id":2},"3":{"id":3}})', [{id: 1}, {id: 2}, {id: 3}])
 })
 
-export const flatten = L.lazy(rec => L.choose(
-  x => R.is(Array, x) ? [L.sequence, rec] : L.identity))
+export const flatten = L.lazy(rec => {
+  const nest = [L.sequence, rec]
+  return L.choose(x => R.is(Array, x) ? nest : L.identity)
+})
 
 describe("L.lazy", () => {
   testEq('L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])', [1, 2, 3, 4, 5, 6])
