@@ -1,4 +1,4 @@
-[ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) | [GitHub](https://github.com/calmm-js/partial.lenses) | [Try Lenses!](http://calmm-js.github.io/partial.lenses/) ]
+[ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) | [GitHub](https://github.com/calmm-js/partial.lenses) | [Try Lenses!](https://calmm-js.github.io/partial.lenses/) ]
 
 # Partial Lenses
 
