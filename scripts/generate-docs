@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+
+const I = require("infestines")
+const R = require("ramda")
+const fs = require("fs")
+
+const marked = require("marked")
+
+marked.setOptions({
+  renderer: new marked.Renderer(),
+  gfm: true,
+  tables: true,
+  breaks: false,
+  pedantic: false,
+  sanitize: false,
+  smartLists: true,
+  smartypants: false
+})
+
+const body = I.seq(
+  fs.readFileSync("README.md"),
+  R.toString,
+  R.replace(/\bconst\b/g, "var"),
+  marked)
+
+fs.writeFileSync("docs/index.html",
+`<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Partial Lenses</title>
+    <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="text/javascript" src="bundle.js"></script>
+  </head>
+  <body>
+    ${body}
+    <script type="text/javascript">
+window.klipse_settings = {
+  codemirror_options_in: {
+    lineWrapping: true,
+    lineNumbers: true,
+    autoCloseBrackets: true,
+    cursorBlinkRate: 0,
+  },
+  codemirror_options_out: {
+    lineWrapping: true
+  },
+  'beautify?': false,
+  selector_eval_js: '.lang-js'
+};
+    </script>
+    <script type="text/javascript"
+            src="http://app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>
+  </body>
+</html>`)
