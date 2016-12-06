@@ -102,14 +102,11 @@ const mkArray = x => isArray(x) ? x : emptyArray
 
 //
 
-const check = (expected, predicate) => x => {
-  if (predicate(x))
+const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
+  if (process.env.NODE_ENV === "production" || p(x))
     return x
-  else
-    throw new Error(`Expected ${expected}, but got ${x}.`)
+  throw new Error(msg)
 }
-
-const assert = process.env.NODE_ENV === "production" ? always(id) : check
 
 //
 
@@ -121,9 +118,13 @@ const toPartial = x2y => x => x !== undefined ? x2y(x) : x
 
 //
 
+const isntConst = x => x !== Const
+
+//
+
 const seemsLens = x => typeof x === "function" && x.length === 3
 
-const lifted = assert("a lens", seemsLens)
+const lifted = l => assert(l, seemsLens, "Expecting a lens.")
 
 const close = (l, F, x2yF) => x => l(F, x2yF, x)
 
@@ -287,7 +288,8 @@ export const rewrite = y2y => (F, x2yF, x) => F.map(toPartial(y2y), x2yF(x))
 
 const isProp = x => typeof x === "string"
 
-export const prop = assert("a string", isProp)
+export const prop = x =>
+  assert(x, isProp, "`prop` expects a string.")
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
 const setProp = (k, v, o) =>
@@ -312,7 +314,8 @@ export function findWith(...ls) {
 
 const isIndex = x => Number.isInteger(x) && 0 <= x
 
-export const index = assert("a non-negative integer", isIndex)
+export const index = x =>
+  assert(x, isIndex, "`index` expects a non-negative integer.")
 
 const nulls = n => Array(n).fill(null)
 
@@ -422,21 +425,25 @@ const show = (labels, dir) => x => console.log(...labels, dir, x) || x
 export const log = (...labels) =>
   lensU(show(labels, "get"), show(labels, "set"))
 
-export const sequence = (A, x2yA, xs) =>
-  A === Ident
-  ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-  : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
-
-export const optional = (A, x2yA, x) =>
-  x !== undefined ? x2yA(x) : A.of(undefined)
-
 export function lazy(toLens) {
-  let memo = (A, fn, x) => {
+  let memo = (F, fn, x) => {
     memo = lift(toLens(rec))
-    return memo(A, fn, x)
+    return memo(F, fn, x)
   }
-  const rec = (A, fn, x) => memo(A, fn, x)
+  const rec = (F, fn, x) => memo(F, fn, x)
   return rec
+}
+
+export const sequence = (A, x2yA, xs) => {
+  assert(A, isntConst, "`sequence` cannot be `get`, consider `collect`.")
+  return A=== Ident
+    ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
+    : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
+}
+
+export const optional = (A, x2yA, x) => {
+  assert(A, isntConst, "`optional` cannot be `get`, consider `collect`.")
+  return x !== undefined ? x2yA(x) : A.of(undefined)
 }
 
 export const branch = template => {
@@ -445,6 +452,7 @@ export const branch = template => {
   unzipObjIntoU(template, keys, vals)
   const n = keys.length
   return (A, x2yA, x) => {
+    assert(A, isntConst, "`branch` cannot be `get`, consider `collect`.")
     const wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
     let r = A.of(wait(x, n-1))
     for (let i=n-1; 0<=i; --i)
