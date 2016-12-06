@@ -148,11 +148,11 @@ to query texts:
 
 ```js
 L.get(textIn("sv"), sampleTexts)
-// "Rubrik"
+// 'Rubrik'
 ```
 ```js
 L.get(textIn("en"), sampleTexts)
-// "Title"
+// 'Title'
 ```
 
 Partial lenses can deal with missing data.  If we use the partial lens to query
@@ -160,7 +160,7 @@ a text that does not exist, we get the default:
 
 ```js
 L.get(textIn("fi"), sampleTexts)
-// ""
+// ''
 ```
 
 We get this value, rather than `undefined`, thanks to the last
@@ -170,7 +170,7 @@ default even if we query from `undefined`:
 
 ```js
 L.get(textIn("fi"), undefined)
-// ""
+// ''
 ```
 
 With partial lenses, `undefined` is the equivalent of empty or non-existent.
@@ -181,8 +181,8 @@ As with ordinary lenses, we can use the same lens to update texts:
 
 ```js
 L.set(textIn("en"), "The title", sampleTexts)
-// { contents: [ { language: "en", text: "The title" },
-//               { language: "sv", text: "Rubrik" } ] }
+// { contents: [ { language: 'en', text: 'The title' },
+//               { language: 'sv', text: 'Rubrik' } ] }
 ```
 
 ### Inserting data
@@ -191,9 +191,9 @@ The same partial lens also allows us to insert new texts:
 
 ```js
 L.set(textIn("fi"), "Otsikko", sampleTexts)
-// { contents: [ { language: "en", text: "Title" },
-//               { language: "fi", text: "Otsikko" },
-//               { language: "sv", text: "Rubrik" } ] }
+// { contents: [ { language: 'en', text: 'Title' },
+//               { language: 'fi', text: 'Otsikko' },
+//               { language: 'sv', text: 'Rubrik' } ] }
 ```
 
 Note the position into which the new text was inserted.  The array of texts is
@@ -206,7 +206,7 @@ Finally, we can use the same partial lens to remove texts:
 
 ```js
 L.set(textIn("sv"), undefined, sampleTexts)
-// { contents: [ { language: "en", text: "Title" } ] }
+// { contents: [ { language: 'en', text: 'Title' } ] }
 ```
 
 Note that a single text is actually a part of an object.  The key to having the
@@ -349,11 +349,11 @@ In both directions:
 
 ```js
 L.set(flag("id-69"), true, sampleFlags)
-// ["id-19", "id-69", "id-76"]
+// ['id-19', 'id-69', 'id-76']
 ```
 ```js
 L.set(flag("id-76"), false, sampleFlags)
-// ["id-19"]
+// ['id-19']
 ```
 
 ### Food for thought: BST as a lens
@@ -525,7 +525,7 @@ For example:
 
 ```js
 L.set(["a", 0, "x"], 11, {id: "z"})
-// {a: [{x: 11}], id: "z"}
+// {a: [{x: 11}], id: 'z'}
 ```
 
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
@@ -886,7 +886,7 @@ For example:
 
 ```js
 L.get(["a", 1], {a: ["b", "c"]})
-// "c"
+// 'c'
 ```
 
 #### Providing defaults
@@ -1434,7 +1434,7 @@ transform(R.ifElse(isObject,
           sampleBloated)
 // { just: 'some',
 //   that: [ 'we', { want: 'to',
-//                   filter: ["out"],
+//                   filter: ['out'],
 //                   including: {the: 'following'} } ] }
 ```
 
