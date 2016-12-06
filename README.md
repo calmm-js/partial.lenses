@@ -115,7 +115,7 @@ const data = { contents: [ { language: "en", text: "Title" },
 
 First we import libraries
 
-```js
+```jsx
 import * as L from "partial.lenses"
 import * as R from "ramda"
 ```
@@ -146,6 +146,8 @@ to query texts:
 ```js
 L.get(textIn("sv"), data)
 // "Rubrik"
+```
+```js
 L.get(textIn("en"), data)
 // "Title"
 ```
@@ -334,6 +336,8 @@ Now we can treat individual constants as boolean flags:
 ```js
 L.get(flag("id-69"), data)
 // false
+```
+```js
 L.get(flag("id-76"), data)
 // true
 ```
@@ -343,6 +347,8 @@ In both directions:
 ```js
 L.set(flag("id-69"), true, data)
 // ["id-19", "id-69", "id-76"]
+```
+```js
 L.set(flag("id-76"), false, data)
 // ["id-19"]
 ```
@@ -445,13 +451,13 @@ rather than `undefined`.
 The lens combinators are available as named imports.  Typically one just imports
 the library as:
 
-```js
+```jsx
 import * as L from "partial.lenses"
 ```
 
 The default import
 
-``` js
+```jsx
 import P from "partial.lenses"
 ```
 
@@ -592,8 +598,12 @@ For example:
 ```js
 L.get(["items", L.defaults([])], {})
 // []
+```
+```js
 L.get(["items", L.defaults([])], {items: [1, 2, 3]})
 // [ 1, 2, 3 ]
+```
+```js
 L.set(["items", L.defaults([])], [], {items: [1, 2, 3]})
 // undefined
 ```
@@ -609,7 +619,9 @@ required value for an element.
 ```js
 L.get(["x", L.define(null)], {y: 10})
 // null
-L.set(["x", L.define(null)], undefined, {y: 10}))
+```
+```js
+L.set(["x", L.define(null)], undefined, {y: 10})
 // { y: 10, x: null }
 ```
 
@@ -635,8 +647,12 @@ For example:
 ```js
 L.remove(["items", 0], {items: [1]})
 // undefined
+```
+```js
 L.remove([L.required({}), "items", 0], {items: [1]})
 // {}
+```
+```js
 L.remove(["items", L.required([]), 0], {items: [1]})
 // { items: [] }
 ```
@@ -662,8 +678,12 @@ For example:
 ```js
 L.get(L.append, ["x"])
 // undefined
+```
+```js
 L.set(L.append, "x", undefined)
 // [ 'x' ]
+```
+```js
 L.set(L.append, "x", ["z", "y"])
 // [ 'z', 'y', 'x' ]
 ```
@@ -717,6 +737,8 @@ For example:
 ```js
 L.get(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 // 9
+```
+```js
 L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
@@ -742,8 +764,12 @@ without [`L.required([])`](#required):
 ```js
 L.remove(0, ["a", "b"])
 // [ 'b' ]
+```
+```js
 L.remove(0, ["b"])
 // undefined
+```
+```js
 L.remove(["elems", 0], {elems: ["b"], some: "thing"})
 // { some: 'thing' }
 ```
@@ -753,8 +779,12 @@ Then consider the same examples with [`L.required([])`](#required):
 ```js
 L.remove([L.required([]), 0], ["a", "b"])
 // [ 'b' ]
+```
+```js
 L.remove([L.required([]), 0], ["b"])
 // []
+```
+```js
 L.remove(["elems", L.required([]), 0], {elems: ["b"], some: "thing"})
 // { elems: [], some: 'thing' }
 ```
@@ -765,6 +795,8 @@ following example:
 ```js
 L.remove(L.required([]), [])
 // []
+```
+```js
 L.get(L.required([]), [])
 // undefined
 ```
@@ -791,6 +823,8 @@ For example:
 ```js
 L.get("y", {x: 1, y: 2, z: 3})
 // 2
+```
+```js
 L.set("y", -2, {x: 1, y: 2, z: 3})
 // { x: 1, y: -2, z: 3 }
 ```
@@ -820,7 +854,7 @@ The default import `P` and `L.compose` refer to the one and same function, which
 performs lens composition.  The following equations characterize lens
 composition:
 
-```js
+```jsx
                   L.compose() = L.identity
                  L.compose(l) = l
    L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
@@ -831,7 +865,7 @@ Furthermore, an array of lenses `[...lenses]` is treated as a composition of
 lenses `L.compose(...lenses)`.  Using the array notation, the above equations
 can be written as:
 
-```js
+```jsx
                   [] = L.identity
                  [l] = l
    L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
@@ -858,8 +892,12 @@ For example:
 ```js
 L.get(L.valueOr(0), null)
 // 0
+```
+```js
 L.set(L.valueOr(0), 0, 1)
 // 0
+```
+```js
 L.remove(L.valueOr(0), 1)
 // undefined
 ```
@@ -870,7 +908,7 @@ L.remove(L.valueOr(0), 1)
 
 `L.chain(a2bPLens, aPLens)` is equivalent to
 
-```js
+```jsx
 L.compose(aPLens, L.choose(aMaybe =>
   aMaybe === undefined
   ? L.nothing
@@ -909,8 +947,12 @@ we get:
 ```js
 L.get(majorAxis, {x: 1, y: 2})
 // 2
+```
+```js
 L.get(majorAxis, {x: -3, y: 1})
 // -3
+```
+```js
 L.modify(majorAxis, R.negate, {x: 2, y: -3})
 // { x: 2, y: 3 }
 
@@ -921,7 +963,7 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 `L.just` returns a read-only lens whose view is always the given value.  In
 other words, for all `x`, `y` and `z`:
 
-```js
+```jsx
    L.get(L.just(z), x) = z
 L.set(L.just(z), y, x) = x
 ```
@@ -936,7 +978,7 @@ with [`L.chain`](#chain).
 `L.nothing` is a read-only lens whose view is always `undefined`.  In other
 words, for all `x` and `y`:
 
-```js
+```jsx
    L.get(L.nothing, x) = undefined
 L.set(L.nothing, y, x) = x
 ```
@@ -961,6 +1003,8 @@ For example:
 ```js
 L.get(["x", L.to(x => x + 1)], {x: 1})
 // 2
+```
+```js
 L.set(["x", L.to(x => x + 1)], 3, {x: 1})
 // { x: 1 }
 ```
@@ -990,8 +1034,12 @@ Now, for example:
 ```js
 L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
 // [ 1, 2, 3, 4, 5, 6 ]
+```
+```js
 L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
 // [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
+```
+```js
 L.modify(flatten, x => 3 <= x && x <= 5 ? undefined : x, [[[1], 2], 3, [4, [[5]], [6]]])
 // [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
 ```
@@ -1056,6 +1104,8 @@ For example:
 ```js
 L.get(L.replace(1, 2), 1)
 // 2
+```
+```js
 L.set(L.replace(1, 2), 2, 0)
 // 1
 ```
@@ -1071,7 +1121,7 @@ Aside from lenses, there is support for isomorphisms.  A lens, `iso`, is an
 isomorphism iff the following equations hold for all `x` and `y` in the domain
 and range, respectively, of the lens:
 
-```js
+```jsx
 L.set(iso, L.get(iso, x), undefined) = x
 L.get(iso, L.set(iso, y, undefined)) = y
 ```
@@ -1124,6 +1174,8 @@ For example:
 ```js
 L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
 // { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
+```
+```js
 L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
 // [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
 ```
@@ -1133,7 +1185,7 @@ L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value:
 `L.identity` is the identity element of lens composition and also the identity
 isomorphism.  The following equations characterize `L.identity`:
 
-```js
+```jsx
       L.get(L.identity, x) = x
 L.modify(L.identity, f, x) = f(x)
   L.compose(L.identity, l) = l
@@ -1230,10 +1282,14 @@ Given a binary tree `t` we can now:
 ```js
 L.collect(values, t)
 // [ 2, 3, 1 ]
+```
+```js
 L.modify(values, x => -x, t)
 // { key: 'c',
 //   value: -1,
 //   smaller: { key: 'a', value: -2, greater: { key: 'b', value: -3 } } }
+```
+```js
 L.modify(values, x => x <= 2 ? undefined : x, t)
 // { key: 'b', value: 3 }
 ```
@@ -1287,10 +1343,14 @@ For example:
 L.get(["x", L.log()], {x: 10})
 // get 10
 // 10
+```
+```js
 L.set(["x", L.log("x")], "11", {x: 10})
 // x get 10
 // x set 11
 // { x: '11' }
+```
+```js
 L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // get x: 10
 // set x: "11"
@@ -1375,14 +1435,24 @@ Consider the following REPL session using Ramda 0.19.1:
 ```js
 R.set(R.lensPath(["x", "y"]), 1, {})
 // { x: { y: 1 } }
+```
+```js
 R.set(R.compose(R.lensProp("x"), R.lensProp("y")), 1, {})
 // TypeError: Cannot read property 'y' of undefined
+```
+```js
 R.view(R.lensPath(["x", "y"]), {})
 // undefined
+```
+```js
 R.view(R.compose(R.lensProp("x"), R.lensProp("y")), {})
 // TypeError: Cannot read property 'y' of undefined
+```
+```js
 R.set(R.lensPath(["x", "y"]), undefined, {x: {y: 1}})
 // { x: { y: undefined } }
+```
+```js
 R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
 // { x: { y: undefined } }
 ```
@@ -1429,7 +1499,7 @@ roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R` version
 0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P` version
 0.1.1).
 
-```js
+```jsx
 L.foldMapOf(Sum, L.sequence, id, xs100) x    476,883 ops/sec ±1.03% (93 runs sampled)
 P.sumOf(P.traversed, xs100)             x     23,755 ops/sec ±0.98% (91 runs sampled)
 R.sum(xs100)                            x    139,397 ops/sec ±0.89% (92 runs sampled)
