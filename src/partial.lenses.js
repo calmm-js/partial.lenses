@@ -434,19 +434,19 @@ export function lazy(toLens) {
   return rec
 }
 
-export const sequence = (A, x2yA, xs) => {
+export function sequence(A, x2yA, xs) {
   assert(A, isntConst, "`sequence` cannot be `get`, consider `collect`.")
-  return A=== Ident
+  return A === Ident
     ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
     : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
 }
 
-export const optional = (A, x2yA, x) => {
+export function optional(A, x2yA, x) {
   assert(A, isntConst, "`optional` cannot be `get`, consider `collect`.")
   return x !== undefined ? x2yA(x) : A.of(undefined)
 }
 
-export const branch = template => {
+export function branch(template) {
   const keys = []
   const vals = []
   unzipObjIntoU(template, keys, vals)
