@@ -127,14 +127,13 @@ import * as R from "ramda"
 and compose a parameterized lens for accessing texts:
 
 ```js
-const textIn = language => L.compose(
-  L.prop("contents"),
-  L.required([]),
-  L.normalize(R.sortBy(R.prop("language"))),
-  L.find(R.whereEq({language})),
-  L.defaults({language}),
-  L.prop("text"),
-  L.valueOr(""))
+const textIn = language => L.compose(L.prop("contents"),
+                                     L.required([]),
+                                     L.normalize(R.sortBy(R.prop("language"))),
+                                     L.find(R.whereEq({language})),
+                                     L.defaults({language}),
+                                     L.prop("text"),
+                                     L.valueOr(""))
 ```
 
 Take a moment to read through the above definition line by line.  Each line has
@@ -264,15 +263,14 @@ It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Reconsider the lens from the start of the
 example:
 
-```js
-const textIn = language => L.compose(
-  L.prop("contents"),
-  L.required([]),
-  L.normalize(R.sortBy(R.prop("language"))),
-  L.find(R.whereEq({language})),
-  L.defaults({language}),
-  L.prop("text"),
-  L.valueOr(""))
+```jsx
+L.compose(L.prop("contents"),
+          L.required([]),
+          L.normalize(R.sortBy(R.prop("language"))),
+          L.find(R.whereEq({language})),
+          L.defaults({language}),
+          L.prop("text"),
+          L.valueOr(""))
 ```
 
 Following the structure or schema of the JSON, we could break this into three
@@ -285,7 +283,7 @@ Furthermore, we could organize the lenses into an object following the structure
 of the JSON:
 
 ```js
-const M = {
+const Texts = {
   data: {
     contents: ["contents",
                L.required([]),
@@ -297,23 +295,25 @@ const M = {
   },
   content: {
     text: ["text", L.valueOr("")]
-  }
+  },
+  textIn: language => [Texts.data.contents,
+                       Texts.contents.contentIn(language),
+                       Texts.content.text]
 }
 ```
 
-Using the above object, we could rewrite the parameterized `textIn` lens as:
+We can now say:
 
 ```js
-const textIn = language => [M.data.contents,
-                            M.contents.contentIn(language),
-                            M.content.text]
+L.get(Texts.textIn("sv"), sampleTexts)
+// 'Rubrik'
 ```
 
 This style of organizing lenses is overkill for our toy example.  In a more
-realistic case the `data` object would contain many more properties.  Also,
-rather than composing a lens, like `textIn` above, to access a leaf property
-from the root of our object, we might actually compose lenses incrementally as
-we inspect the model structure.
+realistic case the `sampleTexts` object would contain many more properties.
+Also, rather than composing a lens, like `Texts.textIn` above, to access a leaf
+property from the root of our object, we might actually compose lenses
+incrementally as we inspect the model structure.
 
 ### Example: An array of ids as boolean flags
 

@@ -167,14 +167,13 @@ elements.</p>
 import * as R from &quot;ramda&quot;
 </code></pre>
 <p>and compose a parameterized lens for accessing texts:</p>
-<pre><code class="lang-js">var textIn = language =&gt; L.compose(
-  L.prop(&quot;contents&quot;),
-  L.required([]),
-  L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
-  L.find(R.whereEq({language})),
-  L.defaults({language}),
-  L.prop(&quot;text&quot;),
-  L.valueOr(&quot;&quot;))
+<pre><code class="lang-js">var textIn = language =&gt; L.compose(L.prop(&quot;contents&quot;),
+                                     L.required([]),
+                                     L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
+                                     L.find(R.whereEq({language})),
+                                     L.defaults({language}),
+                                     L.prop(&quot;text&quot;),
+                                     L.valueOr(&quot;&quot;))
 </code></pre>
 <p>Take a moment to read through the above definition line by line.  Each line has
 a specific purpose.  The purpose of the <a href="#prop"><code>L.prop(...)</code></a> lines is probably
@@ -255,14 +254,13 @@ library supports.  In particular,</p>
 <p>It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Reconsider the lens from the start of the
 example:</p>
-<pre><code class="lang-js">var textIn = language =&gt; L.compose(
-  L.prop(&quot;contents&quot;),
-  L.required([]),
-  L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
-  L.find(R.whereEq({language})),
-  L.defaults({language}),
-  L.prop(&quot;text&quot;),
-  L.valueOr(&quot;&quot;))
+<pre><code class="lang-jsx">L.compose(L.prop(&quot;contents&quot;),
+          L.required([]),
+          L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
+          L.find(R.whereEq({language})),
+          L.defaults({language}),
+          L.prop(&quot;text&quot;),
+          L.valueOr(&quot;&quot;))
 </code></pre>
 <p>Following the structure or schema of the JSON, we could break this into three
 separate lenses:</p>
@@ -273,7 +271,7 @@ separate lenses:</p>
 </ul>
 <p>Furthermore, we could organize the lenses into an object following the structure
 of the JSON:</p>
-<pre><code class="lang-js">var M = {
+<pre><code class="lang-js">var Texts = {
   data: {
     contents: [&quot;contents&quot;,
                L.required([]),
@@ -285,19 +283,20 @@ of the JSON:</p>
   },
   content: {
     text: [&quot;text&quot;, L.valueOr(&quot;&quot;)]
-  }
+  },
+  textIn: language =&gt; [Texts.data.contents,
+                       Texts.contents.contentIn(language),
+                       Texts.content.text]
 }
 </code></pre>
-<p>Using the above object, we could rewrite the parameterized <code>textIn</code> lens as:</p>
-<pre><code class="lang-js">var textIn = language =&gt; [M.data.contents,
-                            M.contents.contentIn(language),
-                            M.content.text]
+<p>We can now say:</p>
+<pre><code class="lang-js">L.get(Texts.textIn(&quot;sv&quot;), sampleTexts)
 </code></pre>
 <p>This style of organizing lenses is overkill for our toy example.  In a more
-realistic case the <code>data</code> object would contain many more properties.  Also,
-rather than composing a lens, like <code>textIn</code> above, to access a leaf property
-from the root of our object, we might actually compose lenses incrementally as
-we inspect the model structure.</p>
+realistic case the <code>sampleTexts</code> object would contain many more properties.
+Also, rather than composing a lens, like <code>Texts.textIn</code> above, to access a leaf
+property from the root of our object, we might actually compose lenses
+incrementally as we inspect the model structure.</p>
 <h3 id="example-an-array-of-ids-as-boolean-flags">Example: An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
 constant strings such as</p>
