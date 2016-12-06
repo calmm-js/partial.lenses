@@ -16,7 +16,7 @@ window.klipse_settings = {
   selector_eval_js: '.lang-js'
 }
 
-const klipse = document.createElement("script")
+var klipse = document.createElement("script")
 klipse.type = "text/javascript"
 klipse.src = "https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"
 klipse.async = 1
