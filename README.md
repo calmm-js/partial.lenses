@@ -1,4 +1,6 @@
-[ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) ]
+[ [Contents](#contents) | [Tutorial](#tutorial) | [Reference](#reference) | [Background](#background) | [GitHub](https://github.com/calmm-js/partial.lenses) | [Try Lenses!](http://calmm-js.github.io/partial.lenses/) ]
+
+# Partial Lenses
 
 Lenses are primarily a convenient abstraction for performing updates on
 individual elements of immutable data structures.  This library provides a
