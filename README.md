@@ -1573,7 +1573,7 @@ optimized for common cases*, but there is definitely a lot of room for
 improvement.  The goal is to make partial lenses fast enough that performance
 isn't the reason why you might not want to use them.
 
-See [bench.js](bench/bench.js) for details.
+See [bench.js](./bench/bench.js) for details.
 
 ## Related work
 
