@@ -50,10 +50,10 @@ elements.
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
     * [Enforcing invariants](#enforcing-invariants)
-      * [`L.defaults(valueOut)`](#defaults "L.defaults :: s -> PLens s s")
+      * [`L.defaults(valueIn)`](#defaults "L.defaults :: s -> PLens s s")
       * [`L.define(value)`](#define "L.define :: s -> PLens s s")
       * [`L.normalize(value => value)`](#normalize "L.normalize :: (s -> s) -> PLens s s")
-      * [`L.required(valueIn)`](#required "L.required :: s -> PLens s s")
+      * [`L.required(valueOut)`](#required "L.required :: s -> PLens s s")
       * [`L.rewrite(valueOut => valueOut)`](#rewrite "L.rewrite :: (s -> s) -> PLens s s")
     * [Lensing arrays](#lensing-arrays)
       * [`L.append`](#append "L.append :: PLens [a] a")
@@ -595,7 +595,7 @@ L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y})
 
 #### Enforcing invariants
 
-##### <a name="defaults"></a>[`L.defaults(valueOut)`](#defaults "L.defaults :: s -> PLens s s")
+##### <a name="defaults"></a>[`L.defaults(valueIn)`](#defaults "L.defaults :: s -> PLens s s")
 
 `L.defaults` is used to specify a default context or value for an element in
 case it is missing.  When set with the default value, the effect is to remove
@@ -618,8 +618,8 @@ L.set(["items", L.defaults([])], [], {items: [1, 2, 3]})
 // undefined
 ```
 
-Note that `L.defaults(valueOut)` is equivalent
-to [`L.replace(undefined, valueOut)`](#replace).
+Note that `L.defaults(valueIn)` is equivalent
+to [`L.replace(undefined, valueIn)`](#replace).
 
 ##### <a name="define"></a>[`L.define(value)`](#define "L.define :: s -> PLens s s")
 
@@ -647,7 +647,7 @@ One use case for `normalize` is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a
 simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
-##### <a name="required"></a>[`L.required(valueIn)`](#required "L.required :: s -> PLens s s")
+##### <a name="required"></a>[`L.required(valueOut)`](#required "L.required :: s -> PLens s s")
 
 `L.required` is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.
@@ -667,8 +667,8 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 // { items: [] }
 ```
 
-Note that `L.required(valueIn)` is equivalent
-to [`L.replace(valueIn, undefined)`](#replace).
+Note that `L.required(valueOut)` is equivalent
+to [`L.replace(valueOut, undefined)`](#replace).
 
 ##### <a name="rewrite"></a>[`L.rewrite(valueOut => valueOut)`](#rewrite "L.rewrite :: (s -> s) -> PLens s s")
 
