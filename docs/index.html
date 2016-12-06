@@ -157,8 +157,10 @@ elements.</p>
 </ul>
 <h2 id="tutorial">Tutorial</h2>
 <p>Let&#39;s work with the following sample JSON object:</p>
-<pre><code class="lang-js">var data = { contents: [ { language: &quot;en&quot;, text: &quot;Title&quot; },
-                           { language: &quot;sv&quot;, text: &quot;Rubrik&quot; } ] }
+<pre><code class="lang-js">var sampleTexts = {
+  contents: [{ language: &quot;en&quot;, text: &quot;Title&quot; },
+             { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
+}
 </code></pre>
 <p>First we import libraries</p>
 <pre><code class="lang-jsx">import * as L from &quot;partial.lenses&quot;
@@ -181,15 +183,15 @@ obvious.  The other lines we will mention below.</p>
 <p>Thanks to the parameterized search part,
 <a href="#find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we can use it
 to query texts:</p>
-<pre><code class="lang-js">L.get(textIn(&quot;sv&quot;), data)
+<pre><code class="lang-js">L.get(textIn(&quot;sv&quot;), sampleTexts)
 // &quot;Rubrik&quot;
 </code></pre>
-<pre><code class="lang-js">L.get(textIn(&quot;en&quot;), data)
+<pre><code class="lang-js">L.get(textIn(&quot;en&quot;), sampleTexts)
 // &quot;Title&quot;
 </code></pre>
 <p>Partial lenses can deal with missing data.  If we use the partial lens to query
 a text that does not exist, we get the default:</p>
-<pre><code class="lang-js">L.get(textIn(&quot;fi&quot;), data)
+<pre><code class="lang-js">L.get(textIn(&quot;fi&quot;), sampleTexts)
 // &quot;&quot;
 </code></pre>
 <p>We get this value, rather than <code>undefined</code>, thanks to the last
@@ -202,13 +204,13 @@ default even if we query from <code>undefined</code>:</p>
 <p>With partial lenses, <code>undefined</code> is the equivalent of empty or non-existent.</p>
 <h3 id="updating-data">Updating data</h3>
 <p>As with ordinary lenses, we can use the same lens to update texts:</p>
-<pre><code class="lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, data)
+<pre><code class="lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, sampleTexts)
 // { contents: [ { language: &quot;en&quot;, text: &quot;The title&quot; },
 //               { language: &quot;sv&quot;, text: &quot;Rubrik&quot; } ] }
 </code></pre>
 <h3 id="inserting-data">Inserting data</h3>
 <p>The same partial lens also allows us to insert new texts:</p>
-<pre><code class="lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, data)
+<pre><code class="lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, sampleTexts)
 // { contents: [ { language: &quot;en&quot;, text: &quot;Title&quot; },
 //               { language: &quot;fi&quot;, text: &quot;Otsikko&quot; },
 //               { language: &quot;sv&quot;, text: &quot;Rubrik&quot; } ] }
@@ -218,7 +220,7 @@ kept sorted thanks to the
 <a href="#normalize"><code>L.normalize(R.sortBy(R.prop(&quot;language&quot;)))</code></a> part of our lens.</p>
 <h3 id="removing-data">Removing data</h3>
 <p>Finally, we can use the same partial lens to remove texts:</p>
-<pre><code class="lang-js">L.set(textIn(&quot;sv&quot;), undefined, data)
+<pre><code class="lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTexts)
 // { contents: [ { language: &quot;en&quot;, text: &quot;Title&quot; } ] }
 </code></pre>
 <p>Note that a single text is actually a part of an object.  The key to having the
@@ -229,7 +231,7 @@ whole object vanish, rather than just the <code>text</code> property, is the
 be removed.</p>
 <p>If we remove all of the texts, we get the required value:</p>
 <pre><code class="lang-js">R.pipe(L.set(textIn(&quot;sv&quot;), undefined),
-       L.set(textIn(&quot;en&quot;), undefined))(data)
+       L.set(textIn(&quot;en&quot;), undefined))(sampleTexts)
 // { contents: [] }
 </code></pre>
 <p>The <code>contents</code> property is not removed thanks to the
@@ -310,7 +312,7 @@ we inspect the model structure.</p>
 <h3 id="example-an-array-of-ids-as-boolean-flags">Example: An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
 constant strings such as</p>
-<pre><code class="lang-js">var data = [&quot;id-19&quot;, &quot;id-76&quot;]
+<pre><code class="lang-js">var sampleFlags = [&quot;id-19&quot;, &quot;id-76&quot;]
 </code></pre>
 <p>that we wish to manipulate as if it was a collection of boolean flags.  Here is
 a parameterized lens that does just that:</p>
@@ -321,17 +323,17 @@ a parameterized lens that does just that:</p>
    L.replace(id, true)]
 </code></pre>
 <p>Now we can treat individual constants as boolean flags:</p>
-<pre><code class="lang-js">L.get(flag(&quot;id-69&quot;), data)
+<pre><code class="lang-js">L.get(flag(&quot;id-69&quot;), sampleFlags)
 // false
 </code></pre>
-<pre><code class="lang-js">L.get(flag(&quot;id-76&quot;), data)
+<pre><code class="lang-js">L.get(flag(&quot;id-76&quot;), sampleFlags)
 // true
 </code></pre>
 <p>In both directions:</p>
-<pre><code class="lang-js">L.set(flag(&quot;id-69&quot;), true, data)
+<pre><code class="lang-js">L.set(flag(&quot;id-69&quot;), true, sampleFlags)
 // [&quot;id-19&quot;, &quot;id-69&quot;, &quot;id-76&quot;]
 </code></pre>
-<pre><code class="lang-js">L.set(flag(&quot;id-76&quot;), false, data)
+<pre><code class="lang-js">L.set(flag(&quot;id-76&quot;), false, sampleFlags)
 // [&quot;id-19&quot;]
 </code></pre>
 <h3 id="food-for-thought-bst-as-a-lens">Food for thought: BST as a lens</h3>
@@ -361,15 +363,15 @@ build a binary tree.  Here is a little helper to build a tree from pairs:</p>
   R.reduce((t, [k, v]) =&gt; L.set(valueOf(k), v, t), undefined)
 </code></pre>
 <p>Now:</p>
-<pre><code class="lang-js">var t = fromPairs([[&quot;c&quot;, 1], [&quot;a&quot;, 2], [&quot;b&quot;, 3]])
-t
+<pre><code class="lang-js">var sampleBST = fromPairs([[&quot;c&quot;, 1], [&quot;a&quot;, 2], [&quot;b&quot;, 3]])
+sampleBST
 // { key: &#39;c&#39;,
 //   value: 1,
 //   smaller: { key: &#39;a&#39;, value: 2, greater: { key: &#39;b&#39;, value: 3 } } }
 </code></pre>
 <p>However, the above <code>search</code> lens constructor does not maintain the BST structure
 when values are being removed:</p>
-<pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), t)
+<pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), sampleBST)
 // { key: &#39;c&#39;,
 //   smaller: { key: &#39;a&#39;, value: 2, greater: { key: &#39;b&#39;, value: 3 } } }
 </code></pre>
@@ -393,7 +395,7 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
                                L.identity)])
 </code></pre>
 <p>Now we can also remove values from a binary tree:</p>
-<pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), t)
+<pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), sampleBST)
 // { key: &#39;a&#39;, value: 2, greater: { key: &#39;b&#39;, value: 3 } }
 </code></pre>
 <p>As an exercise, you could improve the rewrite to better maintain balance.
@@ -812,7 +814,7 @@ are set to the context via the lenses of the template.  <code>undefined</code> i
 as the equivalent of empty or non-existent in both directions.</p>
 <p>For example, let&#39;s say we need to deal with data and schema in need of some
 semantic restructuring:</p>
-<pre><code class="lang-js">var data = {px: 1, py: 2, vx: 1.0, vy: 0.0}
+<pre><code class="lang-js">var sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
 </code></pre>
 <p>We can use <code>L.pick</code> to create lenses to pick apart the data and put it back
 together into a more meaningful structure:</p>
@@ -820,11 +822,11 @@ together into a more meaningful structure:</p>
 var sanitize = L.pick({pos: asVec(&quot;p&quot;), vel: asVec(&quot;v&quot;)})
 </code></pre>
 <p>We now have a better structured view of the data:</p>
-<pre><code class="lang-js">L.get(sanitize, data)
+<pre><code class="lang-js">L.get(sanitize, sampleFlat)
 // { pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
 </code></pre>
 <p>That works in both directions:</p>
-<pre><code class="lang-js">L.modify([sanitize, &quot;pos&quot;, &quot;x&quot;], R.add(5), data)
+<pre><code class="lang-js">L.modify([sanitize, &quot;pos&quot;, &quot;x&quot;], R.add(5), sampleFlat)
 // { px: 6, py: 2, vx: 1, vy: 0 }
 </code></pre>
 <p><strong>NOTE:</strong> In order for a lens created with <code>L.pick</code> to work in a predictable
@@ -955,16 +957,16 @@ here is a traversal that visits all the values of a binary tree in order:</p>
             value: L.identity,
             greater: rec})])
 </code></pre>
-<p>Given a binary tree <code>t</code> we can now:</p>
-<pre><code class="lang-js">L.collect(values, t)
+<p>Given a binary tree <code>sampleBST</code> we can now:</p>
+<pre><code class="lang-js">L.collect(values, sampleBST)
 // [ 2, 3, 1 ]
 </code></pre>
-<pre><code class="lang-js">L.modify(values, x =&gt; -x, t)
+<pre><code class="lang-js">L.modify(values, x =&gt; -x, sampleBST)
 // { key: &#39;c&#39;,
 //   value: -1,
 //   smaller: { key: &#39;a&#39;, value: -2, greater: { key: &#39;b&#39;, value: -3 } } }
 </code></pre>
-<pre><code class="lang-js">L.modify(values, x =&gt; x &lt;= 2 ? undefined : x, t)
+<pre><code class="lang-js">L.modify(values, x =&gt; x &lt;= 2 ? undefined : x, sampleBST)
 // { key: &#39;b&#39;, value: 3 }
 </code></pre>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
@@ -1045,7 +1047,7 @@ var transform = (w2w, w) =&gt; w2w(substUp(w2w, w))
 <p><code>transform(w2w, w)</code> basically just performs a single-pass bottom-up transform
 using the given function <code>w2w</code> over the given data structure <code>w</code>.  Suppose we
 are given the following data:</p>
-<pre><code class="lang-js">var data = {
+<pre><code class="lang-js">var sampleBloated = {
   just: &quot;some&quot;,
   extra: &quot;crap&quot;,
   that: [
@@ -1061,7 +1063,7 @@ are given the following data:</p>
 <pre><code class="lang-js">transform(R.ifElse(isObject,
                    L.remove(L.props(&quot;extra&quot;, &quot;fields&quot;)),
                    R.identity),
-          data)
+          sampleBloated)
 // { just: &#39;some&#39;,
 //   that: [ &#39;we&#39;, { want: &#39;to&#39;,
 //                   filter: [&quot;out&quot;],

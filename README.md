@@ -111,8 +111,10 @@ elements.
 Let's work with the following sample JSON object:
 
 ```js
-const data = { contents: [ { language: "en", text: "Title" },
-                           { language: "sv", text: "Rubrik" } ] }
+const sampleTexts = {
+  contents: [{ language: "en", text: "Title" },
+             { language: "sv", text: "Rubrik" }]
+}
 ```
 
 First we import libraries
@@ -146,11 +148,11 @@ Thanks to the parameterized search part,
 to query texts:
 
 ```js
-L.get(textIn("sv"), data)
+L.get(textIn("sv"), sampleTexts)
 // "Rubrik"
 ```
 ```js
-L.get(textIn("en"), data)
+L.get(textIn("en"), sampleTexts)
 // "Title"
 ```
 
@@ -158,7 +160,7 @@ Partial lenses can deal with missing data.  If we use the partial lens to query
 a text that does not exist, we get the default:
 
 ```js
-L.get(textIn("fi"), data)
+L.get(textIn("fi"), sampleTexts)
 // ""
 ```
 
@@ -179,7 +181,7 @@ With partial lenses, `undefined` is the equivalent of empty or non-existent.
 As with ordinary lenses, we can use the same lens to update texts:
 
 ```js
-L.set(textIn("en"), "The title", data)
+L.set(textIn("en"), "The title", sampleTexts)
 // { contents: [ { language: "en", text: "The title" },
 //               { language: "sv", text: "Rubrik" } ] }
 ```
@@ -189,7 +191,7 @@ L.set(textIn("en"), "The title", data)
 The same partial lens also allows us to insert new texts:
 
 ```js
-L.set(textIn("fi"), "Otsikko", data)
+L.set(textIn("fi"), "Otsikko", sampleTexts)
 // { contents: [ { language: "en", text: "Title" },
 //               { language: "fi", text: "Otsikko" },
 //               { language: "sv", text: "Rubrik" } ] }
@@ -204,7 +206,7 @@ kept sorted thanks to the
 Finally, we can use the same partial lens to remove texts:
 
 ```js
-L.set(textIn("sv"), undefined, data)
+L.set(textIn("sv"), undefined, sampleTexts)
 // { contents: [ { language: "en", text: "Title" } ] }
 ```
 
@@ -219,7 +221,7 @@ If we remove all of the texts, we get the required value:
 
 ```js
 R.pipe(L.set(textIn("sv"), undefined),
-       L.set(textIn("en"), undefined))(data)
+       L.set(textIn("en"), undefined))(sampleTexts)
 // { contents: [] }
 ```
 
@@ -319,7 +321,7 @@ A case that we have run into multiple times is where we have an array of
 constant strings such as
 
 ```js
-const data = ["id-19", "id-76"]
+const sampleFlags = ["id-19", "id-76"]
 ```
 
 that we wish to manipulate as if it was a collection of boolean flags.  Here is
@@ -336,22 +338,22 @@ const flag = id =>
 Now we can treat individual constants as boolean flags:
 
 ```js
-L.get(flag("id-69"), data)
+L.get(flag("id-69"), sampleFlags)
 // false
 ```
 ```js
-L.get(flag("id-76"), data)
+L.get(flag("id-76"), sampleFlags)
 // true
 ```
 
 In both directions:
 
 ```js
-L.set(flag("id-69"), true, data)
+L.set(flag("id-69"), true, sampleFlags)
 // ["id-19", "id-69", "id-76"]
 ```
 ```js
-L.set(flag("id-76"), false, data)
+L.set(flag("id-76"), false, sampleFlags)
 // ["id-19"]
 ```
 
@@ -393,8 +395,8 @@ const fromPairs =
 Now:
 
 ```js
-const t = fromPairs([["c", 1], ["a", 2], ["b", 3]])
-t
+const sampleBST = fromPairs([["c", 1], ["a", 2], ["b", 3]])
+sampleBST
 // { key: 'c',
 //   value: 1,
 //   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
@@ -404,7 +406,7 @@ However, the above `search` lens constructor does not maintain the BST structure
 when values are being removed:
 
 ```js
-L.remove(valueOf('c'), t)
+L.remove(valueOf('c'), sampleBST)
 // { key: 'c',
 //   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
 ```
@@ -437,7 +439,7 @@ const search = key => L.lazy(rec =>
 Now we can also remove values from a binary tree:
 
 ```js
-L.remove(valueOf('c'), t)
+L.remove(valueOf('c'), sampleBST)
 // { key: 'a', value: 2, greater: { key: 'b', value: 3 } }
 ```
 
@@ -1061,7 +1063,7 @@ For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
 
 ```js
-const data = {px: 1, py: 2, vx: 1.0, vy: 0.0}
+const sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
 ```
 
 We can use `L.pick` to create lenses to pick apart the data and put it back
@@ -1075,14 +1077,14 @@ const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
 We now have a better structured view of the data:
 
 ```js
-L.get(sanitize, data)
+L.get(sanitize, sampleFlat)
 // { pos: { x: 1, y: 2 }, vel: { x: 1, y: 0 } }
 ```
 
 That works in both directions:
 
 ```js
-L.modify([sanitize, "pos", "x"], R.add(5), data)
+L.modify([sanitize, "pos", "x"], R.add(5), sampleFlat)
 // { px: 6, py: 2, vx: 1, vy: 0 }
 ```
 
@@ -1279,20 +1281,20 @@ const values = L.lazy(rec => [
             greater: rec})])
 ```
 
-Given a binary tree `t` we can now:
+Given a binary tree `sampleBST` we can now:
 
 ```js
-L.collect(values, t)
+L.collect(values, sampleBST)
 // [ 2, 3, 1 ]
 ```
 ```js
-L.modify(values, x => -x, t)
+L.modify(values, x => -x, sampleBST)
 // { key: 'c',
 //   value: -1,
 //   smaller: { key: 'a', value: -2, greater: { key: 'b', value: -3 } } }
 ```
 ```js
-L.modify(values, x => x <= 2 ? undefined : x, t)
+L.modify(values, x => x <= 2 ? undefined : x, sampleBST)
 // { key: 'b', value: 3 }
 ```
 
@@ -1404,7 +1406,7 @@ using the given function `w2w` over the given data structure `w`.  Suppose we
 are given the following data:
 
 ``` js
-const data = {
+const sampleBloated = {
   just: "some",
   extra: "crap",
   that: [
@@ -1423,7 +1425,7 @@ We can now remove the `extra` `fields` like this:
 transform(R.ifElse(isObject,
                    L.remove(L.props("extra", "fields")),
                    R.identity),
-          data)
+          sampleBloated)
 // { just: 'some',
 //   that: [ 'we', { want: 'to',
 //                   filter: ["out"],
