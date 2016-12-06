@@ -28,7 +28,7 @@ fs.writeFileSync("docs/index.html",
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Try Partial Lenses with Klipse</title>
+    <title>Try Partial Lenses with KLIPSE</title>
     <link rel="icon" href="https://avatars1.githubusercontent.com/u/17234211">
     <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -36,5 +36,7 @@ fs.writeFileSync("docs/index.html",
   </head>
   <body class="markdown-body">
     ${body}
+    <hr>
+    <p>Interactive snippets via <a href="https://github.com/viebel/klipse">KLIPSE</a>.</p>
   </body>
 </html>`)
