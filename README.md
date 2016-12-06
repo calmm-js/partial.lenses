@@ -127,14 +127,14 @@ import * as R from "ramda"
 and compose a parameterized lens for accessing texts:
 
 ```js
-const textIn = language =>
-  L.compose(L.prop("contents"),
-            L.required([]),
-            L.normalize(R.sortBy(R.prop("language"))),
-            L.find(R.whereEq({language})),
-            L.defaults({language}),
-            L.prop("text"),
-            L.valueOr(""))
+const textIn = language => L.compose(
+  L.prop("contents"),
+  L.required([]),
+  L.normalize(R.sortBy(R.prop("language"))),
+  L.find(R.whereEq({language})),
+  L.defaults({language}),
+  L.prop("text"),
+  L.valueOr(""))
 ```
 
 Take a moment to read through the above definition line by line.  Each line has
@@ -265,14 +265,14 @@ the JSON data being manipulated.  Reconsider the lens from the start of the
 example:
 
 ```js
-const textIn = language =>
-  L.compose(L.prop("contents"),
-            L.required([]),
-            L.normalize(R.sortBy(R.prop("language"))),
-            L.find(R.whereEq({language})),
-            L.defaults({language}),
-            L.prop("text"),
-            L.valueOr(""))
+const textIn = language => L.compose(
+  L.prop("contents"),
+  L.required([]),
+  L.normalize(R.sortBy(R.prop("language"))),
+  L.find(R.whereEq({language})),
+  L.defaults({language}),
+  L.prop("text"),
+  L.valueOr(""))
 ```
 
 Following the structure or schema of the JSON, we could break this into three
@@ -328,11 +328,10 @@ that we wish to manipulate as if it was a collection of boolean flags.  Here is
 a parameterized lens that does just that:
 
 ```js
-const flag = id =>
-  [L.normalize(R.sortBy(R.identity)),
-   L.find(R.equals(id)),
-   L.replace(undefined, false),
-   L.replace(id, true)]
+const flag = id => [L.normalize(R.sortBy(R.identity)),
+                    L.find(R.equals(id)),
+                    L.replace(undefined, false),
+                    L.replace(id, true)]
 ```
 
 Now we can treat individual constants as boolean flags:
@@ -372,24 +371,27 @@ correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:
 
 ```js
-const search = key => L.lazy(rec =>
-  [L.defaults({key}),
-   L.choose(n => key < n.key ? ["smaller", rec] :
-                 n.key < key ? ["greater", rec] :
-                               L.identity)])
+const searchAttempt = key => L.lazy(rec => [
+  L.defaults({key}),
+  L.choose(n => {
+    if (key === n.key)
+      return L.identity
+    return [key < n.key ? "smaller" : "greater", rec]
+  })])
 
-const valueOf = key => [search(key), "value"]
+const valueOfAttempt = key => [searchAttempt(key), "value"]
 ```
 
 Note that we also make use of the [`L.lazy`](#lazy) combinator to create a
 recursive lens.
 
-This actually works to a degree.  We can use the `valueOf` lens constructor to
-build a binary tree.  Here is a little helper to build a tree from pairs:
+This actually works to a degree.  We can use the `valueOfAttempt` lens
+constructor to build a binary tree.  Here is a little helper to build a tree
+from pairs:
 
 ```js
 const fromPairs =
-  R.reduce((t, [k, v]) => L.set(valueOf(k), v, t), undefined)
+  R.reduce((t, [k, v]) => L.set(valueOfAttempt(k), v, t), undefined)
 ```
 
 Now:
@@ -402,11 +404,11 @@ sampleBST
 //   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
 ```
 
-However, the above `search` lens constructor does not maintain the BST structure
-when values are being removed:
+However, the above `searchAttempt` lens constructor does not maintain the BST
+structure when values are being removed:
 
 ```js
-L.remove(valueOf('c'), sampleBST)
+L.remove(valueOfAttempt('c'), sampleBST)
 // { key: 'c',
 //   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
 ```
@@ -425,15 +427,19 @@ const naiveBST = L.rewrite(n => {
 })
 ```
 
-Here is the updated `search` definition:
+Here is a working `search` lens and `valueOf` lens constructors:
 
 ```js
-const search = key => L.lazy(rec =>
-  [naiveBST,
-   L.defaults({key}),
-   L.choose(n => key < n.key ? ["smaller", rec] :
-                 n.key < key ? ["greater", rec] :
-                               L.identity)])
+const search = key => L.lazy(rec => [
+  naiveBST,
+  L.defaults({key}),
+  L.choose(n => {
+    if (key === n.key)
+      return L.identity
+    return [key < n.key ? "smaller" : "greater", rec]
+  })])
+
+const valueOf = key => [search(key), "value"]
 ```
 
 Now we can also remove values from a binary tree:
@@ -942,8 +948,8 @@ examining the data structure being manipulated.
 For example, given:
 
 ```js
-const majorAxis = L.choose(({x, y} = {}) =>
-  Math.abs(x) < Math.abs(y) ? "y" : "x")
+const majorAxis =
+  L.choose(({x, y} = {}) => Math.abs(x) < Math.abs(y) ? "y" : "x")
 ```
 
 we get:

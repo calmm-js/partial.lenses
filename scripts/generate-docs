@@ -19,7 +19,7 @@ marked.setOptions({
 
 const body = I.seq(fs.readFileSync("README.md"),
                    R.toString,
-                   R.replace(/\bconst\b/g, "var"),
+                   R.replace(/([^ ])\bconst\b/g, "$1var"),
                    R.replace(/\/\/ .*/g, ""),
                    marked)
 

@@ -167,14 +167,14 @@ elements.</p>
 import * as R from &quot;ramda&quot;
 </code></pre>
 <p>and compose a parameterized lens for accessing texts:</p>
-<pre><code class="lang-js">var textIn = language =&gt;
-  L.compose(L.prop(&quot;contents&quot;),
-            L.required([]),
-            L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
-            L.find(R.whereEq({language})),
-            L.defaults({language}),
-            L.prop(&quot;text&quot;),
-            L.valueOr(&quot;&quot;))
+<pre><code class="lang-js">var textIn = language =&gt; L.compose(
+  L.prop(&quot;contents&quot;),
+  L.required([]),
+  L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
+  L.find(R.whereEq({language})),
+  L.defaults({language}),
+  L.prop(&quot;text&quot;),
+  L.valueOr(&quot;&quot;))
 </code></pre>
 <p>Take a moment to read through the above definition line by line.  Each line has
 a specific purpose.  The purpose of the <a href="#prop"><code>L.prop(...)</code></a> lines is probably
@@ -255,14 +255,14 @@ library supports.  In particular,</p>
 <p>It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Reconsider the lens from the start of the
 example:</p>
-<pre><code class="lang-js">var textIn = language =&gt;
-  L.compose(L.prop(&quot;contents&quot;),
-            L.required([]),
-            L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
-            L.find(R.whereEq({language})),
-            L.defaults({language}),
-            L.prop(&quot;text&quot;),
-            L.valueOr(&quot;&quot;))
+<pre><code class="lang-js">var textIn = language =&gt; L.compose(
+  L.prop(&quot;contents&quot;),
+  L.required([]),
+  L.normalize(R.sortBy(R.prop(&quot;language&quot;))),
+  L.find(R.whereEq({language})),
+  L.defaults({language}),
+  L.prop(&quot;text&quot;),
+  L.valueOr(&quot;&quot;))
 </code></pre>
 <p>Following the structure or schema of the JSON, we could break this into three
 separate lenses:</p>
@@ -305,11 +305,10 @@ constant strings such as</p>
 </code></pre>
 <p>that we wish to manipulate as if it was a collection of boolean flags.  Here is
 a parameterized lens that does just that:</p>
-<pre><code class="lang-js">var flag = id =&gt;
-  [L.normalize(R.sortBy(R.identity)),
-   L.find(R.equals(id)),
-   L.replace(undefined, false),
-   L.replace(id, true)]
+<pre><code class="lang-js">var flag = id =&gt; [L.normalize(R.sortBy(R.identity)),
+                    L.find(R.equals(id)),
+                    L.replace(undefined, false),
+                    L.replace(id, true)]
 </code></pre>
 <p>Now we can treat individual constants as boolean flags:</p>
 <pre><code class="lang-js">L.get(flag(&quot;id-69&quot;), sampleFlags)
@@ -332,47 +331,54 @@ construction of lenses based on examining the data structure being manipulated.
 Inside <a href="#choose"><code>L.choose</code></a> we can write the ordinary BST logic to pick the
 correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:</p>
-<pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt;
-  [L.defaults({key}),
-   L.choose(n =&gt; key &lt; n.key ? [&quot;smaller&quot;, rec] :
-                 n.key &lt; key ? [&quot;greater&quot;, rec] :
-                               L.identity)])
+<pre><code class="lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; [
+  L.defaults({key}),
+  L.choose(n =&gt; {
+    if (key === n.key)
+      return L.identity
+    return [key &lt; n.key ? &quot;smaller&quot; : &quot;greater&quot;, rec]
+  })])
 
-var valueOf = key =&gt; [search(key), &quot;value&quot;]
+var valueOfAttempt = key =&gt; [searchAttempt(key), &quot;value&quot;]
 </code></pre>
 <p>Note that we also make use of the <a href="#lazy"><code>L.lazy</code></a> combinator to create a
 recursive lens.</p>
-<p>This actually works to a degree.  We can use the <code>valueOf</code> lens constructor to
-build a binary tree.  Here is a little helper to build a tree from pairs:</p>
+<p>This actually works to a degree.  We can use the <code>valueOfAttempt</code> lens
+constructor to build a binary tree.  Here is a little helper to build a tree
+from pairs:</p>
 <pre><code class="lang-js">var fromPairs =
-  R.reduce((t, [k, v]) =&gt; L.set(valueOf(k), v, t), undefined)
+  R.reduce((t, [k, v]) =&gt; L.set(valueOfAttempt(k), v, t), undefined)
 </code></pre>
 <p>Now:</p>
 <pre><code class="lang-js">var sampleBST = fromPairs([[&quot;c&quot;, 1], [&quot;a&quot;, 2], [&quot;b&quot;, 3]])
 sampleBST
 </code></pre>
-<p>However, the above <code>search</code> lens constructor does not maintain the BST structure
-when values are being removed:</p>
-<pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), sampleBST)
+<p>However, the above <code>searchAttempt</code> lens constructor does not maintain the BST
+structure when values are being removed:</p>
+<pre><code class="lang-js">L.remove(valueOfAttempt(&#39;c&#39;), sampleBST)
 </code></pre>
 <p>How do we fix this?  We could check and transform the data structure to a BST
 after changes.  The <a href="#rewrite"><code>L.rewrite</code></a> combinator can be used for that
 purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 <pre><code class="lang-js">var naiveBST = L.rewrite(n =&gt; {
   if (undefined !== n.value) return n
-  var s = n.smaller, g = n.greater
+  const s = n.smaller, g = n.greater
   if (!s) return g
   if (!g) return s
   return L.set(search(s.key), s, g)
 })
 </code></pre>
-<p>Here is the updated <code>search</code> definition:</p>
-<pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt;
-  [naiveBST,
-   L.defaults({key}),
-   L.choose(n =&gt; key &lt; n.key ? [&quot;smaller&quot;, rec] :
-                 n.key &lt; key ? [&quot;greater&quot;, rec] :
-                               L.identity)])
+<p>Here is a working <code>search</code> lens and <code>valueOf</code> lens constructors:</p>
+<pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt; [
+  naiveBST,
+  L.defaults({key}),
+  L.choose(n =&gt; {
+    if (key === n.key)
+      return L.identity
+    return [key &lt; n.key ? &quot;smaller&quot; : &quot;greater&quot;, rec]
+  })])
+
+var valueOf = key =&gt; [search(key), &quot;value&quot;]
 </code></pre>
 <p>Now we can also remove values from a binary tree:</p>
 <pre><code class="lang-js">L.remove(valueOf(&#39;c&#39;), sampleBST)
@@ -680,8 +686,8 @@ that maps the underlying view, which can be <code>undefined</code>, to a lens.  
 words, the <code>L.choose</code> combinator allows a lens to be constructed <em>after</em>
 examining the data structure being manipulated.</p>
 <p>For example, given:</p>
-<pre><code class="lang-js">var majorAxis = L.choose(({x, y} = {}) =&gt;
-  Math.abs(x) &lt; Math.abs(y) ? &quot;y&quot; : &quot;x&quot;)
+<pre><code class="lang-js">var majorAxis =
+  L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &quot;y&quot; : &quot;x&quot;)
 </code></pre>
 <p>we get:</p>
 <pre><code class="lang-js">L.get(majorAxis, {x: 1, y: 2})
@@ -728,7 +734,7 @@ references to other optics and possibly construct a recursive optic.</p>
 <p>For example, here is a traversal that targets all the non-arrays in a data
 structure of nested arrays:</p>
 <pre><code class="lang-js">var flatten = L.lazy(rec =&gt; {
-  var nest = [L.sequence, rec]
+  const nest = [L.sequence, rec]
   return L.choose(x =&gt; R.is(Array, x) ? nest : L.identity)
 })
 </code></pre>

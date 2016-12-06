@@ -18,6 +18,6 @@ window.klipse_settings = {
 
 const klipse = document.createElement("script")
 klipse.type = "text/javascript"
-klipse.src = "http://app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"
+klipse.src = "https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"
 klipse.async = 1
 document.head.appendChild(klipse)
