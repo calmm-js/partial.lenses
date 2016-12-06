@@ -6,7 +6,7 @@
   "scripts": {
     "bench": "NODE_ENV=production node bench/bench.js",
     "dist": "babel src --source-maps inline --out-dir lib",
-    "docs": "./scripts/generate-docs && NODE_ENV=dev browserify docs/start.js -g envify -g uglifyify > docs/bundle.js",
+    "docs": "NODE_ENV=dev browserify docs/start.js -g envify -g uglifyify > docs/bundle.js & ./scripts/generate-docs & wait",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
     "test": "nyc mocha"
