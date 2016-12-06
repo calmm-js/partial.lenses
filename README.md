@@ -1440,7 +1440,7 @@ transform(R.ifElse(isObject,
 
 ### Motivation
 
-Consider the following REPL session using Ramda 0.19.1:
+Consider the following REPL session using Ramda:
 
 ```js
 R.set(R.lensPath(["x", "y"]), 1, {})
