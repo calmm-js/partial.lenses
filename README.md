@@ -427,7 +427,7 @@ const naiveBST = L.rewrite(n => {
 })
 ```
 
-Here is a working `search` lens and `valueOf` lens constructors:
+Here is a working `search` lens and a `valueOf` lens constructor:
 
 ```js
 const search = key => L.lazy(rec => [
@@ -455,6 +455,9 @@ as [AVL](https://en.wikipedia.org/wiki/AVL_tree)
 or [Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).  Another
 worthy exercise would be to make it so that the empty binary tree is `null`
 rather than `undefined`.
+
+See the documentation of [`L.branch`](#branch-op) for a continuation of this
+example.
 
 ## Reference
 

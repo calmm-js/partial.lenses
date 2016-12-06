@@ -368,7 +368,7 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
   return L.set(search(s.key), s, g)
 })
 </code></pre>
-<p>Here is a working <code>search</code> lens and <code>valueOf</code> lens constructors:</p>
+<p>Here is a working <code>search</code> lens and a <code>valueOf</code> lens constructor:</p>
 <pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt; [
   naiveBST,
   L.defaults({key}),
@@ -389,6 +389,8 @@ as <a href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>
 or <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-Black</a>.  Another
 worthy exercise would be to make it so that the empty binary tree is <code>null</code>
 rather than <code>undefined</code>.</p>
+<p>See the documentation of <a href="#branch-op"><code>L.branch</code></a> for a continuation of this
+example.</p>
 <h2 id="reference">Reference</h2>
 <p>The lens combinators are available as named imports.  Typically one just imports
 the library as:</p>
