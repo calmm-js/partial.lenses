@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 
+const title = "Try Partial Lenses with KLIPSE"
+const icon = "https://avatars1.githubusercontent.com/u/17234211"
+const blob = "https://github.com/calmm-js/partial.lenses/blob/master/"
+
 const I = require("infestines")
 const R = require("ramda")
 const fs = require("fs")
@@ -21,6 +25,7 @@ const body = I.seq(fs.readFileSync("README.md"),
                    R.toString,
                    R.replace(/([^ ])\bconst\b/g, "$1var"),
                    R.replace(/\/\/ .*/g, ""),
+                   R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
                    marked)
 
 fs.writeFileSync("docs/index.html",
@@ -28,8 +33,8 @@ fs.writeFileSync("docs/index.html",
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Try Partial Lenses with KLIPSE</title>
-    <link rel="icon" href="https://avatars1.githubusercontent.com/u/17234211">
+    <title>${title}</title>
+    ${icon && `<link rel="icon" href="${icon}">`}
     <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="text/javascript" src="bundle.js" async></script>
