@@ -335,21 +335,21 @@ function setIndex(i, x, xs) {
     ys[i] = x
     return ys
   } else {
-    if (!isArray(xs))
-      return undefined
-    const n = xs.length
-    if (!n)
-      return undefined
-    if (i < 0 || n <= i)
-      return xs
-    if (n === 1)
-      return undefined
-    const ys = Array(n-1)
-    for (let j=0; j<i; ++j)
-      ys[j] = xs[j]
-    for (let j=i+1; j<n; ++j)
-      ys[j-1] = xs[j]
-    return ys
+    if (isArray(xs)) {
+      const n = xs.length
+      if (!n)
+        return undefined
+      if (i < 0 || n <= i)
+        return xs
+      if (n === 1)
+        return undefined
+      const ys = Array(n-1)
+      for (let j=0; j<i; ++j)
+        ys[j] = xs[j]
+      for (let j=i+1; j<n; ++j)
+        ys[j-1] = xs[j]
+      return ys
+    }
   }
 }
 const liftIndex = i => (F, x2yF, xs) =>
@@ -368,8 +368,6 @@ export const augment = template => lensU(
       for (const k in template)
         z[k] = template[k](z)
       return z
-    } else {
-      return undefined
     }
   },
   (y, c) => {
@@ -390,8 +388,6 @@ export const augment = template => lensU(
             set(k, c[k])
       }
       return z
-    } else {
-      return undefined
     }
   })
 
