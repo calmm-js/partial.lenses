@@ -35,6 +35,7 @@ fs.writeFileSync("docs/index.html",
     <meta charset="utf-8">
     <title>${title}</title>
     ${icon && `<link rel="icon" href="${icon}">`}
+    <link rel="stylesheet" type="text/css" href="github.css">
     <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="text/javascript" src="bundle.js" async></script>
