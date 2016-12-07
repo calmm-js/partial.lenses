@@ -871,7 +871,7 @@ composition:
                   L.compose() = L.identity
                  L.compose(l) = l
    L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
-L.modify(L.compose(l, ...ls)) = R.pipe(L.modify(l), ...ls.map(L.modify))
+L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
 ```
 
 Furthermore, an array of lenses `[...lenses]` is treated as a composition of
@@ -882,7 +882,7 @@ can be written as:
                   [] = L.identity
                  [l] = l
    L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
-L.modify([l, ...ls]) = R.pipe(L.modify(l), ...ls.map(L.modify))
+L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
 ```
 
 For example:
