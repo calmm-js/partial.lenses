@@ -38,6 +38,7 @@ elements.
   * [Systematic decomposition](#systematic-decomposition)
   * [Example: An array of ids as boolean flags](#example-an-array-of-ids-as-boolean-flags)
   * [Food for thought: BST as a lens](#food-for-thought-bst-as-a-lens)
+  * [Manipulating multiple items](#manipulating-multiple-items)
 * [Reference](#reference)
   * [Operations on lenses](#operations-on-lenses)
     * [`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
@@ -460,6 +461,71 @@ rather than `undefined`.
 
 See the documentation of [`L.branch`](#branch-op) for a continuation of this
 example.
+
+### Manipulating multiple items
+
+The previous examples used lenses to manipulate individual items.  This library
+also supports [traversals](#traversals) that compose with lenses and can target
+multiple items.  Continuing on the tutorial example, let's define a traversal
+that targets all the texts:
+
+```js
+const texts = ["contents",
+               L.required([]),
+               L.sequence,
+               L.choose(R.pipe(L.remove("text"), L.defaults)),
+               "text"]
+```
+
+What makes the above a traversal is the [`L.sequence`](#sequence) part.  Once a
+traversal is composed with a lens, the whole results is a traversal.  The other
+parts of the above composition should already be familiar from previous
+examples.  Note the use of [`L.choose`](#choose) with [`L.defaults`](#choose).
+We'll get back to that shortly.
+
+Now, we can use the above traversal to [`collect`](#collect) all the texts:
+
+```js
+L.collect(texts, sampleTexts)
+// [ 'Title', 'Rubrik' ]
+```
+
+More generally, we can [map and fold](#foldMapOf) over texts.  For example, we
+can compute the length of the longest text:
+
+```js
+L.foldMapOf({empty: _ => 0, concat: Math.max}, texts, R.length, sampleTexts)
+// 6
+```
+
+Of course, we can also modify texts.  For example, we could uppercase all the
+titles:
+
+```js
+L.modify(texts, R.toUpper, sampleTexts)
+// { contents: [ { language: 'en', text: 'TITLE' },
+//               { language: 'sv', text: 'RUBRIK' } ] }
+```
+
+We can also set and remove texts.  Recall the `L.choose` and `L.defaults`
+combination from the definition of `texts`.  Like with the `textIn` lens, that
+part allows us to remove the whole object instead of just the `text` property:
+
+```js
+L.remove(texts, sampleTexts)
+// { contents: [] }
+```
+
+We can also manipulate texts selectively.  For example, we could truncate all the
+texts that are longer than 5 characters:
+
+```js
+L.modify([texts, L.when(t => t.length > 5)],
+         t => t.slice(0, 5) + "...",
+         sampleTexts)
+// { contents: [ { language: 'en', text: 'Title' },
+//               { language: 'sv', text: 'Rubri...' } ] }
+```
 
 ## Reference
 
