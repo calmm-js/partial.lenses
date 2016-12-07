@@ -1222,8 +1222,9 @@ L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
 Aside from lenses, there is support for traversals.  Traversals and lenses can
 be composed and the result is a traversal.  A traversal operates over a
 collection of focuses and for this reason traversals cannot be viewed
-([`get`](#get) does not work on a traversal), but they can be collected,
-modified, set and removed.
+([`get`](#get) does not work on a traversal), but they can
+be [collected](#collect), [folded](#foldMapOf), [modified](#modify), [set](#set)
+and [removed](#remove).
 
 #### Operations on traversals
 
