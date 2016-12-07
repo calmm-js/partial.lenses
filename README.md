@@ -644,6 +644,24 @@ const timesAsDuration = L.lens(
 )
 ```
 
+Now, for example:
+
+```js
+L.get(timesAsDuration,
+      {start: moment().toISOString(),
+       end: moment().add("hours", 10).toISOString()})
+// "PT10H"
+```
+
+```js
+L.set(timesAsDuration,
+      "PT10H",
+      {start: "2016-12-07T09:39:02.451Z",
+       end: "2016-12-07T09:39:02.451Z"})
+// { end: '2016-12-07T19:39:02.451Z',
+//   start: '2016-12-07T09:39:02.451Z' }
+```
+
 When composed with [`L.pick`](#pick), to flexibly pick the `start` and `end`
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require

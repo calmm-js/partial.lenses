@@ -506,6 +506,16 @@ convert a pair of <code>start</code> and <code>end</code> times to a duration:</
   }
 )
 </code></pre>
+<p>Now, for example:</p>
+<pre><code class="lang-js">L.get(timesAsDuration,
+      {start: moment().toISOString(),
+       end: moment().add(&quot;hours&quot;, 10).toISOString()})
+</code></pre>
+<pre><code class="lang-js">L.set(timesAsDuration,
+      &quot;PT10H&quot;,
+      {start: &quot;2016-12-07T09:39:02.451Z&quot;,
+       end: &quot;2016-12-07T09:39:02.451Z&quot;})
+</code></pre>
 <p>When composed with <a href="#pick"><code>L.pick</code></a>, to flexibly pick the <code>start</code> and <code>end</code>
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require
