@@ -437,10 +437,14 @@ export const sequence = (A, x2yA, xs) =>
   ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
   : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
 
-export function optional(A, x2yA, x) {
+
+export const when = p => (A, x2yA, x) => {
   notGet(A)
-  return isDefined(x) ? x2yA(x) : A.of(undefined)
+  return p(x) ? x2yA(x) : A.of(x)
 }
+
+export const optional = when(isDefined)
+export const skip = when(always(false))
 
 export function branch(template) {
   const keys = []

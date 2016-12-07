@@ -97,6 +97,8 @@ elements.
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
+      * [`L.skip`](#skip "L.skip :: PTraversal a b")
+      * [`L.when`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
 * [Background](#background)
@@ -1053,7 +1055,7 @@ L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
 // [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
 ```
 ```js
-L.modify(flatten, x => 3 <= x && x <= 5 ? undefined : x, [[[1], 2], 3, [4, [[5]], [6]]])
+L.remove([flatten, L.when(x => 3 <= x && x <= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
 // [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
 ```
 
@@ -1304,7 +1306,7 @@ L.modify(values, x => -x, sampleBST)
 //   smaller: { key: 'a', value: -2, greater: { key: 'b', value: -3 } } }
 ```
 ```js
-L.modify(values, x => x <= 2 ? undefined : x, sampleBST)
+L.remove([values, L.when(R.gte(2))], sampleBST)
 // { key: 'b', value: 3 }
 ```
 
@@ -1339,6 +1341,32 @@ For example:
 ```js
 L.modify(["xs", L.sequence, "x"], R.add(1), {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
+```
+
+##### <a name="skip"></a>[`L.skip`](#skip "L.skip :: PTraversal a b")
+
+`L.skip` is a traversal of no elements.
+
+For example:
+
+```js
+L.collect([L.sequence,
+           L.choose(x => (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? "x" :
+                          L.skip))],
+          [1, {x: 2}, [3,4]])
+// [ 2, 3, 4 ]
+```
+
+##### <a name="when"></a>[`L.when`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
+
+`L.when` allows one to selectively skip elements within a traversal.
+
+For example:
+
+```js
+L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
+// [ 0, -1, -2, -3, -4 ]
 ```
 
 ### Debugging
