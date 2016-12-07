@@ -515,7 +515,7 @@ convert a pair of <code>start</code> and <code>end</code> times to a duration:</
 <p>Now, for example:</p>
 <pre><code class="lang-js">L.get(timesAsDuration,
       {start: &quot;2016-12-07T09:39:02.451Z&quot;,
-       end: moment(&quot;2016-12-07T09:39:02.451Z&quot;).add(&quot;hours&quot;, 10).toISOString()})
+       end: moment(&quot;2016-12-07T09:39:02.451Z&quot;).add(10, &quot;hours&quot;).toISOString()})
 </code></pre>
 <pre><code class="lang-js">L.set(timesAsDuration,
       &quot;PT10H&quot;,
