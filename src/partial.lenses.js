@@ -256,10 +256,9 @@ export const chain = curry2((x2yL, xL) =>
 
 export const to = x2y => (F, y2zF, x) => F.map(always(x), y2zF(x2y(x)))
 export const just = x => to(always(x))
+export const nothing = just(undefined)
 
 export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
-
-export const nothing = lensU(snd, snd)
 
 export const orElse =
   curry2((d, l) => choose(x => isDefined(getU(l, x)) ? l : d))
