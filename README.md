@@ -73,7 +73,7 @@ elements.
       * [`L.choice(...lenses)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
       * [`L.choose(maybeValue => lens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
       * [`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
-      * [`L.nothing`](#nothing "L.nothing :: PLens s s")
+      * [`L.nothing`](#nothing "L.nothing :: PLens s a")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
       * [`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
     * [Recursion](#recursion)
@@ -986,7 +986,7 @@ Note that `L.just(x)` is equivalent to [`L.to(_ => x)`](#to).
 `L.just` can be seen as the unit function of the monad formed
 with [`L.chain`](#chain).
 
-##### <a name="nothing"></a>[`L.nothing`](#nothing "L.nothing :: PLens s s")
+##### <a name="nothing"></a>[`L.nothing`](#nothing "L.nothing :: PLens s a")
 
 `L.nothing` is a read-only lens whose view is always `undefined`.  In other
 words, for all `x` and `y`:
