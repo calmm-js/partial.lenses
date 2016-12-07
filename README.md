@@ -99,7 +99,7 @@ elements.
       * [`L.optional`](#optional "L.optional :: PTraversal a a")
       * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
       * [`L.skip`](#skip "L.skip :: PTraversal a b")
-      * [`L.when`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
+      * [`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
 * [Background](#background)
@@ -1424,7 +1424,7 @@ L.collect([L.sequence,
 // [ 2, 3, 4 ]
 ```
 
-##### <a name="when"></a>[`L.when`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
+##### <a name="when"></a>[`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
 
 `L.when` allows one to selectively skip elements within a traversal.
 
