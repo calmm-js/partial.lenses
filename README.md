@@ -88,7 +88,7 @@ of elements.
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
       * [`L.fromArrayBy(idPropName)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
       * [`L.identity`](#identity "L.identity :: PIso s s")
-      * [`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+      * [`L.inverse(isomorphism)`](#inverse "L.inverse :: PIso a b -> PIso b a")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
@@ -1273,7 +1273,7 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 ```
 
-##### <a name="inverse"></a>[`L.inverse`](#inverse "L.inverse :: PIso a b -> PIso b a")
+##### <a name="inverse"></a>[`L.inverse(isomorphism)`](#inverse "L.inverse :: PIso a b -> PIso b a")
 
 `L.inverse(iso)` returns the inverse of the given isomorphism.  Note that this
 operation only works on isomorphisms.
