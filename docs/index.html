@@ -26,8 +26,8 @@ way that operations <a href="#compose"><code>compose</code></a> and one can conv
 operate on deeply nested data structures.</p>
 <p>Aside from partial lenses, this library also
 supports <a href="#isomorphisms">isomorphisms</a> and <a href="#traversals">traversals</a>.
-Isomorphisms have an <a href="#inverse"><code>inverse</code></a> and traversals can target multiple
-elements.</p>
+Isomorphisms have an <a href="#inverse"><code>inverse</code></a> and traversals can target any number
+of elements.</p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
 <p><strong>Protip:</strong> Code link headings have naïve approximate types as tooltips.</p>
@@ -42,6 +42,7 @@ elements.</p>
 <li><a href="#systematic-decomposition">Systematic decomposition</a></li>
 <li><a href="#example-an-array-of-ids-as-boolean-flags">Example: An array of ids as boolean flags</a></li>
 <li><a href="#food-for-thought-bst-as-a-lens">Food for thought: BST as a lens</a></li>
+<li><a href="#manipulating-multiple-items">Manipulating multiple items</a></li>
 </ul>
 </li>
 <li><a href="#reference">Reference</a><ul>
@@ -94,8 +95,8 @@ elements.</p>
 <li><a href="#chain" title="L.chain :: (a -&gt; PLens s b) -&gt; PLens s a -&gt; PLens s b"><code>L.chain(value =&gt; lens, lens)</code></a></li>
 <li><a href="#choice" title="L.choice :: (...PLens s a) -&gt; PLens s a"><code>L.choice(...lenses)</code></a></li>
 <li><a href="#choose" title="L.choose :: (Maybe s -&gt; PLens s a) -&gt; PLens s a"><code>L.choose(maybeValue =&gt; lens)</code></a></li>
-<li><a href="#just" title="L.just :: a -&gt; PLens s a"><code>L.just(value)</code></a></li>
-<li><a href="#nothing" title="L.nothing :: PLens s s"><code>L.nothing</code></a></li>
+<li><a href="#just" title="L.just :: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></li>
+<li><a href="#nothing" title="L.nothing :: PLens s a"><code>L.nothing</code></a></li>
 <li><a href="#orElse" title="L.orElse :: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></li>
 <li><a href="#to" title="L.to :: (a -&gt; b) -&gt; PLens a b"><code>L.to(maybeValue =&gt; maybeValue)</code></a></li>
 </ul>
@@ -137,6 +138,8 @@ elements.</p>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
 <li><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></li>
 <li><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></li>
+<li><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></li>
+<li><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></li>
 </ul>
 </li>
 </ul>
@@ -391,6 +394,44 @@ worthy exercise would be to make it so that the empty binary tree is <code>null<
 rather than <code>undefined</code>.</p>
 <p>See the documentation of <a href="#branch-op"><code>L.branch</code></a> for a continuation of this
 example.</p>
+<h3 id="manipulating-multiple-items">Manipulating multiple items</h3>
+<p>The previous examples used lenses to manipulate individual items.  This library
+also supports <a href="#traversals">traversals</a> that compose with lenses and can target
+multiple items.  Continuing on the tutorial example, let&#39;s define a traversal
+that targets all the texts:</p>
+<pre><code class="lang-js">var texts = [&quot;contents&quot;,
+               L.required([]),
+               L.sequence,
+               L.choose(R.pipe(L.remove(&quot;text&quot;), L.defaults)),
+               &quot;text&quot;]
+</code></pre>
+<p>What makes the above a traversal is the <a href="#sequence"><code>L.sequence</code></a> part.  Once a
+traversal is composed with a lens, the whole results is a traversal.  The other
+parts of the above composition should already be familiar from previous
+examples.  Note the use of <a href="#choose"><code>L.choose</code></a> with <a href="#choose"><code>L.defaults</code></a>.
+We&#39;ll get back to that shortly.</p>
+<p>Now, we can use the above traversal to <a href="#collect"><code>collect</code></a> all the texts:</p>
+<pre><code class="lang-js">L.collect(texts, sampleTexts)
+</code></pre>
+<p>More generally, we can <a href="#foldMapOf">map and fold</a> over texts.  For example, we
+can compute the length of the longest text:</p>
+<pre><code class="lang-js">L.foldMapOf({empty: _ =&gt; 0, concat: Math.max}, texts, R.length, sampleTexts)
+</code></pre>
+<p>Of course, we can also modify texts.  For example, we could uppercase all the
+titles:</p>
+<pre><code class="lang-js">L.modify(texts, R.toUpper, sampleTexts)
+</code></pre>
+<p>We can also set and remove texts.  Recall the <code>L.choose</code> and <code>L.defaults</code>
+combination from the definition of <code>texts</code>.  Like with the <code>textIn</code> lens, that
+part allows us to remove the whole object instead of just the <code>text</code> property:</p>
+<pre><code class="lang-js">L.remove(texts, sampleTexts)
+</code></pre>
+<p>We can also manipulate texts selectively.  For example, we could truncate all the
+texts that are longer than 5 characters:</p>
+<pre><code class="lang-js">L.modify([texts, L.when(t =&gt; t.length &gt; 5)],
+         t =&gt; t.slice(0, 5) + &quot;...&quot;,
+         sampleTexts)
+</code></pre>
 <h2 id="reference">Reference</h2>
 <p>The lens combinators are available as named imports.  Typically one just imports
 the library as:</p>
@@ -639,7 +680,7 @@ composition:</p>
 <pre><code class="lang-jsx">                  L.compose() = L.identity
                  L.compose(l) = l
    L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
-L.modify(L.compose(l, ...ls)) = R.pipe(L.modify(l), ...ls.map(L.modify))
+L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
 </code></pre>
 <p>Furthermore, an array of lenses <code>[...lenses]</code> is treated as a composition of
 lenses <code>L.compose(...lenses)</code>.  Using the array notation, the above equations
@@ -647,7 +688,7 @@ can be written as:</p>
 <pre><code class="lang-jsx">                  [] = L.identity
                  [l] = l
    L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
-L.modify([l, ...ls]) = R.pipe(L.modify(l), ...ls.map(L.modify))
+L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
 </code></pre>
 <p>For example:</p>
 <pre><code class="lang-js">L.get([&quot;a&quot;, 1], {a: [&quot;b&quot;, &quot;c&quot;]})
@@ -698,7 +739,7 @@ examining the data structure being manipulated.</p>
 </code></pre>
 <pre><code class="lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
 </code></pre>
-<h5 id="-a-name-just-a-l-just-value-just-l-just-a-plens-s-a-"><a name="just"></a><a href="#just" title="L.just :: a -&gt; PLens s a"><code>L.just(value)</code></a></h5>
+<h5 id="-a-name-just-a-l-just-maybevalue-just-l-just-maybe-a-plens-s-a-"><a name="just"></a><a href="#just" title="L.just :: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></h5>
 <p><code>L.just</code> returns a read-only lens whose view is always the given value.  In
 other words, for all <code>x</code>, <code>y</code> and <code>z</code>:</p>
 <pre><code class="lang-jsx">   L.get(L.just(z), x) = z
@@ -707,7 +748,7 @@ L.set(L.just(z), y, x) = x
 <p>Note that <code>L.just(x)</code> is equivalent to <a href="#to"><code>L.to(_ =&gt; x)</code></a>.</p>
 <p><code>L.just</code> can be seen as the unit function of the monad formed
 with <a href="#chain"><code>L.chain</code></a>.</p>
-<h5 id="-a-name-nothing-a-l-nothing-nothing-l-nothing-plens-s-s-"><a name="nothing"></a><a href="#nothing" title="L.nothing :: PLens s s"><code>L.nothing</code></a></h5>
+<h5 id="-a-name-nothing-a-l-nothing-nothing-l-nothing-plens-s-a-"><a name="nothing"></a><a href="#nothing" title="L.nothing :: PLens s a"><code>L.nothing</code></a></h5>
 <p><code>L.nothing</code> is a read-only lens whose view is always <code>undefined</code>.  In other
 words, for all <code>x</code> and <code>y</code>:</p>
 <pre><code class="lang-jsx">   L.get(L.nothing, x) = undefined
@@ -746,7 +787,7 @@ structure of nested arrays:</p>
 </code></pre>
 <pre><code class="lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], 3, [4, [[5]], [6]]])
 </code></pre>
-<pre><code class="lang-js">L.modify(flatten, x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 5 ? undefined : x, [[[1], 2], 3, [4, [[5]], [6]]])
+<pre><code class="lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
 </code></pre>
 <h4 id="transforming-data">Transforming data</h4>
 <h5 id="-a-name-pick-a-l-pick-prop-lens-props-pick-l-pick-p1-plens-s-a1-pls-plens-s-p1-a1-pls-"><a name="pick"></a><a href="#pick" title="L.pick :: {p1 :: PLens s a1, ...pls} -&gt; PLens s {p1 :: a1, ...pls}"><code>L.pick({prop: lens, ...props})</code></a></h5>
@@ -846,14 +887,16 @@ operation only works on isomorphisms.</p>
 <p>Aside from lenses, there is support for traversals.  Traversals and lenses can
 be composed and the result is a traversal.  A traversal operates over a
 collection of focuses and for this reason traversals cannot be viewed
-(<a href="#get"><code>get</code></a> does not work on a traversal), but they can be collected,
-modified, set and removed.</p>
+(<a href="#get"><code>get</code></a> does not work on a traversal), but they can
+be <a href="#collect">collected</a>, <a href="#foldMapOf">folded</a>, <a href="#modify">modified</a>, <a href="#set">set</a>
+and <a href="#remove">removed</a>.</p>
 <h4 id="operations-on-traversals">Operations on traversals</h4>
 <h5 id="-a-name-collect-a-l-collect-traversal-maybedata-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="collect"></a><a href="#collect" title="L.collect :: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
 <p><code>L.collect</code> returns an array of the elements focused on by the given traversal
 or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Given a traversal, there can be any number of elements in
-the returned array.</p>
+the returned array.  Note that a partial <em>lens</em> always targets an element, but
+<code>L.collect</code> implicitly skips elements that are <code>undefined</code>.  Given a traversal,
+there can be any number of elements in the array returned by <code>L.collect</code>.</p>
 <p>For example:</p>
 <pre><code class="lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
@@ -895,7 +938,7 @@ here is a traversal that visits all the values of a binary tree in order:</p>
 </code></pre>
 <pre><code class="lang-js">L.modify(values, x =&gt; -x, sampleBST)
 </code></pre>
-<pre><code class="lang-js">L.modify(values, x =&gt; x &lt;= 2 ? undefined : x, sampleBST)
+<pre><code class="lang-js">L.remove([values, L.when(R.gte(2))], sampleBST)
 </code></pre>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
 <h5 id="-a-name-optional-a-l-optional-optional-l-optional-ptraversal-a-a-"><a name="optional"></a><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></h5>
@@ -912,6 +955,20 @@ over the focused element.</p>
 <p><code>L.sequence</code> is a traversal over an array.</p>
 <p>For example:</p>
 <pre><code class="lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.add(1), {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<h5 id="-a-name-skip-a-l-skip-skip-l-skip-ptraversal-a-b-"><a name="skip"></a><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></h5>
+<p><code>L.skip</code> is a traversal of no elements.</p>
+<p>For example:</p>
+<pre><code class="lang-js">L.collect([L.sequence,
+           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? &quot;x&quot; :
+                          L.skip))],
+          [1, {x: 2}, [3,4]])
+</code></pre>
+<h5 id="-a-name-when-a-l-when-maybevalue-testable-when-l-when-maybe-a-boolean-ptraversal-a-a-"><a name="when"></a><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
+<p><code>L.when</code> allows one to selectively skip elements within a traversal.</p>
+<p>For example:</p>
+<pre><code class="lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0,-1,2,-3,4])
 </code></pre>
 <h3 id="debugging">Debugging</h3>
 <h4 id="-a-name-log-a-l-log-labels-log-l-log-any-lens-s-s-"><a name="log"></a><a href="#log" title="L.log :: (...Any) -&gt; Lens s s"><code>L.log(...labels)</code></a></h4>
