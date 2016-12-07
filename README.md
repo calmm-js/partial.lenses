@@ -494,7 +494,7 @@ More generally, we can [map and fold](#foldMapOf) over texts.  For example, we
 can compute the length of the longest text:
 
 ```js
-L.foldMapOf({empty: _ => 0, concat: Math.max}, texts, R.length, sampleTexts)
+L.foldMapOf({empty: () => 0, concat: Math.max}, texts, R.length, sampleTexts)
 // 6
 ```
 
@@ -1337,7 +1337,7 @@ the values returned by `aM2r`.
 For example:
 
 ```js
-L.foldMapOf({empty: () => 0, concat: (x, y) => x + y}, L.sequence, x => x, [1,2,3])
+L.foldMapOf({empty: () => 0, concat: R.add}, L.sequence, x => x, [1,2,3])
 // 6
 ```
 

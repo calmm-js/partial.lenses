@@ -415,7 +415,7 @@ We&#39;ll get back to that shortly.</p>
 </code></pre>
 <p>More generally, we can <a href="#foldMapOf">map and fold</a> over texts.  For example, we
 can compute the length of the longest text:</p>
-<pre><code class="lang-js">L.foldMapOf({empty: _ =&gt; 0, concat: Math.max}, texts, R.length, sampleTexts)
+<pre><code class="lang-js">L.foldMapOf({empty: () =&gt; 0, concat: Math.max}, texts, R.length, sampleTexts)
 </code></pre>
 <p>Of course, we can also modify texts.  For example, we could uppercase all the
 titles:</p>
@@ -918,7 +918,7 @@ a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values returned by <code>aM2r</code>.</p>
 <p>For example:</p>
-<pre><code class="lang-js">L.foldMapOf({empty: () =&gt; 0, concat: (x, y) =&gt; x + y}, L.sequence, x =&gt; x, [1,2,3])
+<pre><code class="lang-js">L.foldMapOf({empty: () =&gt; 0, concat: R.add}, L.sequence, x =&gt; x, [1,2,3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5 id="-a-name-branch-op-a-l-branch-prop-traversal-props-branch-op-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="branch-op"></a><a href="#branch-op" title="L.branch :: {p1 :: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
