@@ -19,8 +19,8 @@ operate on deeply nested data structures.
 
 Aside from partial lenses, this library also
 supports [isomorphisms](#isomorphisms) and [traversals](#traversals).
-Isomorphisms have an [`inverse`](#inverse) and traversals can target multiple
-elements.
+Isomorphisms have an [`inverse`](#inverse) and traversals can target any number
+of elements.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -1300,8 +1300,9 @@ and [removed](#remove).
 
 `L.collect` returns an array of the elements focused on by the given traversal
 or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Given a traversal, there can be any number of elements in
-the returned array.
+the returned array.  Note that a partial *lens* always targets an element, but
+`L.collect` implicitly skips elements that are `undefined`.  Given a traversal,
+there can be any number of elements in the array returned by `L.collect`.
 
 For example:
 
