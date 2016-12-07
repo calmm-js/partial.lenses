@@ -8,6 +8,7 @@ import {
   dissocPartialU,
   id,
   isArray,
+  isDefined,
   isObject,
   mapPartialU,
   unzipObjIntoU,
@@ -40,9 +41,9 @@ const ConstOf = Monoid => ({
 })
 
 const PartialList = {
-  of: x => x !== undefined ? [x, null] : null,
+  of: x => isDefined(x) ? [x, null] : null,
   empty: always(null),
-  cons: (h, t) => h !== undefined ? [h, t] : t,
+  cons: (h, t) => isDefined(h) ? [h, t] : t,
   revConcat(xs, ys) {
     while (xs) {
       ys = [xs[0], ys]
@@ -114,7 +115,7 @@ const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 //
 
-const toPartial = x2y => x => x !== undefined ? x2y(x) : x
+const toPartial = x2y => x => isDefined(x) ? x2y(x) : x
 
 //
 
@@ -251,7 +252,7 @@ export const inverse = iso => (F, inner, x) =>
   F.map(x => getU(iso, x), inner(getInverseU(iso, x)))
 
 export const chain = curry2((x2yL, xL) =>
-  [xL, choose(xO => xO !== undefined ? x2yL(xO) : nothing)])
+  [xL, choose(xO => isDefined(xO) ? x2yL(xO) : nothing)])
 
 export const to = x2y => (F, y2zF, x) => F.map(always(x), y2zF(x2y(x)))
 export const just = x => to(always(x))
@@ -261,10 +262,10 @@ export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 export const nothing = lensU(snd, snd)
 
 export const orElse =
-  curry2((d, l) => choose(x => getU(l, x) !== undefined ? l : d))
+  curry2((d, l) => choose(x => isDefined(getU(l, x)) ? l : d))
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => getU(l, x) !== undefined)
+  const i = ls.findIndex(l => isDefined(getU(l, x)))
   return 0 <= i ? ls[i] : nothing
 })
 
@@ -275,12 +276,12 @@ export const replace = curry2((inn, out) => (F, x2yF, x) =>
   F.map(replacer(out, inn), x2yF(replacer(inn, out)(x))))
 
 export const defaults = out => (F, x2yF, x) =>
-  F.map(replacer(out, undefined), x2yF(x !== undefined ? x : out))
+  F.map(replacer(out, undefined), x2yF(isDefined(x) ? x : out))
 export const required = inn => replace(inn, undefined)
-export const define = v => normalizer(x => x !== undefined ? x : v)
+export const define = v => normalizer(x => isDefined(x) ? x : v)
 
 export const valueOr = v => (_F, x2yF, x) =>
-  x2yF(x !== undefined && x !== null ? x : v)
+  x2yF(isDefined(x) && x !== null ? x : v)
 
 export const normalize = x2x => normalizer(toPartial(x2x))
 
@@ -293,7 +294,7 @@ export const prop = x =>
 
 const getProp = (k, o) => isObject(o) ? o[k] : undefined
 const setProp = (k, v, o) =>
-  v !== undefined ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+  isDefined(v) ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
 const liftProp = k => (F, x2yF, x) =>
   F.map(v => setProp(k, v, x), x2yF(getProp(k, x)))
@@ -309,7 +310,7 @@ export const find = predicate => choose(xs => {
 
 export function findWith(...ls) {
   const lls = compose(...ls)
-  return [find(x => getU(lls, x) !== undefined), lls]
+  return [find(x => isDefined(getU(lls, x))), lls]
 }
 
 const isIndex = x => Number.isInteger(x) && 0 <= x
@@ -321,7 +322,7 @@ const nulls = n => Array(n).fill(null)
 
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
 function setIndex(i, x, xs) {
-  if (x !== undefined) {
+  if (isDefined(x)) {
     if (!isArray(xs))
       return i < 0 ? undefined : nulls(i).concat([x])
     const n = xs.length
@@ -356,7 +357,7 @@ const liftIndex = i => (F, x2yF, xs) =>
   F.map(y => setIndex(i, y, xs), x2yF(getIndex(i, xs)))
 
 export const append = lensU(snd, (x, xs) =>
-  x !== undefined ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
+  isDefined(x) ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
 
 export const filter = p => lensU(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
   emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
@@ -395,7 +396,7 @@ function getPick(template, x) {
   let r
   for (const k in template) {
     const v = getU(template[k], x)
-    if (v !== undefined) {
+    if (isDefined(v)) {
       if (!r)
         r = {}
       r[k] = v
