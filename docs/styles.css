@@ -714,3 +714,7 @@
 .CodeMirror:last-of-type {
   background: #f7f7f7;
 }
+
+.CodeMirror:last-of-type .cm-string {
+  color: #611;
+}
