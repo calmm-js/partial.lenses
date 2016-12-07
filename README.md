@@ -648,8 +648,8 @@ Now, for example:
 
 ```js
 L.get(timesAsDuration,
-      {start: moment().toISOString(),
-       end: moment().add("hours", 10).toISOString()})
+      {start: "2016-12-07T09:39:02.451Z",
+       end: moment("2016-12-07T09:39:02.451Z").add("hours", 10).toISOString()})
 // "PT10H"
 ```
 
