@@ -3,7 +3,16 @@
 }
 
 .CodeMirror:first-of-type {
-  border-bottom: 1px #ddd solid;
+  border: 1px #f7f7f7 solid;
+  border-radius: 3px;
+}
+
+.CodeMirror:first-of-type:hover {
+  border: 1px #ddd solid;
+}
+
+.CodeMirror:last-of-type {
+  background: #f7f7f7;
 }
 
 @font-face {
@@ -329,7 +338,8 @@
 .markdown-body pre {
   margin-top: 0;
   margin-bottom: 0;
-  font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font: 13.6px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  line-height: 19.72px;
 }
 
 .markdown-body .octicon {
