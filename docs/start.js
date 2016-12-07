@@ -6,7 +6,6 @@ window.moment = require("moment")
 window.klipse_settings = {
   codemirror_options_in: {
     lineWrapping: true,
-    lineNumbers: true,
     autoCloseBrackets: true,
     cursorBlinkRate: 0
   },
