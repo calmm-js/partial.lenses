@@ -72,7 +72,7 @@ elements.
       * [`L.chain(value => lens, lens)`](#chain "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
       * [`L.choice(...lenses)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
       * [`L.choose(maybeValue => lens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
-      * [`L.just(value)`](#just "L.just :: a -> PLens s a")
+      * [`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
       * [`L.nothing`](#nothing "L.nothing :: PLens s s")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
       * [`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
@@ -971,7 +971,7 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 
 ```
 
-##### <a name="just"></a>[`L.just(value)`](#just "L.just :: a -> PLens s a")
+##### <a name="just"></a>[`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
 
 `L.just` returns a read-only lens whose view is always the given value.  In
 other words, for all `x`, `y` and `z`:
