@@ -1,5 +1,6 @@
 import {
   acyclicEqualsU,
+  always,
   assocPartialU,
   curry2,
   curry3,
@@ -17,7 +18,6 @@ import {
 //
 
 const apply = (x2y, x) => x2y(x)
-const always = x => _ => x
 const snd = (_, c) => c
 
 //
