@@ -878,7 +878,7 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 </code></pre>
 <h5 id="-a-name-inverse-a-l-inverse-isomorphism-inverse-l-inverse-piso-a-b-piso-b-a-"><a name="inverse"></a><a href="#inverse" title="L.inverse :: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism)</code></a></h5>
-<p><code>L.inverse(iso)</code> returns the inverse of the given isomorphism.  Note that this
+<p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
 operation only works on isomorphisms.</p>
 <p>For example:</p>
 <pre><code class="lang-js">L.get(L.inverse(L.fromArrayBy(&#39;id&#39;)), {a: {id: &quot;a&quot;, x: 1}, b: {id: &quot;b&quot;, x: 2}})

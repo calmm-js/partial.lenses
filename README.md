@@ -1275,7 +1275,7 @@ L.modify(L.identity, f, x) = f(x)
 
 ##### <a name="inverse"></a>[`L.inverse(isomorphism)`](#inverse "L.inverse :: PIso a b -> PIso b a")
 
-`L.inverse(iso)` returns the inverse of the given isomorphism.  Note that this
+`L.inverse` returns the inverse of the given isomorphism.  Note that this
 operation only works on isomorphisms.
 
 For example:
