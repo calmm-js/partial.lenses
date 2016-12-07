@@ -9,12 +9,16 @@ const naiveBST = L.rewrite(n => {
   return L.set(search(s.key), s, g)
 })
 
-const search = key => L.lazy(rec =>
-  [naiveBST,
-   L.defaults({key}),
-   L.choose(n => key < n.key ? ["smaller", rec] :
-                 n.key < key ? ["greater", rec] :
-                               L.identity)])
+const search = key => L.lazy(rec => {
+  const smaller = ["smaller", rec]
+  const greater = ["greater", rec]
+  const insert = L.defaults({key})
+  return [naiveBST, L.choose(n => {
+    if (!n || key === n.key)
+      return insert
+    return key < n.key ? smaller : greater
+  })]
+})
 
 export const valueOf = key => [search(key), "value"]
 

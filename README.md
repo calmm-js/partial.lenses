@@ -374,13 +374,16 @@ correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:
 
 ```js
-const searchAttempt = key => L.lazy(rec => [
-  L.defaults({key}),
-  L.choose(n => {
-    if (key === n.key)
-      return L.identity
-    return [key < n.key ? "smaller" : "greater", rec]
-  })])
+const searchAttempt = key => L.lazy(rec => {
+  const smaller = ["smaller", rec]
+  const greater = ["greater", rec]
+  const insert = L.defaults({key})
+  return L.choose(n => {
+    if (!n || key === n.key)
+      return insert
+    return key < n.key ? smaller : greater
+  })
+})
 
 const valueOfAttempt = key => [searchAttempt(key), "value"]
 ```
@@ -433,14 +436,16 @@ const naiveBST = L.rewrite(n => {
 Here is a working `search` lens and a `valueOf` lens constructor:
 
 ```js
-const search = key => L.lazy(rec => [
-  naiveBST,
-  L.defaults({key}),
-  L.choose(n => {
-    if (key === n.key)
-      return L.identity
-    return [key < n.key ? "smaller" : "greater", rec]
-  })])
+const search = key => L.lazy(rec => {
+  const smaller = ["smaller", rec]
+  const greater = ["greater", rec]
+  const insert = L.defaults({key})
+  return [naiveBST, L.choose(n => {
+    if (!n || key === n.key)
+      return insert
+    return key < n.key ? smaller : greater
+  })]
+})
 
 const valueOf = key => [search(key), "value"]
 ```

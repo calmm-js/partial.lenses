@@ -334,13 +334,16 @@ construction of lenses based on examining the data structure being manipulated.
 Inside <a href="#choose"><code>L.choose</code></a> we can write the ordinary BST logic to pick the
 correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:</p>
-<pre><code class="lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; [
-  L.defaults({key}),
-  L.choose(n =&gt; {
-    if (key === n.key)
-      return L.identity
-    return [key &lt; n.key ? &quot;smaller&quot; : &quot;greater&quot;, rec]
-  })])
+<pre><code class="lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; {
+  const smaller = [&quot;smaller&quot;, rec]
+  const greater = [&quot;greater&quot;, rec]
+  const insert = L.defaults({key})
+  return L.choose(n =&gt; {
+    if (!n || key === n.key)
+      return insert
+    return key &lt; n.key ? smaller : greater
+  })
+})
 
 var valueOfAttempt = key =&gt; [searchAttempt(key), &quot;value&quot;]
 </code></pre>
@@ -372,14 +375,16 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 })
 </code></pre>
 <p>Here is a working <code>search</code> lens and a <code>valueOf</code> lens constructor:</p>
-<pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt; [
-  naiveBST,
-  L.defaults({key}),
-  L.choose(n =&gt; {
-    if (key === n.key)
-      return L.identity
-    return [key &lt; n.key ? &quot;smaller&quot; : &quot;greater&quot;, rec]
-  })])
+<pre><code class="lang-js">var search = key =&gt; L.lazy(rec =&gt; {
+  const smaller = [&quot;smaller&quot;, rec]
+  const greater = [&quot;greater&quot;, rec]
+  const insert = L.defaults({key})
+  return [naiveBST, L.choose(n =&gt; {
+    if (!n || key === n.key)
+      return insert
+    return key &lt; n.key ? smaller : greater
+  })]
+})
 
 var valueOf = key =&gt; [search(key), &quot;value&quot;]
 </code></pre>
