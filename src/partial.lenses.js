@@ -120,6 +120,8 @@ const toPartial = x2y => x => isDefined(x) ? x2y(x) : x
 //
 
 const isntConst = x => x !== Const
+const notGet = A =>
+  assert(A, isntConst, "Traversals cannot be `get`. Consider `collect`.")
 
 //
 
@@ -430,16 +432,14 @@ export function lazy(toLens) {
   return rec
 }
 
-export function sequence(A, x2yA, xs) {
-  assert(A, isntConst, "`sequence` cannot be `get`, consider `collect`.")
-  return A === Ident
-    ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-    : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
-}
+export const sequence = (A, x2yA, xs) =>
+  notGet(A) === Ident
+  ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
+  : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
 
 export function optional(A, x2yA, x) {
-  assert(A, isntConst, "`optional` cannot be `get`, consider `collect`.")
-  return x !== undefined ? x2yA(x) : A.of(undefined)
+  notGet(A)
+  return isDefined(x) ? x2yA(x) : A.of(undefined)
 }
 
 export function branch(template) {
@@ -448,7 +448,7 @@ export function branch(template) {
   unzipObjIntoU(template, keys, vals)
   const n = keys.length
   return (A, x2yA, x) => {
-    assert(A, isntConst, "`branch` cannot be `get`, consider `collect`.")
+    notGet(A)
     const wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
     let r = A.of(wait(x, n-1))
     for (let i=n-1; 0<=i; --i)
