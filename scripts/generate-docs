@@ -40,8 +40,12 @@ fs.writeFileSync("docs/index.html",
     <script type="text/javascript" src="bundle.js" async></script>
   </head>
   <body class="markdown-body">
-    ${body}
+    <p>
+      All the code snippets on this page are <b>live</b> and <b>interactive</b>
+      powered by the <a href="https://github.com/viebel/klipse">klipse
+      plugin</a>.
+    <p>
     <hr>
-    <p>Interactive snippets via <a href="https://github.com/viebel/klipse">KLIPSE</a>.</p>
+    ${body}
   </body>
 </html>`)
