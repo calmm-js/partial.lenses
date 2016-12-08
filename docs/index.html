@@ -19,23 +19,15 @@
     <hr>
     <p>[ <a href="#contents">Contents</a> | <a href="#tutorial">Tutorial</a> | <a href="#reference">Reference</a> | <a href="#background">Background</a> | <a href="https://github.com/calmm-js/partial.lenses">GitHub</a> | <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a> ]</p>
 <h1 id="partial-lenses">Partial Lenses</h1>
-<p>Lenses are primarily a convenient abstraction for performing updates on
-individual elements of immutable data structures.  This library provides a
-collection of <em>partial</em> lenses for manipulating JSON.  A partial lens can <em>view</em>
-optional data, <em>insert</em> new data, <em>update</em> existing data and <em>remove</em> existing
-data and can, for example, provide <em>defaults</em> and maintain <em>required</em> data
-structure parts.</p>
-<p>In JavaScript, missing data can be mapped to <code>undefined</code>, which is what partial
-lenses also do, because <code>undefined</code> is not a valid JSON value.  When a part of a
-data structure is missing, an attempt to view it returns <code>undefined</code>.  When a
-part is missing, setting it to a defined value inserts the new part.  Setting an
-existing part to <code>undefined</code> removes it.  Partial lenses are defined in such a
-way that operations <a href="#compose"><code>compose</code></a> and one can conveniently and robustly
-operate on deeply nested data structures.</p>
-<p>Aside from partial lenses, this library also
-supports <a href="#isomorphisms">isomorphisms</a> and <a href="#traversals">traversals</a>.
-Isomorphisms have an <a href="#inverse"><code>inverse</code></a> and traversals can target any number
-of elements.</p>
+<p>Lenses are basically a <a href="#get">bidirectional</a> <a href="#compose">composable</a> abstraction
+for <a href="#modify">updating</a> <a href="#choose">selected</a> elements of immutable data
+structures that admits <a href="#performance">efficient</a> implementation.  This library
+provides a collection of <em>partial</em> lenses, <a href="#isomorphisms">isomorphisms</a>
+and <a href="#traversals">traversals</a> for manipulating <a href="http://json.org/">JSON</a>.  A
+partial lens can <em>view</em> optional data, <em>insert</em> new data, <em>update</em> existing data
+and <em>remove</em> existing data and can, for example, provide <em>defaults</em> and maintain
+<em>required</em> data structure
+parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
 <p><strong>Protip:</strong> Code link headings have naïve approximate types as tooltips.</p>
@@ -159,10 +151,10 @@ of elements.</p>
 </ul>
 </li>
 <li><a href="#background">Background</a><ul>
-<li><a href="#should-i-use-lenses-for">Should I use lenses for...?</a></li>
 <li><a href="#motivation">Motivation</a></li>
 <li><a href="#types">Types</a></li>
 <li><a href="#performance">Performance</a></li>
+<li><a href="#should-i-use-lenses-for">Should I use lenses for...?</a></li>
 <li><a href="#related-work">Related work</a></li>
 </ul>
 </li>
@@ -464,23 +456,32 @@ array notation <a href="#compose"><code>[...]</code></a> to denote composition.<
 </code></pre>
 <p>Note that <code>L.get</code> does not work on traversals.</p>
 <h4 id="-a-name-modify-a-l-modify-lens-maybevalue-maybevalue-maybedata-modify-l-modify-plens-s-a-maybe-a-maybe-a-maybe-s-maybe-s-"><a name="modify"></a><a href="#modify" title="L.modify :: PLens s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(lens, maybeValue =&gt; maybeValue, maybeData)</code></a></h4>
-<p><code>L.modify</code> allows one to map over the focused element of a data structure.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify(&quot;elems&quot;, R.map(L.remove(&quot;x&quot;)), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+<p><code>L.modify</code> allows one to map over the focused element</p>
+<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
+<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
+<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.sequence, &quot;x&quot;], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+</code></pre>
+<p>of a data structure.</p>
 <h4 id="-a-name-remove-a-l-remove-lens-maybedata-remove-l-remove-plens-s-a-maybe-s-maybe-s-"><a name="remove"></a><a href="#remove" title="L.remove :: PLens s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(lens, maybeData)</code></a></h4>
-<p><code>L.remove</code> allows one to remove the focused element from a data structure.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.remove([&quot;a&quot;, &quot;b&quot;], {a: {b: 1}, x: {y: 2}})
+<p><code>L.remove</code> allows one to remove the focused element</p>
+<pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
+<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
+<pre><code class="hljs lang-js">L.remove([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2}, {x: 3}])
+</code></pre>
+<p>from a data structure.</p>
 <p>Note that <code>L.remove(lens, maybeData)</code> is equivalent
 to <a href="#set"><code>L.set(lens, undefined, maybeData)</code></a>.  With partial lenses, setting to
 <code>undefined</code> typically has the effect of removing the focused element.</p>
 <h4 id="-a-name-set-a-l-set-lens-maybevalue-maybedata-set-l-set-plens-s-a-maybe-a-maybe-s-maybe-s-"><a name="set"></a><a href="#set" title="L.set :: PLens s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(lens, maybeValue, maybeData)</code></a></h4>
-<p><code>L.set</code> allows one to replace the focused element of a data structure.</p>
-<p>For example:</p>
+<p><code>L.set</code> allows one to replace the focused element</p>
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
+<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], 1, [{x: 1}, {x: 2}, {x: 3}])
+</code></pre>
+<p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
 <h3 id="creating-new-lenses">Creating new lenses</h3>
@@ -1008,60 +1009,6 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <h2 id="background">Background</h2>
-<h3 id="should-i-use-lenses-for-">Should I use lenses for...?</h3>
-<p>As said in the first sentence of this document, lenses are convenient for
-performing updates on &quot;individual elements&quot;.  Having abilities such
-as <a href="#find">searching</a>, <a href="#filter">filtering</a> and <a href="#pick">restructuring</a> data
-using lenses makes the notion of an individual element quite flexible and, even
-further, <a href="#traversals">traversals</a> make it possible to target zero or more than
-one element in a single operation.  It can be tempting to try to do everything
-with lenses, but that will likely only lead to misery.  It is important to
-understand that lenses are just one of many functional abstractions for working
-with data structures and sometimes other approaches can lead to simpler or
-easier solutions.  <a href="https://github.com/polytypic/fastener">Zippers</a>, for
-example, are, in some ways, less principled and can implement queries and
-transforms that are outside the scope of lenses and traversals.</p>
-<p>One type of use case which we&#39;ve ran into multiple times and falls out of the
-sweet spot of lenses is performing uniform transforms over data structures.  For
-example, we&#39;ve run into the following use cases:</p>
-<ul>
-<li>Eliminate all references to an object with a particular id.</li>
-<li>Transform all instances of certain objects over many paths.</li>
-<li>Filter out extra fields from objects of varying shapes and paths.</li>
-</ul>
-<p>One approach to making such whole data structure spanning updates is to use a
-simple bottom-up transform.  Here is a simple implementation for JSON based on
-ideas from the <a href="https://github.com/ndmitchell/uniplate">Uniplate</a> library:</p>
-<pre><code class="hljs lang-js">var isObject = x =&gt; x &amp;&amp; x.constructor === Object
-var isArray = x =&gt; x &amp;&amp; x.constructor === Array
-var isAggregate = R.anyPass([isObject, isArray])
-
-var descend = (w2w, w) =&gt; isAggregate(w) ? R.map(w2w, w) : w
-var substUp = (h2h, w) =&gt; descend(h2h, descend(w =&gt; substUp(h2h, w), w))
-
-var transform = (w2w, w) =&gt; w2w(substUp(w2w, w))
-</code></pre>
-<p><code>transform(w2w, w)</code> basically just performs a single-pass bottom-up transform
-using the given function <code>w2w</code> over the given data structure <code>w</code>.  Suppose we
-are given the following data:</p>
-<pre><code class="hljs lang-js">var sampleBloated = {
-  just: &quot;some&quot;,
-  extra: &quot;crap&quot;,
-  that: [
-    &quot;we&quot;,
-    {want: &quot;to&quot;,
-     filter: [&quot;out&quot;],
-     including: {the: &quot;following&quot;,
-                 extra: true,
-                 fields: 1}}]
-}
-</code></pre>
-<p>We can now remove the <code>extra</code> <code>fields</code> like this:</p>
-<pre><code class="hljs lang-js">transform(R.ifElse(isObject,
-                   L.remove(L.props(&quot;extra&quot;, &quot;fields&quot;)),
-                   R.identity),
-          sampleBloated)
-</code></pre>
 <h3 id="motivation">Motivation</h3>
 <p>Consider the following REPL session using Ramda:</p>
 <pre><code class="hljs lang-js">R.set(R.lensPath([&quot;x&quot;, &quot;y&quot;]), 1, {})
@@ -1079,6 +1026,11 @@ are given the following data:</p>
 <p>One might assume that <a href="http://ramdajs.com/docs/#lensPath"><code>R.lensPath([p0,
 ...ps])</code></a> is equivalent to
 <code>R.compose(R.lensProp(p0), ...ps.map(R.lensProp))</code>, but that is not the case.</p>
+<p>In JavaScript, missing data can be mapped to <code>undefined</code>, which is what partial
+lenses also do, because <code>undefined</code> is not a valid <a href="http://json.org/">JSON</a>
+value.  When a part of a data structure is missing, an attempt to view it
+returns <code>undefined</code>.  When a part is missing, setting it to a defined value
+inserts the new part.  Setting an existing part to <code>undefined</code> removes it.</p>
 <p>With partial lenses you can robustly compose a path lens from prop lenses
 <code>L.compose(L.prop(p0), ...ps.map(L.prop))</code> or just use the shorthand notation
 <code>[p0, ...ps]</code>.</p>
@@ -1165,6 +1117,60 @@ optimized for common cases</em>, but there is definitely a lot of room for
 improvement.  The goal is to make partial lenses fast enough that performance
 isn&#39;t the reason why you might not want to use them.</p>
 <p>See <a href="https://github.com/calmm-js/partial.lenses/blob/master/bench/bench.js">bench.js</a> for details.</p>
+<h3 id="should-i-use-lenses-for-">Should I use lenses for...?</h3>
+<p>As said in the first sentence of this document, lenses are convenient for
+performing updates on &quot;individual elements&quot;.  Having abilities such
+as <a href="#find">searching</a>, <a href="#filter">filtering</a> and <a href="#pick">restructuring</a> data
+using lenses makes the notion of an individual element quite flexible and, even
+further, <a href="#traversals">traversals</a> make it possible to target zero or more than
+one element in a single operation.  It can be tempting to try to do everything
+with lenses, but that will likely only lead to misery.  It is important to
+understand that lenses are just one of many functional abstractions for working
+with data structures and sometimes other approaches can lead to simpler or
+easier solutions.  <a href="https://github.com/polytypic/fastener">Zippers</a>, for
+example, are, in some ways, less principled and can implement queries and
+transforms that are outside the scope of lenses and traversals.</p>
+<p>One type of use case which we&#39;ve ran into multiple times and falls out of the
+sweet spot of lenses is performing uniform transforms over data structures.  For
+example, we&#39;ve run into the following use cases:</p>
+<ul>
+<li>Eliminate all references to an object with a particular id.</li>
+<li>Transform all instances of certain objects over many paths.</li>
+<li>Filter out extra fields from objects of varying shapes and paths.</li>
+</ul>
+<p>One approach to making such whole data structure spanning updates is to use a
+simple bottom-up transform.  Here is a simple implementation for JSON based on
+ideas from the <a href="https://github.com/ndmitchell/uniplate">Uniplate</a> library:</p>
+<pre><code class="hljs lang-js">var isObject = x =&gt; x &amp;&amp; x.constructor === Object
+var isArray = x =&gt; x &amp;&amp; x.constructor === Array
+var isAggregate = R.anyPass([isObject, isArray])
+
+var descend = (w2w, w) =&gt; isAggregate(w) ? R.map(w2w, w) : w
+var substUp = (h2h, w) =&gt; descend(h2h, descend(w =&gt; substUp(h2h, w), w))
+
+var transform = (w2w, w) =&gt; w2w(substUp(w2w, w))
+</code></pre>
+<p><code>transform(w2w, w)</code> basically just performs a single-pass bottom-up transform
+using the given function <code>w2w</code> over the given data structure <code>w</code>.  Suppose we
+are given the following data:</p>
+<pre><code class="hljs lang-js">var sampleBloated = {
+  just: &quot;some&quot;,
+  extra: &quot;crap&quot;,
+  that: [
+    &quot;we&quot;,
+    {want: &quot;to&quot;,
+     filter: [&quot;out&quot;],
+     including: {the: &quot;following&quot;,
+                 extra: true,
+                 fields: 1}}]
+}
+</code></pre>
+<p>We can now remove the <code>extra</code> <code>fields</code> like this:</p>
+<pre><code class="hljs lang-js">transform(R.ifElse(isObject,
+                   L.remove(L.props(&quot;extra&quot;, &quot;fields&quot;)),
+                   R.identity),
+          sampleBloated)
+</code></pre>
 <h2 id="related-work">Related work</h2>
 <p>Lenses are an old concept and there are dozens of academic papers on lenses and
 dozens of lens libraries for various languages.  Here are just a few links:</p>
