@@ -62,7 +62,7 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Querying and adapting to data](#querying-and-adapting-to-data)
       * [`L.chain(value => lens, lens)`](#chain "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
       * [`L.choice(...lenses)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
-      * [`L.choose(maybeValue => lens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
+      * [`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
       * [`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
       * [`L.nothing`](#nothing "L.nothing :: PLens s a")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
@@ -129,9 +129,11 @@ const textIn = language => L.compose(L.prop("contents"),
                                      L.valueOr(""))
 ```
 
-Take a moment to read through the above definition line by line.  Each line has
-a specific purpose.  The purpose of the [`L.prop(...)`](#prop) lines is probably
-obvious.  The other lines we will mention below.
+Take a moment to read through the above definition line by line.  Each part
+either specifies a step in the path to select the desired element or a way in
+which the data structure must be treated at that point.  The purpose of
+the [`L.prop(...)`](#prop) parts is probably obvious.  The other parts we will
+mention below.
 
 ### Querying data
 
@@ -203,11 +205,11 @@ L.set(textIn("sv"), undefined, sampleTexts)
 ```
 
 Note that a single text is actually a part of an object.  The key to having the
-whole object vanish, rather than just the `text` property, is the
-[`L.defaults({language})`](#defaults) part of our lens composition.  A
-[`L.defaults(value)`](#defaults) lens works *symmetrically*.  When set with
-`value`, the result is `undefined`, which means that the focus of the lens is to
-be removed.
+whole object vanish, rather than just the `text` property, is
+the [`L.defaults({language})`](#defaults) part of our lens composition.
+A [`L.defaults(valueIn)`](#defaults) lens works *symmetrically*.  When set with
+`valueIn`, the result is `undefined`, which means that the focus of the lens is
+to be removed.
 
 If we remove all of the texts, we get the required value:
 
@@ -253,7 +255,7 @@ library supports.  In particular,
 ### Systematic decomposition
 
 It is also typical to compose lenses out of short paths following the schema of
-the JSON data being manipulated.  Reconsider the lens from the start of the
+the JSON data being manipulated.  Recall the lens from the start of the
 example:
 
 ```jsx
@@ -367,10 +369,10 @@ we are looking for.  So, here is our first attempt at a BST lens:
 const searchAttempt = key => L.lazy(rec => {
   const smaller = ["smaller", rec]
   const greater = ["greater", rec]
-  const insert = L.defaults({key})
+  const found = L.defaults({key})
   return L.choose(n => {
     if (!n || key === n.key)
-      return insert
+      return found
     return key < n.key ? smaller : greater
   })
 })
@@ -379,7 +381,7 @@ const valueOfAttempt = key => [searchAttempt(key), "value"]
 ```
 
 Note that we also make use of the [`L.lazy`](#lazy) combinator to create a
-recursive lens.
+recursive lens with a cyclic representation.
 
 This actually works to a degree.  We can use the `valueOfAttempt` lens
 constructor to build a binary tree.  Here is a little helper to build a tree
@@ -393,20 +395,22 @@ const fromPairs =
 Now:
 
 ```js
-const sampleBST = fromPairs([["c", 1], ["a", 2], ["b", 3]])
+const sampleBST = fromPairs([[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]])
 sampleBST
-// { key: 'c',
-//   value: 1,
-//   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
+// { key: 3,
+//   value: 'g',
+//   smaller: { key: 2, value: 'a', smaller: { key: 1, value: 'm' } },
+//   greater: { key: 4, value: 'i', greater: { key: 5, value: 'c' } } }
 ```
 
 However, the above `searchAttempt` lens constructor does not maintain the BST
 structure when values are being removed:
 
 ```js
-L.remove(valueOfAttempt('c'), sampleBST)
-// { key: 'c',
-//   smaller: { key: 'a', value: 2, greater: { key: 'b', value: 3 } } }
+L.remove(valueOfAttempt(3), sampleBST)
+// { key: 3,
+//   smaller: { key: 2, value: 'a', smaller: { key: 1, value: 'm' } },
+//   greater: { key: 4, value: 'i', greater: { key: 5, value: 'c' } } }
 ```
 
 How do we fix this?  We could check and transform the data structure to a BST
@@ -429,10 +433,10 @@ Here is a working `search` lens and a `valueOf` lens constructor:
 const search = key => L.lazy(rec => {
   const smaller = ["smaller", rec]
   const greater = ["greater", rec]
-  const insert = L.defaults({key})
+  const found = L.defaults({key})
   return [naiveBST, L.choose(n => {
     if (!n || key === n.key)
-      return insert
+      return found
     return key < n.key ? smaller : greater
   })]
 })
@@ -443,8 +447,11 @@ const valueOf = key => [search(key), "value"]
 Now we can also remove values from a binary tree:
 
 ```js
-L.remove(valueOf('c'), sampleBST)
-// { key: 'a', value: 2, greater: { key: 'b', value: 3 } }
+L.remove(valueOf(3), sampleBST)
+// { key: 4,
+//   value: 'i',
+//   greater: { key: 5, value: 'c' },
+//   smaller: { key: 2, value: 'a', smaller: { key: 1, value: 'm' } } }
 ```
 
 As an exercise, you could improve the rewrite to better maintain balance.
@@ -531,15 +538,6 @@ the library as:
 import * as L from "partial.lenses"
 ```
 
-The default import
-
-```jsx
-import P from "partial.lenses"
-```
-
-is an alias for [`L.compose`](#compose).  Typically one just uses the shorthand
-array notation [`[...]`](#compose) to denote composition.
-
 ### Operations on lenses
 
 Operations on lenses take lenses as parameters, but do not return lenses.
@@ -555,7 +553,7 @@ L.get("y", {x: 112, y: 101})
 // 101
 ```
 
-Note that `L.get` does not work on traversals.
+Note that `L.get` does not work on [traversals](#traversals).
 
 #### <a name="modify"></a>[`L.modify(lens, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
@@ -966,15 +964,14 @@ kN})`](#pick).
 
 ##### <a name="compose"></a>[`L.compose(...lenses)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
 
-The default import `P` and `L.compose` refer to the one and same function, which
-performs lens composition.  The following equations characterize lens
-composition:
+`L.compose` performs lens composition.  The following equations characterize
+lens composition:
 
 ```jsx
                   L.compose() = L.identity
                  L.compose(l) = l
-   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
 L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
+   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
 ```
 
 Furthermore, an array of lenses `[...lenses]` is treated as a composition of
@@ -984,16 +981,24 @@ can be written as:
 ```jsx
                   [] = L.identity
                  [l] = l
-   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
 L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
+   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
 ```
 
 For example:
 
 ```js
+L.set(["a", 1], "a", {a: ["b", "c"]})
+// { a: [ 'b', 'a' ] }
+```
+
+```js
 L.get(["a", 1], {a: ["b", "c"]})
 // 'c'
 ```
+
+Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
+`L.compose`.
 
 #### Providing defaults
 
@@ -1044,11 +1049,18 @@ whose view is not `undefined` on the given data structure.  When the views of
 all of the given lenses are `undefined`, the returned lens acts
 like [`L.nothing`](#nothing), which is the identity element of `L.choice`.
 
-##### <a name="choose"></a>[`L.choose(maybeValue => lens)`](#choose "L.choose :: (Maybe s -> PLens s a) -> PLens s a")
+For example:
 
-`L.choose` creates a lens whose operation is determined by the given function
-that maps the underlying view, which can be `undefined`, to a lens.  In other
-words, the `L.choose` combinator allows a lens to be constructed *after*
+```js
+L.modify([L.sequence, L.choice("a", "d"), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+// [ { R: 1 }, { a: 2 }, { d: 3 } ]
+```
+
+##### <a name="choose"></a>[`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
+
+`L.choose` creates an optic whose operation is determined by the given function
+that maps the underlying view, which can be `undefined`, to an optic.  In other
+words, the `L.choose` combinator allows an optic to be constructed *after*
 examining the data structure being manipulated.
 
 For example, given:
@@ -1099,7 +1111,9 @@ words, for all `x` and `y`:
 L.set(L.nothing, y, x) = x
 ```
 
-`L.nothing` is the identity element of [`L.choice`](#choice).
+Note that `L.nothing` is the identity element of [`L.choice`](#choice).  Also
+note that the lens `L.nothing`, which traverses 1 element, is not the same as
+the traversal [`L.skip`](#skip), which traverses 0 elements.
 
 ##### <a name="orElse"></a>[`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
 
@@ -1355,6 +1369,13 @@ const List = {empty: R.always([]), concat: R.concat}
 const toList = x => x !== undefined ? [x] : []
 ```
 
+So:
+
+```js
+L.foldMapOf(List, ["xs", L.sequence, "x"], toList, {xs: [{x: 1}, {x: 2}]})
+// [ 1, 2 ]
+```
+
 The internal implementation of `L.collect` is optimized and faster than the
 above naïve implementation.
 
@@ -1395,21 +1416,23 @@ const values = L.lazy(rec => [
             greater: rec})])
 ```
 
-Given a binary tree `sampleBST` we can now:
+Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
+example:
 
 ```js
 L.collect(values, sampleBST)
-// [ 2, 3, 1 ]
+// [ 'm', 'a', 'g', 'i', 'c' ]
 ```
 ```js
-L.modify(values, x => -x, sampleBST)
-// { key: 'c',
-//   value: -1,
-//   smaller: { key: 'a', value: -2, greater: { key: 'b', value: -3 } } }
+L.modify(values, R.toUpper, sampleBST)
+// { key: 3,
+//   value: 'G',
+//   smaller: { key: 2, value: 'A', smaller: { key: 1, value: 'M' } },
+//   greater: { key: 4, value: 'I', greater: { key: 5, value: 'C' } } }
 ```
 ```js
-L.remove([values, L.when(R.gte(2))], sampleBST)
-// { key: 'b', value: 3 }
+L.remove([values, L.when(x => x > "e")], sampleBST)
+// { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
 ```
 
 #### Traversals and combinators
@@ -1459,6 +1482,9 @@ L.collect([L.sequence,
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
 ```
+
+Note that the traversal `L.skip`, which traverses 0 elements, is not the same as
+the lens [`L.nothing`](#nothing), which traverses 1 element.
 
 ##### <a name="when"></a>[`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
 

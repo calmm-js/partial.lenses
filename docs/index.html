@@ -94,7 +94,7 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#querying-and-adapting-to-data">Querying and adapting to data</a><ul>
 <li><a href="#chain" title="L.chain :: (a -&gt; PLens s b) -&gt; PLens s a -&gt; PLens s b"><code>L.chain(value =&gt; lens, lens)</code></a></li>
 <li><a href="#choice" title="L.choice :: (...PLens s a) -&gt; PLens s a"><code>L.choice(...lenses)</code></a></li>
-<li><a href="#choose" title="L.choose :: (Maybe s -&gt; PLens s a) -&gt; PLens s a"><code>L.choose(maybeValue =&gt; lens)</code></a></li>
+<li><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></li>
 <li><a href="#just" title="L.just :: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></li>
 <li><a href="#nothing" title="L.nothing :: PLens s a"><code>L.nothing</code></a></li>
 <li><a href="#orElse" title="L.orElse :: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></li>
@@ -179,9 +179,11 @@ import * as R from &quot;ramda&quot;
                                      L.prop(&quot;text&quot;),
                                      L.valueOr(&quot;&quot;))
 </code></pre>
-<p>Take a moment to read through the above definition line by line.  Each line has
-a specific purpose.  The purpose of the <a href="#prop"><code>L.prop(...)</code></a> lines is probably
-obvious.  The other lines we will mention below.</p>
+<p>Take a moment to read through the above definition line by line.  Each part
+either specifies a step in the path to select the desired element or a way in
+which the data structure must be treated at that point.  The purpose of
+the <a href="#prop"><code>L.prop(...)</code></a> parts is probably obvious.  The other parts we will
+mention below.</p>
 <h3 id="querying-data">Querying data</h3>
 <p>Thanks to the parameterized search part,
 <a href="#find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we can use it
@@ -217,11 +219,11 @@ kept sorted thanks to the
 <pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTexts)
 </code></pre>
 <p>Note that a single text is actually a part of an object.  The key to having the
-whole object vanish, rather than just the <code>text</code> property, is the
-<a href="#defaults"><code>L.defaults({language})</code></a> part of our lens composition.  A
-<a href="#defaults"><code>L.defaults(value)</code></a> lens works <em>symmetrically</em>.  When set with
-<code>value</code>, the result is <code>undefined</code>, which means that the focus of the lens is to
-be removed.</p>
+whole object vanish, rather than just the <code>text</code> property, is
+the <a href="#defaults"><code>L.defaults({language})</code></a> part of our lens composition.
+A <a href="#defaults"><code>L.defaults(valueIn)</code></a> lens works <em>symmetrically</em>.  When set with
+<code>valueIn</code>, the result is <code>undefined</code>, which means that the focus of the lens is
+to be removed.</p>
 <p>If we remove all of the texts, we get the required value:</p>
 <pre><code class="hljs lang-js">R.pipe(L.set(textIn(&quot;sv&quot;), undefined),
        L.set(textIn(&quot;en&quot;), undefined))(sampleTexts)
@@ -256,7 +258,7 @@ library supports.  In particular,</p>
 </ul>
 <h3 id="systematic-decomposition">Systematic decomposition</h3>
 <p>It is also typical to compose lenses out of short paths following the schema of
-the JSON data being manipulated.  Reconsider the lens from the start of the
+the JSON data being manipulated.  Recall the lens from the start of the
 example:</p>
 <pre><code class="hljs lang-jsx">L.compose(L.prop(&quot;contents&quot;),
           L.required([]),
@@ -337,10 +339,10 @@ we are looking for.  So, here is our first attempt at a BST lens:</p>
 <pre><code class="hljs lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; {
   const smaller = [&quot;smaller&quot;, rec]
   const greater = [&quot;greater&quot;, rec]
-  const insert = L.defaults({key})
+  const found = L.defaults({key})
   return L.choose(n =&gt; {
     if (!n || key === n.key)
-      return insert
+      return found
     return key &lt; n.key ? smaller : greater
   })
 })
@@ -348,7 +350,7 @@ we are looking for.  So, here is our first attempt at a BST lens:</p>
 var valueOfAttempt = key =&gt; [searchAttempt(key), &quot;value&quot;]
 </code></pre>
 <p>Note that we also make use of the <a href="#lazy"><code>L.lazy</code></a> combinator to create a
-recursive lens.</p>
+recursive lens with a cyclic representation.</p>
 <p>This actually works to a degree.  We can use the <code>valueOfAttempt</code> lens
 constructor to build a binary tree.  Here is a little helper to build a tree
 from pairs:</p>
@@ -356,12 +358,12 @@ from pairs:</p>
   R.reduce((t, [k, v]) =&gt; L.set(valueOfAttempt(k), v, t), undefined)
 </code></pre>
 <p>Now:</p>
-<pre><code class="hljs lang-js">var sampleBST = fromPairs([[&quot;c&quot;, 1], [&quot;a&quot;, 2], [&quot;b&quot;, 3]])
+<pre><code class="hljs lang-js">var sampleBST = fromPairs([[3, &quot;g&quot;], [2, &quot;a&quot;], [1, &quot;m&quot;], [4, &quot;i&quot;], [5, &quot;c&quot;]])
 sampleBST
 </code></pre>
 <p>However, the above <code>searchAttempt</code> lens constructor does not maintain the BST
 structure when values are being removed:</p>
-<pre><code class="hljs lang-js">L.remove(valueOfAttempt(&#39;c&#39;), sampleBST)
+<pre><code class="hljs lang-js">L.remove(valueOfAttempt(3), sampleBST)
 </code></pre>
 <p>How do we fix this?  We could check and transform the data structure to a BST
 after changes.  The <a href="#rewrite"><code>L.rewrite</code></a> combinator can be used for that
@@ -378,10 +380,10 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 <pre><code class="hljs lang-js">var search = key =&gt; L.lazy(rec =&gt; {
   const smaller = [&quot;smaller&quot;, rec]
   const greater = [&quot;greater&quot;, rec]
-  const insert = L.defaults({key})
+  const found = L.defaults({key})
   return [naiveBST, L.choose(n =&gt; {
     if (!n || key === n.key)
-      return insert
+      return found
     return key &lt; n.key ? smaller : greater
   })]
 })
@@ -389,7 +391,7 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 var valueOf = key =&gt; [search(key), &quot;value&quot;]
 </code></pre>
 <p>Now we can also remove values from a binary tree:</p>
-<pre><code class="hljs lang-js">L.remove(valueOf(&#39;c&#39;), sampleBST)
+<pre><code class="hljs lang-js">L.remove(valueOf(3), sampleBST)
 </code></pre>
 <p>As an exercise, you could improve the rewrite to better maintain balance.
 Perhaps you might even enhance it to maintain a balance condition such
@@ -442,11 +444,6 @@ texts that are longer than 5 characters:</p>
 the library as:</p>
 <pre><code class="hljs lang-jsx">import * as L from &quot;partial.lenses&quot;
 </code></pre>
-<p>The default import</p>
-<pre><code class="hljs lang-jsx">import P from &quot;partial.lenses&quot;
-</code></pre>
-<p>is an alias for <a href="#compose"><code>L.compose</code></a>.  Typically one just uses the shorthand
-array notation <a href="#compose"><code>[...]</code></a> to denote composition.</p>
 <h3 id="operations-on-lenses">Operations on lenses</h3>
 <p>Operations on lenses take lenses as parameters, but do not return lenses.</p>
 <h4 id="-a-name-get-a-l-get-lens-maybedata-get-l-get-plens-s-a-maybe-s-maybe-a-"><a name="get"></a><a href="#get" title="L.get :: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></h4>
@@ -454,7 +451,7 @@ array notation <a href="#compose"><code>[...]</code></a> to denote composition.<
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
 </code></pre>
-<p>Note that <code>L.get</code> does not work on traversals.</p>
+<p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
 <h4 id="-a-name-modify-a-l-modify-lens-maybevalue-maybevalue-maybedata-modify-l-modify-plens-s-a-maybe-a-maybe-a-maybe-s-maybe-s-"><a name="modify"></a><a href="#modify" title="L.modify :: PLens s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(lens, maybeValue =&gt; maybeValue, maybeData)</code></a></h4>
 <p><code>L.modify</code> allows one to map over the focused element</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
@@ -698,25 +695,28 @@ exists previously.  When set, any extra properties are ignored.</p>
 kN})</code></a>.</p>
 <h4 id="nesting">Nesting</h4>
 <h5 id="-a-name-compose-a-l-compose-lenses-compose-l-compose-plens-s-s1-plens-sn-a-plens-s-a-"><a name="compose"></a><a href="#compose" title="L.compose :: (PLens s s1, ...PLens sN a) -&gt; PLens s a"><code>L.compose(...lenses)</code></a></h5>
-<p>The default import <code>P</code> and <code>L.compose</code> refer to the one and same function, which
-performs lens composition.  The following equations characterize lens
-composition:</p>
+<p><code>L.compose</code> performs lens composition.  The following equations characterize
+lens composition:</p>
 <pre><code class="hljs lang-jsx">                  L.compose() = L.identity
                  L.compose(l) = l
-   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
 L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
+   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
 </code></pre>
 <p>Furthermore, an array of lenses <code>[...lenses]</code> is treated as a composition of
 lenses <code>L.compose(...lenses)</code>.  Using the array notation, the above equations
 can be written as:</p>
 <pre><code class="hljs lang-jsx">                  [] = L.identity
                  [l] = l
-   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
 L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
+   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
 </code></pre>
 <p>For example:</p>
+<pre><code class="hljs lang-js">L.set([&quot;a&quot;, 1], &quot;a&quot;, {a: [&quot;b&quot;, &quot;c&quot;]})
+</code></pre>
 <pre><code class="hljs lang-js">L.get([&quot;a&quot;, 1], {a: [&quot;b&quot;, &quot;c&quot;]})
 </code></pre>
+<p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
+<code>L.compose</code>.</p>
 <h4 id="providing-defaults">Providing defaults</h4>
 <h5 id="-a-name-valueor-a-l-valueor-valueout-valueor-l-valueor-s-plens-s-s-"><a name="valueOr"></a><a href="#valueOr" title="L.valueOr :: s -&gt; PLens s s"><code>L.valueOr(valueOut)</code></a></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
@@ -747,10 +747,13 @@ are essentially degenerate.</p>
 whose view is not <code>undefined</code> on the given data structure.  When the views of
 all of the given lenses are <code>undefined</code>, the returned lens acts
 like <a href="#nothing"><code>L.nothing</code></a>, which is the identity element of <code>L.choice</code>.</p>
-<h5 id="-a-name-choose-a-l-choose-maybevalue-lens-choose-l-choose-maybe-s-plens-s-a-plens-s-a-"><a name="choose"></a><a href="#choose" title="L.choose :: (Maybe s -&gt; PLens s a) -&gt; PLens s a"><code>L.choose(maybeValue =&gt; lens)</code></a></h5>
-<p><code>L.choose</code> creates a lens whose operation is determined by the given function
-that maps the underlying view, which can be <code>undefined</code>, to a lens.  In other
-words, the <code>L.choose</code> combinator allows a lens to be constructed <em>after</em>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([L.sequence, L.choice(&quot;a&quot;, &quot;d&quot;), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+</code></pre>
+<h5 id="-a-name-choose-a-l-choose-maybevalue-optic-choose-l-choose-maybe-s-poptic-s-a-poptic-s-a-"><a name="choose"></a><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></h5>
+<p><code>L.choose</code> creates an optic whose operation is determined by the given function
+that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
+words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
 examining the data structure being manipulated.</p>
 <p>For example, given:</p>
 <pre><code class="hljs lang-js">var majorAxis =
@@ -778,7 +781,9 @@ words, for all <code>x</code> and <code>y</code>:</p>
 <pre><code class="hljs lang-jsx">   L.get(L.nothing, x) = undefined
 L.set(L.nothing, y, x) = x
 </code></pre>
-<p><code>L.nothing</code> is the identity element of <a href="#choice"><code>L.choice</code></a>.</p>
+<p>Note that <code>L.nothing</code> is the identity element of <a href="#choice"><code>L.choice</code></a>.  Also
+note that the lens <code>L.nothing</code>, which traverses 1 element, is not the same as
+the traversal <a href="#skip"><code>L.skip</code></a>, which traverses 0 elements.</p>
 <h5 id="-a-name-orelse-a-l-orelse-backuplens-primarylens-orelse-l-orelse-plens-s-a-plens-s-a-plens-s-a-"><a name="orElse"></a><a href="#orElse" title="L.orElse :: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></h5>
 <p><code>L.orElse(backupLens, primaryLens)</code> acts like <code>primaryLens</code> when its view is not
 <code>undefined</code> and otherwise like <code>backupLens</code>.  You can use <code>L.orElse</code> on its own
@@ -930,6 +935,9 @@ and <code>toList</code> are defined as follows:</p>
 <pre><code class="hljs lang-js">var List = {empty: R.always([]), concat: R.concat}
 var toList = x =&gt; x !== undefined ? [x] : []
 </code></pre>
+<p>So:</p>
+<pre><code class="hljs lang-js">L.foldMapOf(List, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toList, {xs: [{x: 1}, {x: 2}]})
+</code></pre>
 <p>The internal implementation of <code>L.collect</code> is optimized and faster than the
 above naïve implementation.</p>
 <h5 id="-a-name-foldmapof-a-l-foldmapof-empty-value-concat-value-value-value-traversal-maybevalue-value-maybedata-foldmapof-l-foldmapof-empty-r-concat-r-r-r-ptraversal-s-a-maybe-a-r-maybe-s-r-"><a name="foldMapOf"></a><a href="#foldMapOf" title="L.foldMapOf :: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></h5>
@@ -957,12 +965,13 @@ here is a traversal that visits all the values of a binary tree in order:</p>
             value: L.identity,
             greater: rec})])
 </code></pre>
-<p>Given a binary tree <code>sampleBST</code> we can now:</p>
+<p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
+example:</p>
 <pre><code class="hljs lang-js">L.collect(values, sampleBST)
 </code></pre>
-<pre><code class="hljs lang-js">L.modify(values, x =&gt; -x, sampleBST)
+<pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
 </code></pre>
-<pre><code class="hljs lang-js">L.remove([values, L.when(R.gte(2))], sampleBST)
+<pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
 </code></pre>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
 <h5 id="-a-name-optional-a-l-optional-optional-l-optional-ptraversal-a-a-"><a name="optional"></a><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></h5>
@@ -989,6 +998,8 @@ over the focused element.</p>
                           L.skip))],
           [1, {x: 2}, [3,4]])
 </code></pre>
+<p>Note that the traversal <code>L.skip</code>, which traverses 0 elements, is not the same as
+the lens <a href="#nothing"><code>L.nothing</code></a>, which traverses 1 element.</p>
 <h5 id="-a-name-when-a-l-when-maybevalue-testable-when-l-when-maybe-a-boolean-ptraversal-a-a-"><a name="when"></a><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal.</p>
 <p>For example:</p>
