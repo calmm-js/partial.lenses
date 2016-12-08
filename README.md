@@ -577,14 +577,22 @@ of a data structure.
 
 #### <a name="remove"></a>[`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
-`L.remove` allows one to remove the focused element from a data structure.
-
-For example:
+`L.remove` allows one to remove the focused element
 
 ```js
-L.remove(["a", "b"], {a: {b: 1}, x: {y: 2}})
-// {x: {y: 2}}
+L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
+// [ { x: 2 }, { x: 3 } ]
+
 ```
+
+or, when using a [traversal](#traversals), elements
+
+```js
+L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2}, {x: 3}])
+// [ { x: 1 } ]
+```
+
+from a data structure.
 
 Note that `L.remove(lens, maybeData)` is equivalent
 to [`L.set(lens, undefined, maybeData)`](#set).  With partial lenses, setting to
@@ -592,14 +600,21 @@ to [`L.set(lens, undefined, maybeData)`](#set).  With partial lenses, setting to
 
 #### <a name="set"></a>[`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
 
-`L.set` allows one to replace the focused element of a data structure.
-
-For example:
+`L.set` allows one to replace the focused element
 
 ```js
 L.set(["a", 0, "x"], 11, {id: "z"})
 // {a: [{x: 11}], id: 'z'}
 ```
+
+or, when using a [traversal](#traversals), elements
+
+```js
+L.set([L.sequence, "x", L.when(x => x > 1)], 1, [{x: 1}, {x: 2}, {x: 3}])
+// [ { x: 1 }, { x: 1 }, { x: 1 } ]
+```
+
+of a data structure.
 
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#modify).
