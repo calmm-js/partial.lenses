@@ -2,25 +2,14 @@
 
 # Partial Lenses
 
-Lenses are primarily a convenient abstraction for performing updates on
-individual elements of immutable data structures.  This library provides a
-collection of *partial* lenses for manipulating JSON.  A partial lens can *view*
-optional data, *insert* new data, *update* existing data and *remove* existing
-data and can, for example, provide *defaults* and maintain *required* data
-structure parts.
-
-In JavaScript, missing data can be mapped to `undefined`, which is what partial
-lenses also do, because `undefined` is not a valid JSON value.  When a part of a
-data structure is missing, an attempt to view it returns `undefined`.  When a
-part is missing, setting it to a defined value inserts the new part.  Setting an
-existing part to `undefined` removes it.  Partial lenses are defined in such a
-way that operations [`compose`](#compose) and one can conveniently and robustly
-operate on deeply nested data structures.
-
-Aside from partial lenses, this library also
-supports [isomorphisms](#isomorphisms) and [traversals](#traversals).
-Isomorphisms have an [`inverse`](#inverse) and traversals can target any number
-of elements.
+Lenses are basically a [bidirectional](#get) [composable](#compose) abstraction
+for [updating](#modify) [selected](#choose) elements of immutable data
+structures that admits [efficient](#performance) implementation.  This library
+provides a collection of *partial* lenses, [isomorphisms](#isomorphisms)
+and [traversals](#traversals) for manipulating [JSON](http://json.org/).  A
+partial lens can *view* optional data, *insert* new data, *update* existing data
+and *remove* existing data and can, for example, provide *defaults* and maintain
+*required* data structure parts.
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -1599,6 +1588,12 @@ R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
 One might assume that [`R.lensPath([p0,
 ...ps])`](http://ramdajs.com/docs/#lensPath) is equivalent to
 `R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
+
+In JavaScript, missing data can be mapped to `undefined`, which is what partial
+lenses also do, because `undefined` is not a valid [JSON](http://json.org/)
+value.  When a part of a data structure is missing, an attempt to view it
+returns `undefined`.  When a part is missing, setting it to a defined value
+inserts the new part.  Setting an existing part to `undefined` removes it.
 
 With partial lenses you can robustly compose a path lens from prop lenses
 `L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
