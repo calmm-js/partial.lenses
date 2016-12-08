@@ -3,6 +3,7 @@
 const title = "Try Partial Lenses with KLIPSE"
 const icon = "https://avatars1.githubusercontent.com/u/17234211"
 const blob = "https://github.com/calmm-js/partial.lenses/blob/master/"
+const hljsStyle = "googlecode"
 
 const I = require("infestines")
 const R = require("ramda")
@@ -26,7 +27,9 @@ const body = I.seq(fs.readFileSync("README.md"),
                    R.replace(/([^ ])\bconst\b/g, "$1var"),
                    R.replace(/\/\/ .*/g, ""),
                    R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
-                   marked)
+                   marked,
+                   R.replace(/<code class="lang-([a-z]*)">/g,
+                             '<code class="hljs lang-$1\">'))
 
 fs.writeFileSync("docs/index.html",
 `<!doctype html>
@@ -34,8 +37,11 @@ fs.writeFileSync("docs/index.html",
   <head>
     <meta charset="utf-8">
     <title>${title}</title>
-    ${icon && `<link rel="icon" href="${icon}">`}
+    ${icon &&
+      `<link rel="icon" href="${icon}">`}
     <link rel="stylesheet" type="text/css" href="github.css">
+    ${hljsStyle &&
+      `<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/${hljsStyle}.min.css">`}
     <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="text/javascript" src="bundle.js" async></script>
