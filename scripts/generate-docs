@@ -44,7 +44,7 @@ fs.writeFileSync("docs/index.html",
       `<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/${hljsStyle}.min.css">`}
     <link rel="stylesheet" type="text/css" href="http://app.klipse.tech/css/codemirror.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <script type="text/javascript" src="bundle.js" async></script>
+    <script type="text/javascript" src="start.js" async></script>
   </head>
   <body class="markdown-body">
     <p>

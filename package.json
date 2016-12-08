@@ -6,7 +6,8 @@
   "scripts": {
     "bench": "NODE_ENV=production node bench/bench.js",
     "dist": "babel src --source-maps inline --out-dir lib",
-    "docs": "NODE_ENV=dev browserify docs/start.js -g envify -g uglifyify > docs/bundle.js & ./scripts/generate-docs & wait",
+    "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
+    "docs": "./scripts/generate-docs",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
     "test": "nyc mocha"

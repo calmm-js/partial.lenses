@@ -1,8 +1,10 @@
-require("babel-polyfill")
-
-window.L = require("../lib/partial.lenses")
-window.R = require("ramda")
-window.moment = require("moment")
+function initBundle(k) {
+  require("babel-polyfill")
+  window.L = require("partial.lenses")
+  window.R = require("ramda")
+  window.moment = require("moment")
+  k()
+}
 
 var hljsLanguages = ["javascript", "haskell"]
 
@@ -45,7 +47,7 @@ function loadScript(url) {
   }
 }
 
-function init(k) {
+function initHLJS(k) {
   document.querySelectorAll(".hljs")
   .forEach(function (elem) {
     hljs.highlightBlock(elem)
@@ -54,10 +56,12 @@ function init(k) {
 }
 
 queue(seq([].concat(
-  [loadScript("https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"),
+  [loadScript("bundle.js"),
+   initBundle,
+   loadScript("https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"),
    loadScript("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js")],
   hljsLanguages.map(function (lang) {
     return loadScript("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/languages/" + lang + ".min.js")
   }),
-  [init]
+  [initHLJS]
 )))
