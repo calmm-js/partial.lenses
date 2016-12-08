@@ -569,14 +569,21 @@ Note that `L.get` does not work on traversals.
 
 #### <a name="modify"></a>[`L.modify(lens, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
-`L.modify` allows one to map over the focused element of a data structure.
-
-For example:
+`L.modify` allows one to map over the focused element
 
 ```js
-L.modify("elems", R.map(L.remove("x")), {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
-// {elems: [{y: 2}, {y: 4}]}
+L.modify(["elems", 0, "x"], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+// { elems: [ { x: 2, y: 2 }, { x: 3, y: 4 } ] }
 ```
+
+or, when using a [traversal](#traversals), elements
+
+```js
+L.modify(["elems", L.sequence, "x"], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+// { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
+```
+
+of a data structure.
 
 #### <a name="remove"></a>[`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
 
