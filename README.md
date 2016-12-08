@@ -9,7 +9,8 @@ provides a collection of *partial* lenses, [isomorphisms](#isomorphisms)
 and [traversals](#traversals) for manipulating [JSON](http://json.org/).  A
 partial lens can *view* optional data, *insert* new data, *update* existing data
 and *remove* existing data and can, for example, provide *defaults* and maintain
-*required* data structure parts.
+*required* data structure
+parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
