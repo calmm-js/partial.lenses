@@ -92,10 +92,10 @@ and *remove* existing data and can, for example, provide *defaults* and maintain
   * [Debugging](#debugging)
     * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
 * [Background](#background)
-  * [Should I use lenses for...?](#should-i-use-lenses-for)
   * [Motivation](#motivation)
   * [Types](#types)
   * [Performance](#performance)
+  * [Should I use lenses for...?](#should-i-use-lenses-for)
   * [Related work](#related-work)
 
 ## Tutorial
@@ -1487,75 +1487,6 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 
 ## Background
 
-### Should I use lenses for...?
-
-As said in the first sentence of this document, lenses are convenient for
-performing updates on "individual elements".  Having abilities such
-as [searching](#find), [filtering](#filter) and [restructuring](#pick) data
-using lenses makes the notion of an individual element quite flexible and, even
-further, [traversals](#traversals) make it possible to target zero or more than
-one element in a single operation.  It can be tempting to try to do everything
-with lenses, but that will likely only lead to misery.  It is important to
-understand that lenses are just one of many functional abstractions for working
-with data structures and sometimes other approaches can lead to simpler or
-easier solutions.  [Zippers](https://github.com/polytypic/fastener), for
-example, are, in some ways, less principled and can implement queries and
-transforms that are outside the scope of lenses and traversals.
-
-One type of use case which we've ran into multiple times and falls out of the
-sweet spot of lenses is performing uniform transforms over data structures.  For
-example, we've run into the following use cases:
-
-* Eliminate all references to an object with a particular id.
-* Transform all instances of certain objects over many paths.
-* Filter out extra fields from objects of varying shapes and paths.
-
-One approach to making such whole data structure spanning updates is to use a
-simple bottom-up transform.  Here is a simple implementation for JSON based on
-ideas from the [Uniplate](https://github.com/ndmitchell/uniplate) library:
-
-``` js
-const isObject = x => x && x.constructor === Object
-const isArray = x => x && x.constructor === Array
-const isAggregate = R.anyPass([isObject, isArray])
-
-const descend = (w2w, w) => isAggregate(w) ? R.map(w2w, w) : w
-const substUp = (h2h, w) => descend(h2h, descend(w => substUp(h2h, w), w))
-
-const transform = (w2w, w) => w2w(substUp(w2w, w))
-```
-
-`transform(w2w, w)` basically just performs a single-pass bottom-up transform
-using the given function `w2w` over the given data structure `w`.  Suppose we
-are given the following data:
-
-``` js
-const sampleBloated = {
-  just: "some",
-  extra: "crap",
-  that: [
-    "we",
-    {want: "to",
-     filter: ["out"],
-     including: {the: "following",
-                 extra: true,
-                 fields: 1}}]
-}
-```
-
-We can now remove the `extra` `fields` like this:
-
-``` js
-transform(R.ifElse(isObject,
-                   L.remove(L.props("extra", "fields")),
-                   R.identity),
-          sampleBloated)
-// { just: 'some',
-//   that: [ 'we', { want: 'to',
-//                   filter: ['out'],
-//                   including: {the: 'following'} } ] }
-```
-
 ### Motivation
 
 Consider the following REPL session using Ramda:
@@ -1698,6 +1629,75 @@ improvement.  The goal is to make partial lenses fast enough that performance
 isn't the reason why you might not want to use them.
 
 See [bench.js](./bench/bench.js) for details.
+
+### Should I use lenses for...?
+
+As said in the first sentence of this document, lenses are convenient for
+performing updates on "individual elements".  Having abilities such
+as [searching](#find), [filtering](#filter) and [restructuring](#pick) data
+using lenses makes the notion of an individual element quite flexible and, even
+further, [traversals](#traversals) make it possible to target zero or more than
+one element in a single operation.  It can be tempting to try to do everything
+with lenses, but that will likely only lead to misery.  It is important to
+understand that lenses are just one of many functional abstractions for working
+with data structures and sometimes other approaches can lead to simpler or
+easier solutions.  [Zippers](https://github.com/polytypic/fastener), for
+example, are, in some ways, less principled and can implement queries and
+transforms that are outside the scope of lenses and traversals.
+
+One type of use case which we've ran into multiple times and falls out of the
+sweet spot of lenses is performing uniform transforms over data structures.  For
+example, we've run into the following use cases:
+
+* Eliminate all references to an object with a particular id.
+* Transform all instances of certain objects over many paths.
+* Filter out extra fields from objects of varying shapes and paths.
+
+One approach to making such whole data structure spanning updates is to use a
+simple bottom-up transform.  Here is a simple implementation for JSON based on
+ideas from the [Uniplate](https://github.com/ndmitchell/uniplate) library:
+
+``` js
+const isObject = x => x && x.constructor === Object
+const isArray = x => x && x.constructor === Array
+const isAggregate = R.anyPass([isObject, isArray])
+
+const descend = (w2w, w) => isAggregate(w) ? R.map(w2w, w) : w
+const substUp = (h2h, w) => descend(h2h, descend(w => substUp(h2h, w), w))
+
+const transform = (w2w, w) => w2w(substUp(w2w, w))
+```
+
+`transform(w2w, w)` basically just performs a single-pass bottom-up transform
+using the given function `w2w` over the given data structure `w`.  Suppose we
+are given the following data:
+
+``` js
+const sampleBloated = {
+  just: "some",
+  extra: "crap",
+  that: [
+    "we",
+    {want: "to",
+     filter: ["out"],
+     including: {the: "following",
+                 extra: true,
+                 fields: 1}}]
+}
+```
+
+We can now remove the `extra` `fields` like this:
+
+``` js
+transform(R.ifElse(isObject,
+                   L.remove(L.props("extra", "fields")),
+                   R.identity),
+          sampleBloated)
+// { just: 'some',
+//   that: [ 'we', { want: 'to',
+//                   filter: ['out'],
+//                   including: {the: 'following'} } ] }
+```
 
 ## Related work
 
