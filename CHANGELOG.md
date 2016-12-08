@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.2.1
+
+Marked the default import for removal.  With the array shorthand for composition
+the default import is no longer worth keeping.
+
 ## 5.0.0
 
 Reimplemented library internals

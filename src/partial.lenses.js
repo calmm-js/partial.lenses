@@ -475,4 +475,6 @@ export const fromArrayBy = id =>
   },
   o => isObject(o) ? values(o) : undefined)
 
-export default compose
+export default (...ls) =>
+  warn("default import will be removed. Use `compose` or array notation `[...]`.") ||
+  compose(...ls)
