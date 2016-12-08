@@ -588,8 +588,8 @@ L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2}, {x: 3}])
-// [ { x: 1 } ]
+L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
+// [ { x: 1 }, { y: 1 } ]
 ```
 
 from a data structure.
@@ -610,8 +610,8 @@ L.set(["a", 0, "x"], 11, {id: "z"})
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.set([L.sequence, "x", L.when(x => x > 1)], 1, [{x: 1}, {x: 2}, {x: 3}])
-// [ { x: 1 }, { x: 1 }, { x: 1 } ]
+L.set([L.sequence, "x", L.when(x => x > 1)], 1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
+// [ { x: 1 }, { x: 1, y: 1 }, { x: 1 } ]
 ```
 
 of a data structure.

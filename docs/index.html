@@ -468,7 +468,7 @@ array notation <a href="#compose"><code>[...]</code></a> to denote composition.<
 <pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.remove([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2}, {x: 3}])
+<pre><code class="hljs lang-js">L.remove([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
 <p>from a data structure.</p>
 <p>Note that <code>L.remove(lens, maybeData)</code> is equivalent
@@ -479,7 +479,7 @@ to <a href="#set"><code>L.set(lens, undefined, maybeData)</code></a>.  With part
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], 1, [{x: 1}, {x: 2}, {x: 3}])
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], 1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
 <p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
