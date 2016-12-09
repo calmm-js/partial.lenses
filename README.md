@@ -5,11 +5,12 @@
 Lenses are basically a [bidirectional](#get) [composable](#compose) abstraction
 for [updating](#modify) [selected](#choose) elements of immutable data
 structures that admits [efficient](#performance) implementation.  This library
-provides a collection of *partial* lenses, [isomorphisms](#isomorphisms)
-and [traversals](#traversals) for manipulating [JSON](http://json.org/).  A
-partial lens can *view* optional data, *insert* new data, *update* existing data
-and *remove* existing data and can, for example, provide *defaults* and maintain
-*required* data structure
+provides a collection of
+*partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
+and [traversals](#traversals), collectively known as [optics](#optics), for
+manipulating [JSON](http://json.org/).  A partial lens can *view* optional data,
+*insert* new data, *update* existing data and *remove* existing data and can,
+for example, provide *defaults* and maintain *required* data structure
 parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
@@ -30,14 +31,35 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
   * [Food for thought: BST as a lens](#food-for-thought-bst-as-a-lens)
   * [Manipulating multiple items](#manipulating-multiple-items)
 * [Reference](#reference)
-  * [Operations on lenses](#operations-on-lenses)
-    * [`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
-    * [`L.modify(lens, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
-    * [`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
-    * [`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
-  * [Creating new lenses](#creating-new-lenses)
-    * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
-  * [Lenses and combinators](#lenses-and-combinators)
+  * [Optics](#optics)
+    * [Operations on optics](#operations-on-optics)
+      * [`L.modify(optic, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: POptic s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+      * [`L.remove(optic, maybeData)`](#remove "L.remove :: POptic s a -> Maybe s -> Maybe s")
+      * [`L.set(optic, maybeValue, maybeData)`](#set "L.set :: POptic s a -> Maybe a -> Maybe s -> Maybe s")
+    * [Nesting](#nesting)
+      * [`L.compose(...optics)`](#compose "L.compose :: (POptic s s1, ...POptic sN a) -> POptic s a")
+    * [Choosing](#choosing)
+      * [`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
+    * [Recursion](#recursion)
+      * [`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
+    * [Debugging](#debugging)
+      * [`L.log(...labels)`](#log "L.log :: (...Any) -> POptic s s")
+  * [Traversals](#traversals)
+    * [Operations on traversals](#operations-on-traversals)
+      * [`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+      * [`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+    * [Creating new traversals](#creating-new-traversals)
+      * [`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
+    * [Traversals and combinators](#traversals-and-combinators)
+      * [`L.optional`](#optional "L.optional :: PTraversal a a")
+      * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
+      * [`L.skip`](#skip "L.skip :: PTraversal a b")
+      * [`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
+  * [Lenses](#lenses)
+    * [Operations on lenses](#operations-on-lenses)
+      * [`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
+    * [Creating new lenses](#creating-new-lenses)
+      * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props})`](#augment "L.augment :: {p1 :: o -> a1, ...ps} -> PLens {...o} {...o, p1 :: a1, ...ps}")
     * [Enforcing invariants](#enforcing-invariants)
@@ -55,43 +77,27 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Lensing objects](#lensing-objects)
       * [`L.prop(propName)`](#prop "L.prop :: (p :: a) -> PLens {p :: a, ...ps} a")
       * [`L.props(...propNames)`](#props "L.props :: (p1 :: a1, ...ps) -> PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}")
-    * [Nesting](#nesting)
-      * [`L.compose(...lenses)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
     * [Providing defaults](#providing-defaults)
       * [`L.valueOr(valueOut)`](#valueOr "L.valueOr :: s -> PLens s s")
     * [Querying and adapting to data](#querying-and-adapting-to-data)
       * [`L.chain(value => lens, lens)`](#chain "L.chain :: (a -> PLens s b) -> PLens s a -> PLens s b")
       * [`L.choice(...lenses)`](#choice "L.choice :: (...PLens s a) -> PLens s a")
-      * [`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
       * [`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
       * [`L.nothing`](#nothing "L.nothing :: PLens s a")
       * [`L.orElse(backupLens, primaryLens)`](#orElse "L.orElse :: (PLens s a, PLens s a) -> PLens s a")
       * [`L.to(maybeValue => maybeValue)`](#to "L.to :: (a -> b) -> PLens a b")
-    * [Recursion](#recursion)
-      * [`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props})`](#pick "L.pick :: {p1 :: PLens s a1, ...pls} -> PLens s {p1 :: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut)`](#replace "L.replace :: Maybe s -> Maybe s -> PLens s s")
   * [Isomorphisms](#isomorphisms)
     * [Operations on isomorphisms](#operations-on-isomorphisms)
       * [`L.getInverse(isomorphism, maybeData)`](#getInverse "L.getInverse :: PIso a b -> Maybe b -> Maybe a")
+    * [Creating new isomorphisms](#creating-new-isomorphisms)
+      * [`L.iso(maybeData => maybeValue, maybeValue => maybeData)`](#iso "L.iso :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
       * [`L.fromArrayBy(idPropName)`](#fromArrayBy "L.fromArrayBy :: (p :: String) -> PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}")
       * [`L.identity`](#identity "L.identity :: PIso s s")
       * [`L.inverse(isomorphism)`](#inverse "L.inverse :: PIso a b -> PIso b a")
-  * [Traversals](#traversals)
-    * [Operations on traversals](#operations-on-traversals)
-      * [`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
-      * [`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
-    * [Creating new traversals](#creating-new-traversals)
-      * [`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
-    * [Traversals and combinators](#traversals-and-combinators)
-      * [`L.optional`](#optional "L.optional :: PTraversal a a")
-      * [`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
-      * [`L.skip`](#skip "L.skip :: PTraversal a b")
-      * [`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
-  * [Debugging](#debugging)
-    * [`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
 * [Background](#background)
   * [Motivation](#motivation)
   * [Types](#types)
@@ -531,31 +537,24 @@ L.modify([texts, L.when(t => t.length > 5)],
 
 ## Reference
 
-The lens combinators are available as named imports.  Typically one just imports
-the library as:
+The combinators provided by this library are available as named imports.
+Typically one just imports the library as:
 
 ```jsx
 import * as L from "partial.lenses"
 ```
 
-### Operations on lenses
+### Optics
 
-Operations on lenses take lenses as parameters, but do not return lenses.
+The abstractions, [traversals](#traversals), [lenses](#lenses),
+and [isomorphisms](#isomorphisms), provided by this library are collectively
+known as *optics*.  Traversals can target any number of elements.  Lenses are a
+restriction of traversals that target a single element.  Isomorphisms are a
+restriction of lenses with an inverse.
 
-#### <a name="get"></a>[`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
+#### Operations on optics
 
-`L.get` returns the focused element from a data structure.
-
-For example:
-
-```js
-L.get("y", {x: 112, y: 101})
-// 101
-```
-
-Note that `L.get` does not work on [traversals](#traversals).
-
-#### <a name="modify"></a>[`L.modify(lens, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: PLens s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
+##### <a name="modify"></a>[`L.modify(optic, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: POptic s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
 
 `L.modify` allows one to map over the focused element
 
@@ -573,7 +572,7 @@ L.modify(["elems", L.sequence, "x"], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]
 
 of a data structure.
 
-#### <a name="remove"></a>[`L.remove(lens, maybeData)`](#remove "L.remove :: PLens s a -> Maybe s -> Maybe s")
+##### <a name="remove"></a>[`L.remove(optic, maybeData)`](#remove "L.remove :: POptic s a -> Maybe s -> Maybe s")
 
 `L.remove` allows one to remove the focused element
 
@@ -592,11 +591,11 @@ L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 
 from a data structure.
 
-Note that `L.remove(lens, maybeData)` is equivalent
-to [`L.set(lens, undefined, maybeData)`](#set).  With partial lenses, setting to
+Note that `L.remove(optic, maybeData)` is equivalent
+to [`L.seOptic(lens, undefined, maybeData)`](#set).  With partial lenses, setting to
 `undefined` typically has the effect of removing the focused element.
 
-#### <a name="set"></a>[`L.set(lens, maybeValue, maybeData)`](#set "L.set :: PLens s a -> Maybe a -> Maybe s -> Maybe s")
+##### <a name="set"></a>[`L.set(optic, maybeValue, maybeData)`](#set "L.set :: POptic s a -> Maybe a -> Maybe s -> Maybe s")
 
 `L.set` allows one to replace the focused element
 
@@ -617,9 +616,325 @@ of a data structure.
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#modify).
 
-### Creating new lenses
+#### Nesting
 
-#### <a name="lens"></a>[`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
+##### <a name="compose"></a>[`L.compose(...optics)`](#compose "L.compose :: (POptic s s1, ...POptic sN a) -> POptic s a")
+
+`L.compose` performs composition of optics.  The following equations
+characterize composition:
+
+```jsx
+                  L.compose() = L.identity
+                 L.compose(l) = l
+L.modify(L.compose(o, ...os)) = R.compose(L.modify(o), ...os.map(L.modify))
+   L.get(L.compose(o, ...os)) = R.pipe(L.get(o), ...os.map(L.get))
+```
+
+Furthermore, in this library, an array of optics `[...optics]` is treated as a
+composition `L.compose(...optics)`.  Using the array notation, the above
+equations can be written as:
+
+```jsx
+                  [] = L.identity
+                 [l] = l
+L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
+   L.get([o, ...os]) = R.pipe(L.get(o), ...os.map(L.get))
+```
+
+For example:
+
+```js
+L.set(["a", 1], "a", {a: ["b", "c"]})
+// { a: [ 'b', 'a' ] }
+```
+```js
+L.get(["a", 1], {a: ["b", "c"]})
+// 'c'
+```
+
+Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
+`L.compose`.
+
+#### Choosing
+
+##### <a name="choose"></a>[`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
+
+`L.choose` creates an optic whose operation is determined by the given function
+that maps the underlying view, which can be `undefined`, to an optic.  In other
+words, the `L.choose` combinator allows an optic to be constructed *after*
+examining the data structure being manipulated.
+
+For example, given:
+
+```js
+const majorAxis =
+  L.choose(({x, y} = {}) => Math.abs(x) < Math.abs(y) ? "y" : "x")
+```
+
+we get:
+
+```js
+L.get(majorAxis, {x: 1, y: 2})
+// 2
+```
+```js
+L.get(majorAxis, {x: -3, y: 1})
+// -3
+```
+```js
+L.modify(majorAxis, R.negate, {x: 2, y: -3})
+// { x: 2, y: 3 }
+```
+
+#### Recursion
+
+##### <a name="lazy"></a>[`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
+
+`L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
+is passed a forwarding proxy to its return value and can also make forward
+references to other optics and possibly construct a recursive optic.
+
+For example, here is a traversal that targets all the non-arrays in a data
+structure of nested arrays:
+
+```js
+const flatten = L.lazy(rec => {
+  const nest = [L.sequence, rec]
+  return L.choose(x => R.is(Array, x) ? nest : L.identity)
+})
+```
+
+Note that the above creates a cyclic representation of the traversal.
+
+Now, for example:
+
+```js
+L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
+// [ 1, 2, 3, 4, 5, 6 ]
+```
+```js
+L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
+// [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
+```
+```js
+L.remove([flatten, L.when(x => 3 <= x && x <= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
+// [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
+```
+
+#### Debugging
+
+##### <a name="log"></a>[`L.log(...labels)`](#log "L.log :: (...Any) -> POptic s s")
+
+`L.log(...labels)` is an identity optic that
+outputs
+[`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
+messages with the given labels
+(or
+[format in Node.js](https://nodejs.org/api/console.html#console_console_log_data))
+when data flows in either direction, `get` or `set`, through the lens.
+
+For example:
+
+```js
+L.get(["x", L.log()], {x: 10})
+// get 10
+// 10
+```
+```js
+L.set(["x", L.log("x")], "11", {x: 10})
+// x get 10
+// x set 11
+// { x: '11' }
+```
+```js
+L.set(["x", L.log("%s x: %j")], "11", {x: 10})
+// get x: 10
+// set x: "11"
+// { x: '11' }
+```
+
+### Traversals
+
+A traversal operates over a collection of focuses that can
+be [collected](#collect), [folded](#foldMapOf), [modified](#modify), [set](#set)
+and [removed](#remove).
+
+#### Operations on traversals
+
+##### <a name="collect"></a>[`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
+
+`L.collect` returns an array of the elements focused on by the given traversal
+or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
+the returned array.  Note that a partial *lens* always targets an element, but
+`L.collect` implicitly skips elements that are `undefined`.  Given a traversal,
+there can be any number of elements in the array returned by `L.collect`.
+
+For example:
+
+```js
+L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
+// [ 1, 2 ]
+```
+
+`L.collect(traversal, maybeData)` is equivalent
+to [`L.foldMapOf(List, traversal, toList, maybeData)`](#foldMapOf) where `List`
+and `toList` are defined as follows:
+
+```js
+const List = {empty: R.always([]), concat: R.concat}
+const toList = x => x !== undefined ? [x] : []
+```
+
+So:
+
+```js
+L.foldMapOf(List, ["xs", L.sequence, "x"], toList, {xs: [{x: 1}, {x: 2}]})
+// [ 1, 2 ]
+```
+
+The internal implementation of `L.collect` is optimized and faster than the
+above naïve implementation.
+
+##### <a name="foldMapOf"></a>[`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
+
+`L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
+`aM2r`, and fold, using the given `concat` and `empty` operations, over the
+elements focused on by the given traversal or lens `t` from the given data
+structure `s`.  The `concat` operation and the constant returned by `empty()`
+should form
+a
+[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
+the values returned by `aM2r`.
+
+For example:
+
+```js
+L.foldMapOf({empty: () => 0, concat: R.add}, L.sequence, x => x, [1,2,3])
+// 6
+```
+
+#### Creating new traversals
+
+##### <a name="branch-op"></a>[`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
+
+`L.branch` is given a template object of traversals and returns a traversal that
+visits all the properties of an object according to the template.
+
+For example, continuing on the [BST example](#food-for-thought-bst-as-a-lens),
+here is a traversal that visits all the values of a binary tree in order:
+
+```js
+const values = L.lazy(rec => [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+```
+
+Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
+example:
+
+```js
+L.collect(values, sampleBST)
+// [ 'm', 'a', 'g', 'i', 'c' ]
+```
+```js
+L.modify(values, R.toUpper, sampleBST)
+// { key: 3,
+//   value: 'G',
+//   smaller: { key: 2, value: 'A', smaller: { key: 1, value: 'M' } },
+//   greater: { key: 4, value: 'I', greater: { key: 5, value: 'C' } } }
+```
+```js
+L.remove([values, L.when(x => x > "e")], sampleBST)
+// { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
+```
+
+#### Traversals and combinators
+
+##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
+
+`L.optional` is a traversal over an optional element.  When the focus of
+`L.optional` is `undefined`, the traversal is empty.  Otherwise the traversal is
+over the focused element.
+
+As an example, consider the difference between:
+
+```js
+L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { y: 2, x: 3 } ]
+```
+
+and:
+
+```js
+L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { y: 2 } ]
+```
+
+##### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
+
+`L.sequence` is a traversal over an array.
+
+For example:
+
+```js
+L.modify(["xs", L.sequence, "x"], R.add(1), {xs: [{x: 1}, {x: 2}]})
+// { xs: [ { x: 2 }, { x: 3 } ] }
+```
+
+##### <a name="skip"></a>[`L.skip`](#skip "L.skip :: PTraversal a b")
+
+`L.skip` is a traversal of no elements.
+
+For example:
+
+```js
+L.collect([L.sequence,
+           L.choose(x => (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? "x" :
+                          L.skip))],
+          [1, {x: 2}, [3,4]])
+// [ 2, 3, 4 ]
+```
+
+Note that the traversal `L.skip`, which traverses 0 elements, is not the same as
+the lens [`L.nothing`](#nothing), which traverses 1 element.
+
+##### <a name="when"></a>[`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
+
+`L.when` allows one to selectively skip elements within a traversal.
+
+For example:
+
+```js
+L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
+// [ 0, -1, -2, -3, -4 ]
+```
+
+### Lenses
+
+#### Operations on lenses
+
+Operations on lenses take lenses as parameters, but do not return lenses.
+
+##### <a name="get"></a>[`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
+
+`L.get` returns the focused element from a data structure.
+
+For example:
+
+```js
+L.get("y", {x: 112, y: 101})
+// 101
+```
+
+Note that `L.get` does not work on [traversals](#traversals).
+
+#### Creating new lenses
+
+##### <a name="lens"></a>[`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData)`](#lens "L.lens :: (Maybe s -> Maybe a) -> ((Maybe a, Maybe s) -> Maybe s) -> PLens s a")
 
 `L.lens` creates a new primitive lens.  The first parameter is the *getter* and
 the second parameter is the *setter*.  The setter takes two parameters: the
@@ -676,10 +991,6 @@ When composed with [`L.pick`](#pick), to flexibly pick the `start` and `end`
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require
 adding dependency to [Moment.js](http://momentjs.com/).
-
-### Lenses and combinators
-
-Lens combinators are either lenses or functions that return lenses.
 
 #### Computing derived props
 
@@ -960,46 +1271,6 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
 kN})`](#pick).
 
-#### Nesting
-
-##### <a name="compose"></a>[`L.compose(...lenses)`](#compose "L.compose :: (PLens s s1, ...PLens sN a) -> PLens s a")
-
-`L.compose` performs lens composition.  The following equations characterize
-lens composition:
-
-```jsx
-                  L.compose() = L.identity
-                 L.compose(l) = l
-L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
-   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
-```
-
-Furthermore, an array of lenses `[...lenses]` is treated as a composition of
-lenses `L.compose(...lenses)`.  Using the array notation, the above equations
-can be written as:
-
-```jsx
-                  [] = L.identity
-                 [l] = l
-L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
-   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
-```
-
-For example:
-
-```js
-L.set(["a", 1], "a", {a: ["b", "c"]})
-// { a: [ 'b', 'a' ] }
-```
-
-```js
-L.get(["a", 1], {a: ["b", "c"]})
-// 'c'
-```
-
-Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
-`L.compose`.
-
 #### Providing defaults
 
 ##### <a name="valueOr"></a>[`L.valueOr(valueOut)`](#valueOr "L.valueOr :: s -> PLens s s")
@@ -1056,36 +1327,6 @@ L.modify([L.sequence, L.choice("a", "d"), L.optional], R.inc, [{R: 1}, {a: 1}, {
 // [ { R: 1 }, { a: 2 }, { d: 3 } ]
 ```
 
-##### <a name="choose"></a>[`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
-
-`L.choose` creates an optic whose operation is determined by the given function
-that maps the underlying view, which can be `undefined`, to an optic.  In other
-words, the `L.choose` combinator allows an optic to be constructed *after*
-examining the data structure being manipulated.
-
-For example, given:
-
-```js
-const majorAxis =
-  L.choose(({x, y} = {}) => Math.abs(x) < Math.abs(y) ? "y" : "x")
-```
-
-we get:
-
-```js
-L.get(majorAxis, {x: 1, y: 2})
-// 2
-```
-```js
-L.get(majorAxis, {x: -3, y: 1})
-// -3
-```
-```js
-L.modify(majorAxis, R.negate, {x: 2, y: -3})
-// { x: 2, y: 3 }
-
-```
-
 ##### <a name="just"></a>[`L.just(maybeValue)`](#just "L.just :: Maybe a -> PLens s a")
 
 `L.just` returns a read-only lens whose view is always the given value.  In
@@ -1137,41 +1378,6 @@ L.get(["x", L.to(x => x + 1)], {x: 1})
 ```js
 L.set(["x", L.to(x => x + 1)], 3, {x: 1})
 // { x: 1 }
-```
-
-#### Recursion
-
-##### <a name="lazy"></a>[`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
-
-`L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
-is passed a forwarding proxy to its return value and can also make forward
-references to other optics and possibly construct a recursive optic.
-
-For example, here is a traversal that targets all the non-arrays in a data
-structure of nested arrays:
-
-```js
-const flatten = L.lazy(rec => {
-  const nest = [L.sequence, rec]
-  return L.choose(x => R.is(Array, x) ? nest : L.identity)
-})
-```
-
-Note that the above creates a cyclic representation of the traversal.
-
-Now, for example:
-
-```js
-L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
-// [ 1, 2, 3, 4, 5, 6 ]
-```
-```js
-L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
-// [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
-```
-```js
-L.remove([flatten, L.when(x => 3 <= x && x <= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
-// [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
 ```
 
 #### Transforming data
@@ -1247,9 +1453,9 @@ and [`define`](#define).
 
 ### Isomorphisms
 
-Aside from lenses, there is support for isomorphisms.  A lens, `iso`, is an
-isomorphism iff the following equations hold for all `x` and `y` in the domain
-and range, respectively, of the lens:
+The focus of an isomorphism is the whole data structure rather than a part of
+it.  A lens, `iso`, is an isomorphism iff the following equations hold for all
+`x` and `y` in the domain and range, respectively, of the lens:
 
 ```jsx
 L.set(iso, L.get(iso, x), undefined) = x
@@ -1258,10 +1464,6 @@ L.get(iso, L.set(iso, y, undefined)) = y
 
 The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
 undefined)` are inverses of each other.
-
-You can create new isomorphisms using [`L.lens`](#lens) and by composing
-existing isomorphism, because the composition of two isomorphisms is also an
-isomorphism.
 
 #### Operations on isomorphisms
 
@@ -1286,6 +1488,20 @@ example:
 ```js
 L.getInverse([0, "meaning"], 42)
 // [ { meaning: 42 } ]
+```
+
+#### Creating new isomorphisms
+
+##### <a name="iso"></a>[`L.iso(maybeData => maybeValue, maybeValue => maybeData)`](#iso "L.iso :: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
+
+`L.iso` creates a new primitive isomorphism.
+
+For example:
+
+```js
+const negate = L.iso(R.negate, R.negate)
+L.get([negate, L.inverse(negate)], 112)
+// 112
 ```
 
 #### Isomorphisms and combinators
@@ -1332,199 +1548,6 @@ For example:
 ```js
 L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
 // [ { id: 'a', x: 1 }, { id: 'b', x: 2 } ]
-```
-
-### Traversals
-
-Aside from lenses, there is support for traversals.  Traversals and lenses can
-be composed and the result is a traversal.  A traversal operates over a
-collection of focuses and for this reason traversals cannot be viewed
-([`get`](#get) does not work on a traversal), but they can
-be [collected](#collect), [folded](#foldMapOf), [modified](#modify), [set](#set)
-and [removed](#remove).
-
-#### Operations on traversals
-
-##### <a name="collect"></a>[`L.collect(traversal, maybeData)`](#collect "L.collect :: PTraversal s a -> Maybe s -> [a]")
-
-`L.collect` returns an array of the elements focused on by the given traversal
-or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Note that a partial *lens* always targets an element, but
-`L.collect` implicitly skips elements that are `undefined`.  Given a traversal,
-there can be any number of elements in the array returned by `L.collect`.
-
-For example:
-
-```js
-L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
-// [ 1, 2 ]
-```
-
-`L.collect(traversal, maybeData)` is equivalent
-to [`L.foldMapOf(List, traversal, toList, maybeData)`](#foldMapOf) where `List`
-and `toList` are defined as follows:
-
-```js
-const List = {empty: R.always([]), concat: R.concat}
-const toList = x => x !== undefined ? [x] : []
-```
-
-So:
-
-```js
-L.foldMapOf(List, ["xs", L.sequence, "x"], toList, {xs: [{x: 1}, {x: 2}]})
-// [ 1, 2 ]
-```
-
-The internal implementation of `L.collect` is optimized and faster than the
-above naïve implementation.
-
-##### <a name="foldMapOf"></a>[`L.foldMapOf({empty: value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#foldMapOf "L.foldMapOf :: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
-
-`L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
-`aM2r`, and fold, using the given `concat` and `empty` operations, over the
-elements focused on by the given traversal or lens `t` from the given data
-structure `s`.  The `concat` operation and the constant returned by `empty()`
-should form
-a
-[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values returned by `aM2r`.
-
-For example:
-
-```js
-L.foldMapOf({empty: () => 0, concat: R.add}, L.sequence, x => x, [1,2,3])
-// 6
-```
-
-#### Creating new traversals
-
-##### <a name="branch-op"></a>[`L.branch({prop: traversal, ...props})`](#branch-op "L.branch :: {p1 :: PTraversal s a, ...pts} -> PTraversal s a")
-
-`L.branch` is given a template object of traversals and returns a traversal that
-visits all the properties of an object according to the template.
-
-For example, continuing on the [BST example](#food-for-thought-bst-as-a-lens),
-here is a traversal that visits all the values of a binary tree in order:
-
-```js
-const values = L.lazy(rec => [
-  L.optional,
-  naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])
-```
-
-Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
-example:
-
-```js
-L.collect(values, sampleBST)
-// [ 'm', 'a', 'g', 'i', 'c' ]
-```
-```js
-L.modify(values, R.toUpper, sampleBST)
-// { key: 3,
-//   value: 'G',
-//   smaller: { key: 2, value: 'A', smaller: { key: 1, value: 'M' } },
-//   greater: { key: 4, value: 'I', greater: { key: 5, value: 'C' } } }
-```
-```js
-L.remove([values, L.when(x => x > "e")], sampleBST)
-// { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
-```
-
-#### Traversals and combinators
-
-##### <a name="optional"></a>[`L.optional`](#optional "L.optional :: PTraversal a a")
-
-`L.optional` is a traversal over an optional element.  When the focus of
-`L.optional` is `undefined`, the traversal is empty.  Otherwise the traversal is
-over the focused element.
-
-As an example, consider the difference between:
-
-```js
-L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
-// [ { x: 3 }, { y: 2, x: 3 } ]
-```
-
-and:
-
-```js
-L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
-// [ { x: 3 }, { y: 2 } ]
-```
-
-##### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
-
-`L.sequence` is a traversal over an array.
-
-For example:
-
-```js
-L.modify(["xs", L.sequence, "x"], R.add(1), {xs: [{x: 1}, {x: 2}]})
-// { xs: [ { x: 2 }, { x: 3 } ] }
-```
-
-##### <a name="skip"></a>[`L.skip`](#skip "L.skip :: PTraversal a b")
-
-`L.skip` is a traversal of no elements.
-
-For example:
-
-```js
-L.collect([L.sequence,
-           L.choose(x => (R.is(Array, x) ? L.sequence :
-                          R.is(Object, x) ? "x" :
-                          L.skip))],
-          [1, {x: 2}, [3,4]])
-// [ 2, 3, 4 ]
-```
-
-Note that the traversal `L.skip`, which traverses 0 elements, is not the same as
-the lens [`L.nothing`](#nothing), which traverses 1 element.
-
-##### <a name="when"></a>[`L.when(maybeValue => testable)`](#when "L.when :: (Maybe a -> Boolean) -> PTraversal a a")
-
-`L.when` allows one to selectively skip elements within a traversal.
-
-For example:
-
-```js
-L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
-// [ 0, -1, -2, -3, -4 ]
-```
-
-### Debugging
-
-#### <a name="log"></a>[`L.log(...labels)`](#log "L.log :: (...Any) -> Lens s s")
-
-`L.log(...labels)` is an identity lens that outputs
-[`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
-messages with the given labels (or
-[format in Node.js](https://nodejs.org/api/console.html#console_console_log_data))
-when data flows in either direction, `get` or `set`, through the lens.
-
-For example:
-
-```js
-L.get(["x", L.log()], {x: 10})
-// get 10
-// 10
-```
-```js
-L.set(["x", L.log("x")], "11", {x: 10})
-// x get 10
-// x set 11
-// { x: '11' }
-```
-```js
-L.set(["x", L.log("%s x: %j")], "11", {x: 10})
-// get x: 10
-// set x: "11"
-// { x: '11' }
 ```
 
 ## Background

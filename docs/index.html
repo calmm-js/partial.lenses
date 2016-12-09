@@ -22,11 +22,12 @@
 <p>Lenses are basically a <a href="#get">bidirectional</a> <a href="#compose">composable</a> abstraction
 for <a href="#modify">updating</a> <a href="#choose">selected</a> elements of immutable data
 structures that admits <a href="#performance">efficient</a> implementation.  This library
-provides a collection of <em>partial</em> lenses, <a href="#isomorphisms">isomorphisms</a>
-and <a href="#traversals">traversals</a> for manipulating <a href="http://json.org/">JSON</a>.  A
-partial lens can <em>view</em> optional data, <em>insert</em> new data, <em>update</em> existing data
-and <em>remove</em> existing data and can, for example, provide <em>defaults</em> and maintain
-<em>required</em> data structure
+provides a collection of
+<em>partial</em> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
+and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
+manipulating <a href="http://json.org/">JSON</a>.  A partial lens can <em>view</em> optional data,
+<em>insert</em> new data, <em>update</em> existing data and <em>remove</em> existing data and can,
+for example, provide <em>defaults</em> and maintain <em>required</em> data structure
 parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
@@ -46,18 +47,59 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#reference">Reference</a><ul>
+<li><a href="#optics">Optics</a><ul>
+<li><a href="#operations-on-optics">Operations on optics</a><ul>
+<li><a href="#modify" title="L.modify :: POptic s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, maybeValue =&gt; maybeValue, maybeData)</code></a></li>
+<li><a href="#remove" title="L.remove :: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData)</code></a></li>
+<li><a href="#set" title="L.set :: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData)</code></a></li>
+</ul>
+</li>
+<li><a href="#nesting">Nesting</a><ul>
+<li><a href="#compose" title="L.compose :: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a></li>
+</ul>
+</li>
+<li><a href="#choosing">Choosing</a><ul>
+<li><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></li>
+</ul>
+</li>
+<li><a href="#recursion">Recursion</a><ul>
+<li><a href="#lazy" title="L.lazy :: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></li>
+</ul>
+</li>
+<li><a href="#debugging">Debugging</a><ul>
+<li><a href="#log" title="L.log :: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#traversals">Traversals</a><ul>
+<li><a href="#operations-on-traversals">Operations on traversals</a><ul>
+<li><a href="#collect" title="L.collect :: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
+<li><a href="#foldMapOf" title="L.foldMapOf :: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></li>
+</ul>
+</li>
+<li><a href="#creating-new-traversals">Creating new traversals</a><ul>
+<li><a href="#branch-op" title="L.branch :: {p1 :: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></li>
+</ul>
+</li>
+<li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
+<li><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></li>
+<li><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></li>
+<li><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></li>
+<li><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#lenses">Lenses</a><ul>
 <li><a href="#operations-on-lenses">Operations on lenses</a><ul>
 <li><a href="#get" title="L.get :: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></li>
-<li><a href="#modify" title="L.modify :: PLens s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(lens, maybeValue =&gt; maybeValue, maybeData)</code></a></li>
-<li><a href="#remove" title="L.remove :: PLens s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(lens, maybeData)</code></a></li>
-<li><a href="#set" title="L.set :: PLens s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(lens, maybeValue, maybeData)</code></a></li>
 </ul>
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
 <li><a href="#lens" title="L.lens :: (Maybe s -&gt; Maybe a) -&gt; ((Maybe a, Maybe s) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData)</code></a></li>
 </ul>
 </li>
-<li><a href="#lenses-and-combinators">Lenses and combinators</a><ul>
 <li><a href="#computing-derived-props">Computing derived props</a><ul>
 <li><a href="#augment" title="L.augment :: {p1 :: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1 :: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props})</code></a></li>
 </ul>
@@ -83,10 +125,6 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#props" title="L.props :: (p1 :: a1, ...ps) -&gt; PLens {p1 :: a1, ...ps, ...o} {p1 :: a1, ...ps}"><code>L.props(...propNames)</code></a></li>
 </ul>
 </li>
-<li><a href="#nesting">Nesting</a><ul>
-<li><a href="#compose" title="L.compose :: (PLens s s1, ...PLens sN a) -&gt; PLens s a"><code>L.compose(...lenses)</code></a></li>
-</ul>
-</li>
 <li><a href="#providing-defaults">Providing defaults</a><ul>
 <li><a href="#valueOr" title="L.valueOr :: s -&gt; PLens s s"><code>L.valueOr(valueOut)</code></a></li>
 </ul>
@@ -94,15 +132,10 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#querying-and-adapting-to-data">Querying and adapting to data</a><ul>
 <li><a href="#chain" title="L.chain :: (a -&gt; PLens s b) -&gt; PLens s a -&gt; PLens s b"><code>L.chain(value =&gt; lens, lens)</code></a></li>
 <li><a href="#choice" title="L.choice :: (...PLens s a) -&gt; PLens s a"><code>L.choice(...lenses)</code></a></li>
-<li><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></li>
 <li><a href="#just" title="L.just :: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></li>
 <li><a href="#nothing" title="L.nothing :: PLens s a"><code>L.nothing</code></a></li>
 <li><a href="#orElse" title="L.orElse :: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></li>
 <li><a href="#to" title="L.to :: (a -&gt; b) -&gt; PLens a b"><code>L.to(maybeValue =&gt; maybeValue)</code></a></li>
-</ul>
-</li>
-<li><a href="#recursion">Recursion</a><ul>
-<li><a href="#lazy" title="L.lazy :: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></li>
 </ul>
 </li>
 <li><a href="#transforming-data">Transforming data</a><ul>
@@ -117,35 +150,16 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#getInverse" title="L.getInverse :: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData)</code></a></li>
 </ul>
 </li>
+<li><a href="#creating-new-isomorphisms">Creating new isomorphisms</a><ul>
+<li><a href="#iso" title="L.iso :: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData)</code></a></li>
+</ul>
+</li>
 <li><a href="#isomorphisms-and-combinators">Isomorphisms and combinators</a><ul>
 <li><a href="#fromArrayBy" title="L.fromArrayBy :: (p :: String) -&gt; PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}"><code>L.fromArrayBy(idPropName)</code></a></li>
 <li><a href="#identity" title="L.identity :: PIso s s"><code>L.identity</code></a></li>
 <li><a href="#inverse" title="L.inverse :: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism)</code></a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#traversals">Traversals</a><ul>
-<li><a href="#operations-on-traversals">Operations on traversals</a><ul>
-<li><a href="#collect" title="L.collect :: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
-<li><a href="#foldMapOf" title="L.foldMapOf :: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></li>
-</ul>
-</li>
-<li><a href="#creating-new-traversals">Creating new traversals</a><ul>
-<li><a href="#branch-op" title="L.branch :: {p1 :: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></li>
-</ul>
-</li>
-<li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></li>
-<li><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></li>
-<li><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></li>
-<li><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#debugging">Debugging</a><ul>
-<li><a href="#log" title="L.log :: (...Any) -&gt; Lens s s"><code>L.log(...labels)</code></a></li>
 </ul>
 </li>
 </ul>
@@ -440,19 +454,18 @@ texts that are longer than 5 characters:</p>
          sampleTexts)
 </code></pre>
 <h2 id="reference">Reference</h2>
-<p>The lens combinators are available as named imports.  Typically one just imports
-the library as:</p>
+<p>The combinators provided by this library are available as named imports.
+Typically one just imports the library as:</p>
 <pre><code class="hljs lang-jsx">import * as L from &quot;partial.lenses&quot;
 </code></pre>
-<h3 id="operations-on-lenses">Operations on lenses</h3>
-<p>Operations on lenses take lenses as parameters, but do not return lenses.</p>
-<h4 id="-a-name-get-a-l-get-lens-maybedata-get-l-get-plens-s-a-maybe-s-maybe-a-"><a name="get"></a><a href="#get" title="L.get :: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></h4>
-<p><code>L.get</code> returns the focused element from a data structure.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
-</code></pre>
-<p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
-<h4 id="-a-name-modify-a-l-modify-lens-maybevalue-maybevalue-maybedata-modify-l-modify-plens-s-a-maybe-a-maybe-a-maybe-s-maybe-s-"><a name="modify"></a><a href="#modify" title="L.modify :: PLens s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(lens, maybeValue =&gt; maybeValue, maybeData)</code></a></h4>
+<h3 id="optics">Optics</h3>
+<p>The abstractions, <a href="#traversals">traversals</a>, <a href="#lenses">lenses</a>,
+and <a href="#isomorphisms">isomorphisms</a>, provided by this library are collectively
+known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
+restriction of traversals that target a single element.  Isomorphisms are a
+restriction of lenses with an inverse.</p>
+<h4 id="operations-on-optics">Operations on optics</h4>
+<h5 id="-a-name-modify-a-l-modify-optic-maybevalue-maybevalue-maybedata-modify-l-modify-poptic-s-a-maybe-a-maybe-a-maybe-s-maybe-s-"><a name="modify"></a><a href="#modify" title="L.modify :: POptic s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, maybeValue =&gt; maybeValue, maybeData)</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
@@ -460,7 +473,7 @@ the library as:</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.sequence, &quot;x&quot;], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
 <p>of a data structure.</p>
-<h4 id="-a-name-remove-a-l-remove-lens-maybedata-remove-l-remove-plens-s-a-maybe-s-maybe-s-"><a name="remove"></a><a href="#remove" title="L.remove :: PLens s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(lens, maybeData)</code></a></h4>
+<h5 id="-a-name-remove-a-l-remove-optic-maybedata-remove-l-remove-poptic-s-a-maybe-s-maybe-s-"><a name="remove"></a><a href="#remove" title="L.remove :: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData)</code></a></h5>
 <p><code>L.remove</code> allows one to remove the focused element</p>
 <pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
@@ -468,10 +481,10 @@ the library as:</p>
 <pre><code class="hljs lang-js">L.remove([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
 <p>from a data structure.</p>
-<p>Note that <code>L.remove(lens, maybeData)</code> is equivalent
-to <a href="#set"><code>L.set(lens, undefined, maybeData)</code></a>.  With partial lenses, setting to
+<p>Note that <code>L.remove(optic, maybeData)</code> is equivalent
+to <a href="#set"><code>L.seOptic(lens, undefined, maybeData)</code></a>.  With partial lenses, setting to
 <code>undefined</code> typically has the effect of removing the focused element.</p>
-<h4 id="-a-name-set-a-l-set-lens-maybevalue-maybedata-set-l-set-plens-s-a-maybe-a-maybe-s-maybe-s-"><a name="set"></a><a href="#set" title="L.set :: PLens s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(lens, maybeValue, maybeData)</code></a></h4>
+<h5 id="-a-name-set-a-l-set-optic-maybevalue-maybedata-set-l-set-poptic-s-a-maybe-a-maybe-s-maybe-s-"><a name="set"></a><a href="#set" title="L.set :: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData)</code></a></h5>
 <p><code>L.set</code> allows one to replace the focused element</p>
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
@@ -481,8 +494,184 @@ to <a href="#set"><code>L.set(lens, undefined, maybeData)</code></a>.  With part
 <p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
-<h3 id="creating-new-lenses">Creating new lenses</h3>
-<h4 id="-a-name-lens-a-l-lens-maybedata-maybevalue-maybevalue-maybedata-maybedata-lens-l-lens-maybe-s-maybe-a-maybe-a-maybe-s-maybe-s-plens-s-a-"><a name="lens"></a><a href="#lens" title="L.lens :: (Maybe s -&gt; Maybe a) -&gt; ((Maybe a, Maybe s) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData)</code></a></h4>
+<h4 id="nesting">Nesting</h4>
+<h5 id="-a-name-compose-a-l-compose-optics-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-"><a name="compose"></a><a href="#compose" title="L.compose :: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a></h5>
+<p><code>L.compose</code> performs composition of optics.  The following equations
+characterize composition:</p>
+<pre><code class="hljs lang-jsx">                  L.compose() = L.identity
+                 L.compose(l) = l
+L.modify(L.compose(o, ...os)) = R.compose(L.modify(o), ...os.map(L.modify))
+   L.get(L.compose(o, ...os)) = R.pipe(L.get(o), ...os.map(L.get))
+</code></pre>
+<p>Furthermore, in this library, an array of optics <code>[...optics]</code> is treated as a
+composition <code>L.compose(...optics)</code>.  Using the array notation, the above
+equations can be written as:</p>
+<pre><code class="hljs lang-jsx">                  [] = L.identity
+                 [l] = l
+L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
+   L.get([o, ...os]) = R.pipe(L.get(o), ...os.map(L.get))
+</code></pre>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set([&quot;a&quot;, 1], &quot;a&quot;, {a: [&quot;b&quot;, &quot;c&quot;]})
+</code></pre>
+<pre><code class="hljs lang-js">L.get([&quot;a&quot;, 1], {a: [&quot;b&quot;, &quot;c&quot;]})
+</code></pre>
+<p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
+<code>L.compose</code>.</p>
+<h4 id="choosing">Choosing</h4>
+<h5 id="-a-name-choose-a-l-choose-maybevalue-optic-choose-l-choose-maybe-s-poptic-s-a-poptic-s-a-"><a name="choose"></a><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></h5>
+<p><code>L.choose</code> creates an optic whose operation is determined by the given function
+that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
+words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
+examining the data structure being manipulated.</p>
+<p>For example, given:</p>
+<pre><code class="hljs lang-js">var majorAxis =
+  L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &quot;y&quot; : &quot;x&quot;)
+</code></pre>
+<p>we get:</p>
+<pre><code class="hljs lang-js">L.get(majorAxis, {x: 1, y: 2})
+</code></pre>
+<pre><code class="hljs lang-js">L.get(majorAxis, {x: -3, y: 1})
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
+</code></pre>
+<h4 id="recursion">Recursion</h4>
+<h5 id="-a-name-lazy-a-l-lazy-optic-optic-lazy-l-lazy-poptic-s-a-poptic-s-a-"><a name="lazy"></a><a href="#lazy" title="L.lazy :: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
+<p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
+is passed a forwarding proxy to its return value and can also make forward
+references to other optics and possibly construct a recursive optic.</p>
+<p>For example, here is a traversal that targets all the non-arrays in a data
+structure of nested arrays:</p>
+<pre><code class="hljs lang-js">var flatten = L.lazy(rec =&gt; {
+  const nest = [L.sequence, rec]
+  return L.choose(x =&gt; R.is(Array, x) ? nest : L.identity)
+})
+</code></pre>
+<p>Note that the above creates a cyclic representation of the traversal.</p>
+<p>Now, for example:</p>
+<pre><code class="hljs lang-js">L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], 3, [4, [[5]], [6]]])
+</code></pre>
+<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
+</code></pre>
+<h4 id="debugging">Debugging</h4>
+<h5 id="-a-name-log-a-l-log-labels-log-l-log-any-poptic-s-s-"><a name="log"></a><a href="#log" title="L.log :: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></h5>
+<p><code>L.log(...labels)</code> is an identity optic that
+outputs
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
+messages with the given labels
+(or
+<a href="https://nodejs.org/api/console.html#console_console_log_data">format in Node.js</a>)
+when data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.log()], {x: 10})
+</code></pre>
+<pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;x&quot;)], &quot;11&quot;, {x: 10})
+</code></pre>
+<pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
+</code></pre>
+<h3 id="traversals">Traversals</h3>
+<p>A traversal operates over a collection of focuses that can
+be <a href="#collect">collected</a>, <a href="#foldMapOf">folded</a>, <a href="#modify">modified</a>, <a href="#set">set</a>
+and <a href="#remove">removed</a>.</p>
+<h4 id="operations-on-traversals">Operations on traversals</h4>
+<h5 id="-a-name-collect-a-l-collect-traversal-maybedata-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="collect"></a><a href="#collect" title="L.collect :: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
+<p><code>L.collect</code> returns an array of the elements focused on by the given traversal
+or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
+the returned array.  Note that a partial <em>lens</em> always targets an element, but
+<code>L.collect</code> implicitly skips elements that are <code>undefined</code>.  Given a traversal,
+there can be any number of elements in the array returned by <code>L.collect</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<p><code>L.collect(traversal, maybeData)</code> is equivalent
+to <a href="#foldMapOf"><code>L.foldMapOf(List, traversal, toList, maybeData)</code></a> where <code>List</code>
+and <code>toList</code> are defined as follows:</p>
+<pre><code class="hljs lang-js">var List = {empty: R.always([]), concat: R.concat}
+var toList = x =&gt; x !== undefined ? [x] : []
+</code></pre>
+<p>So:</p>
+<pre><code class="hljs lang-js">L.foldMapOf(List, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toList, {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<p>The internal implementation of <code>L.collect</code> is optimized and faster than the
+above naïve implementation.</p>
+<h5 id="-a-name-foldmapof-a-l-foldmapof-empty-value-concat-value-value-value-traversal-maybevalue-value-maybedata-foldmapof-l-foldmapof-empty-r-concat-r-r-r-ptraversal-s-a-maybe-a-r-maybe-s-r-"><a name="foldMapOf"></a><a href="#foldMapOf" title="L.foldMapOf :: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></h5>
+<p><code>L.foldMapOf({empty, concat}, t, aM2r, s)</code> performs a map, using given function
+<code>aM2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
+elements focused on by the given traversal or lens <code>t</code> from the given data
+structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
+should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values returned by <code>aM2r</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.foldMapOf({empty: () =&gt; 0, concat: R.add}, L.sequence, x =&gt; x, [1,2,3])
+</code></pre>
+<h4 id="creating-new-traversals">Creating new traversals</h4>
+<h5 id="-a-name-branch-op-a-l-branch-prop-traversal-props-branch-op-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="branch-op"></a><a href="#branch-op" title="L.branch :: {p1 :: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
+<p><code>L.branch</code> is given a template object of traversals and returns a traversal that
+visits all the properties of an object according to the template.</p>
+<p>For example, continuing on the <a href="#food-for-thought-bst-as-a-lens">BST example</a>,
+here is a traversal that visits all the values of a binary tree in order:</p>
+<pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+</code></pre>
+<p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
+example:</p>
+<pre><code class="hljs lang-js">L.collect(values, sampleBST)
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
+</code></pre>
+<pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
+</code></pre>
+<h4 id="traversals-and-combinators">Traversals and combinators</h4>
+<h5 id="-a-name-optional-a-l-optional-optional-l-optional-ptraversal-a-a-"><a name="optional"></a><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></h5>
+<p><code>L.optional</code> is a traversal over an optional element.  When the focus of
+<code>L.optional</code> is <code>undefined</code>, the traversal is empty.  Otherwise the traversal is
+over the focused element.</p>
+<p>As an example, consider the difference between:</p>
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
+</code></pre>
+<p>and:</p>
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
+</code></pre>
+<h5 id="-a-name-sequence-a-l-sequence-sequence-l-sequence-ptraversal-a-a-"><a name="sequence"></a><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></h5>
+<p><code>L.sequence</code> is a traversal over an array.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.add(1), {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<h5 id="-a-name-skip-a-l-skip-skip-l-skip-ptraversal-a-b-"><a name="skip"></a><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></h5>
+<p><code>L.skip</code> is a traversal of no elements.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect([L.sequence,
+           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? &quot;x&quot; :
+                          L.skip))],
+          [1, {x: 2}, [3,4]])
+</code></pre>
+<p>Note that the traversal <code>L.skip</code>, which traverses 0 elements, is not the same as
+the lens <a href="#nothing"><code>L.nothing</code></a>, which traverses 1 element.</p>
+<h5 id="-a-name-when-a-l-when-maybevalue-testable-when-l-when-maybe-a-boolean-ptraversal-a-a-"><a name="when"></a><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
+<p><code>L.when</code> allows one to selectively skip elements within a traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0,-1,2,-3,4])
+</code></pre>
+<h3 id="lenses">Lenses</h3>
+<h4 id="operations-on-lenses">Operations on lenses</h4>
+<p>Operations on lenses take lenses as parameters, but do not return lenses.</p>
+<h5 id="-a-name-get-a-l-get-lens-maybedata-get-l-get-plens-s-a-maybe-s-maybe-a-"><a name="get"></a><a href="#get" title="L.get :: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></h5>
+<p><code>L.get</code> returns the focused element from a data structure.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
+</code></pre>
+<p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
+<h4 id="creating-new-lenses">Creating new lenses</h4>
+<h5 id="-a-name-lens-a-l-lens-maybedata-maybevalue-maybevalue-maybedata-maybedata-lens-l-lens-maybe-s-maybe-a-maybe-a-maybe-s-maybe-s-plens-s-a-"><a name="lens"></a><a href="#lens" title="L.lens :: (Maybe s -&gt; Maybe a) -&gt; ((Maybe a, Maybe s) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData)</code></a></h5>
 <p><code>L.lens</code> creates a new primitive lens.  The first parameter is the <em>getter</em> and
 the second parameter is the <em>setter</em>.  The setter takes two parameters: the
 first is the value written and the second is the data structure to write into.</p>
@@ -526,8 +715,6 @@ convert a pair of <code>start</code> and <code>end</code> times to a duration:</
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
-<h3 id="lenses-and-combinators">Lenses and combinators</h3>
-<p>Lens combinators are either lenses or functions that return lenses.</p>
 <h4 id="computing-derived-props">Computing derived props</h4>
 <h5 id="-a-name-augment-a-l-augment-prop-object-value-props-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a name="augment"></a><a href="#augment" title="L.augment :: {p1 :: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1 :: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props})</code></a></h5>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
@@ -693,30 +880,6 @@ exists previously.  When set, any extra properties are ignored.</p>
 </code></pre>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#pick"><code>L.pick({[k1]: k1, ..., [kN]:
 kN})</code></a>.</p>
-<h4 id="nesting">Nesting</h4>
-<h5 id="-a-name-compose-a-l-compose-lenses-compose-l-compose-plens-s-s1-plens-sn-a-plens-s-a-"><a name="compose"></a><a href="#compose" title="L.compose :: (PLens s s1, ...PLens sN a) -&gt; PLens s a"><code>L.compose(...lenses)</code></a></h5>
-<p><code>L.compose</code> performs lens composition.  The following equations characterize
-lens composition:</p>
-<pre><code class="hljs lang-jsx">                  L.compose() = L.identity
-                 L.compose(l) = l
-L.modify(L.compose(l, ...ls)) = R.compose(L.modify(l), ...ls.map(L.modify))
-   L.get(L.compose(l, ...ls)) = R.pipe(L.get(l), ...ls.map(L.get))
-</code></pre>
-<p>Furthermore, an array of lenses <code>[...lenses]</code> is treated as a composition of
-lenses <code>L.compose(...lenses)</code>.  Using the array notation, the above equations
-can be written as:</p>
-<pre><code class="hljs lang-jsx">                  [] = L.identity
-                 [l] = l
-L.modify([l, ...ls]) = R.compose(L.modify(l), ...ls.map(L.modify))
-   L.get([l, ...ls]) = R.pipe(L.get(l), ...ls.map(L.get))
-</code></pre>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.set([&quot;a&quot;, 1], &quot;a&quot;, {a: [&quot;b&quot;, &quot;c&quot;]})
-</code></pre>
-<pre><code class="hljs lang-js">L.get([&quot;a&quot;, 1], {a: [&quot;b&quot;, &quot;c&quot;]})
-</code></pre>
-<p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
-<code>L.compose</code>.</p>
 <h4 id="providing-defaults">Providing defaults</h4>
 <h5 id="-a-name-valueor-a-l-valueor-valueout-valueor-l-valueor-s-plens-s-s-"><a name="valueOr"></a><a href="#valueOr" title="L.valueOr :: s -&gt; PLens s s"><code>L.valueOr(valueOut)</code></a></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
@@ -750,22 +913,6 @@ like <a href="#nothing"><code>L.nothing</code></a>, which is the identity elemen
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.sequence, L.choice(&quot;a&quot;, &quot;d&quot;), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
-<h5 id="-a-name-choose-a-l-choose-maybevalue-optic-choose-l-choose-maybe-s-poptic-s-a-poptic-s-a-"><a name="choose"></a><a href="#choose" title="L.choose :: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></h5>
-<p><code>L.choose</code> creates an optic whose operation is determined by the given function
-that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
-words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
-examining the data structure being manipulated.</p>
-<p>For example, given:</p>
-<pre><code class="hljs lang-js">var majorAxis =
-  L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &quot;y&quot; : &quot;x&quot;)
-</code></pre>
-<p>we get:</p>
-<pre><code class="hljs lang-js">L.get(majorAxis, {x: 1, y: 2})
-</code></pre>
-<pre><code class="hljs lang-js">L.get(majorAxis, {x: -3, y: 1})
-</code></pre>
-<pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
-</code></pre>
 <h5 id="-a-name-just-a-l-just-maybevalue-just-l-just-maybe-a-plens-s-a-"><a name="just"></a><a href="#just" title="L.just :: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></h5>
 <p><code>L.just</code> returns a read-only lens whose view is always the given value.  In
 other words, for all <code>x</code>, <code>y</code> and <code>z</code>:</p>
@@ -797,26 +944,6 @@ for <a href="#choice"><code>L.choice</code></a>, for example.</p>
 <pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.to(x =&gt; x + 1)], {x: 1})
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.to(x =&gt; x + 1)], 3, {x: 1})
-</code></pre>
-<h4 id="recursion">Recursion</h4>
-<h5 id="-a-name-lazy-a-l-lazy-optic-optic-lazy-l-lazy-poptic-s-a-poptic-s-a-"><a name="lazy"></a><a href="#lazy" title="L.lazy :: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
-<p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
-is passed a forwarding proxy to its return value and can also make forward
-references to other optics and possibly construct a recursive optic.</p>
-<p>For example, here is a traversal that targets all the non-arrays in a data
-structure of nested arrays:</p>
-<pre><code class="hljs lang-js">var flatten = L.lazy(rec =&gt; {
-  const nest = [L.sequence, rec]
-  return L.choose(x =&gt; R.is(Array, x) ? nest : L.identity)
-})
-</code></pre>
-<p>Note that the above creates a cyclic representation of the traversal.</p>
-<p>Now, for example:</p>
-<pre><code class="hljs lang-js">L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
-</code></pre>
-<pre><code class="hljs lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], 3, [4, [[5]], [6]]])
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
 </code></pre>
 <h4 id="transforming-data">Transforming data</h4>
 <h5 id="-a-name-pick-a-l-pick-prop-lens-props-pick-l-pick-p1-plens-s-a1-pls-plens-s-p1-a1-pls-"><a name="pick"></a><a href="#pick" title="L.pick :: {p1 :: PLens s a1, ...pls} -&gt; PLens s {p1 :: a1, ...pls}"><code>L.pick({prop: lens, ...props})</code></a></h5>
@@ -862,17 +989,14 @@ and elements.  In most cases, rather than using <code>replace</code>, you will m
 selective use of <a href="#defaults"><code>defaults</code></a>, <a href="#required"><code>required</code></a>
 and <a href="#define"><code>define</code></a>.</p>
 <h3 id="isomorphisms">Isomorphisms</h3>
-<p>Aside from lenses, there is support for isomorphisms.  A lens, <code>iso</code>, is an
-isomorphism iff the following equations hold for all <code>x</code> and <code>y</code> in the domain
-and range, respectively, of the lens:</p>
+<p>The focus of an isomorphism is the whole data structure rather than a part of
+it.  A lens, <code>iso</code>, is an isomorphism iff the following equations hold for all
+<code>x</code> and <code>y</code> in the domain and range, respectively, of the lens:</p>
 <pre><code class="hljs lang-jsx">L.set(iso, L.get(iso, x), undefined) = x
 L.get(iso, L.set(iso, y, undefined)) = y
 </code></pre>
 <p>The above equations mean that <code>x =&gt; L.get(iso, x)</code> and <code>y =&gt; L.set(iso, y,
 undefined)</code> are inverses of each other.</p>
-<p>You can create new isomorphisms using <a href="#lens"><code>L.lens</code></a> and by composing
-existing isomorphism, because the composition of two isomorphisms is also an
-isomorphism.</p>
 <h4 id="operations-on-isomorphisms">Operations on isomorphisms</h4>
 <h5 id="-a-name-getinverse-a-l-getinverse-isomorphism-maybedata-getinverse-l-getinverse-piso-a-b-maybe-b-maybe-a-"><a name="getInverse"></a><a href="#getInverse" title="L.getInverse :: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData)</code></a></h5>
 <p><code>L.getInverse</code> views through an isomorphism in the inverse direction.</p>
@@ -885,6 +1009,13 @@ undefined)</code>.</p>
 isomorphism, it is valid to use <code>L.getInverse</code> with lenses in general.  For
 example:</p>
 <pre><code class="hljs lang-js">L.getInverse([0, &quot;meaning&quot;], 42)
+</code></pre>
+<h4 id="creating-new-isomorphisms">Creating new isomorphisms</h4>
+<h5 id="-a-name-iso-a-l-iso-maybedata-maybevalue-maybevalue-maybedata-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a name="iso"></a><a href="#iso" title="L.iso :: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData)</code></a></h5>
+<p><code>L.iso</code> creates a new primitive isomorphism.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">var negate = L.iso(R.negate, R.negate)
+L.get([negate, L.inverse(negate)], 112)
 </code></pre>
 <h4 id="isomorphisms-and-combinators">Isomorphisms and combinators</h4>
 <h5 id="-a-name-fromarrayby-a-l-fromarrayby-idpropname-fromarrayby-l-fromarrayby-p-string-piso-p-string-ps-string-p-string-ps-"><a name="fromArrayBy"></a><a href="#fromArrayBy" title="L.fromArrayBy :: (p :: String) -&gt; PIso [{p :: String, ...ps}] {String: {p :: String, ...ps}}"><code>L.fromArrayBy(idPropName)</code></a></h5>
@@ -911,113 +1042,6 @@ L.modify(L.identity, f, x) = f(x)
 operation only works on isomorphisms.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(L.fromArrayBy(&#39;id&#39;)), {a: {id: &quot;a&quot;, x: 1}, b: {id: &quot;b&quot;, x: 2}})
-</code></pre>
-<h3 id="traversals">Traversals</h3>
-<p>Aside from lenses, there is support for traversals.  Traversals and lenses can
-be composed and the result is a traversal.  A traversal operates over a
-collection of focuses and for this reason traversals cannot be viewed
-(<a href="#get"><code>get</code></a> does not work on a traversal), but they can
-be <a href="#collect">collected</a>, <a href="#foldMapOf">folded</a>, <a href="#modify">modified</a>, <a href="#set">set</a>
-and <a href="#remove">removed</a>.</p>
-<h4 id="operations-on-traversals">Operations on traversals</h4>
-<h5 id="-a-name-collect-a-l-collect-traversal-maybedata-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="collect"></a><a href="#collect" title="L.collect :: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
-<p><code>L.collect</code> returns an array of the elements focused on by the given traversal
-or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Note that a partial <em>lens</em> always targets an element, but
-<code>L.collect</code> implicitly skips elements that are <code>undefined</code>.  Given a traversal,
-there can be any number of elements in the array returned by <code>L.collect</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
-</code></pre>
-<p><code>L.collect(traversal, maybeData)</code> is equivalent
-to <a href="#foldMapOf"><code>L.foldMapOf(List, traversal, toList, maybeData)</code></a> where <code>List</code>
-and <code>toList</code> are defined as follows:</p>
-<pre><code class="hljs lang-js">var List = {empty: R.always([]), concat: R.concat}
-var toList = x =&gt; x !== undefined ? [x] : []
-</code></pre>
-<p>So:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(List, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toList, {xs: [{x: 1}, {x: 2}]})
-</code></pre>
-<p>The internal implementation of <code>L.collect</code> is optimized and faster than the
-above naïve implementation.</p>
-<h5 id="-a-name-foldmapof-a-l-foldmapof-empty-value-concat-value-value-value-traversal-maybevalue-value-maybedata-foldmapof-l-foldmapof-empty-r-concat-r-r-r-ptraversal-s-a-maybe-a-r-maybe-s-r-"><a name="foldMapOf"></a><a href="#foldMapOf" title="L.foldMapOf :: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></h5>
-<p><code>L.foldMapOf({empty, concat}, t, aM2r, s)</code> performs a map, using given function
-<code>aM2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
-elements focused on by the given traversal or lens <code>t</code> from the given data
-structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
-should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values returned by <code>aM2r</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.foldMapOf({empty: () =&gt; 0, concat: R.add}, L.sequence, x =&gt; x, [1,2,3])
-</code></pre>
-<h4 id="creating-new-traversals">Creating new traversals</h4>
-<h5 id="-a-name-branch-op-a-l-branch-prop-traversal-props-branch-op-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="branch-op"></a><a href="#branch-op" title="L.branch :: {p1 :: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
-<p><code>L.branch</code> is given a template object of traversals and returns a traversal that
-visits all the properties of an object according to the template.</p>
-<p>For example, continuing on the <a href="#food-for-thought-bst-as-a-lens">BST example</a>,
-here is a traversal that visits all the values of a binary tree in order:</p>
-<pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
-  L.optional,
-  naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])
-</code></pre>
-<p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
-example:</p>
-<pre><code class="hljs lang-js">L.collect(values, sampleBST)
-</code></pre>
-<pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
-</code></pre>
-<h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<h5 id="-a-name-optional-a-l-optional-optional-l-optional-ptraversal-a-a-"><a name="optional"></a><a href="#optional" title="L.optional :: PTraversal a a"><code>L.optional</code></a></h5>
-<p><code>L.optional</code> is a traversal over an optional element.  When the focus of
-<code>L.optional</code> is <code>undefined</code>, the traversal is empty.  Otherwise the traversal is
-over the focused element.</p>
-<p>As an example, consider the difference between:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
-</code></pre>
-<p>and:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
-</code></pre>
-<h5 id="-a-name-sequence-a-l-sequence-sequence-l-sequence-ptraversal-a-a-"><a name="sequence"></a><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></h5>
-<p><code>L.sequence</code> is a traversal over an array.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.add(1), {xs: [{x: 1}, {x: 2}]})
-</code></pre>
-<h5 id="-a-name-skip-a-l-skip-skip-l-skip-ptraversal-a-b-"><a name="skip"></a><a href="#skip" title="L.skip :: PTraversal a b"><code>L.skip</code></a></h5>
-<p><code>L.skip</code> is a traversal of no elements.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.sequence,
-           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
-                          R.is(Object, x) ? &quot;x&quot; :
-                          L.skip))],
-          [1, {x: 2}, [3,4]])
-</code></pre>
-<p>Note that the traversal <code>L.skip</code>, which traverses 0 elements, is not the same as
-the lens <a href="#nothing"><code>L.nothing</code></a>, which traverses 1 element.</p>
-<h5 id="-a-name-when-a-l-when-maybevalue-testable-when-l-when-maybe-a-boolean-ptraversal-a-a-"><a name="when"></a><a href="#when" title="L.when :: (Maybe a -&gt; Boolean) -&gt; PTraversal a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
-<p><code>L.when</code> allows one to selectively skip elements within a traversal.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0,-1,2,-3,4])
-</code></pre>
-<h3 id="debugging">Debugging</h3>
-<h4 id="-a-name-log-a-l-log-labels-log-l-log-any-lens-s-s-"><a name="log"></a><a href="#log" title="L.log :: (...Any) -&gt; Lens s s"><code>L.log(...labels)</code></a></h4>
-<p><code>L.log(...labels)</code> is an identity lens that outputs
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
-messages with the given labels (or
-<a href="https://nodejs.org/api/console.html#console_console_log_data">format in Node.js</a>)
-when data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.log()], {x: 10})
-</code></pre>
-<pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;x&quot;)], &quot;11&quot;, {x: 10})
-</code></pre>
-<pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <h2 id="background">Background</h2>
 <h3 id="motivation">Motivation</h3>
