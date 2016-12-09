@@ -233,11 +233,13 @@ function modifyU(l, x2x, s) {
   }
 }
 
+const isoU = (bwd, fwd) => (F, x2yF, x) => F.map(fwd, x2yF(bwd(x)))
 const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
 const collectU = (l, s) =>
   PartialList.toArray(lift(l)(Collect, PartialList.of, s))
 
 export const remove = curry2((l, s) => setU(l, undefined, s))
+export const iso = curry2(isoU)
 export const lens = curry2(lensU)
 export const modify = curry3(modifyU)
 export const set = curry3(setU)
@@ -421,7 +423,7 @@ export const props = (...ks) => pick(zipObjPartialU(ks, ks))
 const show = (labels, dir) => x => console.log(...labels, dir, x) || x
 
 export const log = (...labels) =>
-  lensU(show(labels, "get"), show(labels, "set"))
+  isoU(show(labels, "get"), show(labels, "set"))
 
 export function lazy(toLens) {
   let memo = (F, fn, x) => {
@@ -463,7 +465,7 @@ export function branch(template) {
 
 export const fromArrayBy = id =>
   warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  lensU(xs => {
+  isoU(xs => {
     if (isArray(xs)) {
       const o = {}, n=xs.length
       for (let i=0; i<n; ++i) {
