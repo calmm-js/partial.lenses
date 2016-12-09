@@ -1482,8 +1482,8 @@ Note that `L.getInverse(iso, data)` is equivalent to `L.set(iso, data,
 undefined)`.
 
 Also note that, while `L.getInverse` makes most sense when used with an
-isomorphism, it is valid to use `L.getInverse` with lenses in general.  For
-example:
+isomorphism, it is valid to use `L.getInverse` with *partial* lenses in general.
+For example:
 
 ```js
 L.getInverse([0, "meaning"], 42)
