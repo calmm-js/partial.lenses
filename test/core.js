@@ -1,12 +1,11 @@
 import * as I from "infestines"
 import * as L from "../src/partial.lenses"
-import * as R from "ramda"
 
 //
 
 const toPartial = x2x => s => I.isDefined(s) ? x2x(s) : s
-const List = {empty: R.always([]), concat: R.concat}
-const toList = x => x !== undefined ? [x] : []
+const List = {empty: I.always([]), concat: (x, y) => x.concat(y)}
+const toList = x => I.isDefined(x) ? [x] : []
 
 //
 
@@ -43,12 +42,12 @@ export const rewrite = x2x => iso(I.id, toPartial(x2x))
 
 export const append = choose(s => I.isArray(s) ? s.length : 0)
 export const filter = L.filter
-export const find = predicate => choose(xs => {if (!I.isArray(xs)) return append; const i = xs.findIndex(predicate); return i < 0 ? append : i})
+export const find = p => choose(xs => {if (!I.isArray(xs)) return append; const i = xs.findIndex(p); return i < 0 ? append : i})
 export const findWith = (...ls) => {const lls = compose(...ls); return [find(x => I.isDefined(get(lls, x))), lls]}
 export const index = L.index
 
 export const prop = L.prop
-export const props = (...ps) => pick(R.zipObj(ps, ps))
+export const props = (...ps) => pick(I.zipObjPartialU(ps, ps))
 
 export const valueOr = v => lens(s => s === null || s === undefined ? v : s, I.id)
 
@@ -64,8 +63,8 @@ export const replace = I.curry2((i, o) => iso(x => I.acyclicEqualsU(i, x) ? o : 
 
 export const getInverse = I.curry2((i, s) => set(i, s, undefined))
 
-export const iso = I.curry2((b, f) => lens(b, f))
+export const iso = lens
 
 export const fromArrayBy = L.fromArrayBy
-export const identity = lens(I.id, I.id)
+export const identity = iso(I.id, I.id)
 export const inverse = i => iso(getInverse(i), get(i))
