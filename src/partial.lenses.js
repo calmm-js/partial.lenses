@@ -18,23 +18,19 @@ import {
 
 //
 
+const emptyArray = []
+const emptyObject = {}
+
+//
+
 const apply = (x2y, x) => x2y(x)
 const snd = (_, c) => c
 
 //
 
-const Ident = {
-  map: apply,
-  of: id,
-  ap: apply
-}
-
-const Const = {
-  map: snd,
-  of: id
-}
-
-const ConstOf = Monoid => {
+const Ident = {map: apply, of: id, ap: apply}
+const Const = {map: snd, of: id}
+function ConstOf(Monoid) {
   const concat = Monoid.concat
   return {
     map: snd,
@@ -43,44 +39,50 @@ const ConstOf = Monoid => {
   }
 }
 
-const pl_of = x => isDefined(x) ? [x, null] : null
-function pl_revConcat(xs, ys) {
-  while (xs) {
-    ys = [xs[0], ys]
-    xs = xs[1]
-  }
-  return ys
-}
-const pl_reverse = xs => pl_revConcat(xs, null)
-function pl_toArray(xs) {
+//
+
+function Concat(l, r) {this.l = l; this.r = r}
+const pl_concat = (l, r) =>
+  isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
+const pl_rconcat = t => h => pl_concat(h, t)
+
+function pl_toArray(n) {
   const ys = []
-  while (xs) {
-    ys.push(xs[0])
-    xs = xs[1]
-  }
+  if (!isDefined(n))
+    return ys
+  const ns = []
+  do {
+    if (n && n.constructor === Concat) {
+      ns.push(n.r)
+      n = n.l
+    } else {
+      ys.push(n)
+      n = ns.pop()
+    }
+  } while (isDefined(n))
   return ys
 }
 
 const Collect = ConstOf({
-  empty: always(null),
-  concat: (xs, ys) => pl_revConcat(pl_reverse(xs), ys)
+  empty: always(undefined),
+  concat: pl_concat
 })
 
-const pl_consr = t => h => isDefined(h) ? [h, t] : t
+//
+
 
 function pa_traverse(A, x2yA, xs) {
-  let s = A.of(null)
-  let i = xs.length
+  const ap = A.ap, map = A.map
+  let s = A.of(undefined), i = xs.length
   while (i)
-    s = A.ap(A.map(pl_consr, s), x2yA(xs[--i]))
-  return A.map(pl_toArray, s)
+    s = ap(map(pl_rconcat, s), x2yA(xs[--i]))
+  return map(pl_toArray, s)
 }
 
 //
 
 const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
   const warned = {}
-
   return message => {
     if (!(message in warned)) {
       warned[message] = message
@@ -88,11 +90,6 @@ const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
     }
   }
 })()
-
-//
-
-const emptyArray = []
-const emptyObject = {}
 
 //
 
@@ -234,7 +231,7 @@ function modifyU(l, x2x, s) {
 
 const isoU = (bwd, fwd) => (F, x2yF, x) => F.map(fwd, x2yF(bwd(x)))
 const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
-const collectU = (l, s) => pl_toArray(lift(l)(Collect, pl_of, s))
+const collectU = (l, s) => pl_toArray(lift(l)(Collect, id, s))
 
 export const remove = curry2((l, s) => setU(l, undefined, s))
 export const iso = curry2(isoU)
@@ -448,10 +445,10 @@ export function branch(template) {
   const n = keys.length
   return (A, x2yA, x) => {
     notGet(A)
-    const wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
+    const ap = A.ap, wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
     let r = A.of(wait(x, n-1))
     for (let i=n-1; 0<=i; --i)
-      r = A.ap(r, vals[i](A, x2yA, getU(keys[i], x)))
+      r = ap(r, vals[i](A, x2yA, getU(keys[i], x)))
     return r
   }
 }
