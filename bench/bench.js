@@ -38,41 +38,15 @@ const toList = x => x !== undefined ? [x] : []
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
 const bs = [
-  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
-  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
-  'R.map(R.map(R.map(inc)), xsss100)',
-
-  'L.get(d0x0y, axay)',
-  'L.set(d0x0y, 1, undefined)',
-
-  'L.set(L.findWith("x"), 2, axay)',
-
-  'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
-
-  'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
-  'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
-
   'L.foldMapOf(Sum, L.sequence, id, xs100)',
   'P.sumOf(P.traversed, xs100)',
   'R.sum(xs100)',
 
   'L.collect(L.sequence, xs100)',
-  'L.foldMapOf(List, L.sequence, toList, xs100)',
 
   'L.modify(L.sequence, inc, xs100)',
   'P.over(P.traversed, inc, xs100)',
   'R.map(inc, xs100)',
-
-  'L.get(L.defaults(1), undefined)',
-  'L.get(L.defaults(1), 2)',
-
-  'L.get(L.define(1), undefined)',
-  'L.get(L.define(1), 2)',
-
-  'L.get(L.valueOr(1), undefined)',
-  'L.get(L.valueOr(1), null)',
-  'L.get(L.valueOr(1), 2)',
-
   'L.get(1, xs)',
   'R.nth(1, xs)',
   'R.view(l_1, xs)',
@@ -129,6 +103,32 @@ const bs = [
   'L.set(5000, 2, xs10000)',
   'R.remove(5000, 1, xs10000)',
   'R.update(5000, 2, xs10000)',
+
+  'L.get(L.defaults(1), undefined)',
+  'L.get(L.defaults(1), 2)',
+
+  'L.get(L.define(1), undefined)',
+  'L.get(L.define(1), 2)',
+
+  'L.get(L.valueOr(1), undefined)',
+  'L.get(L.valueOr(1), null)',
+  'L.get(L.valueOr(1), 2)',
+
+  'L.foldMapOf(List, L.sequence, toList, xs100)',
+
+  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
+  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
+  'R.map(R.map(R.map(inc)), xsss100)',
+
+  'L.get(d0x0y, axay)',
+  'L.set(d0x0y, 1, undefined)',
+
+  'L.set(L.findWith("x"), 2, axay)',
+
+  'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
+
+  'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
+  'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
 
   'L.get(L.fromArrayBy("id"), ids)'
 ]
