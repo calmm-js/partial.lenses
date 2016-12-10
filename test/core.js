@@ -24,7 +24,7 @@ export const foldMapOf = L.foldMapOf
 
 export const branch = L.branch
 
-export const when = p => choose(x => p(x) ? skip : identity)
+export const when = p => choose(x => p(x) ? identity : skip)
 export const optional = when(I.isDefined)
 export const sequence = L.sequence
 export const skip = L.skip
@@ -60,7 +60,7 @@ export const nothing = just(undefined)
 export const orElse = I.curry2((d, l) => choose(x => I.isDefined(get(l, x)) ? l : d))
 
 export const pick = L.pick
-export const replace = I.curry2((i, o) => iso(x => I.acyclicEquals(i, x) ? o : x, x => I.acyclicEquals(o, x) ? i : x))
+export const replace = I.curry2((i, o) => iso(x => I.acyclicEqualsU(i, x) ? o : x, x => I.acyclicEqualsU(o, x) ? i : x))
 
 export const getInverse = I.curry2((i, s) => set(i, s, undefined))
 
