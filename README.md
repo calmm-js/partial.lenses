@@ -38,9 +38,9 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
       * [`L.set(optic, maybeValue, maybeData)`](#set "L.set :: POptic s a -> Maybe a -> Maybe s -> Maybe s")
     * [Nesting](#nesting)
       * [`L.compose(...optics)`](#compose "L.compose :: (POptic s s1, ...POptic sN a) -> POptic s a")
-    * [Choosing](#choosing)
+    * [Adapting](#adapting)
       * [`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
-    * [Recursion](#recursion)
+    * [Recursing](#recursing)
       * [`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
     * [Debugging](#debugging)
       * [`L.log(...labels)`](#log "L.log :: (...Any) -> POptic s s")
@@ -674,7 +674,7 @@ L.get(["a", 1], {a: ["b", "c"]})
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
 
-#### Choosing
+#### Adapting
 
 ##### <a name="choose"></a>[`L.choose(maybeValue => optic)`](#choose "L.choose :: (Maybe s -> POptic s a) -> POptic s a")
 
@@ -705,7 +705,7 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 // { x: 2, y: 3 }
 ```
 
-#### Recursion
+#### Recursing
 
 ##### <a name="lazy"></a>[`L.lazy(optic => optic)`](#lazy "L.lazy :: POptic s a -> POptic s a")
 
