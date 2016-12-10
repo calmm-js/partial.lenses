@@ -247,10 +247,7 @@ export const get = curry2(getU)
 export const getInverse = curry2(getInverseU)
 export const collect = curry2(collectU)
 
-export const foldMapOf = curry4((m, l, to, s) => {
-  const Const = ConstOf(m)
-  return lift(l)(Const, to, s)
-})
+export const foldMapOf = curry4((m, l, to, s) => lift(l)(ConstOf(m), to, s))
 
 export const inverse = iso => (F, inner, x) =>
   F.map(x => getU(iso, x), inner(getInverseU(iso, x)))
