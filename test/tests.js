@@ -296,6 +296,7 @@ describe("L.sequence", () => {
 describe("L.optional", () => {
   testEq('L.collect(L.optional, undefined)', [])
   testEq('L.collect(L.optional, 0)', [ 0 ])
+  testEq('L.collect([L.sequence, L.sequence], [[0, null], [false, NaN]])', [0, null, false, NaN])
   testEq('L.collect([L.sequence, "x", L.optional], [{x: 1}, {y: 2}, {x: 3, z: 1}])', [1, 3])
   testEq('L.modify([L.sequence, "x", L.optional], R.add(1), [{x: 1}, {y: 2}, {x: 3, z: 1}])', [{x: 2}, {y: 2}, {x: 4, z: 1}])
   testEq('L.collect([L.sequence, "x", L.optional, L.sequence], [{x: [1, 2]}, {y: 2}, {x: [3], z: 1}])', [1, 2, 3])
