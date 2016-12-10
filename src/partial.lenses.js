@@ -34,47 +34,46 @@ const Const = {
   of: id
 }
 
-const ConstOf = Monoid => ({
-  map: snd,
-  of: always(Monoid.empty()),
-  ap: (x2yA, xA) => Monoid.concat(xA, x2yA)
-})
-
-const PartialList = {
-  of: x => isDefined(x) ? [x, null] : null,
-  empty: always(null),
-  cons: (h, t) => isDefined(h) ? [h, t] : t,
-  revConcat(xs, ys) {
-    while (xs) {
-      ys = [xs[0], ys]
-      xs = xs[1]
-    }
-    return ys
-  },
-  reverse: xs => PartialList.revConcat(xs, null),
-  concat: (xs, ys) => PartialList.revConcat(PartialList.reverse(xs), ys),
-  toArray(xs) {
-    const ys = []
-    while (xs) {
-      ys.push(xs[0])
-      xs = xs[1]
-    }
-    return ys
+const ConstOf = Monoid => {
+  const concat = Monoid.concat
+  return {
+    map: snd,
+    of: always(Monoid.empty()),
+    ap: (x2yA, xA) => concat(xA, x2yA)
   }
 }
 
-const Collect = ConstOf(PartialList)
-
-const csnoc = t => h => PartialList.cons(h, t)
-
-const PartialArray = {
-  traverse(A, x2yA, xs) {
-    let s = A.of(PartialList.empty())
-    let i = xs.length
-    while (i)
-      s = A.ap(A.map(csnoc, s), x2yA(xs[--i]))
-    return A.map(PartialList.toArray, s)
+const pl_of = x => isDefined(x) ? [x, null] : null
+function pl_revConcat(xs, ys) {
+  while (xs) {
+    ys = [xs[0], ys]
+    xs = xs[1]
   }
+  return ys
+}
+const pl_reverse = xs => pl_revConcat(xs, null)
+function pl_toArray(xs) {
+  const ys = []
+  while (xs) {
+    ys.push(xs[0])
+    xs = xs[1]
+  }
+  return ys
+}
+
+const Collect = ConstOf({
+  empty: always(null),
+  concat: (xs, ys) => pl_revConcat(pl_reverse(xs), ys)
+})
+
+const pl_consr = t => h => isDefined(h) ? [h, t] : t
+
+function pa_traverse(A, x2yA, xs) {
+  let s = A.of(null)
+  let i = xs.length
+  while (i)
+    s = A.ap(A.map(pl_consr, s), x2yA(xs[--i]))
+  return A.map(pl_toArray, s)
 }
 
 //
@@ -235,8 +234,7 @@ function modifyU(l, x2x, s) {
 
 const isoU = (bwd, fwd) => (F, x2yF, x) => F.map(fwd, x2yF(bwd(x)))
 const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
-const collectU = (l, s) =>
-  PartialList.toArray(lift(l)(Collect, PartialList.of, s))
+const collectU = (l, s) => pl_toArray(lift(l)(Collect, pl_of, s))
 
 export const remove = curry2((l, s) => setU(l, undefined, s))
 export const iso = curry2(isoU)
@@ -266,7 +264,7 @@ export const orElse =
 
 export const choice = (...ls) => choose(x => {
   const i = ls.findIndex(l => isDefined(getU(l, x)))
-  return 0 <= i ? ls[i] : nothing
+  return i < 0 ? nothing : ls[i]
 })
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
@@ -432,7 +430,7 @@ export function lazy(toLens) {
 export const sequence = (A, x2yA, xs) =>
   notGet(A) === Ident
   ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-  : A.map(emptyArrayToUndefined, PartialArray.traverse(A, x2yA, mkArray(xs)))
+  : A.map(emptyArrayToUndefined, pa_traverse(A, x2yA, mkArray(xs)))
 
 
 export const when = p => (A, x2yA, x) => {
