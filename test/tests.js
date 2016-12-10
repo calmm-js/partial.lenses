@@ -23,7 +23,7 @@ const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
   const actual = run(expr)
   if (!I.acyclicEqualsU(actual, expect))
     throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
-  const core = run(expr.replace(/\bL\./, "C."))
+  const core = run(expr.replace(/\bL\./g, "C."))
   if (!I.acyclicEqualsU(actual, core))
     throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
 })
