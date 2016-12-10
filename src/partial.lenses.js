@@ -42,41 +42,41 @@ function ConstOf(Monoid) {
 //
 
 function Concat(l, r) {this.l = l; this.r = r}
-const pl_concat = (l, r) =>
-  isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
-const pl_rconcat = t => h => pl_concat(h, t)
+const isConcat = n => n && n.constructor === Concat
+const concat = (l, r) => isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
+const rconcat = t => h => concat(h, t)
 
-function pl_toArray(n) {
+function pushTo(n, ys) {
+  while (isConcat(n)) {
+    const l = n.l
+    n = n.r
+    if (isConcat(l)) {
+      pushTo(l.l, ys)
+      pushTo(l.r, ys)
+    } else
+      ys.push(l)
+  }
+  ys.push(n)
+}
+
+function toArray(n) {
   const ys = []
-  if (!isDefined(n))
-    return ys
-  const ns = []
-  do {
-    if (n && n.constructor === Concat) {
-      ns.push(n.r)
-      n = n.l
-    } else {
-      ys.push(n)
-      n = ns.pop()
-    }
-  } while (isDefined(n))
+  if (isDefined(n))
+    pushTo(n, ys)
   return ys
 }
 
-const Collect = ConstOf({
-  empty: always(undefined),
-  concat: pl_concat
-})
+const Collect = ConstOf({empty: always(undefined), concat})
 
 //
 
 
-function pa_traverse(A, x2yA, xs) {
+function traverse(A, x2yA, xs) {
   const ap = A.ap, map = A.map
   let s = A.of(undefined), i = xs.length
   while (i)
-    s = ap(map(pl_rconcat, s), x2yA(xs[--i]))
-  return map(pl_toArray, s)
+    s = ap(map(rconcat, s), x2yA(xs[--i]))
+  return map(toArray, s)
 }
 
 //
@@ -231,7 +231,7 @@ function modifyU(l, x2x, s) {
 
 const isoU = (bwd, fwd) => (F, x2yF, x) => F.map(fwd, x2yF(bwd(x)))
 const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
-const collectU = (l, s) => pl_toArray(lift(l)(Collect, id, s))
+const collectU = (l, s) => toArray(lift(l)(Collect, id, s))
 
 export const remove = curry2((l, s) => setU(l, undefined, s))
 export const iso = curry2(isoU)
@@ -427,7 +427,7 @@ export function lazy(toLens) {
 export const sequence = (A, x2yA, xs) =>
   notGet(A) === Ident
   ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-  : A.map(emptyArrayToUndefined, pa_traverse(A, x2yA, mkArray(xs)))
+  : A.map(emptyArrayToUndefined, traverse(A, x2yA, mkArray(xs)))
 
 
 export const when = p => (A, x2yA, x) => {
