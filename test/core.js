@@ -7,7 +7,7 @@ const toPartial = x2x => s => I.isDefined(s) ? x2x(s) : s
 const List = {empty: I.always([]), concat: (x, y) => x.concat(y)}
 const toList = x => I.isDefined(x) ? [x] : []
 
-const Left = {empty: I.always(undefined), concat: (l, _) => l} // Not a Monoid
+const Defined = {empty: () => {}, concat: (l, r) => I.isDefined(l) ? l : r}
 
 //
 
@@ -30,7 +30,7 @@ export const optional = when(I.isDefined)
 export const sequence = L.sequence
 export const skip = L.skip
 
-export const get = I.curry2((l, s) => foldMapOf(Left, l, I.id, s))
+export const get = I.curry2((l, s) => foldMapOf(Defined, l, I.id, s))
 
 export const lens = L.lens
 
