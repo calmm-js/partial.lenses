@@ -186,7 +186,7 @@ function getU(l, s) {
   }
 }
 
-const getInverseU = (l, x) => setU(l, x, undefined)
+const getInverseU = setU
 
 function modifyComposed(ls, x2x, x) {
   let n = ls.length
