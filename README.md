@@ -552,6 +552,25 @@ known as *optics*.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an inverse.
 
+Some optics libraries provide many more abstractions, such as "optionals",
+"prisms" and "folds", to name a few, forming a DAG.  Aside from being
+conceptually important, many of those abstractions are not only useful but
+required in a statically typed setting where data structures have precise
+constraints on their shapes, so to speak, and operations on data structures must
+respect those constraints at *all* times.
+
+In a dynamically typed language like JavaScript, the shapes of run-time objects
+are naturally *malleable*.  Nothing immediately breaks if a new object is
+created as a copy of another object by adding or removing a property, for
+example.  We can exploit this to our advantage by considering all optics as
+*partial*.  A partial optic, as manifested in this library, may be intended to
+operate on data structures of a specific type, such as arrays or objects, but
+also accepts the possibility that it may be given any valid JSON object or
+`undefined` as input.  When the input does not match the expectation of a
+partial lens, the input is treated as being `undefined`.  This allows specific
+partial optics, such as the simple [`L.prop`](#prop) lens, to be used in a wider
+range of situations than corresponding total optics.
+
 #### Operations on optics
 
 ##### <a name="modify"></a>[`L.modify(optic, maybeValue => maybeValue, maybeData)`](#modify "L.modify :: POptic s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
@@ -873,6 +892,8 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
+Note that `L.optional` is equivalent to `L.when(x => x !== undefined)`.
+
 ##### <a name="sequence"></a>[`L.sequence`](#sequence "L.sequence :: PTraversal [a] a")
 
 `L.sequence` is a traversal over an array.
@@ -913,6 +934,9 @@ L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
 // [ 0, -1, -2, -3, -4 ]
 ```
 
+Note that `L.when(p)` is equivalent to `L.choose(x => x !== undefined ?
+L.identity : L.skip)`.
+
 ### Lenses
 
 #### Operations on lenses
@@ -930,7 +954,20 @@ L.get("y", {x: 112, y: 101})
 // 101
 ```
 
-Note that `L.get` does not work on [traversals](#traversals).
+Note that `L.get` does not work on [traversals](#traversals).  However,
+using [`L.foldMapOf`](foldMapOf) we can define
+
+```js
+const Defined = {empty: () => {}, concat: (l, r) => l !== undefined ? l : r}
+const first = R.curry((t, s) => L.foldMapOf(Defined, t, R.identity, s))
+```
+
+which agrees with `L.get`.  For example:
+
+```js
+first("y", {x: 112, y: 101})
+// 101
+```
 
 #### Creating new lenses
 

@@ -464,6 +464,23 @@ and <a href="#isomorphisms">isomorphisms</a>, provided by this library are colle
 known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an inverse.</p>
+<p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
+&quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
+conceptually important, many of those abstractions are not only useful but
+required in a statically typed setting where data structures have precise
+constraints on their shapes, so to speak, and operations on data structures must
+respect those constraints at <em>all</em> times.</p>
+<p>In a dynamically typed language like JavaScript, the shapes of run-time objects
+are naturally <em>malleable</em>.  Nothing immediately breaks if a new object is
+created as a copy of another object by adding or removing a property, for
+example.  We can exploit this to our advantage by considering all optics as
+<em>partial</em>.  A partial optic, as manifested in this library, may be intended to
+operate on data structures of a specific type, such as arrays or objects, but
+also accepts the possibility that it may be given any valid JSON object or
+<code>undefined</code> as input.  When the input does not match the expectation of a
+partial lens, the input is treated as being <code>undefined</code>.  This allows specific
+partial optics, such as the simple <a href="#prop"><code>L.prop</code></a> lens, to be used in a wider
+range of situations than corresponding total optics.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5 id="-a-name-modify-a-l-modify-optic-maybevalue-maybevalue-maybedata-modify-l-modify-poptic-s-a-maybe-a-maybe-a-maybe-s-maybe-s-"><a name="modify"></a><a href="#modify" title="L.modify :: POptic s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, maybeValue =&gt; maybeValue, maybeData)</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
@@ -640,6 +657,7 @@ over the focused element.</p>
 <p>and:</p>
 <pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
 </code></pre>
+<p>Note that <code>L.optional</code> is equivalent to <code>L.when(x =&gt; x !== undefined)</code>.</p>
 <h5 id="-a-name-sequence-a-l-sequence-sequence-l-sequence-ptraversal-a-a-"><a name="sequence"></a><a href="#sequence" title="L.sequence :: PTraversal [a] a"><code>L.sequence</code></a></h5>
 <p><code>L.sequence</code> is a traversal over an array.</p>
 <p>For example:</p>
@@ -661,6 +679,8 @@ the lens <a href="#nothing"><code>L.nothing</code></a>, which traverses 1 elemen
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0,-1,2,-3,4])
 </code></pre>
+<p>Note that <code>L.when(p)</code> is equivalent to <code>L.choose(x =&gt; x !== undefined ?
+L.identity : L.skip)</code>.</p>
 <h3 id="lenses">Lenses</h3>
 <h4 id="operations-on-lenses">Operations on lenses</h4>
 <p>Operations on lenses take lenses as parameters, but do not return lenses.</p>
@@ -669,7 +689,14 @@ the lens <a href="#nothing"><code>L.nothing</code></a>, which traverses 1 elemen
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
 </code></pre>
-<p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
+<p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.  However,
+using <a href="foldMapOf"><code>L.foldMapOf</code></a> we can define</p>
+<pre><code class="hljs lang-js">var Defined = {empty: () =&gt; {}, concat: (l, r) =&gt; l !== undefined ? l : r}
+var first = R.curry((t, s) =&gt; L.foldMapOf(Defined, t, R.identity, s))
+</code></pre>
+<p>which agrees with <code>L.get</code>.  For example:</p>
+<pre><code class="hljs lang-js">first(&quot;y&quot;, {x: 112, y: 101})
+</code></pre>
 <h4 id="creating-new-lenses">Creating new lenses</h4>
 <h5 id="-a-name-lens-a-l-lens-maybedata-maybevalue-maybevalue-maybedata-maybedata-lens-l-lens-maybe-s-maybe-a-maybe-a-maybe-s-maybe-s-plens-s-a-"><a name="lens"></a><a href="#lens" title="L.lens :: (Maybe s -&gt; Maybe a) -&gt; ((Maybe a, Maybe s) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData)</code></a></h5>
 <p><code>L.lens</code> creates a new primitive lens.  The first parameter is the <em>getter</em> and
