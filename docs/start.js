@@ -6,7 +6,7 @@ function initBundle(k) {
   k()
 }
 
-var hljsLanguages = ["javascript", "haskell"]
+var hljsLanguages = ["javascript"]
 
 window.klipse_settings = {
   codemirror_options_in: {
