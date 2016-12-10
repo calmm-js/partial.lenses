@@ -45,6 +45,7 @@ const testThrows = expr => it(`${expr} => throws`, () => {
 const empties = [undefined, null, false, true, "a", 0, 0.0/0.0, {}, []]
 
 describe("compose", () => {
+  testEq('P()', L.identity)
   testEq('P("x")', "x")
   testEq('P(101)', 101)
   testEq('P(101, "x")', [101, "x"])
