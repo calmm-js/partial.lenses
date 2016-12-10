@@ -939,9 +939,9 @@ L.identity : L.skip)`.
 
 ### Lenses
 
-#### Operations on lenses
+Lenses always have a single focus which can be [viewed](#get) directly.
 
-Operations on lenses take lenses as parameters, but do not return lenses.
+#### Operations on lenses
 
 ##### <a name="get"></a> [≡](#contents) [`L.get(lens, maybeData)`](#get "L.get :: PLens s a -> Maybe s -> Maybe a")
 
@@ -1491,8 +1491,9 @@ and [`define`](#define).
 ### Isomorphisms
 
 The focus of an isomorphism is the whole data structure rather than a part of
-it.  A lens, `iso`, is an isomorphism iff the following equations hold for all
-`x` and `y` in the domain and range, respectively, of the lens:
+it.  Furthermore, an isomorphism can be [inverted](#inverse).  More
+specifically, a lens, `iso`, is an isomorphism iff the following equations hold
+for all `x` and `y` in the domain and range, respectively, of the lens:
 
 ```jsx
 L.set(iso, L.get(iso, x), undefined) = x
@@ -1520,11 +1521,13 @@ undefined)`.
 
 Also note that, while `L.getInverse` makes most sense when used with an
 isomorphism, it is valid to use `L.getInverse` with *partial* lenses in general.
-For example:
+Doing so essentially constructs a minimal data structure that contains the given
+value. For example, here is the minimal [BST](#food-for-thought-bst-as-a-lens)
+where `"meaning"` has the value `42`:
 
 ```js
-L.getInverse([0, "meaning"], 42)
-// [ { meaning: 42 } ]
+L.getInverse(valueOf("meaning"), 42)
+// { key: 'meaning', value: 42 }
 ```
 
 #### Creating new isomorphisms
