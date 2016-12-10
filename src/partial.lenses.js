@@ -300,12 +300,10 @@ const liftProp = k => (F, x2yF, x) =>
   F.map(v => setProp(k, v, x), x2yF(getProp(k, x)))
 
 export const find = predicate => choose(xs => {
-  if (isArray(xs)) {
-    const i = xs.findIndex(predicate)
-    return i < 0 ? append : i
-  } else {
-    return append
-  }
+  if (!isArray(xs))
+    return 0
+  const i = xs.findIndex(predicate)
+  return i < 0 ? append : i
 })
 
 export function findWith(...ls) {
