@@ -43,7 +43,47 @@ const flatten = L.lazy(rec => {
   return L.choose(x => I.isArray(x) ? nest : L.identity)
 })
 
+const naiveBST = L.rewrite(n => {
+  if (undefined !== n.value) return n
+  const s = n.smaller, g = n.greater
+  if (!s) return g
+  if (!g) return s
+  return L.set(search(s.key), s, g)
+})
+
+const search = key => L.lazy(rec => {
+  const smaller = ["smaller", rec]
+  const greater = ["greater", rec]
+  const insert = L.defaults({key})
+  return [naiveBST, L.choose(n => {
+    if (!n || key === n.key)
+      return insert
+    return key < n.key ? smaller : greater
+  })]
+})
+
+const valueOf = key => [search(key), "value"]
+
+const fromPairs =
+  R.reduce((t, [k, v]) => L.set(valueOf(k), v, t), undefined)
+
+const values = L.lazy(rec => [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+
+const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
+const bst = fromPairs(bstPairs)
+
+
 const bs = [
+  'L.modify(values, x => x + x, bst)',
+  'L.collect(values, bst)',
+
+  'fromPairs(bstPairs)',
+
   'L.foldMapOf(Sum, L.sequence, id, xs100)',
   'P.sumOf(P.traversed, xs100)',
   'R.sum(xs100)',
