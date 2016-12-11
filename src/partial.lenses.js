@@ -43,8 +43,8 @@ function ConstOf(Monoid) {
 
 function Concat(l, r) {this.l = l; this.r = r}
 const isConcat = n => n && n.constructor === Concat
-const concat = (l, r) => isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
-const rconcat = t => h => concat(h, t)
+const ap = (r, l) => isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
+const rconcat = t => h => ap(t, h)
 
 function pushTo(n, ys) {
   while (isConcat(n)) {
@@ -66,7 +66,7 @@ function toArray(n) {
   return ys
 }
 
-const Collect = ConstOf({empty: always(undefined), concat})
+const Collect = {map: snd, of() {}, ap}
 
 //
 
@@ -231,7 +231,7 @@ function modifyU(l, x2x, s) {
 
 const isoU = (bwd, fwd) => (F, x2yF, x) => F.map(fwd, x2yF(bwd(x)))
 const lensU = (get, set) => (F, x2yF, x) => F.map(y => set(y, x), x2yF(get(x)))
-const collectU = (l, s) => toArray(lift(l)(Collect, id, s))
+const collectU = (t, s) => toArray(lift(t)(Collect, id, s))
 
 export const remove = curry2((l, s) => setU(l, undefined, s))
 export const iso = curry2(isoU)
