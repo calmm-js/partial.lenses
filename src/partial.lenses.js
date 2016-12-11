@@ -400,9 +400,10 @@ function getPick(template, x) {
   return r
 }
 const setPick = (template, x) => value => {
-  const o = value || emptyObject
+  if (!isObject(value))
+    value = emptyObject
   for (const k in template)
-    x = setU(template[k], o[k], x)
+    x = setU(template[k], value[k], x)
   return x
 }
 export const pick = template => (F, x2yF, x) =>
