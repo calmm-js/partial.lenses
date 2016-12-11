@@ -386,6 +386,11 @@ describe("L.inverse", () => {
   testEq('L.remove([L.inverse(L.fromArrayBy("id")), 0], {a: {id: "a", x: 1}})', undefined)
 })
 
+describe("L.branch", () => {
+  testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
+  testEq('L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}), x => x+1, {a:{x:1},b:2,c:[3],d:4})', {"a":{"x":2},"b":3,"c":[4],"d":5})
+})
+
 describe("BST", () => {
   const randomInt = (min, max) =>
     Math.floor(Math.random() * (max - min)) + min
