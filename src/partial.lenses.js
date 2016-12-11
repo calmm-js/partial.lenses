@@ -127,16 +127,16 @@ const lifted = l => assert(l, seemsLens, "Expecting a lens.")
 
 const close = (l, F, x2yF) => x => l(F, x2yF, x)
 
-function composed(ls) {
-  switch (ls.length) {
+function composed(i, ls) {
+  switch (ls.length - i) {
     case 0:  return identity
-    case 1:  return lift(ls[0])
+    case 1:  return lift(ls[i])
     default: return (F, x2yF, x) => {
       let n = ls.length
       x2yF = close(lift(ls[--n]), F, x2yF)
-      while (1 < n)
-        x2yF = close(lift(ls[--n]), F, x2yF)
-      return lift(ls[0])(F, x2yF, x)
+      while (i < --n)
+        x2yF = close(lift(ls[n]), F, x2yF)
+      return lift(ls[i])(F, x2yF, x)
     }
   }
 }
@@ -146,7 +146,7 @@ function lift(l) {
     case "string":   return liftProp(l)
     case "number":   return liftIndex(l)
     case "function": return lifted(l)
-    default:         return composed(l)
+    default:         return composed(0, l)
   }
 }
 
@@ -200,7 +200,7 @@ function modifyComposed(ls, x2x, x) {
         x = getIndex(l, x)
         break
       default:
-        x = composed(ls.slice(i))(Ident, x2x, x)
+        x = composed(i, ls)(Ident, x2x, x)
         n = i
         break
     }
