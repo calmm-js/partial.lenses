@@ -38,6 +38,11 @@ const toList = x => x !== undefined ? [x] : []
 
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
+const flatten = L.lazy(rec => {
+  const nest = L.lift([L.sequence, rec])
+  return L.choose(x => I.isArray(x) ? nest : L.identity)
+})
+
 const bs = [
   'L.foldMapOf(Sum, L.sequence, id, xs100)',
   'P.sumOf(P.traversed, xs100)',
@@ -117,6 +122,18 @@ const bs = [
   'L.get(L.valueOr(1), 2)',
 
   'L.foldMapOf(List, L.sequence, toList, xs100)',
+
+  'L.collect([L.sequence, L.sequence, L.sequence], xsss100)',
+  'R.chain(R.chain(R.identity), xsss100)',
+
+  'L.collect(flatten, xsss100)',
+  'R.flatten(xsss100)',
+
+  'L.modify(flatten, inc, xsss100)',
+
+  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
+  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
+  'R.map(R.map(R.map(inc)), xsss100)',
 
   'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
   'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
