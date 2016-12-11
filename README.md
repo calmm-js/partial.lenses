@@ -10,11 +10,10 @@ This library provides a collection of
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and users can [write new optics](#L-lens)
 for manipulating non-JSON objects, such
-as [Immutable](http://facebook.github.io/immutable-js/) collections.  A partial
-lens can *view* optional data, *insert* new data, *update* existing data and
-*remove* existing data and can, for example, provide *defaults* and maintain
-*required* data structure
-parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
+as [Immutable.js](#interfacing-with-immutable-js) collections.  A partial lens
+can *view* optional data, *insert* new data, *update* existing data and *remove*
+existing data and can, for example, provide *defaults* and maintain *required*
+data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -89,7 +88,7 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [BST as a lens](#bst-as-a-lens)
-  * [Interfacing with Immutable](#interfacing-with-immutable)
+  * [Interfacing with Immutable.js](#interfacing-with-immutable-js)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Performance](#performance)
@@ -1583,9 +1582,9 @@ rather than `undefined`.
 See the documentation of [`L.branch`](#L-branch) for a continuation of this
 example.
 
-### Interfacing with Immutable
+### Interfacing with Immutable.js
 
-[Immutable](http://facebook.github.io/immutable-js/) is a popular library
+[Immutable.js](http://facebook.github.io/immutable-js/) is a popular library
 providing immutable data structures.  As argued
 in
 [Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3) it
