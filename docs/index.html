@@ -25,9 +25,12 @@ immutable data structures that admits <a href="#performance">efficient</a> imple
 This library provides a collection of
 <em>partial</em> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
-manipulating <a href="http://json.org/">JSON</a>.  A partial lens can <em>view</em> optional data,
-<em>insert</em> new data, <em>update</em> existing data and <em>remove</em> existing data and can,
-for example, provide <em>defaults</em> and maintain <em>required</em> data structure
+manipulating <a href="http://json.org/">JSON</a> and users can <a href="#L-lens">write new optics</a>
+for manipulating non-JSON objects, such
+as <a href="http://facebook.github.io/immutable-js/">Immutable</a> collections.  A partial
+lens can <em>view</em> optional data, <em>insert</em> new data, <em>update</em> existing data and
+<em>remove</em> existing data and can, for example, provide <em>defaults</em> and maintain
+<em>required</em> data structure
 parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
@@ -145,6 +148,7 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#examples">Examples</a><ul>
 <li><a href="#an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</a></li>
 <li><a href="#bst-as-a-lens">BST as a lens</a></li>
+<li><a href="#interfacing-with-immutable">Interfacing with Immutable</a></li>
 </ul>
 </li>
 <li><a href="#background">Background</a><ul>
@@ -489,13 +493,13 @@ there can be any number of elements in the array returned by <code>L.collect</co
 <pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p><code>L.collect(traversal, maybeData)</code> is equivalent
-to <a href="#L-foldMapOf"><code>L.foldMapOf(List, traversal, toList, maybeData)</code></a> where
-<code>List</code> and <code>toList</code> are defined as follows:</p>
-<pre><code class="hljs lang-js">var List = {empty: R.always([]), concat: R.concat}
-var toList = x =&gt; x !== undefined ? [x] : []
+to <a href="#L-foldMapOf"><code>L.foldMapOf(Collect, traversal, toCollect, maybeData)</code></a> where
+<code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
+<pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
+var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>So:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(List, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toList, {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.foldMapOf(Collect, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toCollect, {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collect</code> is optimized and faster than the
 above naïve implementation.</p>
@@ -1059,6 +1063,51 @@ worthy exercise would be to make it so that the empty binary tree is <code>null<
 rather than <code>undefined</code>.</p>
 <p>See the documentation of <a href="#L-branch"><code>L.branch</code></a> for a continuation of this
 example.</p>
+<h3 id="interfacing-with-immutable">Interfacing with Immutable</h3>
+<p><a href="http://facebook.github.io/immutable-js/">Immutable</a> is a popular library
+providing immutable data structures.  As argued
+in
+<a href="https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3">Lenses with Immutable.js</a> it
+can be useful to wrap such libraries as optics.</p>
+<p>When interfacing external libraries with partial lenses one does need to
+consider whether and how to support partiality.  Partial lenses allow one to
+insert new and remove existing elements rather than just view and update
+existing elements.</p>
+<p>Here is an example on how to provide a partial lens
+for <a href="http://facebook.github.io/immutable-js/docs/#/List"><code>List</code></a>:</p>
+<pre><code class="hljs lang-js">var getList = i =&gt; xs =&gt; Immutable.List.isList(xs) ? xs.get(i) : undefined
+
+var setList = i =&gt; (x, xs) =&gt; {
+  if (!Immutable.List.isList(xs))
+    xs = Immutable.List()
+  if (x !== undefined)
+    return xs.set(i, x)
+  xs = xs.delete(i)
+  return xs.size ? xs : undefined
+}
+
+var idxList = i =&gt; L.lens(getList(i), setList(i))
+
+var sampleList = Immutable.List([&quot;a&quot;, &quot;l&quot;, &quot;i&quot;, &quot;s&quot;, &quot;t&quot;])
+</code></pre>
+<p>We can now view existing elements:</p>
+<pre><code class="hljs lang-js">L.get(idxList(2), sampleList)
+</code></pre>
+<p>Update existing elements:</p>
+<pre><code class="hljs lang-js">L.modify(idxList(1), R.toUpper, sampleList)
+</code></pre>
+<p>Remove existing elements:</p>
+<pre><code class="hljs lang-js">L.remove(idxList(0), sampleList)
+</code></pre>
+<p>Append new elements:</p>
+<pre><code class="hljs lang-js">L.set(idxList(5), &quot;!&quot;, sampleList)
+</code></pre>
+<p>We can also create lists from non-lists:</p>
+<pre><code class="hljs lang-js">L.set(idxList(0), &quot;x&quot;, undefined)
+</code></pre>
+<p>And removing the last element propagates removal:</p>
+<pre><code class="hljs lang-js">L.remove(idxList(0), Immutable.List([&quot;x&quot;]))
+</code></pre>
 <h2 id="background">Background</h2>
 <h3 id="motivation">Motivation</h3>
 <p>Consider the following REPL session using Ramda:</p>

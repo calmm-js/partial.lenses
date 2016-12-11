@@ -8,9 +8,12 @@ immutable data structures that admits [efficient](#performance) implementation.
 This library provides a collection of
 *partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
-manipulating [JSON](http://json.org/).  A partial lens can *view* optional data,
-*insert* new data, *update* existing data and *remove* existing data and can,
-for example, provide *defaults* and maintain *required* data structure
+manipulating [JSON](http://json.org/) and users can [write new optics](#L-lens)
+for manipulating non-JSON objects, such
+as [Immutable](http://facebook.github.io/immutable-js/) collections.  A partial
+lens can *view* optional data, *insert* new data, *update* existing data and
+*remove* existing data and can, for example, provide *defaults* and maintain
+*required* data structure
 parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
@@ -86,6 +89,7 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [BST as a lens](#bst-as-a-lens)
+  * [Interfacing with Immutable](#interfacing-with-immutable)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Performance](#performance)
@@ -628,18 +632,18 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 ```
 
 `L.collect(traversal, maybeData)` is equivalent
-to [`L.foldMapOf(List, traversal, toList, maybeData)`](#L-foldMapOf) where
-`List` and `toList` are defined as follows:
+to [`L.foldMapOf(Collect, traversal, toCollect, maybeData)`](#L-foldMapOf) where
+`Collect` and `toCollect` are defined as follows:
 
 ```js
-const List = {empty: R.always([]), concat: R.concat}
-const toList = x => x !== undefined ? [x] : []
+const Collect = {empty: R.always([]), concat: R.concat}
+const toCollect = x => x !== undefined ? [x] : []
 ```
 
 So:
 
 ```js
-L.foldMapOf(List, ["xs", L.sequence, "x"], toList, {xs: [{x: 1}, {x: 2}]})
+L.foldMapOf(Collect, ["xs", L.sequence, "x"], toCollect, {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
@@ -1578,6 +1582,81 @@ rather than `undefined`.
 
 See the documentation of [`L.branch`](#L-branch) for a continuation of this
 example.
+
+### Interfacing with Immutable
+
+[Immutable](http://facebook.github.io/immutable-js/) is a popular library
+providing immutable data structures.  As argued
+in
+[Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3) it
+can be useful to wrap such libraries as optics.
+
+When interfacing external libraries with partial lenses one does need to
+consider whether and how to support partiality.  Partial lenses allow one to
+insert new and remove existing elements rather than just view and update
+existing elements.
+
+Here is an example on how to provide a partial lens
+for [`List`](http://facebook.github.io/immutable-js/docs/#/List):
+
+```js
+const getList = i => xs => Immutable.List.isList(xs) ? xs.get(i) : undefined
+
+const setList = i => (x, xs) => {
+  if (!Immutable.List.isList(xs))
+    xs = Immutable.List()
+  if (x !== undefined)
+    return xs.set(i, x)
+  xs = xs.delete(i)
+  return xs.size ? xs : undefined
+}
+
+const idxList = i => L.lens(getList(i), setList(i))
+
+const sampleList = Immutable.List(["a", "l", "i", "s", "t"])
+```
+
+We can now view existing elements:
+
+```js
+L.get(idxList(2), sampleList)
+// 'i'
+```
+
+Update existing elements:
+
+```js
+L.modify(idxList(1), R.toUpper, sampleList)
+// List [ "a", "L", "i", "s", "t" ]
+```
+
+Remove existing elements:
+
+```js
+L.remove(idxList(0), sampleList)
+// List [ "l", "i", "s", "t" ]
+```
+
+Append new elements:
+
+```js
+L.set(idxList(5), "!", sampleList)
+// List [ "a", "l", "i", "s", "t", "!" ]
+```
+
+We can also create lists from non-lists:
+
+```js
+L.set(idxList(0), "x", undefined)
+// List [ "x" ]
+```
+
+And removing the last element propagates removal:
+
+```js
+L.remove(idxList(0), Immutable.List(["x"]))
+// undefined
+```
 
 ## Background
 

@@ -1,6 +1,7 @@
 function initBundle(k) {
   require("babel-polyfill")
   window.L = require("partial.lenses")
+  window.Immutable = require("immutable")
   window.R = require("ramda")
   window.moment = require("moment")
   k()
