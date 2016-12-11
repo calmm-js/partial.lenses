@@ -17,7 +17,6 @@ import {
 //
 
 const emptyArray = []
-const emptyObject = {}
 
 //
 
@@ -366,10 +365,10 @@ export const augment = template => lensU(
         z[k] = template[k](z)
     return z
   },
-  (y, c) => {
+  (y, x) => {
     if (isObject(y)) {
-      if (!isObject(c))
-        c = emptyObject
+      if (!isObject(x))
+        x = undefined
       let z
       const set = (k, v) => {
         if (!z)
@@ -380,8 +379,8 @@ export const augment = template => lensU(
         if (!(k in template))
           set(k, y[k])
         else
-          if (k in c)
-            set(k, c[k])
+          if (x && k in x)
+            set(k, x[k])
       }
       return z
     }
@@ -401,9 +400,9 @@ function getPick(template, x) {
 }
 const setPick = (template, x) => value => {
   if (!isObject(value))
-    value = emptyObject
+    value = undefined
   for (const k in template)
-    x = setU(template[k], value[k], x)
+    x = setU(template[k], value && value[k], x)
   return x
 }
 export const pick = template => (F, x2yF, x) =>
@@ -458,10 +457,13 @@ export function branch(template) {
   const n = keys.length
   return (A, x2yA, x) => {
     notGet(A)
-    const ap = A.ap, wait = (x, i) => 0 <= i ? y => wait(setU(keys[i], y, x), i-1) : x
+    const ap = A.ap,
+          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
     let r = (0,A.of)(wait(x, n-1))
+    if (!isObject(x))
+      x = undefined
     for (let i=n-1; 0<=i; --i)
-      r = ap(r, vals[i](A, x2yA, getU(keys[i], x)))
+      r = ap(r, vals[i](A, x2yA, x && x[keys[i]]))
     return r
   }
 }
