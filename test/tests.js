@@ -351,6 +351,7 @@ describe("L.props", () => {
   testEq('L.set(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
   testEq('L.remove(L.props("x", "y"), {x: 1, y: 2})', undefined)
   testEq('L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
+  testEq('L.set(L.props("length"), "lol", undefined)', undefined)
 })
 
 describe("L.fromArrayBy", () => {
