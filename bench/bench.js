@@ -1,5 +1,6 @@
 'use strict';
 
+const I = require("infestines")
 const L = require("../lib/partial.lenses")
 const P = require("ramda-lens")
 const R = require("ramda")
@@ -26,8 +27,8 @@ const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
 const l_xyz = R.lensPath(["x", "y", "z"])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
 
-const id = x => x
-const always = x => _ => x
+const id = I.id
+const always = I.always
 const inc = x => x + 1
 const add = (x, y) => x+y
 
