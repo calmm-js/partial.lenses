@@ -362,7 +362,9 @@ export const filter = p => lensU(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
 export const augment = template => lensU(
   x => {
     if (isObject(x)) {
-      const z = {...x}
+      const z = {}
+      for (const k in x)
+        z[k] = x[k]
       for (const k in template)
         z[k] = template[k](z)
       return z
