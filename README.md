@@ -9,11 +9,11 @@ This library provides a collection of
 *partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and users can [write new optics](#L-lens)
-for manipulating non-JSON objects, such
-as [Immutable.js](#interfacing-with-immutable-js) collections.  A partial lens
-can *view* optional data, *insert* new data, *update* existing data and *remove*
-existing data and can, for example, provide *defaults* and maintain *required*
-data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
+for manipulating non-JSON objects, such as [Immutable.js](#interfacing)
+collections.  A partial lens can *view* optional data, *insert* new data,
+*update* existing data and *remove* existing data and can, for example, provide
+*defaults* and maintain *required* data structure
+parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -88,7 +88,7 @@ data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [BST as a lens](#bst-as-a-lens)
-  * [Interfacing with Immutable.js](#interfacing-with-immutable-js)
+  * [Interfacing with Immutable.js](#interfacing)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Performance](#performance)
@@ -1582,7 +1582,7 @@ rather than `undefined`.
 See the documentation of [`L.branch`](#L-branch) for a continuation of this
 example.
 
-### Interfacing with Immutable.js
+### <a name="interfacing"></a> Interfacing with Immutable.js
 
 [Immutable.js](http://facebook.github.io/immutable-js/) is a popular library
 providing immutable data structures.  As argued
@@ -1653,8 +1653,8 @@ L.set(idxList(0), "x", undefined)
 And removing the last element propagates removal:
 
 ```js
-L.remove(idxList(0), Immutable.List(["x"]))
-// undefined
+L.remove(["elems", idxList(0)], {elems: Immutable.List(["x"]), look: "No elems!"})
+// { look: 'No elems!' }
 ```
 
 ## Background
