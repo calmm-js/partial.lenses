@@ -89,9 +89,10 @@ const bs = [
   'R.set(l_x_y_z, 0, xyzn)',
 
   'L.remove(50, xs100)',
+  'R.remove(50, 1, xs100)',
+
   'L.set(50, 2, xs100)',
   'R.set(l_50, 2, xs100)',
-  'R.remove(50, 1, xs100)',
   'R.update(50, 2, xs100)',
 
   'L.remove(500, xs1000)',
