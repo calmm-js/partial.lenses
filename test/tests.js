@@ -388,7 +388,7 @@ describe("L.inverse", () => {
 
 describe("L.branch", () => {
   testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
-  testEq('L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}), x => x+1, {a:{x:1},b:2,c:[3],d:4})', {"a":{"x":2},"b":3,"c":[4],"d":5})
+  testEq('L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}), x => x+1, {a:{x:1},b:2,c:[3],d:4,extra:"one"})', {"a":{"x":2},"b":3,"c":[4],"d":5,extra:"one"})
 })
 
 describe("BST", () => {
