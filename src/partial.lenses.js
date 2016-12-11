@@ -11,7 +11,6 @@ import {
   isDefined,
   isObject,
   mapPartialU,
-  unzipObjIntoU,
   values
 } from "infestines"
 
@@ -451,7 +450,10 @@ export const skip = when(always(false))
 export function branch(template) {
   const keys = []
   const vals = []
-  unzipObjIntoU(template, keys, vals)
+  for (const k in template) {
+    keys.push(k)
+    vals.push(lift(template[k]))
+  }
   const n = keys.length
   return (A, x2yA, x) => {
     notGet(A)
