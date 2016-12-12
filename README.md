@@ -1357,12 +1357,11 @@ undefined)`.
 Also note that, while `L.getInverse` makes most sense when used with an
 isomorphism, it is valid to use `L.getInverse` with *partial* lenses in general.
 Doing so essentially constructs a minimal data structure that contains the given
-value. For example, here is the minimal [BST](#bst-as-a-lens) where `"meaning"`
-has the value `42`:
+value.  For example:
 
 ```js
-L.getInverse(valueOf("meaning"), 42)
-// { key: 'meaning', value: 42 }
+L.getInverse("meaning", 42)
+// { meaning: 42 }
 ```
 
 #### Creating new isomorphisms

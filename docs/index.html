@@ -925,9 +925,8 @@ undefined)</code>.</p>
 <p>Also note that, while <code>L.getInverse</code> makes most sense when used with an
 isomorphism, it is valid to use <code>L.getInverse</code> with <em>partial</em> lenses in general.
 Doing so essentially constructs a minimal data structure that contains the given
-value. For example, here is the minimal <a href="#bst-as-a-lens">BST</a> where <code>&quot;meaning&quot;</code>
-has the value <code>42</code>:</p>
-<pre><code class="hljs lang-js">L.getInverse(valueOf(&quot;meaning&quot;), 42)
+value.  For example:</p>
+<pre><code class="hljs lang-js">L.getInverse(&quot;meaning&quot;, 42)
 </code></pre>
 <h4 id="creating-new-isomorphisms">Creating new isomorphisms</h4>
 <h5 id="-a-name-l-iso-a-contents-l-iso-maybedata-maybevalue-maybevalue-maybedata-l-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a name="L-iso"></a> <a href="#contents">≡</a> <a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData)</code></a></h5>
