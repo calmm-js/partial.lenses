@@ -1067,13 +1067,15 @@ example.</p>
 providing immutable data structures.  As argued
 in
 <a href="https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3">Lenses with Immutable.js</a> it
-can be useful to wrap such libraries as optics.</p>
+can be useful to wrap such libraries as <a href="#optics">optics</a>.</p>
 <p>When interfacing external libraries with partial lenses one does need to
 consider whether and how to support partiality.  Partial lenses allow one to
 insert new and remove existing elements rather than just view and update
 existing elements.</p>
-<p>Here is an example on how to provide a partial lens
-for <a href="http://facebook.github.io/immutable-js/docs/#/List"><code>List</code></a>:</p>
+<h4 id="-list-indexing"><code>List</code> indexing</h4>
+<p>Here is a primitive partial lens for
+indexing <a href="http://facebook.github.io/immutable-js/docs/#/List"><code>List</code></a> written
+using <a href="#L-lens"><code>L.lens</code></a>:</p>
 <pre><code class="hljs lang-js">var getList = i =&gt; xs =&gt; Immutable.List.isList(xs) ? xs.get(i) : undefined
 
 var setList = i =&gt; (x, xs) =&gt; {
@@ -1086,11 +1088,15 @@ var setList = i =&gt; (x, xs) =&gt; {
 }
 
 var idxList = i =&gt; L.lens(getList(i), setList(i))
-
-var sampleList = Immutable.List([&quot;a&quot;, &quot;l&quot;, &quot;i&quot;, &quot;s&quot;, &quot;t&quot;])
 </code></pre>
+<p>Note how the above uses <code>isList</code> to check the input.  When viewing, in case the
+input is not a <code>List</code>, the proper result is <code>undefined</code>.  When updating the
+proper way to handle a non-<code>List</code> is to treat it as empty and also to replace a
+resulting empty list with <code>undefined</code>.  Also, when updating, we treat
+<code>undefined</code> as a request to <code>delete</code> rather than <code>set</code>.</p>
 <p>We can now view existing elements:</p>
-<pre><code class="hljs lang-js">L.get(idxList(2), sampleList)
+<pre><code class="hljs lang-js">var sampleList = Immutable.List([&quot;a&quot;, &quot;l&quot;, &quot;i&quot;, &quot;s&quot;, &quot;t&quot;])
+L.get(idxList(2), sampleList)
 </code></pre>
 <p>Update existing elements:</p>
 <pre><code class="hljs lang-js">L.modify(idxList(1), R.toUpper, sampleList)
@@ -1098,14 +1104,44 @@ var sampleList = Immutable.List([&quot;a&quot;, &quot;l&quot;, &quot;i&quot;, &q
 <p>Remove existing elements:</p>
 <pre><code class="hljs lang-js">L.remove(idxList(0), sampleList)
 </code></pre>
-<p>Append new elements:</p>
-<pre><code class="hljs lang-js">L.set(idxList(5), &quot;!&quot;, sampleList)
+<p>And removing the last element propagates removal:</p>
+<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, idxList(0)], {elems: Immutable.List([&quot;x&quot;]), look: &quot;No elems!&quot;})
 </code></pre>
 <p>We can also create lists from non-lists:</p>
 <pre><code class="hljs lang-js">L.set(idxList(0), &quot;x&quot;, undefined)
 </code></pre>
-<p>And removing the last element propagates removal:</p>
-<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, idxList(0)], {elems: Immutable.List([&quot;x&quot;]), look: &quot;No elems!&quot;})
+<p>And we can also append new elements:</p>
+<pre><code class="hljs lang-js">L.set(idxList(5), &quot;!&quot;, sampleList)
+</code></pre>
+<p>Consider what happens if the index given to <code>idxList</code> points further beyond the
+last element.  The <a href="#L-index"><code>L.index</code></a> lens adds <code>null</code> values.  The above
+lens adds <code>undefined</code> values, which is not ideal with partial lenses, because of
+the special treatment of <code>undefined</code>.  In practise, however, it is not typical
+to <code>set</code> elements except to append just after the last element.  Treating the
+special case left as an exercise for the reader.</p>
+<h4 id="interfacing-traversals">Interfacing traversals</h4>
+<p>Fortunately we do not need Immutable.js data structures to provide a
+compatible partial
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable"><code>traverse</code></a> function
+to support <a href="#traversals">traversals</a>, because it is also possible to implement
+traversals simply by providing suitable isomorphisms between Immutable.js data
+structures and JSON.  Here is a partial <a href="#isomorphisms">isomorphism</a> between
+<code>List</code> and arrays:</p>
+<pre><code class="hljs lang-js">var fromList = xs =&gt; Immutable.List.isList(xs) ? xs.toArray() : undefined
+var toList = xs =&gt; R.is(Array, xs) &amp;&amp; xs.length ? Immutable.List(xs) : undefined
+var isoList = L.iso(fromList, toList)
+</code></pre>
+<p>So, now we can <a href="#L-compose">compose</a> a traversal over <code>List</code> as:</p>
+<pre><code class="hljs lang-js">var seqList = [isoList, L.sequence]
+</code></pre>
+<p>And all the usual operations work as one would expect, for example:</p>
+<pre><code class="hljs lang-js">L.remove([seqList, L.when(c =&gt; c &lt; &quot;i&quot;)], sampleList)
+</code></pre>
+<p>And:</p>
+<pre><code class="hljs lang-js">L.foldMapOf({empty: R.always(&quot;&quot;), concat: R.concat},
+            [seqList, L.when(c =&gt; c &lt;= &quot;i&quot;)],
+            R.toUpper,
+            sampleList)
 </code></pre>
 <h2 id="background">Background</h2>
 <h3 id="motivation">Motivation</h3>

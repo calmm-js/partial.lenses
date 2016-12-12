@@ -1588,15 +1588,18 @@ example.
 providing immutable data structures.  As argued
 in
 [Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3) it
-can be useful to wrap such libraries as optics.
+can be useful to wrap such libraries as [optics](#optics).
 
 When interfacing external libraries with partial lenses one does need to
 consider whether and how to support partiality.  Partial lenses allow one to
 insert new and remove existing elements rather than just view and update
 existing elements.
 
-Here is an example on how to provide a partial lens
-for [`List`](http://facebook.github.io/immutable-js/docs/#/List):
+#### `List` indexing
+
+Here is a primitive partial lens for
+indexing [`List`](http://facebook.github.io/immutable-js/docs/#/List) written
+using [`L.lens`](#L-lens):
 
 ```js
 const getList = i => xs => Immutable.List.isList(xs) ? xs.get(i) : undefined
@@ -1611,13 +1614,18 @@ const setList = i => (x, xs) => {
 }
 
 const idxList = i => L.lens(getList(i), setList(i))
-
-const sampleList = Immutable.List(["a", "l", "i", "s", "t"])
 ```
+
+Note how the above uses `isList` to check the input.  When viewing, in case the
+input is not a `List`, the proper result is `undefined`.  When updating the
+proper way to handle a non-`List` is to treat it as empty and also to replace a
+resulting empty list with `undefined`.  Also, when updating, we treat
+`undefined` as a request to `delete` rather than `set`.
 
 We can now view existing elements:
 
 ```js
+const sampleList = Immutable.List(["a", "l", "i", "s", "t"])
 L.get(idxList(2), sampleList)
 // 'i'
 ```
@@ -1636,11 +1644,11 @@ L.remove(idxList(0), sampleList)
 // List [ "l", "i", "s", "t" ]
 ```
 
-Append new elements:
+And removing the last element propagates removal:
 
 ```js
-L.set(idxList(5), "!", sampleList)
-// List [ "a", "l", "i", "s", "t", "!" ]
+L.remove(["elems", idxList(0)], {elems: Immutable.List(["x"]), look: "No elems!"})
+// { look: 'No elems!' }
 ```
 
 We can also create lists from non-lists:
@@ -1650,11 +1658,57 @@ L.set(idxList(0), "x", undefined)
 // List [ "x" ]
 ```
 
-And removing the last element propagates removal:
+And we can also append new elements:
 
 ```js
-L.remove(["elems", idxList(0)], {elems: Immutable.List(["x"]), look: "No elems!"})
-// { look: 'No elems!' }
+L.set(idxList(5), "!", sampleList)
+// List [ "a", "l", "i", "s", "t", "!" ]
+```
+
+Consider what happens if the index given to `idxList` points further beyond the
+last element.  The [`L.index`](#L-index) lens adds `null` values.  The above
+lens adds `undefined` values, which is not ideal with partial lenses, because of
+the special treatment of `undefined`.  In practise, however, it is not typical
+to `set` elements except to append just after the last element.  Treating the
+special case left as an exercise for the reader.
+
+#### Interfacing traversals
+
+Fortunately we do not need Immutable.js data structures to provide a
+compatible partial
+[`traverse`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable) function
+to support [traversals](#traversals), because it is also possible to implement
+traversals simply by providing suitable isomorphisms between Immutable.js data
+structures and JSON.  Here is a partial [isomorphism](#isomorphisms) between
+`List` and arrays:
+
+```js
+const fromList = xs => Immutable.List.isList(xs) ? xs.toArray() : undefined
+const toList = xs => R.is(Array, xs) && xs.length ? Immutable.List(xs) : undefined
+const isoList = L.iso(fromList, toList)
+```
+
+So, now we can [compose](#L-compose) a traversal over `List` as:
+
+```js
+const seqList = [isoList, L.sequence]
+```
+
+And all the usual operations work as one would expect, for example:
+
+```js
+L.remove([seqList, L.when(c => c < "i")], sampleList)
+// List [ 'l', 's', 't' ]
+```
+
+And:
+
+```js
+L.foldMapOf({empty: R.always(""), concat: R.concat},
+            [seqList, L.when(c => c <= "i")],
+            R.toUpper,
+            sampleList)
+// 'AI'
 ```
 
 ## Background
