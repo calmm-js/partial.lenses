@@ -326,7 +326,8 @@ with <a href="#L-choose"><code>L.defaults</code></a>.  We&#39;ll get back to tha
 </code></pre>
 <p>More generally, we can <a href="#L-foldMapOf">map and fold</a> over texts.  For example, we
 can compute the length of the longest text:</p>
-<pre><code class="hljs lang-js">L.foldMapOf({empty: () =&gt; 0, concat: Math.max}, texts, R.length, sampleTexts)
+<pre><code class="hljs lang-js">var Max = {empty: () =&gt; 0, concat: Math.max}
+L.foldMapOf(Max, texts, R.length, sampleTexts)
 </code></pre>
 <p>Of course, we can also modify texts.  For example, we could uppercase all the
 titles:</p>
@@ -512,7 +513,8 @@ a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values returned by <code>aM2r</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldMapOf({empty: () =&gt; 0, concat: R.add}, L.sequence, x =&gt; x, [1,2,3])
+<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
+L.foldMapOf(Sum, L.sequence, x =&gt; x, [1,2,3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
@@ -1059,7 +1061,7 @@ values of a BST:</p>
 </code></pre>
 <p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
 example:</p>
-<pre><code class="hljs lang-js">var Concat = {empty: R.always(&quot;&quot;), concat: R.concat}
+<pre><code class="hljs lang-js">var Concat = {empty: () =&gt; &quot;&quot;, concat: R.concat}
 L.foldMapOf(Concat, values, R.toUpper, sampleBST)
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)

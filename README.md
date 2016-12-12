@@ -341,7 +341,8 @@ More generally, we can [map and fold](#L-foldMapOf) over texts.  For example, we
 can compute the length of the longest text:
 
 ```js
-L.foldMapOf({empty: () => 0, concat: Math.max}, texts, R.length, sampleTexts)
+const Max = {empty: () => 0, concat: Math.max}
+L.foldMapOf(Max, texts, R.length, sampleTexts)
 // 6
 ```
 
@@ -663,7 +664,8 @@ the values returned by `aM2r`.
 For example:
 
 ```js
-L.foldMapOf({empty: () => 0, concat: R.add}, L.sequence, x => x, [1,2,3])
+const Sum = {empty: () => 0, concat: (x, y) => x + y}
+L.foldMapOf(Sum, L.sequence, x => x, [1,2,3])
 // 6
 ```
 
@@ -1575,7 +1577,7 @@ Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
 example:
 
 ```js
-const Concat = {empty: R.always(""), concat: R.concat}
+const Concat = {empty: () => "", concat: R.concat}
 L.foldMapOf(Concat, values, R.toUpper, sampleBST)
 // 'MAGIC'
 ```
