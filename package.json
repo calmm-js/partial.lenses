@@ -1,7 +1,7 @@
 {
   "name": "partial.lenses",
   "version": "5.3.2",
-  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON",
+  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node bench/bench.js",
@@ -17,11 +17,12 @@
     "url": "git+https://github.com/calmm-js/partial.lenses.git"
   },
   "keywords": [
-    "json",
+    "partial",
     "lens",
     "isomorphism",
     "traversal",
-    "partial"
+    "json",
+    "immutable"
   ],
   "license": "MIT",
   "bugs": {
