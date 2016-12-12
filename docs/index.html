@@ -481,6 +481,8 @@ the focus is <code>undefined</code>, the lens will be read-only.</p>
 <p>and:</p>
 <pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
 </code></pre>
+<p>Note that <code>L.optional</code> is equivalent
+to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
 <h5 id="-a-name-l-when-a-contents-l-when-maybevalue-testable-l-when-l-when-maybe-a-boolean-poptic-a-a-"><a name="L-when"></a> <a href="#contents">≡</a> <a href="#L-when" title="L.when: (Maybe a -&gt; Boolean) -&gt; POptic a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
 selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
@@ -586,7 +588,6 @@ visits all the properties of an object according to the template.</p>
 </code></pre>
 <p>See <a href="#bst-traversal">BST traversal</a> for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<p>Note that <code>L.optional</code> is equivalent to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
 <h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal [a] a"><code>L.sequence</code></a></h5>
 <p><code>L.sequence</code> is a traversal over an array.</p>
 <p>For example:</p>

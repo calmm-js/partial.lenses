@@ -596,6 +596,9 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
+Note that `L.optional` is equivalent
+to [`L.when(x => x !== undefined)`](#L-when).
+
 ##### <a name="L-when"></a> [≡](#contents) [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> POptic a a")
 
 `L.when` allows one to selectively skip elements within a traversal or to
@@ -776,8 +779,6 @@ L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], seco
 See [BST traversal](#bst-traversal) for a more meaningful example.
 
 #### Traversals and combinators
-
-Note that `L.optional` is equivalent to [`L.when(x => x !== undefined)`](#L-when).
 
 ##### <a name="L-sequence"></a> [≡](#contents) [`L.sequence`](#L-sequence "L.sequence: PTraversal [a] a")
 
