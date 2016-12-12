@@ -24,7 +24,7 @@ The lens `L.nothing` and the traversal `L.skip` were merged into a single
 `L.zero` optic that works like `L.nothing` when being viewed, using `L.get`, and
 otherwise like `L.skip`.  The main benefit of this is that it allows "querying"
 combinators `L.chain`, `L.choice`, and `L.when` use the one and same `L.zero`
-and operators to work without additional glue as traversals.
+and work without additional glue as traversals.
 
 ## 5.3.0
 
