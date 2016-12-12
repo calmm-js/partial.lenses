@@ -26,10 +26,17 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
       * [`L.modify(optic, maybeValue => maybeValue, maybeData)`](#L-modify "L.modify: POptic s a -> (Maybe a -> Maybe a) -> Maybe s -> Maybe s")
       * [`L.remove(optic, maybeData)`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
       * [`L.set(optic, maybeValue, maybeData)`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s")
-    * [Combinators](#combinators)
+    * [Nesting](#nesting)
       * [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a")
+    * [Querying](#querying)
+      * [`L.chain(value => optic, optic)`](#L-chain "L.chain: (a -> POptic s b) -> POptic s a -> POptic s b")
+      * [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
       * [`L.choose(maybeValue => optic)`](#L-choose "L.choose: (Maybe s -> POptic s a) -> POptic s a")
+      * [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> POptic a a")
+      * [`L.zero`](#L-zero "L.zero: POptic s a")
+    * [Recursing](#recursing)
       * [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
+    * [Debugging](#debugging)
       * [`L.log(...labels)`](#L-log "L.log: (...Any) -> POptic s s")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
@@ -40,8 +47,6 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.optional`](#L-optional "L.optional: PTraversal a a")
       * [`L.sequence`](#L-sequence "L.sequence: PTraversal [a] a")
-      * [`L.skip`](#L-skip "L.skip: PTraversal a b")
-      * [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> PTraversal a a")
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData)`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
@@ -66,12 +71,10 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
       * [`L.props(...propNames)`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
     * [Providing defaults](#providing-defaults)
       * [`L.valueOr(valueOut)`](#L-valueOr "L.valueOr: s -> PLens s s")
-    * [Querying and adapting to data](#querying-and-adapting-to-data)
-      * [`L.chain(value => lens, lens)`](#L-chain "L.chain: (a -> PLens s b) -> PLens s a -> PLens s b")
-      * [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> PLens s a")
-      * [`L.just(maybeValue)`](#L-just "L.just: Maybe a -> PLens s a")
-      * [`L.nothing`](#L-nothing "L.nothing: PLens s a")
+    * [Adapting to data](#adapting-to-data)
       * [`L.orElse(backupLens, primaryLens)`](#L-orElse "L.orElse: (PLens s a, PLens s a) -> PLens s a")
+    * [Read-only mapping](#read-only-mapping)
+      * [`L.just(maybeValue)`](#L-just "L.just: Maybe a -> PLens s a")
       * [`L.to(maybeValue => maybeValue)`](#L-to "L.to: (a -> b) -> PLens a b")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props})`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
@@ -82,7 +85,6 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData)`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
-      * [`L.fromArrayBy(idPropName)`](#L-fromArrayBy "L.fromArrayBy: (p: String) -> PIso [{p: String, ...ps}] {String: {p: String, ...ps}}")
       * [`L.identity`](#L-identity "L.identity: PIso s s")
       * [`L.inverse(isomorphism)`](#L-inverse "L.inverse: PIso a b -> PIso b a")
 * [Examples](#examples)
@@ -475,7 +477,7 @@ of a data structure.
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
-#### Combinators
+#### Nesting
 
 ##### <a name="L-compose"></a> [≡](#contents) [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a")
 
@@ -514,6 +516,37 @@ L.get(["a", 1], {a: ["b", "c"]})
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
 
+#### Querying
+
+##### <a name="L-chain"></a> [≡](#contents) [`L.chain(value => optic, optic)`](#L-chain "L.chain: (a -> POptic s b) -> POptic s a -> POptic s b")
+
+`L.chain(toOptic, optic)` is equivalent to
+
+```jsx
+L.compose(optic, L.choose(maybeValue =>
+  maybeValue === undefined
+  ? L.zero
+  : toOptic(maybeValue)))
+```
+
+Note that with the [`L.just`](#L-just), `L.chain`, [`L.choice`](#L-choice)
+and [`L.zero`](#L-zero) combinators, one can consider optics as subsuming the
+maybe monad.
+
+##### <a name="L-choice"></a> [≡](#contents) [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
+
+`L.choice` returns a partial optic that acts like the first of the given lenses
+whose view is not `undefined` on the given data structure.  When the views of
+all of the given lenses are `undefined`, the returned lens acts
+like [`L.zero`](#L-zero), which is the identity element of `L.choice`.
+
+For example:
+
+```js
+L.modify([L.sequence, L.choice("a", "d"), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+// [ { R: 1 }, { a: 2 }, { d: 3 } ]
+```
+
 ##### <a name="L-choose"></a> [≡](#contents) [`L.choose(maybeValue => optic)`](#L-choose "L.choose: (Maybe s -> POptic s a) -> POptic s a")
 
 `L.choose` creates an optic whose operation is determined by the given function
@@ -542,6 +575,23 @@ L.get(majorAxis, {x: -3, y: 1})
 L.modify(majorAxis, R.negate, {x: 2, y: -3})
 // { x: 2, y: 3 }
 ```
+
+##### <a name="L-when"></a> [≡](#contents) [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> POptic a a")
+
+`L.when` allows one to selectively skip elements within a traversal or to
+selectively turn a lens into a read-only lens whose view is `undefined`.
+
+For example:
+
+```js
+L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
+// [ 0, -1, -2, -3, -4 ]
+```
+
+Note that `L.when(p)` is equivalent to `L.choose(x => p(x) ? L.identity :
+L.zero)`.
+
+#### Recursing
 
 ##### <a name="L-lazy"></a> [≡](#contents) [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
 
@@ -576,6 +626,8 @@ L.remove([flatten, L.when(x => 3 <= x && x <= 5)], [[[1], 2], 3, [4, [[5]], [6]]
 // [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
 ```
 
+#### Debugging
+
 ##### <a name="L-log"></a> [≡](#contents) [`L.log(...labels)`](#L-log "L.log: (...Any) -> POptic s s")
 
 `L.log(...labels)` is an identity optic that
@@ -604,6 +656,24 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // get x: 10
 // set x: "11"
 // { x: '11' }
+```
+
+#### <a name="L-zero"></a> [≡](#contents) [`L.zero`](#L-zero "L.zero: POptic s a")
+
+`L.zero` is the identity element of [`L.choice`](#L-choice)
+and [`L.chain`](L-chain).  As a traversal, `L.zero` is a traversal of no
+elements and as a lens, i.e. when used with [`L.get`](#L-get), `L.zero` is a
+read-only lens whose view is always `undefined`.
+
+For example:
+
+```js
+L.collect([L.sequence,
+           L.choose(x => (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? "x" :
+                          L.zero))],
+          [1, {x: 2}, [3,4]])
+// [ 2, 3, 4 ]
 ```
 
 ### Traversals
@@ -707,7 +777,7 @@ L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
-Note that `L.optional` is equivalent to `L.when(x => x !== undefined)`.
+Note that `L.optional` is equivalent to [`L.when(x => x !== undefined)`](#L-when).
 
 ##### <a name="L-sequence"></a> [≡](#contents) [`L.sequence`](#L-sequence "L.sequence: PTraversal [a] a")
 
@@ -719,38 +789,6 @@ For example:
 L.modify(["xs", L.sequence, "x"], R.add(1), {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
-
-##### <a name="L-skip"></a> [≡](#contents) [`L.skip`](#L-skip "L.skip: PTraversal a b")
-
-`L.skip` is a traversal of no elements.
-
-For example:
-
-```js
-L.collect([L.sequence,
-           L.choose(x => (R.is(Array, x) ? L.sequence :
-                          R.is(Object, x) ? "x" :
-                          L.skip))],
-          [1, {x: 2}, [3,4]])
-// [ 2, 3, 4 ]
-```
-
-Note that the traversal `L.skip`, which traverses 0 elements, is not the same as
-the lens [`L.nothing`](#L-nothing), which traverses 1 element.
-
-##### <a name="L-when"></a> [≡](#contents) [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> PTraversal a a")
-
-`L.when` allows one to selectively skip elements within a traversal.
-
-For example:
-
-```js
-L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
-// [ 0, -1, -2, -3, -4 ]
-```
-
-Note that `L.when(p)` is equivalent to `L.choose(x => x !== undefined ?
-L.identity : L.skip)`.
 
 ### Lenses
 
@@ -769,20 +807,7 @@ L.get("y", {x: 112, y: 101})
 // 101
 ```
 
-Note that `L.get` does not work on [traversals](#traversals).  However,
-using [`L.foldMapOf`](foldMapOf) we can define
-
-```js
-const Defined = {empty: () => {}, concat: (l, r) => l !== undefined ? l : r}
-const first = R.curry((t, s) => L.foldMapOf(Defined, t, R.identity, s))
-```
-
-which agrees with `L.get`.  For example:
-
-```js
-first("y", {x: 112, y: 101})
-// 101
-```
+Note that `L.get` does not work on [traversals](#traversals).
 
 #### Creating new lenses
 
@@ -1146,38 +1171,18 @@ L.remove(L.valueOr(0), 1)
 // undefined
 ```
 
-#### Querying and adapting to data
+#### Adapting to data
 
-##### <a name="L-chain"></a> [≡](#contents) [`L.chain(value => lens, lens)`](#L-chain "L.chain: (a -> PLens s b) -> PLens s a -> PLens s b")
+##### <a name="L-orElse"></a> [≡](#contents) [`L.orElse(backupLens, primaryLens)`](#L-orElse "L.orElse: (PLens s a, PLens s a) -> PLens s a")
 
-`L.chain(a2bPLens, aPLens)` is equivalent to
+`L.orElse(backupLens, primaryLens)` acts like `primaryLens` when its view is not
+`undefined` and otherwise like `backupLens`.  You can use `L.orElse` on its own
+with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
+(and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
+choice over lenses or use `L.orElse` to specify a default or backup lens
+for [`L.choice`](#L-choice), for example.
 
-```jsx
-L.compose(aPLens, L.choose(aMaybe =>
-  aMaybe === undefined
-  ? L.nothing
-  : a2bPLens(aMaybe)))
-```
-
-With the [`L.just`](#L-just), `L.chain`, [`L.choice`](#L-choice)
-and [`L.nothing`](#L-nothing) combinators, one can view partial lenses as
-subsuming the maybe monad.  Of course, the whole point of lenses is that they
-are bidirectional and read-only [`L.just`](#L-just)
-and [`L.nothing`](#L-nothing) are essentially degenerate.
-
-##### <a name="L-choice"></a> [≡](#contents) [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> PLens s a")
-
-`L.choice` returns a partial lens that acts like the first of the given lenses
-whose view is not `undefined` on the given data structure.  When the views of
-all of the given lenses are `undefined`, the returned lens acts
-like [`L.nothing`](#L-nothing), which is the identity element of `L.choice`.
-
-For example:
-
-```js
-L.modify([L.sequence, L.choice("a", "d"), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
-// [ { R: 1 }, { a: 2 }, { d: 3 } ]
-```
+#### Read-only mapping
 
 ##### <a name="L-just"></a> [≡](#contents) [`L.just(maybeValue)`](#L-just "L.just: Maybe a -> PLens s a")
 
@@ -1193,29 +1198,6 @@ Note that `L.just(x)` is equivalent to [`L.to(_ => x)`](#L-to).
 
 `L.just` can be seen as the unit function of the monad formed
 with [`L.chain`](#L-chain).
-
-##### <a name="L-nothing"></a> [≡](#contents) [`L.nothing`](#L-nothing "L.nothing: PLens s a")
-
-`L.nothing` is a read-only lens whose view is always `undefined`.  In other
-words, for all `x` and `y`:
-
-```jsx
-   L.get(L.nothing, x) = undefined
-L.set(L.nothing, y, x) = x
-```
-
-Note that `L.nothing` is the identity element of [`L.choice`](#L-choice).  Also
-note that the lens `L.nothing`, which traverses 1 element, is not the same as
-the traversal [`L.skip`](#L-skip), which traverses 0 elements.
-
-##### <a name="L-orElse"></a> [≡](#contents) [`L.orElse(backupLens, primaryLens)`](#L-orElse "L.orElse: (PLens s a, PLens s a) -> PLens s a")
-
-`L.orElse(backupLens, primaryLens)` acts like `primaryLens` when its view is not
-`undefined` and otherwise like `backupLens`.  You can use `L.orElse` on its own
-with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
-(and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
-choice over lenses or use `L.orElse` to specify a default or backup lens
-for [`L.choice`](#L-choice), for example.
 
 ##### <a name="L-to"></a> [≡](#contents) [`L.to(maybeValue => maybeValue)`](#L-to "L.to: (a -> b) -> PLens a b")
 
@@ -1327,12 +1309,14 @@ undefined)` are inverses of each other.
 For example:
 
 ```js
-L.getInverse(L.fromArrayBy("id"), {'1': {id: 1, value: 2}, '3': {id: 3, value: 4}})
-// [ { id: 1, value: 2 }, { id: 3, value: 4 } ]
+const numeric = f => x => typeof x === "number" ? f(x) : undefined
+const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
+L.getInverse(offBy1, 1)
+// 0
 ```
 
-Note that `L.getInverse(iso, data)` is equivalent to `L.set(iso, data,
-undefined)`.
+Note that `L.getInverse(iso, data)` is equivalent
+to [`L.set(iso, data, undefined)`](#L-get).
 
 Also note that, while `L.getInverse` makes most sense when used with an
 isomorphism, it is valid to use `L.getInverse` with *partial* lenses in general.
@@ -1353,32 +1337,12 @@ L.getInverse("meaning", 42)
 For example:
 
 ```js
-const negate = L.iso(R.negate, R.negate)
+const negate = L.iso(numeric(R.negate), numeric(R.negate))
 L.get([negate, L.inverse(negate)], 112)
 // 112
 ```
 
 #### Isomorphisms and combinators
-
-##### <a name="L-fromArrayBy"></a> [≡](#contents) [`L.fromArrayBy(idPropName)`](#L-fromArrayBy "L.fromArrayBy: (p: String) -> PIso [{p: String, ...ps}] {String: {p: String, ...ps}}")
-
-**`L.fromArrayBy` is experimental and might be removed, renamed or changed
-semantically before next major release.**
-
-`L.fromArrayBy(id)` is an isomorphism that converts an array of objects
-containing `id` properties into an object with the `id`s as keys and the array
-elements as values.
-
-For example:
-
-```js
-L.get(L.fromArrayBy("id"), [{id: 1, value: 2}, {id: 3, value: 4}])
-// { '1': { id: 1, value: 2 }, '3': { id: 3, value: 4 } }
-```
-```js
-L.set([L.fromArrayBy("id"), "3", "value"], 5, [{id: 1, value: 2}, {id: 3, value: 4}])
-// [ { id: 1, value: 2 }, { id: 3, value: 5 } ]
-```
 
 ##### <a name="L-identity"></a> [≡](#contents) [`L.identity`](#L-identity "L.identity: PIso s s")
 
@@ -1400,8 +1364,8 @@ operation only makes sense on isomorphisms.
 For example:
 
 ```js
-L.get(L.inverse(L.fromArrayBy('id')), {a: {id: "a", x: 1}, b: {id: "b", x: 2}})
-// [ { id: 'a', x: 1 }, { id: 'b', x: 2 } ]
+L.get(L.inverse(offBy1), 1)
+// 0
 ```
 
 ## Examples

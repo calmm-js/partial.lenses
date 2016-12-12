@@ -10,8 +10,7 @@ import {
   isArray,
   isDefined,
   isObject,
-  mapPartialU,
-  values
+  mapPartialU
 } from "infestines"
 
 //
@@ -26,7 +25,7 @@ const snd = (_, c) => c
 //
 
 const Ident = {map: apply, of: id, ap: apply}
-const Const = {map: snd, of: id}
+const Const = {map: snd}
 function ConstOf(Monoid) {
   const concat = Monoid.concat
   return {
@@ -75,18 +74,6 @@ function traverse(A, x2yA, xs) {
     s = ap(map(rconcat, s), x2yA(xs[--i]))
   return map(toArray, s)
 }
-
-//
-
-const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
-  const warned = {}
-  return message => {
-    if (!(message in warned)) {
-      warned[message] = message
-      console.warn("partial.lenses:", message)
-    }
-  }
-})()
 
 //
 
@@ -179,7 +166,7 @@ function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const, Const.of, s)
+    case "function": return lifted(l)(Const, id, s)
     default:         return getComposed(l, s)
   }
 }
@@ -249,12 +236,16 @@ export const foldMapOf = curry4((m, l, to, s) => lift(l)(ConstOf(m), to, s))
 export const inverse = iso => (F, inner, x) =>
   (0,F.map)(x => getU(iso, x), inner(getInverseU(iso, x)))
 
+export const zero = (C, x2yC, x) => {
+  const of = C.of
+  return of ? of(x) : (0,C.map)(always(x), x2yC(undefined))
+}
+
 export const chain = curry2((x2yL, xL) =>
-  [xL, choose(xO => isDefined(xO) ? x2yL(xO) : nothing)])
+  [xL, choose(xO => isDefined(xO) ? x2yL(xO) : zero)])
 
 export const to = x2y => (F, y2zF, x) => (0,F.map)(always(x), y2zF(x2y(x)))
 export const just = x => to(always(x))
-export const nothing = just(undefined)
 
 export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 
@@ -263,7 +254,7 @@ export const orElse =
 
 export const choice = (...ls) => choose(x => {
   const i = ls.findIndex(l => isDefined(getU(l, x)))
-  return i < 0 ? nothing : ls[i]
+  return i < 0 ? zero : ls[i]
 })
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
@@ -439,13 +430,9 @@ export const sequence = (A, x2yA, xs) =>
   ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
   : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, mkArray(xs)))
 
-export const when = p => (A, x2yA, x) => {
-  notGet(A)
-  return p(x) ? x2yA(x) : (0,A.of)(x)
-}
+export const when = p => (C, x2yC, x) => p(x) ? x2yC(x) : zero(C, x2yC, x)
 
 export const optional = when(isDefined)
-export const skip = when(always(false))
 
 export function branch(template) {
   const keys = []
@@ -467,21 +454,3 @@ export function branch(template) {
     return r
   }
 }
-
-export const fromArrayBy = id =>
-  warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  isoU(xs => {
-    if (isArray(xs)) {
-      const o = {}, n=xs.length
-      for (let i=0; i<n; ++i) {
-        const x = xs[i]
-        o[x[id]] = x
-      }
-      return o
-    }
-  },
-  o => isObject(o) ? values(o) : undefined)
-
-export default (...ls) =>
-  warn("default import will be removed. Use `compose` or array notation `[...]`.") ||
-  compose(...ls)
