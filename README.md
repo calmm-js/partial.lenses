@@ -622,13 +622,13 @@ to [`L.choose(x => p(x) ? L.identity : L.zero)`](#L-choose).
 is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.
 
-For example, here is a traversal that targets all the non-arrays in a data
-structure of nested arrays:
+For example, here is a traversal that targets all the primitive elements in a
+data structure of nested arrays and objects:
 
 ```js
 const flatten = L.lazy(rec => {
   const nest = [L.sequence, rec]
-  return L.choose(x => R.is(Array, x) ? nest : L.identity)
+  return L.choose(x => R.is(Object, x) ? nest : L.identity)
 })
 ```
 
@@ -637,16 +637,16 @@ Note that the above creates a cyclic representation of the traversal.
 Now, for example:
 
 ```js
-L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
+L.collect(flatten, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ 1, 2, 3, 4, 5, 6 ]
 ```
 ```js
-L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])
-// [ [ [ 2 ], 3 ], 4, [ 5, [ [Object] ], [ 7 ] ] ]
+L.modify(flatten, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
 ```
 ```js
-L.remove([flatten, L.when(x => 3 <= x && x <= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
-// [ [ [ 1 ], 2 ], [ [ 6 ] ] ]
+L.remove([flatten, L.when(x => 3 <= x && x <= 4)], [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
 #### Debugging

@@ -496,20 +496,20 @@ to <a href="#L-choose"><code>L.choose(x =&gt; p(x) ? L.identity : L.zero)</code>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
 is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.</p>
-<p>For example, here is a traversal that targets all the non-arrays in a data
-structure of nested arrays:</p>
+<p>For example, here is a traversal that targets all the primitive elements in a
+data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">var flatten = L.lazy(rec =&gt; {
   const nest = [L.sequence, rec]
-  return L.choose(x =&gt; R.is(Array, x) ? nest : L.identity)
+  return L.choose(x =&gt; R.is(Object, x) ? nest : L.identity)
 })
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>
 <p>Now, for example:</p>
-<pre><code class="hljs lang-js">L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])
+<pre><code class="hljs lang-js">L.collect(flatten, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<pre><code class="hljs lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], 3, [4, [[5]], [6]]])
+<pre><code class="hljs lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 5)], [[[1], 2], 3, [4, [[5]], [6]]])
+<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)], [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <h4 id="debugging">Debugging</h4>
 <h5 id="-a-name-l-log-a-contents-l-log-labels-l-log-l-log-any-poptic-s-s-"><a name="L-log"></a> <a href="#contents">≡</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></h5>
