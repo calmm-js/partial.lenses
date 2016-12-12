@@ -32,6 +32,7 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
       * [`L.chain(value => optic, optic)`](#L-chain "L.chain: (a -> POptic s b) -> POptic s a -> POptic s b")
       * [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
       * [`L.choose(maybeValue => optic)`](#L-choose "L.choose: (Maybe s -> POptic s a) -> POptic s a")
+      * [`L.optional`](#L-optional "L.optional: POptic a a")
       * [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> POptic a a")
       * [`L.zero`](#L-zero "L.zero: POptic s a")
     * [Recursing](#recursing)
@@ -45,7 +46,6 @@ parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
-      * [`L.optional`](#L-optional "L.optional: PTraversal a a")
       * [`L.sequence`](#L-sequence "L.sequence: PTraversal [a] a")
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
@@ -576,6 +576,26 @@ L.modify(majorAxis, R.negate, {x: 2, y: -3})
 // { x: 2, y: 3 }
 ```
 
+##### <a name="L-optional"></a> [≡](#contents) [`L.optional`](#L-optional "L.optional: POptic a a")
+
+`L.optional` is an optic over an optional element.  When used as a traversal,
+and the focus is `undefined`, the traversal is empty.  When used as a lens, and
+the focus is `undefined`, the lens will be read-only.
+
+As an example, consider the difference between:
+
+```js
+L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { y: 2, x: 3 } ]
+```
+
+and:
+
+```js
+L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
+// [ { x: 3 }, { y: 2 } ]
+```
+
 ##### <a name="L-when"></a> [≡](#contents) [`L.when(maybeValue => testable)`](#L-when "L.when: (Maybe a -> Boolean) -> POptic a a")
 
 `L.when` allows one to selectively skip elements within a traversal or to
@@ -756,26 +776,6 @@ L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], seco
 See [BST traversal](#bst-traversal) for a more meaningful example.
 
 #### Traversals and combinators
-
-##### <a name="L-optional"></a> [≡](#contents) [`L.optional`](#L-optional "L.optional: PTraversal a a")
-
-`L.optional` is a traversal over an optional element.  When the focus of
-`L.optional` is `undefined`, the traversal is empty.  Otherwise the traversal is
-over the focused element.
-
-As an example, consider the difference between:
-
-```js
-L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
-// [ { x: 3 }, { y: 2, x: 3 } ]
-```
-
-and:
-
-```js
-L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
-// [ { x: 3 }, { y: 2 } ]
-```
 
 Note that `L.optional` is equivalent to [`L.when(x => x !== undefined)`](#L-when).
 

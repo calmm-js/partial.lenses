@@ -51,6 +51,7 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#L-chain" title="L.chain: (a -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain(value =&gt; optic, optic)</code></a></li>
 <li><a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses)</code></a></li>
 <li><a href="#L-choose" title="L.choose: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></li>
+<li><a href="#L-optional" title="L.optional: POptic a a"><code>L.optional</code></a></li>
 <li><a href="#L-when" title="L.when: (Maybe a -&gt; Boolean) -&gt; POptic a a"><code>L.when(maybeValue =&gt; testable)</code></a></li>
 <li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero</code></a></li>
 </ul>
@@ -76,7 +77,6 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#L-optional" title="L.optional: PTraversal a a"><code>L.optional</code></a></li>
 <li><a href="#L-sequence" title="L.sequence: PTraversal [a] a"><code>L.sequence</code></a></li>
 </ul>
 </li>
@@ -453,7 +453,7 @@ whose view is not <code>undefined</code> on the given data structure.  When the 
 all of the given lenses are <code>undefined</code>, the returned lens acts
 like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.sequence, L.choice(&quot;a&quot;, &quot;d&quot;), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+<pre><code class="hljs lang-js">L.modify([L.sequence, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
 <h5 id="-a-name-l-choose-a-contents-l-choose-maybevalue-optic-l-choose-l-choose-maybe-s-poptic-s-a-poptic-s-a-"><a name="L-choose"></a> <a href="#contents">≡</a> <a href="#L-choose" title="L.choose: (Maybe s -&gt; POptic s a) -&gt; POptic s a"><code>L.choose(maybeValue =&gt; optic)</code></a></h5>
 <p><code>L.choose</code> creates an optic whose operation is determined by the given function
@@ -470,6 +470,16 @@ examining the data structure being manipulated.</p>
 <pre><code class="hljs lang-js">L.get(majorAxis, {x: -3, y: 1})
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
+</code></pre>
+<h5 id="-a-name-l-optional-a-contents-l-optional-l-optional-l-optional-poptic-a-a-"><a name="L-optional"></a> <a href="#contents">≡</a> <a href="#L-optional" title="L.optional: POptic a a"><code>L.optional</code></a></h5>
+<p><code>L.optional</code> is an optic over an optional element.  When used as a traversal,
+and the focus is <code>undefined</code>, the traversal is empty.  When used as a lens, and
+the focus is <code>undefined</code>, the lens will be read-only.</p>
+<p>As an example, consider the difference between:</p>
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
+</code></pre>
+<p>and:</p>
+<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
 </code></pre>
 <h5 id="-a-name-l-when-a-contents-l-when-maybevalue-testable-l-when-l-when-maybe-a-boolean-poptic-a-a-"><a name="L-when"></a> <a href="#contents">≡</a> <a href="#L-when" title="L.when: (Maybe a -&gt; Boolean) -&gt; POptic a a"><code>L.when(maybeValue =&gt; testable)</code></a></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
@@ -576,16 +586,6 @@ visits all the properties of an object according to the template.</p>
 </code></pre>
 <p>See <a href="#bst-traversal">BST traversal</a> for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<h5 id="-a-name-l-optional-a-contents-l-optional-l-optional-l-optional-ptraversal-a-a-"><a name="L-optional"></a> <a href="#contents">≡</a> <a href="#L-optional" title="L.optional: PTraversal a a"><code>L.optional</code></a></h5>
-<p><code>L.optional</code> is a traversal over an optional element.  When the focus of
-<code>L.optional</code> is <code>undefined</code>, the traversal is empty.  Otherwise the traversal is
-over the focused element.</p>
-<p>As an example, consider the difference between:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
-</code></pre>
-<p>and:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
-</code></pre>
 <p>Note that <code>L.optional</code> is equivalent to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
 <h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal [a] a"><code>L.sequence</code></a></h5>
 <p><code>L.sequence</code> is a traversal over an array.</p>
