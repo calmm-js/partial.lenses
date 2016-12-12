@@ -776,7 +776,7 @@ L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], seco
 // [ 'x', 'y' ]
 ```
 
-See [BST traversal](#bst-traversal) for a more meaningful example.
+See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 #### Traversals and combinators
 
@@ -873,6 +873,9 @@ When composed with [`L.pick`](#L-pick), to flexibly pick the `start` and `end`
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require
 adding dependency to [Moment.js](http://momentjs.com/).
+
+See the [Interfacing with Immutable.js](#interfacing) section for another
+example of using `L.lens`.
 
 #### Computing derived props
 

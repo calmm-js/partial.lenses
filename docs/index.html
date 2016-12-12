@@ -586,7 +586,7 @@ visits all the properties of an object according to the template.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect(L.branch({first: L.sequence, second: L.identity}), {first: [&quot;x&quot;], second: &quot;y&quot;})
 </code></pre>
-<p>See <a href="#bst-traversal">BST traversal</a> for a more meaningful example.</p>
+<p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
 <h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-p-a-ps-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></h5>
 <p><code>L.sequence</code> is a traversal over the values of an array or object.</p>
@@ -649,6 +649,8 @@ convert a pair of <code>start</code> and <code>end</code> times to a duration:</
 times, the above can be adapted to work in a wide variety of cases.  However,
 the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
+<p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
+example of using <code>L.lens</code>.</p>
 <h4 id="computing-derived-props">Computing derived props</h4>
 <h5 id="-a-name-l-augment-a-contents-l-augment-prop-object-value-props-l-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a name="L-augment"></a> <a href="#contents">≡</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props})</code></a></h5>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
