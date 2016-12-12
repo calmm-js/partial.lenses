@@ -608,8 +608,8 @@ L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
 // [ 0, -1, -2, -3, -4 ]
 ```
 
-Note that `L.when(p)` is equivalent to `L.choose(x => p(x) ? L.identity :
-L.zero)`.
+Note that `L.when(p)` is equivalent
+to [`L.choose(x => p(x) ? L.identity : L.zero)`](#L-choose).
 
 #### Recursing
 
