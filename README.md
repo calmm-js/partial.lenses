@@ -1559,7 +1559,7 @@ rather than `undefined`.
 #### BST traversal
 
 What about [traversals](#traverals) over BSTs?  We can use
-the [`L.branch`](#L-branch) combinator to define an inorder traversal over the
+the [`L.branch`](#L-branch) combinator to define an in-order traversal over the
 values of a BST:
 
 ```js
