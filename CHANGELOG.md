@@ -1,5 +1,33 @@
 # Changelog
 
+## 6.0.0
+
+Removed `L.fromArrayBy`.  It was introduced as an experiment, but the use cases
+I had in mind didn't seem to benefit from it.  If you need it, you can use this:
+
+```js
+const fromArrayBy = id =>
+  iso(xs => {
+    if (R.is(Array, xs)) {
+      const o = {}, n=xs.length
+      for (let i=0; i<n; ++i) {
+        const x = xs[i]
+        o[x[id]] = x
+      }
+      return o
+    }
+  },
+  o => R.is(Object, o) ? R.values(o) : undefined)
+```
+
+The lens `L.nothing` and the traversal `L.skip` were merged into a single
+`L.zero` optic that works like `L.nothing` when being viewed, using `L.get`, and
+otherwise like `L.skip`.  The main benefit of this is that it allows "querying"
+combinators `L.chain`, `L.choice`, and `L.when` use the one and same `L.zero`
+and work without additional glue as traversals.
+
+Generalized the `L.sequence` traversal to also operate on the values of objects.
+
 ## 5.3.0
 
 Marked the default import for removal.  With the array shorthand for composition

@@ -10,8 +10,8 @@ import {
   isArray,
   isDefined,
   isObject,
-  mapPartialU,
-  values
+  keys,
+  mapPartialU
 } from "infestines"
 
 //
@@ -26,7 +26,7 @@ const snd = (_, c) => c
 //
 
 const Ident = {map: apply, of: id, ap: apply}
-const Const = {map: snd, of: id}
+const Const = {map: snd}
 function ConstOf(Monoid) {
   const concat = Monoid.concat
   return {
@@ -78,18 +78,6 @@ function traverse(A, x2yA, xs) {
 
 //
 
-const warn = process.env.NODE_ENV === "production" ? () => {} : (() => {
-  const warned = {}
-  return message => {
-    if (!(message in warned)) {
-      warned[message] = message
-      console.warn("partial.lenses:", message)
-    }
-  }
-})()
-
-//
-
 const unArray = x => isArray(x) ? x : undefined
 
 const mkArray = x => isArray(x) ? x : emptyArray
@@ -105,6 +93,13 @@ const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
 //
 
 const emptyArrayToUndefined = xs => xs.length ? xs : undefined
+
+const emptyObjectToUndefined = o => {
+  if (!isObject(o))
+    return o
+  for (const k in o)
+    return o
+}
 
 //
 
@@ -179,7 +174,7 @@ function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const, Const.of, s)
+    case "function": return lifted(l)(Const, id, s)
     default:         return getComposed(l, s)
   }
 }
@@ -249,12 +244,16 @@ export const foldMapOf = curry4((m, l, to, s) => lift(l)(ConstOf(m), to, s))
 export const inverse = iso => (F, inner, x) =>
   (0,F.map)(x => getU(iso, x), inner(getInverseU(iso, x)))
 
+export const zero = (C, x2yC, x) => {
+  const of = C.of
+  return of ? of(x) : (0,C.map)(always(x), x2yC(undefined))
+}
+
 export const chain = curry2((x2yL, xL) =>
-  [xL, choose(xO => isDefined(xO) ? x2yL(xO) : nothing)])
+  [xL, choose(xO => isDefined(xO) ? x2yL(xO) : zero)])
 
 export const to = x2y => (F, y2zF, x) => (0,F.map)(always(x), y2zF(x2y(x)))
 export const just = x => to(always(x))
-export const nothing = just(undefined)
 
 export const choose = x2l => (F, x2yF, x) => lift(x2l(x))(F, x2yF, x)
 
@@ -263,7 +262,7 @@ export const orElse =
 
 export const choice = (...ls) => choose(x => {
   const i = ls.findIndex(l => isDefined(getU(l, x)))
-  return i < 0 ? nothing : ls[i]
+  return i < 0 ? zero : ls[i]
 })
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
@@ -434,26 +433,7 @@ export function lazy(toLens) {
   return rec
 }
 
-export const sequence = (A, x2yA, xs) =>
-  notGet(A) === Ident
-  ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-  : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, mkArray(xs)))
-
-export const when = p => (A, x2yA, x) => {
-  notGet(A)
-  return p(x) ? x2yA(x) : (0,A.of)(x)
-}
-
-export const optional = when(isDefined)
-export const skip = when(always(false))
-
-export function branch(template) {
-  const keys = []
-  const vals = []
-  for (const k in template) {
-    keys.push(k)
-    vals.push(lift(template[k]))
-  }
+function branchOn(keys, vals) {
   const n = keys.length
   return (A, x2yA, x) => {
     notGet(A)
@@ -462,26 +442,36 @@ export function branch(template) {
     let r = (0,A.of)(wait(x, n-1))
     if (!isObject(x))
       x = undefined
-    for (let i=n-1; 0<=i; --i)
-      r = ap(r, vals[i](A, x2yA, x && x[keys[i]]))
-    return r
+    for (let i=n-1; 0<=i; --i) {
+      const v = x && x[keys[i]]
+      r = ap(r, (vals ? vals[i](A, x2yA, v) : x2yA(v)))
+    }
+    return (0,A.map)(emptyObjectToUndefined, r)
   }
 }
 
-export const fromArrayBy = id =>
-  warn("`fromArrayBy` is experimental and might be removed, renamed or changed semantically before next major release") ||
-  isoU(xs => {
-    if (isArray(xs)) {
-      const o = {}, n=xs.length
-      for (let i=0; i<n; ++i) {
-        const x = xs[i]
-        o[x[id]] = x
-      }
-      return o
-    }
-  },
-  o => isObject(o) ? values(o) : undefined)
+export function sequence(A, x2yA, xs) {
+  notGet(A)
+  if (isArray(xs))
+    return A === Ident
+    ? emptyArrayToUndefined(mapPartialU(x2yA, xs))
+    : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, xs))
+  else if (isObject(xs))
+    return branchOn(keys(xs))(A, x2yA, xs)
+  else
+    return (0,A.of)(xs)
+}
 
-export default (...ls) =>
-  warn("default import will be removed. Use `compose` or array notation `[...]`.") ||
-  compose(...ls)
+export const when = p => (C, x2yC, x) => p(x) ? x2yC(x) : zero(C, x2yC, x)
+
+export const optional = when(isDefined)
+
+export function branch(template) {
+  const keys = []
+  const vals = []
+  for (const k in template) {
+    keys.push(k)
+    vals.push(lift(template[k]))
+  }
+  return branchOn(keys, vals)
+}
