@@ -1416,7 +1416,7 @@ L.modify(L.identity, f, x) = f(x)
 ##### <a name="L-inverse"></a> [≡](#contents) [`L.inverse(isomorphism)`](#L-inverse "L.inverse: PIso a b -> PIso b a")
 
 `L.inverse` returns the inverse of the given isomorphism.  Note that this
-operation only works on isomorphisms.
+operation only makes sense on isomorphisms.
 
 For example:
 
@@ -1670,12 +1670,12 @@ last element.  The [`L.index`](#L-index) lens adds `null` values.  The above
 lens adds `undefined` values, which is not ideal with partial lenses, because of
 the special treatment of `undefined`.  In practise, however, it is not typical
 to `set` elements except to append just after the last element.  Treating the
-special case left as an exercise for the reader.
+special case is left as an exercise for the reader.
 
 #### Interfacing traversals
 
-Fortunately we do not need Immutable.js data structures to provide a
-compatible partial
+Fortunately we do not need Immutable.js data structures to provide a compatible
+*partial*
 [`traverse`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable) function
 to support [traversals](#traversals), because it is also possible to implement
 traversals simply by providing suitable isomorphisms between Immutable.js data

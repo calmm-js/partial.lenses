@@ -958,7 +958,7 @@ L.modify(L.identity, f, x) = f(x)
 </code></pre>
 <h5 id="-a-name-l-inverse-a-contents-l-inverse-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a name="L-inverse"></a> <a href="#contents">≡</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism)</code></a></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
-operation only works on isomorphisms.</p>
+operation only makes sense on isomorphisms.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(L.fromArrayBy(&#39;id&#39;)), {a: {id: &quot;a&quot;, x: 1}, b: {id: &quot;b&quot;, x: 2}})
 </code></pre>
@@ -1118,10 +1118,10 @@ last element.  The <a href="#L-index"><code>L.index</code></a> lens adds <code>n
 lens adds <code>undefined</code> values, which is not ideal with partial lenses, because of
 the special treatment of <code>undefined</code>.  In practise, however, it is not typical
 to <code>set</code> elements except to append just after the last element.  Treating the
-special case left as an exercise for the reader.</p>
+special case is left as an exercise for the reader.</p>
 <h4 id="interfacing-traversals">Interfacing traversals</h4>
-<p>Fortunately we do not need Immutable.js data structures to provide a
-compatible partial
+<p>Fortunately we do not need Immutable.js data structures to provide a compatible
+<em>partial</em>
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable"><code>traverse</code></a> function
 to support <a href="#traversals">traversals</a>, because it is also possible to implement
 traversals simply by providing suitable isomorphisms between Immutable.js data
