@@ -1741,7 +1741,7 @@ With partial lenses you can robustly compose a path lens from prop lenses
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (as `L` version 5.3.2) and some
+Here are a few benchmarks on partial lenses (as `L` version 6.0.0) and some
 roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R` version
 0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P` version
 0.1.1).
