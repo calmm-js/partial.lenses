@@ -674,36 +674,14 @@ L.foldMapOf({empty: () => 0, concat: R.add}, L.sequence, x => x, [1,2,3])
 `L.branch` is given a template object of traversals and returns a traversal that
 visits all the properties of an object according to the template.
 
-For example, continuing on the [BST example](#bst-as-a-lens), here is a
-traversal that visits all the values of a binary tree in order:
+For example:
 
 ```js
-const values = L.lazy(rec => [
-  L.optional,
-  naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])
+L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], second: "y"})
+// [ 'x', 'y' ]
 ```
 
-Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
-example:
-
-```js
-L.collect(values, sampleBST)
-// [ 'm', 'a', 'g', 'i', 'c' ]
-```
-```js
-L.modify(values, R.toUpper, sampleBST)
-// { key: 3,
-//   value: 'G',
-//   smaller: { key: 2, value: 'A', smaller: { key: 1, value: 'M' } },
-//   greater: { key: 4, value: 'I', greater: { key: 5, value: 'C' } } }
-```
-```js
-L.remove([values, L.when(x => x > "e")], sampleBST)
-// { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
-```
+See [BST traversal](#bst-traversal) for a more meaningful example.
 
 #### Traversals and combinators
 
@@ -1578,8 +1556,39 @@ or [Red-Black](https://en.wikipedia.org/wiki/Red%E2%80%93black_tree).  Another
 worthy exercise would be to make it so that the empty binary tree is `null`
 rather than `undefined`.
 
-See the documentation of [`L.branch`](#L-branch) for a continuation of this
-example.
+#### BST traversal
+
+What about [traversals](#traverals) over BSTs?  We can use
+the [`L.branch`](#L-branch) combinator to define an inorder traversal over the
+values of a BST:
+
+```js
+const values = L.lazy(rec => [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+```
+
+Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
+example:
+
+```js
+L.collect(values, sampleBST)
+// [ 'm', 'a', 'g', 'i', 'c' ]
+```
+```js
+L.modify(values, R.toUpper, sampleBST)
+// { key: 3,
+//   value: 'G',
+//   smaller: { key: 2, value: 'A', smaller: { key: 1, value: 'M' } },
+//   greater: { key: 4, value: 'I', greater: { key: 5, value: 'C' } } }
+```
+```js
+L.remove([values, L.when(x => x > "e")], sampleBST)
+// { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
+```
 
 ### <a name="interfacing"></a> Interfacing with Immutable.js
 

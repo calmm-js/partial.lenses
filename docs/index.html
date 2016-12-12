@@ -518,23 +518,10 @@ the values returned by <code>aM2r</code>.</p>
 <h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
 <p><code>L.branch</code> is given a template object of traversals and returns a traversal that
 visits all the properties of an object according to the template.</p>
-<p>For example, continuing on the <a href="#bst-as-a-lens">BST example</a>, here is a
-traversal that visits all the values of a binary tree in order:</p>
-<pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
-  L.optional,
-  naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect(L.branch({first: L.sequence, second: L.identity}), {first: [&quot;x&quot;], second: &quot;y&quot;})
 </code></pre>
-<p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
-example:</p>
-<pre><code class="hljs lang-js">L.collect(values, sampleBST)
-</code></pre>
-<pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
-</code></pre>
+<p>See <a href="#bst-traversal">BST traversal</a> for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
 <h5 id="-a-name-l-optional-a-contents-l-optional-l-optional-l-optional-ptraversal-a-a-"><a name="L-optional"></a> <a href="#contents">≡</a> <a href="#L-optional" title="L.optional: PTraversal a a"><code>L.optional</code></a></h5>
 <p><code>L.optional</code> is a traversal over an optional element.  When the focus of
@@ -1059,8 +1046,25 @@ as <a href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>
 or <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-Black</a>.  Another
 worthy exercise would be to make it so that the empty binary tree is <code>null</code>
 rather than <code>undefined</code>.</p>
-<p>See the documentation of <a href="#L-branch"><code>L.branch</code></a> for a continuation of this
-example.</p>
+<h4 id="bst-traversal">BST traversal</h4>
+<p>What about <a href="#traverals">traversals</a> over BSTs?  We can use
+the <a href="#L-branch"><code>L.branch</code></a> combinator to define an inorder traversal over the
+values of a BST:</p>
+<pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
+  L.optional,
+  naiveBST,
+  L.branch({smaller: rec,
+            value: L.identity,
+            greater: rec})])
+</code></pre>
+<p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
+example:</p>
+<pre><code class="hljs lang-js">L.collect(values, sampleBST)
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
+</code></pre>
+<pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
+</code></pre>
 <h3 id="-a-name-interfacing-a-interfacing-with-immutable-js"><a name="interfacing"></a> Interfacing with Immutable.js</h3>
 <p><a href="http://facebook.github.io/immutable-js/">Immutable.js</a> is a popular library
 providing immutable data structures.  As argued
