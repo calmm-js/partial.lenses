@@ -453,8 +453,8 @@ L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 from a data structure.
 
 Note that `L.remove(optic, maybeData)` is equivalent
-to [`L.seOptic(lens, undefined, maybeData)`](#L-set).  With partial lenses,
-setting to `undefined` typically has the effect of removing the focused element.
+to [`L.set(lens, undefined, maybeData)`](#L-set).  With partial lenses, setting
+to `undefined` typically has the effect of removing the focused element.
 
 ##### <a name="L-set"></a> [≡](#contents) [`L.set(optic, maybeValue, maybeData)`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s")
 
