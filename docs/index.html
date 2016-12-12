@@ -1059,7 +1059,8 @@ values of a BST:</p>
 </code></pre>
 <p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
 example:</p>
-<pre><code class="hljs lang-js">L.collect(values, sampleBST)
+<pre><code class="hljs lang-js">var Concat = {empty: R.always(&quot;&quot;), concat: R.concat}
+L.foldMapOf(Concat, values, R.toUpper, sampleBST)
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
 </code></pre>
@@ -1141,7 +1142,7 @@ var isoList = L.iso(fromList, toList)
 <pre><code class="hljs lang-js">L.remove([seqList, L.when(c =&gt; c &lt; &quot;i&quot;)], sampleList)
 </code></pre>
 <p>And:</p>
-<pre><code class="hljs lang-js">L.foldMapOf({empty: R.always(&quot;&quot;), concat: R.concat},
+<pre><code class="hljs lang-js">L.foldMapOf(Concat,
             [seqList, L.when(c =&gt; c &lt;= &quot;i&quot;)],
             R.toUpper,
             sampleList)

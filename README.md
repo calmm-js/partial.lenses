@@ -1575,8 +1575,9 @@ Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
 example:
 
 ```js
-L.collect(values, sampleBST)
-// [ 'm', 'a', 'g', 'i', 'c' ]
+const Concat = {empty: R.always(""), concat: R.concat}
+L.foldMapOf(Concat, values, R.toUpper, sampleBST)
+// 'MAGIC'
 ```
 ```js
 L.modify(values, R.toUpper, sampleBST)
@@ -1712,7 +1713,7 @@ L.remove([seqList, L.when(c => c < "i")], sampleList)
 And:
 
 ```js
-L.foldMapOf({empty: R.always(""), concat: R.concat},
+L.foldMapOf(Concat,
             [seqList, L.when(c => c <= "i")],
             R.toUpper,
             sampleList)
