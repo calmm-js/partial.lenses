@@ -77,7 +77,7 @@ parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#L-sequence" title="L.sequence: PTraversal [a] a"><code>L.sequence</code></a></li>
+<li><a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></li>
 </ul>
 </li>
 </ul>
@@ -588,10 +588,12 @@ visits all the properties of an object according to the template.</p>
 </code></pre>
 <p>See <a href="#bst-traversal">BST traversal</a> for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal [a] a"><code>L.sequence</code></a></h5>
-<p><code>L.sequence</code> is a traversal over an array.</p>
+<h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-p-a-ps-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></h5>
+<p><code>L.sequence</code> is a traversal over the values of an array or object.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.add(1), {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(L.sequence, R.negate, {a:1, b:2, c:3})
 </code></pre>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.</p>

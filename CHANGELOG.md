@@ -26,6 +26,8 @@ otherwise like `L.skip`.  The main benefit of this is that it allows "querying"
 combinators `L.chain`, `L.choice`, and `L.when` use the one and same `L.zero`
 and work without additional glue as traversals.
 
+Generalized the `L.sequence` traversal to also operate on the values of objects.
+
 ## 5.3.0
 
 Marked the default import for removal.  With the array shorthand for composition

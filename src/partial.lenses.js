@@ -10,6 +10,7 @@ import {
   isArray,
   isDefined,
   isObject,
+  keys,
   mapPartialU
 } from "infestines"
 
@@ -92,6 +93,13 @@ const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
 //
 
 const emptyArrayToUndefined = xs => xs.length ? xs : undefined
+
+const emptyObjectToUndefined = o => {
+  if (!isObject(o))
+    return o
+  for (const k in o)
+    return o
+}
 
 //
 
@@ -425,10 +433,34 @@ export function lazy(toLens) {
   return rec
 }
 
-export const sequence = (A, x2yA, xs) =>
-  notGet(A) === Ident
-  ? emptyArrayToUndefined(mapPartialU(x2yA, mkArray(xs)))
-  : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, mkArray(xs)))
+function branchOn(keys, vals) {
+  const n = keys.length
+  return (A, x2yA, x) => {
+    notGet(A)
+    const ap = A.ap,
+          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
+    let r = (0,A.of)(wait(x, n-1))
+    if (!isObject(x))
+      x = undefined
+    for (let i=n-1; 0<=i; --i) {
+      const v = x && x[keys[i]]
+      r = ap(r, (vals ? vals[i](A, x2yA, v) : x2yA(v)))
+    }
+    return (0,A.map)(emptyObjectToUndefined, r)
+  }
+}
+
+export function sequence(A, x2yA, xs) {
+  notGet(A)
+  if (isArray(xs))
+    return A === Ident
+    ? emptyArrayToUndefined(mapPartialU(x2yA, xs))
+    : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, xs))
+  else if (isObject(xs))
+    return branchOn(keys(xs))(A, x2yA, xs)
+  else
+    return (0,A.of)(xs)
+}
 
 export const when = p => (C, x2yC, x) => p(x) ? x2yC(x) : zero(C, x2yC, x)
 
@@ -441,16 +473,5 @@ export function branch(template) {
     keys.push(k)
     vals.push(lift(template[k]))
   }
-  const n = keys.length
-  return (A, x2yA, x) => {
-    notGet(A)
-    const ap = A.ap,
-          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = (0,A.of)(wait(x, n-1))
-    if (!isObject(x))
-      x = undefined
-    for (let i=n-1; 0<=i; --i)
-      r = ap(r, vals[i](A, x2yA, x && x[keys[i]]))
-    return r
-  }
+  return branchOn(keys, vals)
 }

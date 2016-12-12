@@ -289,12 +289,18 @@ describe("L.augment", () => {
 })
 
 describe("L.sequence", () => {
+  testEq('L.modify(L.sequence, R.negate, [])', undefined)
   testEq('L.modify(["xs", L.sequence, "x", L.sequence], R.add(1), {xs: [{x: [1]}, {x: [2,3,4]}]})', {xs: [{x: [2]}, {x: [3,4,5]}]})
   testEq('L.set(["xs", L.sequence, "x", L.sequence], 101, {xs: [{x: [1]}, {x: [2,3,4]}]})', {xs: [{x: [101]}, {x: [101,101,101]}]})
   testEq('L.remove(["xs", L.sequence, "x", L.sequence], {ys: "hip", xs: [{x: [1]}, {x: [2,3,4]}]})', {ys: "hip"})
   testEq('L.modify(["xs", L.sequence, "x"], x => x < 2 ? undefined : x, {xs: [{x:3},{x:1},{x:4},{x:1,y:0},{x:5},{x:9},{x:2}]})', {xs:[{x:3},{x:4},{y:0},{x:5},{x:9},{x:2}]})
   testEq('L.modify([L.sequence, ["x", L.sequence]], R.add(1), [{x: [1]}, {}, {x: []}, {x: [2, 3]}])', [{x: [2]}, {x: [3, 4]}])
   testEq('L.modify([[L.sequence, "x"], L.sequence], R.add(1), [{x: [1]}, {y: "keep"}, {x: [], z: "these"}, {x: [2, 3]}])', [{x: [2]}, {y: "keep"}, {z: "these"}, {x: [3, 4]}])
+  testEq('L.modify(L.sequence, R.negate, {x: 11, y: 22})', {x: -11, y: -22})
+  testEq('L.remove([L.sequence, L.when(x => 11 < x && x < 33)], {x: 11, y: 22, z: 33})', {x: 11, z: 33})
+  testEq('L.remove(L.sequence, {x: 11, y: 22, z: 33})', undefined)
+  testEq('L.modify(L.sequence, R.inc, {})', undefined)
+  testEq('L.modify(L.sequence, R.inc, null)', null)
 })
 
 describe("L.optional", () => {
@@ -382,6 +388,7 @@ describe("L.inverse", () => {
 })
 
 describe("L.branch", () => {
+  testEq('L.modify(L.branch({}), x => x+1, null)', null)
   testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
   testEq('L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}), x => x+1, {a:{x:1},b:2,c:[3],d:4,extra:"one"})', {"a":{"x":2},"b":3,"c":[4],"d":5,extra:"one"})
   testEq('L.set(L.branch({a: ["x",0], b: []}), 0, null)', {a:{x:[0]},b:0})
