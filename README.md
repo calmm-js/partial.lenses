@@ -543,7 +543,7 @@ like [`L.zero`](#L-zero), which is the identity element of `L.choice`.
 For example:
 
 ```js
-L.modify([L.sequence, L.choice("a", "d"), L.optional], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+L.modify([L.sequence, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 // [ { R: 1 }, { a: 2 }, { d: 3 } ]
 ```
 
