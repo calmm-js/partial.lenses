@@ -1174,66 +1174,67 @@ inserts the new part.  Setting an existing part to <code>undefined</code> remove
 <code>L.compose(L.prop(p0), ...ps.map(L.prop))</code> or just use the shorthand notation
 <code>[p0, ...ps]</code>.</p>
 <h3 id="performance">Performance</h3>
-<p>Here are a few benchmarks on partial lenses (as <code>L</code> version 5.3.1) and some
+<p>Here are a few benchmarks on partial lenses (as <code>L</code> version 5.3.2) and some
 roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code> version
 0.22.1) and <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code> version
 0.1.1).</p>
-<pre><code class="hljs lang-jsx">L.foldMapOf(Sum, L.sequence, id, xs100) x  1,358,491 ops/sec ±0.52% (174 runs sampled)
-P.sumOf(P.traversed, xs100)             x     23,496 ops/sec ±0.76% (179 runs sampled)
-R.sum(xs100)                            x    142,966 ops/sec ±0.37% (183 runs sampled)
+<pre><code class="hljs lang-jsx">L.foldMapOf(Sum, L.sequence, id, xs100) x  1,379,476 ops/sec ±0.50% (182 runs sampled)
+P.sumOf(P.traversed, xs100)             x     23,977 ops/sec ±0.72% (181 runs sampled)
+R.sum(xs100)                            x    143,341 ops/sec ±0.55% (180 runs sampled)
 
-L.collect(L.sequence, xs100)            x    239,464 ops/sec ±0.46% (180 runs sampled)
+L.collect(L.sequence, xs100)            x    358,058 ops/sec ±0.49% (187 runs sampled)
 
-L.modify(L.sequence, inc, xs100)        x  1,899,492 ops/sec ±0.43% (182 runs sampled)
-P.over(P.traversed, inc, xs100)         x     14,154 ops/sec ±0.39% (186 runs sampled)
-R.map(inc, xs100)                       x  1,926,748 ops/sec ±0.59% (180 runs sampled)
+L.modify(L.sequence, inc, xs100)        x  1,849,076 ops/sec ±0.54% (181 runs sampled)
+P.over(P.traversed, inc, xs100)         x     14,117 ops/sec ±0.43% (182 runs sampled)
+R.map(inc, xs100)                       x  1,930,424 ops/sec ±0.57% (177 runs sampled)
 
-L.get(1, xs)                            x 33,263,859 ops/sec ±0.73% (179 runs sampled)
-R.nth(1, xs)                            x  4,108,669 ops/sec ±0.49% (185 runs sampled)
-R.view(l_1, xs)                         x  2,018,968 ops/sec ±0.44% (184 runs sampled)
+L.get(1, xs)                            x 35,445,315 ops/sec ±0.56% (180 runs sampled)
+R.nth(1, xs)                            x  4,106,084 ops/sec ±0.45% (186 runs sampled)
+R.view(l_1, xs)                         x  2,059,149 ops/sec ±0.57% (182 runs sampled)
 
-L.set(1, 0, xs)                         x 23,222,399 ops/sec ±0.49% (185 runs sampled)
-R.update(1, 0, xs)                      x  8,650,490 ops/sec ±0.45% (185 runs sampled)
-R.set(l_1, 0, xs)                       x  1,410,118 ops/sec ±0.55% (187 runs sampled)
+L.set(1, 0, xs)                         x 22,716,967 ops/sec ±0.50% (179 runs sampled)
+R.update(1, 0, xs)                      x  8,819,862 ops/sec ±0.50% (183 runs sampled)
+R.set(l_1, 0, xs)                       x  1,416,881 ops/sec ±0.48% (181 runs sampled)
 
-L.get(&quot;y&quot;, xyz)                         x 28,659,627 ops/sec ±0.67% (182 runs sampled)
-R.prop(&quot;y&quot;, xyz)                        x 31,590,766 ops/sec ±0.65% (177 runs sampled)
-R.view(l_y, xyz)                        x  4,324,085 ops/sec ±0.40% (186 runs sampled)
+L.get(&quot;y&quot;, xyz)                         x 29,246,767 ops/sec ±0.73% (176 runs sampled)
+R.prop(&quot;y&quot;, xyz)                        x 33,311,414 ops/sec ±0.56% (184 runs sampled)
+R.view(l_y, xyz)                        x  4,295,269 ops/sec ±0.52% (188 runs sampled)
 
-L.set(&quot;y&quot;, 0, xyz)                      x  7,544,344 ops/sec ±0.51% (183 runs sampled)
-R.assoc(&quot;y&quot;, 0, xyz)                    x 13,005,669 ops/sec ±0.64% (178 runs sampled)
-R.set(l_y, 0, xyz)                      x  2,214,256 ops/sec ±0.55% (185 runs sampled)
+L.set(&quot;y&quot;, 0, xyz)                      x  7,436,057 ops/sec ±0.61% (179 runs sampled)
+R.assoc(&quot;y&quot;, 0, xyz)                    x 13,977,977 ops/sec ±0.55% (184 runs sampled)
+R.set(l_y, 0, xyz)                      x  2,048,229 ops/sec ±0.34% (181 runs sampled)
 
-L.get([0,&quot;x&quot;,0,&quot;y&quot;], axay)              x 11,866,055 ops/sec ±0.54% (184 runs sampled)
-R.view(l_0_x_0_y, axay)                 x    700,193 ops/sec ±0.54% (183 runs sampled)
+L.get([0,&quot;x&quot;,0,&quot;y&quot;], axay)              x 12,715,889 ops/sec ±0.54% (180 runs sampled)
+R.view(l_0_x_0_y, axay)                 x    683,161 ops/sec ±0.50% (183 runs sampled)
 
-L.set([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)           x  2,562,653 ops/sec ±0.83% (173 runs sampled)
-R.set(l_0_x_0_y, 0, axay)               x    442,967 ops/sec ±0.52% (181 runs sampled)
+L.set([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)           x  3,164,670 ops/sec ±0.64% (182 runs sampled)
+R.set(l_0_x_0_y, 0, axay)               x    446,004 ops/sec ±0.53% (182 runs sampled)
 
-L.modify([0,&quot;x&quot;,0,&quot;y&quot;], inc, axay)      x  2,970,856 ops/sec ±0.76% (180 runs sampled)
-R.over(l_0_x_0_y, inc, axay)            x    450,811 ops/sec ±0.49% (181 runs sampled)
+L.modify([0,&quot;x&quot;,0,&quot;y&quot;], inc, axay)      x  3,255,169 ops/sec ±0.65% (180 runs sampled)
+R.over(l_0_x_0_y, inc, axay)            x    454,818 ops/sec ±0.43% (176 runs sampled)
 
-L.remove(1, xs)                         x 23,444,635 ops/sec ±0.60% (181 runs sampled)
-R.remove(1, 1, xs)                      x  7,974,083 ops/sec ±0.42% (186 runs sampled)
+L.remove(1, xs)                         x 23,454,934 ops/sec ±0.65% (179 runs sampled)
+R.remove(1, 1, xs)                      x  7,790,301 ops/sec ±0.65% (175 runs sampled)
 
-L.remove(&quot;y&quot;, xyz)                      x 13,334,265 ops/sec ±0.53% (176 runs sampled)
-R.dissoc(&quot;y&quot;, xyz)                      x 14,907,803 ops/sec ±0.53% (182 runs sampled)
+L.remove(&quot;y&quot;, xyz)                      x 13,355,385 ops/sec ±0.62% (179 runs sampled)
+R.dissoc(&quot;y&quot;, xyz)                      x 14,044,862 ops/sec ±0.54% (180 runs sampled)
 
-L.get([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)              x 12,650,095 ops/sec ±0.50% (179 runs sampled)
-R.path([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)             x 15,622,894 ops/sec ±0.52% (181 runs sampled)
-R.view(l_xyz, xyzn)                     x  3,718,840 ops/sec ±0.51% (175 runs sampled)
-R.view(l_x_y_z, xyzn)                   x  1,418,730 ops/sec ±0.55% (183 runs sampled)
+L.get([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)              x 13,503,920 ops/sec ±0.58% (172 runs sampled)
+R.path([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)             x 15,959,699 ops/sec ±0.67% (174 runs sampled)
+R.view(l_xyz, xyzn)                     x  3,696,731 ops/sec ±0.44% (180 runs sampled)
+R.view(l_x_y_z, xyzn)                   x  1,409,591 ops/sec ±0.46% (179 runs sampled)
 
-L.set([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)           x  2,503,168 ops/sec ±0.66% (179 runs sampled)
-R.assocPath([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)     x  2,436,701 ops/sec ±0.55% (182 runs sampled)
-R.set(l_xyz, 0, xyzn)                   x  1,130,071 ops/sec ±0.59% (176 runs sampled)
-R.set(l_x_y_z, 0, xyzn)                 x    847,059 ops/sec ±0.55% (183 runs sampled)
+L.set([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)           x  2,887,232 ops/sec ±0.59% (180 runs sampled)
+R.assocPath([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)     x  2,620,795 ops/sec ±0.58% (183 runs sampled)
+R.set(l_xyz, 0, xyzn)                   x  1,234,385 ops/sec ±0.76% (182 runs sampled)
+R.set(l_x_y_z, 0, xyzn)                 x    854,309 ops/sec ±0.53% (183 runs sampled)
 
-L.remove(50, xs100)                     x  4,958,595 ops/sec ±0.40% (186 runs sampled)
-R.remove(50, 1, xs100)                  x    997,320 ops/sec ±0.42% (184 runs sampled)
+L.remove(50, xs100)                     x  4,913,621 ops/sec ±0.47% (183 runs sampled)
+R.remove(50, 1, xs100)                  x    998,646 ops/sec ±0.49% (182 runs sampled)
 
-L.set(50, 2, xs100)                     x  4,820,142 ops/sec ±0.52% (183 runs sampled)
-R.update(50, 2, xs100)                  x  1,704,273 ops/sec ±0.38% (183 runs sampled)
+L.set(50, 2, xs100)                     x  4,959,245 ops/sec ±0.41% (184 runs sampled)
+R.set(l_50, 2, xs100)                   x    801,953 ops/sec ±0.56% (182 runs sampled)
+R.update(50, 2, xs100)                  x  1,686,352 ops/sec ±0.46% (177 runs sampled)
 </code></pre>
 <p>At the time of writing, various operations on <em>partial lenses have been
 optimized for common cases</em>, but there is definitely a lot of room for
