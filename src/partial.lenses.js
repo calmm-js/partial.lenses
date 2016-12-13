@@ -518,6 +518,7 @@ export const orElse =
 // Read-only mapping
 
 export const to = x2y => (F, y2zF, x) => (0,F.map)(always(x), y2zF(x2y(x)))
+
 export const just = x => to(always(x))
 
 // Transforming data
