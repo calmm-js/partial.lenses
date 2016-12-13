@@ -289,6 +289,32 @@ const setPick = (template, x) => value => {
 
 //
 
+const show = (labels, dir) => x =>
+  console.log.apply(console, labels.concat([dir, x])) || x
+
+function branchOn(keys, vals) {
+  const n = keys.length
+  return (A, x2yA, x) => {
+    notGet(A)
+    const ap = A.ap,
+          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
+    let r = (0,A.of)(wait(x, n-1))
+    if (!isObject(x))
+      x = undefined
+    for (let i=n-1; 0<=i; --i) {
+      const v = x && x[keys[i]]
+      r = ap(r, (vals ? vals[i](A, x2yA, v) : x2yA(v)))
+    }
+    return (0,A.map)(emptyObjectToUndefined, r)
+  }
+}
+
+const normalizer = fn => (F, inner, x) => (0,F.map)(fn, inner(fn(x)))
+
+const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
+
+//
+
 export function lift(l) {
   switch (typeof l) {
     case "string":   return liftProp(l)
@@ -355,11 +381,7 @@ export function lazy(toLens) {
 
 // Debugging
 
-const show = (labels, dir) => x =>
-  console.log.apply(console, labels.concat([dir, x])) || x
-
-export const log = (...labels) =>
-  iso(show(labels, "get"), show(labels, "set"))
+export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
 
 // Operations on traversals
 
@@ -368,23 +390,6 @@ export const collect = curry2((t, s) => toArray(lift(t)(Collect, id, s)))
 export const foldMapOf = curry4((m, l, to, s) => lift(l)(ConstOf(m), to, s))
 
 // Creating new traversals
-
-function branchOn(keys, vals) {
-  const n = keys.length
-  return (A, x2yA, x) => {
-    notGet(A)
-    const ap = A.ap,
-          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = (0,A.of)(wait(x, n-1))
-    if (!isObject(x))
-      x = undefined
-    for (let i=n-1; 0<=i; --i) {
-      const v = x && x[keys[i]]
-      r = ap(r, (vals ? vals[i](A, x2yA, v) : x2yA(v)))
-    }
-    return (0,A.map)(emptyObjectToUndefined, r)
-  }
-}
 
 export function branch(template) {
   const keys = []
@@ -457,8 +462,6 @@ export const defaults = out => (F, x2yF, x) =>
 
 export const required = inn => replace(inn, undefined)
 
-const normalizer = fn => (F, inner, x) => (0,F.map)(fn, inner(fn(x)))
-
 export const define = v => normalizer(x => isDefined(x) ? x : v)
 
 export const normalize = x2x => normalizer(toPartial(x2x))
@@ -521,8 +524,6 @@ export const just = x => to(always(x))
 
 export const pick = template => (F, x2yF, x) =>
   (0,F.map)(setPick(template, x), x2yF(getPick(template, x)))
-
-const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
 
 export const replace = curry2((inn, out) => (F, x2yF, x) =>
   (0,F.map)(replacer(out, inn), x2yF(replacer(inn, out)(x))))
