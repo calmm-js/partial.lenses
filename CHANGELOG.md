@@ -28,6 +28,9 @@ and work without additional glue as traversals.
 
 Generalized the `L.sequence` traversal to also operate on the values of objects.
 
+Removed the defaul import.  The array notation for composition is recommended as
+the shorthand of choice.
+
 ## 5.3.0
 
 Marked the default import for removal.  With the array shorthand for composition
