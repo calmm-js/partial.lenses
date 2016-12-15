@@ -238,8 +238,8 @@ or [`L.valueOr(...)`](#L-valueOr) part(s) from the lens composition and try to
 predict what happens when you rerun the examples with the modified lens
 composition.  Verify your reasoning by actually rerunning the examples.
 
-Replace [`L.defaults(...)`](#L-defaults) with [`L.valueOr(...)`](#L-valueOr) or vice
-verse and try to predict what happens when you rerun the examples with the
+Replace [`L.defaults(...)`](#L-defaults) with [`L.valueOr(...)`](#L-valueOr) or
+vice verse and try to predict what happens when you rerun the examples with the
 modified lens composition.  Verify your reasoning by actually rerunning the
 examples.
 
@@ -366,8 +366,8 @@ L.remove(texts, sampleTexts)
 // { contents: [] }
 ```
 
-We can also manipulate texts selectively.  For example, we could truncate all the
-texts that are longer than 5 characters:
+We can also manipulate texts selectively.  For example, we could truncate all
+the texts that are longer than 5 characters:
 
 ```js
 L.modify([texts, L.when(t => t.length > 5)],
@@ -427,7 +427,9 @@ L.modify(["elems", 0, "x"], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.modify(["elems", L.sequence, "x"], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+L.modify(["elems", L.sequence, "x"],
+         R.dec,
+         {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
 ```
 
@@ -607,7 +609,7 @@ selectively turn a lens into a read-only lens whose view is `undefined`.
 For example:
 
 ```js
-L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0,-1,2,-3,4])
+L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0, -1, 2, -3, 4])
 // [ 0, -1, -2, -3, -4 ]
 ```
 
@@ -645,7 +647,8 @@ L.modify(flatten, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
 ```
 ```js
-L.remove([flatten, L.when(x => 3 <= x && x <= 4)], [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
+         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
@@ -758,7 +761,7 @@ For example:
 
 ```js
 const Sum = {empty: () => 0, concat: (x, y) => x + y}
-L.foldMapOf(Sum, L.sequence, x => x, [1,2,3])
+L.foldMapOf(Sum, L.sequence, x => x, [1, 2, 3])
 // 6
 ```
 
@@ -772,19 +775,20 @@ how the new traversal should visit the properties of an object.
 For example:
 
 ```js
-L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], second: "y"})
+L.collect(L.branch({first: L.sequence, second: L.identity}),
+          {first: ["x"], second: "y"})
 // [ 'x', 'y' ]
 ```
 
-Note that you can also combine `L.branch` with other optics.  For example, you
-can use [`L.pick`](#L-pick) to create a traversal over specific elements of an
-array:
+Note that you can also compose `L.branch` with other optics.  For example, you
+can compose with [`L.pick`](#L-pick) to create a traversal over specific
+elements of an array:
 
 ```js
 L.modify([L.pick({x: 0, z: 2}),
           L.branch({x: L.identity, z: L.identity})],
          R.negate,
-         [1,2,3])
+         [1, 2, 3])
 // [ -1, 2, -3 ]
 ```
 
@@ -803,7 +807,7 @@ L.modify(["xs", L.sequence, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 ```js
-L.modify(L.sequence, R.negate, {a:1, b:2, c:3})
+L.modify(L.sequence, R.negate, {a: 1, b: 2, c: 3})
 // { a: -1, b: -2, c: -3 }
 ```
 
@@ -901,7 +905,9 @@ When set with a defined object, the extended properties are removed.
 For example:
 
 ```js
-L.modify(L.augment({y: r => r.x + 1}), r => ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
+L.modify(L.augment({y: r => r.x + 1}),
+         r => ({x: r.x + r.y, y: 2, z: r.x - r.y}),
+         {x: 1})
 // { x: 3, z: -1 }
 ```
 
@@ -1346,7 +1352,7 @@ L.getInverse(offBy1, 1)
 ```
 
 Note that `L.getInverse(iso, data)` is equivalent
-to [`L.set(iso, data, undefined)`](#L-get).
+to [`L.set(iso, data, undefined)`](#L-set).
 
 Also note that, while `L.getInverse` makes most sense when used with an
 isomorphism, it is valid to use `L.getInverse` with *partial* lenses in general.
@@ -1400,7 +1406,7 @@ L.get(L.inverse(offBy1), 1)
 
 ## Examples
 
-If you are new to lenses, then you probably want to start with
+Note that if you are new to lenses, then you probably want to start with
 the [tutorial](#tutorial).
 
 ### An array of ids as boolean flags
@@ -1652,7 +1658,8 @@ L.remove(idxList(0), sampleList)
 And removing the last element propagates removal:
 
 ```js
-L.remove(["elems", idxList(0)], {elems: Immutable.List(["x"]), look: "No elems!"})
+L.remove(["elems", idxList(0)],
+         {elems: Immutable.List(["x"]), look: "No elems!"})
 // { look: 'No elems!' }
 ```
 
@@ -1670,8 +1677,8 @@ L.set(idxList(5), "!", sampleList)
 // List [ "a", "l", "i", "s", "t", "!" ]
 ```
 
-Consider what happens if the index given to `idxList` points further beyond the
-last element.  The [`L.index`](#L-index) lens adds `null` values.  The above
+Consider what happens when the index given to `idxList` points further beyond
+the last element.  The [`L.index`](#L-index) lens adds `null` values.  The above
 lens adds `undefined` values, which is not ideal with partial lenses, because of
 the special treatment of `undefined`.  In practise, however, it is not typical
 to `set` elements except to append just after the last element.  Treating the
