@@ -25,12 +25,12 @@ immutable data structures that admits <a href="#performance">efficient</a> imple
 This library provides a collection of
 <em>partial</em> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
-manipulating <a href="http://json.org/">JSON</a> and users can <a href="#L-lens">write new optics</a>
-for manipulating non-JSON objects, such as <a href="#interfacing">Immutable.js</a>
-collections.  A partial lens can <em>view</em> optional data, <em>insert</em> new data,
-<em>update</em> existing data and <em>remove</em> existing data and can, for example, provide
-<em>defaults</em> and maintain <em>required</em> data structure
-parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
+manipulating <a href="http://json.org/">JSON</a> and users
+can <a href="#L-iso">write</a> <a href="#L-lens">new</a> <a href="#L-branch">optics</a> for manipulating non-JSON
+objects, such as <a href="#interfacing">Immutable.js</a> collections.  A partial lens can
+<em>view</em> optional data, <em>insert</em> new data, <em>update</em> existing data and <em>remove</em>
+existing data and can, for example, provide <em>defaults</em> and maintain <em>required</em>
+data structure parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
 <ul>
@@ -254,8 +254,8 @@ more)
 or <a href="#L-valueOr"><code>L.valueOr(...)</code></a> part(s) from the lens composition and try to
 predict what happens when you rerun the examples with the modified lens
 composition.  Verify your reasoning by actually rerunning the examples.</p>
-<p>Replace <a href="#L-defaults"><code>L.defaults(...)</code></a> with <a href="#L-valueOr"><code>L.valueOr(...)</code></a> or vice
-verse and try to predict what happens when you rerun the examples with the
+<p>Replace <a href="#L-defaults"><code>L.defaults(...)</code></a> with <a href="#L-valueOr"><code>L.valueOr(...)</code></a> or
+vice verse and try to predict what happens when you rerun the examples with the
 modified lens composition.  Verify your reasoning by actually rerunning the
 examples.</p>
 <h3 id="shorthands">Shorthands</h3>
@@ -348,8 +348,8 @@ combination from the definition of <code>texts</code>.  Like with the <code>text
 part allows us to remove the whole object instead of just the <code>text</code> property:</p>
 <pre><code class="hljs lang-js">L.remove(texts, sampleTexts)
 </code></pre>
-<p>We can also manipulate texts selectively.  For example, we could truncate all the
-texts that are longer than 5 characters:</p>
+<p>We can also manipulate texts selectively.  For example, we could truncate all
+the texts that are longer than 5 characters:</p>
 <pre><code class="hljs lang-js">L.modify([texts, L.when(t =&gt; t.length &gt; 5)],
          t =&gt; t.slice(0, 5) + &quot;...&quot;,
          sampleTexts)
@@ -388,7 +388,9 @@ wider range of situations than corresponding total optics.</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.sequence, &quot;x&quot;], R.dec, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.sequence, &quot;x&quot;],
+         R.dec,
+         {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
 <p>of a data structure.</p>
 <h5 id="-a-name-l-remove-a-contents-l-remove-optic-maybedata-l-remove-l-remove-poptic-s-a-maybe-s-maybe-s-"><a name="L-remove"></a> <a href="#contents">≡</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData)</code></a></h5>
@@ -487,7 +489,7 @@ to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
 selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0,-1,2,-3,4])
+<pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
 </code></pre>
 <p>Note that <code>L.when(p)</code> is equivalent
 to <a href="#L-choose"><code>L.choose(x =&gt; p(x) ? L.identity : L.zero)</code></a>.</p>
@@ -509,7 +511,8 @@ data structure of nested arrays and objects:</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(flatten, x =&gt; x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)], [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)],
+         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <h4 id="debugging">Debugging</h4>
 <h5 id="-a-name-l-log-a-contents-l-log-labels-l-log-l-log-any-poptic-s-s-"><a name="L-log"></a> <a href="#contents">≡</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></h5>
@@ -577,14 +580,23 @@ a
 the values returned by <code>aM2r</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
-L.foldMapOf(Sum, L.sequence, x =&gt; x, [1,2,3])
+L.foldMapOf(Sum, L.sequence, x =&gt; x, [1, 2, 3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
-<p><code>L.branch</code> is given a template object of traversals and returns a traversal that
-visits all the properties of an object according to the template.</p>
+<p><code>L.branch</code> creates a new traversal from a given template object that specifies
+how the new traversal should visit the properties of an object.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect(L.branch({first: L.sequence, second: L.identity}), {first: [&quot;x&quot;], second: &quot;y&quot;})
+<pre><code class="hljs lang-js">L.collect(L.branch({first: L.sequence, second: L.identity}),
+          {first: [&quot;x&quot;], second: &quot;y&quot;})
+</code></pre>
+<p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
+can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
+elements of an array:</p>
+<pre><code class="hljs lang-js">L.modify([L.pick({x: 0, z: 2}),
+          L.branch({x: L.identity, z: L.identity})],
+         R.negate,
+         [1, 2, 3])
 </code></pre>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
@@ -593,7 +605,7 @@ visits all the properties of an object according to the template.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<pre><code class="hljs lang-js">L.modify(L.sequence, R.negate, {a:1, b:2, c:3})
+<pre><code class="hljs lang-js">L.modify(L.sequence, R.negate, {a: 1, b: 2, c: 3})
 </code></pre>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.</p>
@@ -658,7 +670,9 @@ not viewing or setting a defined object, the result is <code>undefined</code>.  
 viewing a defined object, the object is extended with the computed properties.
 When set with a defined object, the extended properties are removed.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify(L.augment({y: r =&gt; r.x + 1}), r =&gt; ({x: r.x + r.y, y: 2, z: r.x - r.y}), {x: 1})
+<pre><code class="hljs lang-js">L.modify(L.augment({y: r =&gt; r.x + 1}),
+         r =&gt; ({x: r.x + r.y, y: 2, z: r.x - r.y}),
+         {x: 1})
 </code></pre>
 <h4 id="enforcing-invariants">Enforcing invariants</h4>
 <h5 id="-a-name-l-defaults-a-contents-l-defaults-valuein-l-defaults-l-defaults-s-plens-s-s-"><a name="L-defaults"></a> <a href="#contents">≡</a> <a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn)</code></a></h5>
@@ -691,6 +705,9 @@ implicitly maps <code>undefined</code> to <code>undefined</code>.</p>
 <p>One use case for <code>normalize</code> is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a
 simple <a href="http://ramdajs.com/docs/#equals"><code>R.equals</code></a> comparison will do.</p>
+<p>Note that the difference between <code>L.normalize</code> and <a href="#L-rewrite"><code>L.rewrite</code></a> is
+that <code>L.normalize</code> applies the transform in both directions
+while <a href="#L-rewrite"><code>L.rewrite</code></a> only applies the transform when writing.</p>
 <h5 id="-a-name-l-required-a-contents-l-required-valueout-l-required-l-required-s-plens-s-s-"><a name="L-required"></a> <a href="#contents">≡</a> <a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut)</code></a></h5>
 <p><code>L.required</code> is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.</p>
@@ -707,6 +724,10 @@ to <a href="#L-replace"><code>L.replace(valueOut, undefined)</code></a>.</p>
 <p><code>L.rewrite</code> maps the value with the given transform when set and implicitly maps
 <code>undefined</code> to <code>undefined</code>.  One use case for <code>rewrite</code> is to re-establish data
 structure invariants after changes.</p>
+<p>Note that the difference between <a href="#L-normalize"><code>L.normalize</code></a> and <code>L.rewrite</code>
+is that <a href="#L-normalize"><code>L.normalize</code></a> applies the transform in both directions
+while <code>L.rewrite</code> only applies the transform when writing.</p>
+<p>See the <a href="#bst-as-a-lens">BST as a lens</a> section for a meaningful example.</p>
 <h4 id="lensing-arrays">Lensing arrays</h4>
 <h5 id="-a-name-l-append-a-contents-l-append-l-append-l-append-plens-a-a-"><a name="L-append"></a> <a href="#contents">≡</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append</code></a></h5>
 <p><code>L.append</code> is a write-only lens that can be used to append values to an array.
@@ -915,7 +936,7 @@ var offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
 L.getInverse(offBy1, 1)
 </code></pre>
 <p>Note that <code>L.getInverse(iso, data)</code> is equivalent
-to <a href="#L-get"><code>L.set(iso, data, undefined)</code></a>.</p>
+to <a href="#L-set"><code>L.set(iso, data, undefined)</code></a>.</p>
 <p>Also note that, while <code>L.getInverse</code> makes most sense when used with an
 isomorphism, it is valid to use <code>L.getInverse</code> with <em>partial</em> lenses in general.
 Doing so essentially constructs a minimal data structure that contains the given
@@ -945,7 +966,7 @@ operation only makes sense on isomorphisms.</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(offBy1), 1)
 </code></pre>
 <h2 id="examples">Examples</h2>
-<p>If you are new to lenses, then you probably want to start with
+<p>Note that if you are new to lenses, then you probably want to start with
 the <a href="#tutorial">tutorial</a>.</p>
 <h3 id="an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
@@ -1105,7 +1126,8 @@ L.get(idxList(2), sampleList)
 <pre><code class="hljs lang-js">L.remove(idxList(0), sampleList)
 </code></pre>
 <p>And removing the last element propagates removal:</p>
-<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, idxList(0)], {elems: Immutable.List([&quot;x&quot;]), look: &quot;No elems!&quot;})
+<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, idxList(0)],
+         {elems: Immutable.List([&quot;x&quot;]), look: &quot;No elems!&quot;})
 </code></pre>
 <p>We can also create lists from non-lists:</p>
 <pre><code class="hljs lang-js">L.set(idxList(0), &quot;x&quot;, undefined)
@@ -1113,8 +1135,8 @@ L.get(idxList(2), sampleList)
 <p>And we can also append new elements:</p>
 <pre><code class="hljs lang-js">L.set(idxList(5), &quot;!&quot;, sampleList)
 </code></pre>
-<p>Consider what happens if the index given to <code>idxList</code> points further beyond the
-last element.  The <a href="#L-index"><code>L.index</code></a> lens adds <code>null</code> values.  The above
+<p>Consider what happens when the index given to <code>idxList</code> points further beyond
+the last element.  The <a href="#L-index"><code>L.index</code></a> lens adds <code>null</code> values.  The above
 lens adds <code>undefined</code> values, which is not ideal with partial lenses, because of
 the special treatment of <code>undefined</code>.  In practise, however, it is not typical
 to <code>set</code> elements except to append just after the last element.  Treating the
@@ -1161,14 +1183,14 @@ var isoList = L.iso(fromList, toList)
 <p>One might assume that <a href="http://ramdajs.com/docs/#lensPath"><code>R.lensPath([p0,
 ...ps])</code></a> is equivalent to
 <code>R.compose(R.lensProp(p0), ...ps.map(R.lensProp))</code>, but that is not the case.</p>
-<p>In JavaScript, missing data can be mapped to <code>undefined</code>, which is what partial
-lenses also do, because <code>undefined</code> is not a valid <a href="http://json.org/">JSON</a>
-value.  When a part of a data structure is missing, an attempt to view it
-returns <code>undefined</code>.  When a part is missing, setting it to a defined value
-inserts the new part.  Setting an existing part to <code>undefined</code> removes it.</p>
-<p>With partial lenses you can robustly compose a path lens from prop lenses
-<code>L.compose(L.prop(p0), ...ps.map(L.prop))</code> or just use the shorthand notation
-<code>[p0, ...ps]</code>.</p>
+<p>With partial lenses you can robustly compose a path lens from prop
+lenses <a href="#L-compose"><code>L.compose(L.prop(p0), ...ps.map(L.prop))</code></a> or just use the
+shorthand notation <code>[p0, ...ps]</code>.  In JavaScript, missing (and mismatching) data
+can be mapped to <code>undefined</code>, which is what partial lenses also do, because
+<code>undefined</code> is not a valid <a href="http://json.org/">JSON</a> value.  When a part of a
+data structure is missing, an attempt to view it returns <code>undefined</code>.  When a
+part is missing, setting it to a defined value inserts the new part.  Setting an
+existing part to <code>undefined</code> removes it.</p>
 <h3 id="performance">Performance</h3>
 <p>Here are a few benchmarks on partial lenses (as <code>L</code> version 6.0.0) and some
 roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code> version
