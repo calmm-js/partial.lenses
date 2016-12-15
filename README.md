@@ -1872,13 +1872,8 @@ simple bottom-up transform.  Here is a simple implementation for JSON based on
 ideas from the [Uniplate](https://github.com/ndmitchell/uniplate) library:
 
 ``` js
-const isObject = x => x && x.constructor === Object
-const isArray = x => x && x.constructor === Array
-const isAggregate = R.anyPass([isObject, isArray])
-
-const descend = (w2w, w) => isAggregate(w) ? R.map(w2w, w) : w
+const descend = (w2w, w) => R.is(Object, w) ? R.map(w2w, w) : w
 const substUp = (h2h, w) => descend(h2h, descend(w => substUp(h2h, w), w))
-
 const transform = (w2w, w) => w2w(substUp(w2w, w))
 ```
 
