@@ -8,12 +8,12 @@ immutable data structures that admits [efficient](#performance) implementation.
 This library provides a collection of
 *partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
-manipulating [JSON](http://json.org/) and users can [write new optics](#L-lens)
-for manipulating non-JSON objects, such as [Immutable.js](#interfacing)
-collections.  A partial lens can *view* optional data, *insert* new data,
-*update* existing data and *remove* existing data and can, for example, provide
-*defaults* and maintain *required* data structure
-parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
+manipulating [JSON](http://json.org/) and users
+can [write](#L-iso) [new](#L-lens) [optics](#L-branch) for manipulating non-JSON
+objects, such as [Immutable.js](#interfacing) collections.  A partial lens can
+*view* optional data, *insert* new data, *update* existing data and *remove*
+existing data and can, for example, provide *defaults* and maintain *required*
+data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses) [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![Build Status](https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master)](https://travis-ci.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses) [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
@@ -766,14 +766,26 @@ L.foldMapOf(Sum, L.sequence, x => x, [1,2,3])
 
 ##### <a name="L-branch"></a> [≡](#contents) [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
 
-`L.branch` is given a template object of traversals and returns a traversal that
-visits all the properties of an object according to the template.
+`L.branch` creates a new traversal from a given template object that specifies
+how the new traversal should visit the properties of an object.
 
 For example:
 
 ```js
 L.collect(L.branch({first: L.sequence, second: L.identity}), {first: ["x"], second: "y"})
 // [ 'x', 'y' ]
+```
+
+Note that you can also combine `L.branch` with other optics.  For example, you
+can use [`L.pick`](#L-pick) to create a traversal over specific elements of an
+array:
+
+```js
+L.modify([L.pick({x: 0, z: 2}),
+          L.branch({x: L.identity, z: L.identity})],
+         R.negate,
+         [1,2,3])
+// [ -1, 2, -3 ]
 ```
 
 See the [BST traversal](#bst-traversal) section for a more meaningful example.
