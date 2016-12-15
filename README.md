@@ -1898,7 +1898,7 @@ const sampleBloated = {
 We can now remove the `extra` `fields` like this:
 
 ``` js
-transform(R.ifElse(isObject,
+transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
                    L.remove(L.props("extra", "fields")),
                    R.identity),
           sampleBloated)
