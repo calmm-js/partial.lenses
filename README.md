@@ -947,6 +947,10 @@ One use case for `normalize` is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a
 simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
 
+Note that the difference between `L.normalize` and [`L.rewrite`](#L-rewrite) is
+that `L.normalize` applies the transform in both directions
+while [`L.rewrite`](#L-rewrite) only applies the transform when writing.
+
 ##### <a name="L-required"></a> [≡](#contents) [`L.required(valueOut)`](#L-required "L.required: s -> PLens s s")
 
 `L.required` is used to specify that an element is not to be removed; in case it
@@ -975,6 +979,12 @@ to [`L.replace(valueOut, undefined)`](#L-replace).
 `L.rewrite` maps the value with the given transform when set and implicitly maps
 `undefined` to `undefined`.  One use case for `rewrite` is to re-establish data
 structure invariants after changes.
+
+Note that the difference between [`L.normalize`](#L-normalize) and `L.rewrite`
+is that [`L.normalize`](#L-normalize) applies the transform in both directions
+while `L.rewrite` only applies the transform when writing.
+
+See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
 #### Lensing arrays
 
