@@ -1286,13 +1286,8 @@ example, we&#39;ve run into the following use cases:</p>
 <p>One approach to making such whole data structure spanning updates is to use a
 simple bottom-up transform.  Here is a simple implementation for JSON based on
 ideas from the <a href="https://github.com/ndmitchell/uniplate">Uniplate</a> library:</p>
-<pre><code class="hljs lang-js">var isObject = x =&gt; x &amp;&amp; x.constructor === Object
-var isArray = x =&gt; x &amp;&amp; x.constructor === Array
-var isAggregate = R.anyPass([isObject, isArray])
-
-var descend = (w2w, w) =&gt; isAggregate(w) ? R.map(w2w, w) : w
+<pre><code class="hljs lang-js">var descend = (w2w, w) =&gt; R.is(Object, w) ? R.map(w2w, w) : w
 var substUp = (h2h, w) =&gt; descend(h2h, descend(w =&gt; substUp(h2h, w), w))
-
 var transform = (w2w, w) =&gt; w2w(substUp(w2w, w))
 </code></pre>
 <p><code>transform(w2w, w)</code> basically just performs a single-pass bottom-up transform
