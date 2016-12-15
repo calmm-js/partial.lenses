@@ -1739,15 +1739,14 @@ One might assume that [`R.lensPath([p0,
 ...ps])`](http://ramdajs.com/docs/#lensPath) is equivalent to
 `R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
 
-In JavaScript, missing data can be mapped to `undefined`, which is what partial
-lenses also do, because `undefined` is not a valid [JSON](http://json.org/)
-value.  When a part of a data structure is missing, an attempt to view it
-returns `undefined`.  When a part is missing, setting it to a defined value
-inserts the new part.  Setting an existing part to `undefined` removes it.
-
-With partial lenses you can robustly compose a path lens from prop lenses
-`L.compose(L.prop(p0), ...ps.map(L.prop))` or just use the shorthand notation
-`[p0, ...ps]`.
+With partial lenses you can robustly compose a path lens from prop
+lenses [`L.compose(L.prop(p0), ...ps.map(L.prop))`](#L-compose) or just use the
+shorthand notation `[p0, ...ps]`.  In JavaScript, missing (and mismatching) data
+can be mapped to `undefined`, which is what partial lenses also do, because
+`undefined` is not a valid [JSON](http://json.org/) value.  When a part of a
+data structure is missing, an attempt to view it returns `undefined`.  When a
+part is missing, setting it to a defined value inserts the new part.  Setting an
+existing part to `undefined` removes it.
 
 ### Performance
 
