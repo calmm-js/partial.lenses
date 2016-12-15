@@ -1306,7 +1306,7 @@ are given the following data:</p>
 }
 </code></pre>
 <p>We can now remove the <code>extra</code> <code>fields</code> like this:</p>
-<pre><code class="hljs lang-js">transform(R.ifElse(isObject,
+<pre><code class="hljs lang-js">transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
                    L.remove(L.props(&quot;extra&quot;, &quot;fields&quot;)),
                    R.identity),
           sampleBloated)
