@@ -27,7 +27,8 @@ export const log = L.log
 
 // Traversals
 
-export const collect = I.curry2((t, s) => foldMapOf(Collect, t, toCollect, s))
+export const collect = I.curry2((t, s) => collectMap(t, I.id, s))
+export const collectMap = I.curry3((t, to, s) => foldMapOf(Collect, t, I.pipe2(to, toCollect), s))
 export const foldMapOf = L.foldMapOf
 
 export const branch = L.branch

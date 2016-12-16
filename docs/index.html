@@ -69,6 +69,7 @@ data structure parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try L
 <li><a href="#traversals">Traversals</a><ul>
 <li><a href="#operations-on-traversals">Operations on traversals</a><ul>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
+<li><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; [a]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></li>
 <li><a href="#L-foldMapOf" title="L.foldMapOf: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></li>
 </ul>
 </li>
@@ -550,24 +551,38 @@ be
 and <a href="#L-remove">removed</a>.</p>
 <h4 id="operations-on-traversals">Operations on traversals</h4>
 <h5 id="-a-name-l-collect-a-contents-l-collect-traversal-maybedata-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="L-collect"></a> <a href="#contents">≡</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
-<p><code>L.collect</code> returns an array of the elements focused on by the given traversal
-or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Note that a partial <em>lens</em> always targets an element, but
-<code>L.collect</code> implicitly skips elements that are <code>undefined</code>.  Given a traversal,
-there can be any number of elements in the array returned by <code>L.collect</code>.</p>
+<p><code>L.collect</code> returns an array of the defined elements focused on by the given
+traversal or lens from a data structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p><code>L.collect(traversal, maybeData)</code> is equivalent
-to <a href="#L-foldMapOf"><code>L.foldMapOf(Collect, traversal, toCollect, maybeData)</code></a> where
+<p>Note that <code>L.collect(t, s)</code> is equivalent
+to <a href="#L-collectMap"><code>L.collectMap(t, R.identity, s)</code></a>.</p>
+<h5 id="-a-name-l-collectmap-a-contents-l-collectmap-traversal-maybevalue-maybevalue-maybedata-l-collectmap-l-collectmap-ptraversal-s-a-maybe-a-maybe-a-maybe-s-a-"><a name="L-collectMap"></a> <a href="#contents">≡</a> <a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; [a]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></h5>
+<p><code>L.collectMap</code> returns an array of the elements focused on by the given
+traversal or lens from a data structure and mapped by the given function to a
+defined value.  Given a lens, there will be 0 or 1 elements in the returned
+array.  Note that a partial <em>lens</em> always targets an element, but <code>L.collectMap</code>
+implicitly skips elements that are mapped to <code>undefined</code> by the given function.
+Given a traversal, there can be any number of elements in the array returned by
+<code>L.collectMap</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collectMap([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.negate, {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<p><code>L.collectMap(traversal, toMaybe, maybeData)</code> is equivalent
+to
+<a href="#L-foldMapOf"><code>L.foldMapOf(Collect, traversal, R.pipe(toMaybe, toCollect), maybeData)</code></a> where
 <code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
 <pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
 var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>So:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(Collect, [&quot;xs&quot;, L.sequence, &quot;x&quot;], toCollect, {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.foldMapOf(Collect,
+            [&quot;xs&quot;, L.sequence, &quot;x&quot;],
+            R.pipe(R.negate, toCollect),
+            {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p>The internal implementation of <code>L.collect</code> is optimized and faster than the
+<p>The internal implementation of <code>L.collectMap</code> is optimized and faster than the
 above naïve implementation.</p>
 <h5 id="-a-name-l-foldmapof-a-contents-l-foldmapof-empty-value-concat-value-value-value-traversal-maybevalue-value-maybedata-l-foldmapof-l-foldmapof-empty-r-concat-r-r-r-ptraversal-s-a-maybe-a-r-maybe-s-r-"><a name="L-foldMapOf"></a> <a href="#contents">≡</a> <a href="#L-foldMapOf" title="L.foldMapOf: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></h5>
 <p><code>L.foldMapOf({empty, concat}, t, aM2r, s)</code> performs a map, using given function

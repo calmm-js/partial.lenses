@@ -71,6 +71,8 @@ function toArray(n) {
 
 const Collect = {map: snd, of() {}, ap}
 
+const collectMapU = (t, to, s) => toArray(lift(t)(Collect, to, s))
+
 //
 
 function traverse(A, x2yA, xs) {
@@ -385,7 +387,9 @@ export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
 
 // Operations on traversals
 
-export const collect = curry2((t, s) => toArray(lift(t)(Collect, id, s)))
+export const collect = curry2((t, s) => collectMapU(t, id, s))
+
+export const collectMap = curry3(collectMapU)
 
 export const foldMapOf = curry4((m, t, to, s) => lift(t)(ConstOf(m), to, s))
 

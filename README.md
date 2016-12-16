@@ -42,6 +42,7 @@ data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
+      * [`L.collectMap(traversal, maybeValue => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> (Maybe a -> Maybe b) -> Maybe s -> [b]")
       * [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
@@ -714,11 +715,8 @@ and [removed](#L-remove).
 
 ##### <a name="L-collect"></a> [≡](#contents) [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
 
-`L.collect` returns an array of the elements focused on by the given traversal
-or lens from a data structure.  Given a lens, there will be 0 or 1 elements in
-the returned array.  Note that a partial *lens* always targets an element, but
-`L.collect` implicitly skips elements that are `undefined`.  Given a traversal,
-there can be any number of elements in the array returned by `L.collect`.
+`L.collect` returns an array of the defined elements focused on by the given
+traversal or lens from a data structure.
 
 For example:
 
@@ -727,8 +725,29 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
-`L.collect(traversal, maybeData)` is equivalent
-to [`L.foldMapOf(Collect, traversal, toCollect, maybeData)`](#L-foldMapOf) where
+Note that `L.collect(t, s)` is equivalent
+to [`L.collectMap(t, R.identity, s)`](#L-collectMap).
+
+##### <a name="L-collectMap"></a> [≡](#contents) [`L.collectMap(traversal, maybeValue => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> (Maybe a -> Maybe b) -> Maybe s -> [b]")
+
+`L.collectMap` returns an array of the elements focused on by the given
+traversal or lens from a data structure and mapped by the given function to a
+defined value.  Given a lens, there will be 0 or 1 elements in the returned
+array.  Note that a partial *lens* always targets an element, but `L.collectMap`
+implicitly skips elements that are mapped to `undefined` by the given function.
+Given a traversal, there can be any number of elements in the array returned by
+`L.collectMap`.
+
+For example:
+
+```js
+L.collectMap(["xs", L.sequence, "x"], R.negate, {xs: [{x: 1}, {x: 2}]})
+// [ -1, -2 ]
+```
+
+`L.collectMap(traversal, toMaybe, maybeData)` is equivalent
+to
+[`L.foldMapOf(Collect, traversal, R.pipe(toMaybe, toCollect), maybeData)`](#L-foldMapOf) where
 `Collect` and `toCollect` are defined as follows:
 
 ```js
@@ -739,11 +758,14 @@ const toCollect = x => x !== undefined ? [x] : []
 So:
 
 ```js
-L.foldMapOf(Collect, ["xs", L.sequence, "x"], toCollect, {xs: [{x: 1}, {x: 2}]})
-// [ 1, 2 ]
+L.foldMapOf(Collect,
+            ["xs", L.sequence, "x"],
+            R.pipe(R.negate, toCollect),
+            {xs: [{x: 1}, {x: 2}]})
+// [ -1, -2 ]
 ```
 
-The internal implementation of `L.collect` is optimized and faster than the
+The internal implementation of `L.collectMap` is optimized and faster than the
 above naïve implementation.
 
 ##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, maybeValue => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> (Maybe a -> r) -> Maybe s -> r")

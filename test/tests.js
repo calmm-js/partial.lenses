@@ -330,6 +330,11 @@ describe("L.collect", () => {
   testEq('L.collect(["a",L.sequence,"b",L.sequence,"c",L.sequence], {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})', [1,2])
 })
 
+describe("L.collectMap", () => {
+  testEq('L.collectMap(L.sequence, R.negate, [1,2,3])', [-1,-2,-3])
+  testEq('L.collectMap(L.sequence, x => x < 0 ? undefined : x+1, [0,-1,2,-3])', [1, 3])
+})
+
 export const Sum = {empty: () => 0, concat: (x, y) => x + y}
 
 describe("L.foldMapOf", () => {
