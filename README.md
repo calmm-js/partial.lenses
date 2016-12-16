@@ -628,10 +628,10 @@ For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
 
 ```js
-const flatten = L.lazy(rec => {
+const flatten = [L.optional, L.lazy(rec => {
   const nest = [L.sequence, rec]
   return L.choose(x => R.is(Object, x) ? nest : L.identity)
-})
+})]
 ```
 
 Note that the above creates a cyclic representation of the traversal.

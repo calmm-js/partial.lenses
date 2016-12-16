@@ -500,10 +500,10 @@ is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.</p>
 <p>For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:</p>
-<pre><code class="hljs lang-js">var flatten = L.lazy(rec =&gt; {
+<pre><code class="hljs lang-js">var flatten = [L.optional, L.lazy(rec =&gt; {
   const nest = [L.sequence, rec]
   return L.choose(x =&gt; R.is(Object, x) ? nest : L.identity)
-})
+})]
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>
 <p>Now, for example:</p>
