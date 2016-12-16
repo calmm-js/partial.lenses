@@ -11,7 +11,8 @@
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "bowerify": "NODE_ENV=production browserify src/partial.lenses.js -t envify -t babelify --no-bundle-external -d -s partialLenses -o dist/partial.lenses.js"
   },
   "repository": {
     "type": "git",
@@ -56,8 +57,10 @@
     "babel-plugin-transform-es2015-template-literals": "^6.8.0",
     "babel-plugin-transform-es2015-unicode-regex": "^6.11.0",
     "babel-polyfill": "^6.20.0",
+    "babel-preset-es2015": "^6.18.0",
     "babel-register": "^6.18.0",
     "benchmark": "^2.1.3",
+    "babelify": "^7.3.0",
     "browserify": "^13.1.1",
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
