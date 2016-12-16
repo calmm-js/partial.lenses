@@ -69,7 +69,7 @@ data structure parts.  <a href="http://calmm-js.github.io/partial.lenses/">Try L
 <li><a href="#traversals">Traversals</a><ul>
 <li><a href="#operations-on-traversals">Operations on traversals</a><ul>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
-<li><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; [a]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></li>
+<li><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></li>
 <li><a href="#L-foldMapOf" title="L.foldMapOf: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; (Maybe a -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, maybeValue =&gt; value, maybeData)</code></a></li>
 </ul>
 </li>
@@ -558,7 +558,7 @@ traversal or lens from a data structure.</p>
 </code></pre>
 <p>Note that <code>L.collect(t, s)</code> is equivalent
 to <a href="#L-collectMap"><code>L.collectMap(t, R.identity, s)</code></a>.</p>
-<h5 id="-a-name-l-collectmap-a-contents-l-collectmap-traversal-maybevalue-maybevalue-maybedata-l-collectmap-l-collectmap-ptraversal-s-a-maybe-a-maybe-a-maybe-s-a-"><a name="L-collectMap"></a> <a href="#contents">≡</a> <a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe a) -&gt; Maybe s -&gt; [a]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></h5>
+<h5 id="-a-name-l-collectmap-a-contents-l-collectmap-traversal-maybevalue-maybevalue-maybedata-l-collectmap-l-collectmap-ptraversal-s-a-maybe-a-maybe-b-maybe-s-b-"><a name="L-collectMap"></a> <a href="#contents">≡</a> <a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; (Maybe a -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, maybeValue =&gt; maybeValue, maybeData)</code></a></h5>
 <p><code>L.collectMap</code> returns an array of the elements focused on by the given
 traversal or lens from a data structure and mapped by the given function to a
 defined value.  Given a lens, there will be 0 or 1 elements in the returned
