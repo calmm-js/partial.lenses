@@ -387,7 +387,7 @@ export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
 
 export const collect = curry2((t, s) => toArray(lift(t)(Collect, id, s)))
 
-export const foldMapOf = curry4((m, l, to, s) => lift(l)(ConstOf(m), to, s))
+export const foldMapOf = curry4((m, t, to, s) => lift(t)(ConstOf(m), to, s))
 
 // Creating new traversals
 
