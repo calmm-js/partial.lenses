@@ -104,7 +104,7 @@ const mkArray = x => isArray(x) ? x : emptyArray
 //
 
 const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
-  if (process.env.NODE_ENV === "production" || p(x))
+  if (p(x))
     return x
   throw new Error(msg)
 }
