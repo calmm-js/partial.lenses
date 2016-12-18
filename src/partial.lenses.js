@@ -202,12 +202,12 @@ function composed(oi0, os) {
   }
 }
 
-function setU(l, x, s) {
-  switch (typeof l) {
-    case "string":   return setProp(l, x, s)
-    case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident, always(x), s)
-    default:         return modifyComposed(l, always(x), s)
+function setU(o, x, s) {
+  switch (typeof o) {
+    case "string":   return setProp(o, x, s)
+    case "number":   return setIndex(o, x, s)
+    case "function": return lifted(o)(Ident, always(x), s)
+    default:         return modifyComposed(o, always(x), s)
   }
 }
 
@@ -232,39 +232,34 @@ function getU(l, s) {
   }
 }
 
-function modifyComposed(ls, xi2x, x) {
-  let n = ls.length
-
+function modifyComposed(os, xi2x, x) {
+  let n = os.length
   const xs = []
-
   for (let i=0; i<n; ++i) {
     xs.push(x)
-    const l = ls[i]
-    switch (typeof l) {
+    const o = os[i]
+    switch (typeof o) {
       case "string":
-        x = getProp(l, x)
+        x = getProp(o, x)
         break
       case "number":
-        x = getIndex(l, x)
+        x = getIndex(o, x)
         break
       default:
-        x = composed(i, ls)(Ident, xi2x, x, ls[i-1])
+        x = composed(i, os)(Ident, xi2x, x, os[i-1])
         n = i
         break
     }
   }
-
-  if (n === ls.length)
-    x = xi2x(x, ls[n-1])
-
+  if (n === os.length)
+    x = xi2x(x, os[n-1])
   while (0 <= --n) {
-    const l = ls[n]
-    switch (typeof l) {
-      case "string": x = setProp(l, x, xs[n]); break
-      case "number": x = setIndex(l, x, xs[n]); break
+    const o = os[n]
+    switch (typeof o) {
+      case "string": x = setProp(o, x, xs[n]); break
+      case "number": x = setIndex(o, x, xs[n]); break
     }
   }
-
   return x
 }
 
@@ -419,7 +414,7 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 
 export const collectMap = curry3(collectMapU)
 
-export const foldMapOf = curry4((m, t, to, s) => lift(t)(ConstOf(m), to, s))
+export const foldMapOf = curry4((m, t, xi2y, s) => lift(t)(ConstOf(m), xi2y, s))
 
 // Creating new traversals
 
