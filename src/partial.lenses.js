@@ -331,6 +331,13 @@ const normalizer = xi2x => (F, xi2yF, x, i) =>
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
 
+function findIndex(xi2b, xs) {
+  for (let i=0, n=xs.length; i<n; ++i)
+    if (xi2b(xs[i], i))
+      return i
+  return -1
+}
+
 //
 
 export function lift(l) {
@@ -378,7 +385,7 @@ export const chain = curry2((xi2yO, xO) =>
   [xO, choose((xM, i) => isDefined(xM) ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => isDefined(getU(l, x)))
+  const i = findIndex(l => isDefined(getU(l, x)), ls)
   return i < 0 ? zero : ls[i]
 })
 
@@ -506,10 +513,10 @@ export const append = lens(snd, (x, xs) =>
 export const filter = p => lens(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
   emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
 
-export const find = predicate => choose(xs => {
+export const find = xi2b => choose(xs => {
   if (!isArray(xs))
     return 0
-  const i = xs.findIndex(predicate)
+  const i = findIndex(xi2b, xs)
   return i < 0 ? append : i
 })
 
