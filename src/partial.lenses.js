@@ -421,8 +421,7 @@ export const foldMapOf = curry4((m, t, to, s) => lift(t)(ConstOf(m), to, s))
 // Creating new traversals
 
 export function branch(template) {
-  const keys = []
-  const vals = []
+  const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
     vals.push(lift(template[k]))
