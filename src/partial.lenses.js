@@ -182,22 +182,22 @@ const liftIndex = i => (F, xi2yF, xs, _) =>
 
 //
 
-const seemsLens = x => typeof x === "function" && x.length === 4
+const seemsOptic = x => typeof x === "function" && x.length === 4
 
-const lifted = l => assert(l, seemsLens, "Expecting a lens.")
+const lifted = o => assert(o, seemsOptic, "Expecting an optic.")
 
-const close = (l, F, x2yF) => (x, i) => l(F, x2yF, x, i)
+const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
-function composed(l0i, ls) {
-  switch (ls.length - l0i) {
+function composed(oi0, os) {
+  switch (os.length - oi0) {
     case 0:  return identity
-    case 1:  return lift(ls[l0i])
-    default: return (F, x2yF, x, i) => {
-      let n = ls.length
-      x2yF = close(lift(ls[--n]), F, x2yF)
-      while (l0i < --n)
-        x2yF = close(lift(ls[n]), F, x2yF)
-      return lift(ls[l0i])(F, x2yF, x, i)
+    case 1:  return lift(os[oi0])
+    default: return (F, xi2yF, x, i) => {
+      let n = os.length
+      xi2yF = close(lift(os[--n]), F, xi2yF)
+      while (oi0 < --n)
+        xi2yF = close(lift(os[n]), F, xi2yF)
+      return lift(os[oi0])(F, xi2yF, x, i)
     }
   }
 }
@@ -336,12 +336,12 @@ function findIndex(xi2b, xs) {
 
 //
 
-export function lift(l) {
-  switch (typeof l) {
-    case "string":   return liftProp(l)
-    case "number":   return liftIndex(l)
-    case "function": return lifted(l)
-    default:         return composed(0,l)
+export function lift(o) {
+  switch (typeof o) {
+    case "string":   return liftProp(o)
+    case "number":   return liftIndex(o)
+    case "function": return lifted(o)
+    default:         return composed(0,o)
   }
 }
 
@@ -349,7 +349,7 @@ export function lift(l) {
 
 export const modify = curry3(modifyU)
 
-export const remove = curry2((l, s) => setU(l, undefined, s))
+export const remove = curry2((o, s) => setU(o, undefined, s))
 
 export const set = curry3(setU)
 
@@ -385,8 +385,8 @@ export const choice = (...ls) => choose(x => {
   return i < 0 ? zero : ls[i]
 })
 
-export const choose = xiM2o => (F, x2yF, x, i) =>
-  lift(xiM2o(x, i))(F, x2yF, x, i)
+export const choose = xiM2o => (C, xi2yC, x, i) =>
+  lift(xiM2o(x, i))(C, xi2yC, x, i)
 
 export const when = p => (C, xi2yC, x, i) =>
   p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
@@ -400,12 +400,12 @@ export function zero(C, xi2yC, x, i) {
 
 // Recursing
 
-export function lazy(toLens) {
-  let memo = (F, fn, x, i) => {
-    memo = lift(toLens(rec))
-    return memo(F, fn, x, i)
+export function lazy(o2o) {
+  let memo = (C, xi2yC, x, i) => {
+    memo = lift(o2o(rec))
+    return memo(C, xi2yC, x, i)
   }
-  const rec = (F, fn, x, i) => memo(F, fn, x, i)
+  const rec = (C, xi2yC, x, i) => memo(C, xi2yC, x, i)
   return rec
 }
 
@@ -549,8 +549,8 @@ export const orElse =
 
 // Read-only mapping
 
-export const to = xi2y => (F, yi2zF, x, i) =>
-  (0,F.map)(always(x), yi2zF(xi2y(x, i), i))
+export const to = wi2x => (F, xi2yF, w, i) =>
+  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
 
 export const just = x => to(always(x))
 
