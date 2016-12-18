@@ -17,12 +17,10 @@ import {
 
 function mapPartialIndexU(xi2y, xs) {
   const ys = [], n=xs.length
-  for (let i=0; i<n; ++i) {
-    const y = xi2y(xs[i], i)
-    if (isDefined(y))
+  for (let i=0, y; i<n; ++i)
+    if (isDefined(y = xi2y(xs[i], i)))
       ys.push(y)
-  }
-  return ys.length ? ys : undefined
+  return ys.length ? ys : void 0
 }
 
 //
@@ -101,7 +99,7 @@ const collectMapU = (t, xi2y, s) => toArray(lift(t)(Collect, xi2y, s)) || []
 
 function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
-  let s = reqApplicative(A.of)(undefined), i = xs.length
+  let s = reqApplicative(A.of)(void 0), i = xs.length
   while (i--)
     s = ap(map(rconcat, s), xi2yA(xs[i], i))
   return map(toArray, s)
@@ -128,7 +126,7 @@ const emptyObjectToUndefined = o => {
 
 const isProp = x => typeof x === "string"
 
-const getProp = (k, o) => isObject(o) ? o[k] : undefined
+const getProp = (k, o) => isObject(o) ? o[k] : void 0
 
 const setProp = (k, v, o) =>
   isDefined(v) ? assocPartialU(k, v, o) : dissocPartialU(k, o)
@@ -142,17 +140,17 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 const nulls = n => Array(n).fill(null)
 
-const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
+const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
   if (isDefined(x)) {
     if (!isArray(xs))
-      return i < 0 ? undefined : nulls(i).concat([x])
+      return i < 0 ? void 0 : nulls(i).concat([x])
     const n = xs.length
     if (n <= i)
       return xs.concat(nulls(i - n), [x])
     if (i < 0)
-      return !n ? undefined : xs
+      return !n ? void 0 : xs
     const ys = Array(n)
     for (let j=0; j<n; ++j)
       ys[j] = xs[j]
@@ -162,11 +160,11 @@ function setIndex(i, x, xs) {
     if (isArray(xs)) {
       const n = xs.length
       if (!n)
-        return undefined
+        return void 0
       if (i < 0 || n <= i)
         return xs
       if (n === 1)
-        return undefined
+        return void 0
       const ys = Array(n-1)
       for (let j=0; j<i; ++j)
         ys[j] = xs[j]
@@ -212,14 +210,12 @@ function setU(o, x, s) {
 }
 
 function getComposed(ls, s) {
-  for (let i=0, n=ls.length; i<n; ++i) {
-    const l = ls[i]
-    switch (typeof l) {
+  for (let i=0, n=ls.length, l; i<n; ++i)
+    switch (typeof (l = ls[i])) {
       case "string": s = getProp(l, s); break
       case "number": s = getIndex(l, s); break
       default: return composed(i, ls)(Const, id, s, ls[i-1])
     }
-  }
   return s
 }
 
@@ -235,10 +231,9 @@ function getU(l, s) {
 function modifyComposed(os, xi2x, x) {
   let n = os.length
   const xs = []
-  for (let i=0; i<n; ++i) {
+  for (let i=0, o; i<n; ++i) {
     xs.push(x)
-    const o = os[i]
-    switch (typeof o) {
+    switch (typeof (o = os[i])) {
       case "string":
         x = getProp(o, x)
         break
@@ -280,7 +275,7 @@ function getPick(template, x) {
 
 const setPick = (template, x) => value => {
   if (!isObject(value))
-    value = undefined
+    value = void 0
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
@@ -298,10 +293,9 @@ function branchOn(keys, vals) {
           wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
     let r = reqApplicative(A.of)(wait(x, n-1))
     if (!isObject(x))
-      x = undefined
+      x = void 0
     for (let i=n-1; 0<=i; --i) {
-      const k = keys[i]
-      const v = x && x[k]
+      const k = keys[i], v = x && x[k]
       r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
     }
     return (0,A.map)(emptyObjectToUndefined, r)
@@ -342,7 +336,7 @@ export const modify = curry3((o, xi2x, s) => {
   }
 })
 
-export const remove = curry2((o, s) => setU(o, undefined, s))
+export const remove = curry2((o, s) => setU(o, void 0, s))
 
 export const set = curry3(setU)
 
@@ -388,7 +382,7 @@ export const optional = when(isDefined)
 
 export function zero(C, xi2yC, x, i) {
   const of = C.of
-  return of ? of(x) : (0,C.map)(always(x), xi2yC(undefined, i))
+  return of ? of(x) : (0,C.map)(always(x), xi2yC(void 0, i))
 }
 
 // Recursing
@@ -460,7 +454,7 @@ export const augment = template => lens(
   (y, x) => {
     if (isObject(y)) {
       if (!isObject(x))
-        x = undefined
+        x = void 0
       let z
       const set = (k, v) => {
         if (!z)
@@ -481,17 +475,17 @@ export const augment = template => lens(
 // Enforcing invariants
 
 export const defaults = out => (F, xi2yF, x, i) =>
-  (0,F.map)(replacer(out, undefined), xi2yF(isDefined(x) ? x : out, i))
+  (0,F.map)(replacer(out), xi2yF(isDefined(x) ? x : out, i))
 
-export const required = inn => replace(inn, undefined)
+export const required = inn => replace(inn, void 0)
 
 export const define = v => normalizer(x => isDefined(x) ? x : v)
 
 export const normalize = xi2x =>
-  normalizer((x, i) => isDefined(x) ? xi2x(x, i) : undefined)
+  normalizer((x, i) => isDefined(x) ? xi2x(x, i) : void 0)
 
 export const rewrite = yi2y => (F, xi2yF, x, i) =>
-  (0,F.map)(y => isDefined(y) ? yi2y(y, i) : undefined, xi2yF(x, i))
+  (0,F.map)(y => isDefined(y) ? yi2y(y, i) : void 0, xi2yF(x, i))
 
 // Lensing arrays
 
@@ -523,10 +517,8 @@ export const prop = x =>
 
 export function props() {
   const n = arguments.length, template = {}
-  for (let i=0; i<n; ++i) {
-    const k = arguments[i]
-    template[k] = k
-  }
+  for (let i=0, k; i<n; ++i)
+    template[k = arguments[i]] = k
   return pick(template)
 }
 
