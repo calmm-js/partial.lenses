@@ -263,15 +263,6 @@ function modifyComposed(os, xi2x, x) {
   return x
 }
 
-function modifyU(l, x2x, s) {
-  switch (typeof l) {
-    case "string":   return setProp(l, x2x(getProp(l, s)), s)
-    case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
-    case "function": return lifted(l)(Ident, x2x, s)
-    default:         return modifyComposed(l, x2x, s)
-  }
-}
-
 //
 
 function getPick(template, x) {
@@ -342,7 +333,14 @@ export function lift(o) {
 
 // Operations on optics
 
-export const modify = curry3(modifyU)
+export const modify = curry3((o, xi2x, s) => {
+  switch (typeof o) {
+    case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
+    case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
+    case "function": return lifted(o)(Ident, xi2x, s)
+    default:         return modifyComposed(o, xi2x, s)
+  }
+})
 
 export const remove = curry2((o, s) => setU(o, undefined, s))
 
