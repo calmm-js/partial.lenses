@@ -52,6 +52,18 @@ function ConstOf(Monoid) {
 
 //
 
+const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
+  if (p(x))
+    return x
+  throw new Error(msg)
+}
+
+//
+
+const reqApplicative = f => assert(f, id, "Traversals require an applicative.")
+
+//
+
 function Concat(l, r) {this.l = l; this.r = r}
 
 const isConcat = n => n && n.constructor === Concat
@@ -89,7 +101,7 @@ const collectMapU = (t, to, s) => toArray(lift(t)(Collect, to, s)) || []
 
 function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
-  let s = (0,A.of)(undefined), i = xs.length
+  let s = reqApplicative(A.of)(undefined), i = xs.length
   while (i--)
     s = ap(map(rconcat, s), xi2yA(xs[i], i))
   return map(toArray, s)
@@ -103,14 +115,6 @@ const mkArray = x => isArray(x) ? x : emptyArray
 
 //
 
-const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
-  if (p(x))
-    return x
-  throw new Error(msg)
-}
-
-//
-
 const emptyArrayToUndefined = xs => xs.length ? xs : undefined
 
 const emptyObjectToUndefined = o => {
@@ -119,13 +123,6 @@ const emptyObjectToUndefined = o => {
   for (const k in o)
     return o
 }
-
-//
-
-const isntConst = x => x !== Const
-
-const notGet = A =>
-  assert(A, isntConst, "Traversals cannot be `get`. Consider `collect`.")
 
 //
 
@@ -311,10 +308,9 @@ const show = (labels, dir) => x =>
 function branchOn(keys, vals) {
   const n = keys.length
   return (A, xi2yA, x, _) => {
-    notGet(A)
     const ap = A.ap,
           wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = (0,A.of)(wait(x, n-1))
+    let r = reqApplicative(A.of)(wait(x, n-1))
     if (!isObject(x))
       x = undefined
     for (let i=n-1; 0<=i; --i) {
@@ -439,7 +435,6 @@ export function branch(template) {
 // Traversals and combinators
 
 export function sequence(A, xi2yA, xs, _) {
-  notGet(A)
   if (isArray(xs))
     return A === Ident
     ? mapPartialIndexU(xi2yA, xs)
@@ -447,7 +442,7 @@ export function sequence(A, xi2yA, xs, _) {
   else if (isObject(xs))
     return branchOn(keys(xs))(A, xi2yA, xs)
   else
-    return (0,A.of)(xs)
+    return reqApplicative(A.of)(xs)
 }
 
 // Operations on lenses
