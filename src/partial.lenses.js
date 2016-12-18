@@ -95,7 +95,7 @@ function toArray(n) {
 
 const Collect = {map: snd, of() {}, ap}
 
-const collectMapU = (t, to, s) => toArray(lift(t)(Collect, to, s)) || []
+const collectMapU = (t, xi2y, s) => toArray(lift(t)(Collect, xi2y, s)) || []
 
 //
 
