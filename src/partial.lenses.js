@@ -25,7 +25,7 @@ function mapPartialIndexU(xi2y, xs) {
 
 //
 
-const emptyArray = Object.freeze([])
+const array0 = Object.freeze([])
 
 //
 
@@ -107,15 +107,9 @@ function traversePartialIndex(A, xi2yA, xs) {
 
 //
 
-const unArray = x => isArray(x) ? x : undefined
+const array0ToUndefined = xs => xs.length ? xs : void 0
 
-const mkArray = x => isArray(x) ? x : emptyArray
-
-//
-
-const emptyArrayToUndefined = xs => xs.length ? xs : undefined
-
-const emptyObjectToUndefined = o => {
+const object0ToUndefined = o => {
   if (!isObject(o))
     return o
   for (const k in o)
@@ -298,7 +292,7 @@ function branchOn(keys, vals) {
       const k = keys[i], v = x && x[k]
       r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
     }
-    return (0,A.map)(emptyObjectToUndefined, r)
+    return (0,A.map)(object0ToUndefined, r)
   }
 }
 
@@ -312,6 +306,11 @@ function findIndex(xi2b, xs) {
     if (xi2b(xs[i], i))
       return i
   return -1
+}
+
+function partitionIntoIndex(xi2b, xs, ts, fs) {
+  for (let i=0, n=xs.length, x; i<n; ++i)
+    (xi2b(x = xs[i], i) ? ts : fs).push(x)
 }
 
 //
@@ -489,11 +488,18 @@ export const rewrite = yi2y => (F, xi2yF, x, i) =>
 
 // Lensing arrays
 
-export const append = lens(snd, (x, xs) =>
-  isDefined(x) ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
+export const append = (F, xi2yF, xs, i) =>
+  (0,F.map)(x => array0ToUndefined((isArray(xs) ? xs : array0)
+                                   .concat(isDefined(x) ? [x] : array0)),
+            xi2yF(void 0, i))
 
-export const filter = p => lens(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
-  emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
+export const filter = xi2b => (F, xi2yF, xs, i) => {
+  let ts, fs = array0
+  if (isArray(xs))
+    partitionIntoIndex(xi2b, xs, ts = [], fs = [])
+  return (0,F.map)(ts => array0ToUndefined(isArray(ts)?ts.concat(fs):fs),
+                   xi2yF(ts, i))
+}
 
 export const find = xi2b => choose(xs => {
   if (!isArray(xs))
