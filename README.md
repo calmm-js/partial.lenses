@@ -29,7 +29,7 @@ data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
     * [Nesting](#nesting)
       * [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a")
     * [Querying](#querying)
-      * [`L.chain(value => optic, optic)`](#L-chain "L.chain: (a -> POptic s b) -> POptic s a -> POptic s b")
+      * [`L.chain((value, index) => optic, lens)`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> PLens s a -> POptic s b")
       * [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
       * [`L.choose((maybeValue, index) => optic)`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a")
       * [`L.optional`](#L-optional "L.optional: POptic a a")
@@ -521,7 +521,7 @@ Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 
 #### Querying
 
-##### <a name="L-chain"></a> [≡](#contents) [`L.chain(value => optic, optic)`](#L-chain "L.chain: (a -> POptic s b) -> POptic s a -> POptic s b")
+##### <a name="L-chain"></a> [≡](#contents) [`L.chain((value, index) => optic, lens)`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> PLens s a -> POptic s b")
 
 `L.chain(toOptic, optic)` is equivalent to
 
