@@ -3,7 +3,6 @@ import * as L from "../src/partial.lenses"
 
 //
 
-const toPartial = x2x => s => I.isDefined(s) ? x2x(s) : s
 const Collect = {empty: I.always([]), concat: (x, y) => x.concat(y)}
 const toCollect = x => I.isDefined(x) ? [x] : []
 
@@ -15,10 +14,10 @@ export const set = I.curry3((o, x, s) => modify(o, I.always(x), s))
 
 export const compose = L.compose
 
-export const chain = I.curry2((x2yO, xO) => [xO, choose(xM => I.isDefined(xM) ? x2yO(xM) : zero)])
+export const chain = I.curry2((x2yO, xO) => [xO, choose((xM, i) => I.isDefined(xM) ? x2yO(xM, i) : zero)])
 export const choice = (...ls) => choose(x => {const i = ls.findIndex(l => I.isDefined(get(l, x))); return 0 <= i ? ls[i] : zero})
 export const choose = L.choose
-export const when = p => choose(x => p(x) ? identity : zero)
+export const when = p => choose((x, i) => p(x, i) ? identity : zero)
 export const zero = L.zero
 
 export const lazy = L.lazy
@@ -46,13 +45,13 @@ export const augment = L.augment
 
 export const defaults = v => replace(undefined, v)
 export const define = v => [required(v), defaults(v)]
-export const normalize = x2x => iso(toPartial(x2x), toPartial(x2x))
+export const normalize = xi2x => lens((x, i) => I.isDefined(x) ? xi2x(x, i) : x, (x, _, i) => I.isDefined(x) ? xi2x(x, i) : x)
 export const required = v => replace(v, undefined)
-export const rewrite = x2x => iso(I.id, toPartial(x2x))
+export const rewrite = xi2x => lens(I.id, (x, _, i) => I.isDefined(x) ? xi2x(x, i) : x)
 
 export const append = choose(s => I.isArray(s) ? s.length : 0)
 export const filter = L.filter
-export const find = p => choose(xs => {if (!I.isArray(xs)) return append; const i = xs.findIndex(p); return i < 0 ? append : i})
+export const find = p => choose(xs => {if (!I.isArray(xs)) return append; const i = xs.findIndex((x, i) => p(x, i)); return i < 0 ? append : i})
 export const findWith = (...ls) => {const lls = compose(...ls); return [find(x => I.isDefined(get(lls, x))), lls]}
 export const index = L.index
 
