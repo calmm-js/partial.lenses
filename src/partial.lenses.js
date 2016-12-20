@@ -93,7 +93,7 @@ function toArray(n) {
 
 const Collect = {map: snd, of() {}, ap}
 
-const collectMapU = (t, xi2y, s) => toArray(lift(t)(Collect, xi2y, s)) || []
+const collectMapU = (t, xi2y, s) => toArray(lift(t)(Collect, xi2y, s, void 0)) || []
 
 //
 
@@ -198,7 +198,7 @@ function setU(o, x, s) {
   switch (typeof o) {
     case "string":   return setProp(o, x, s)
     case "number":   return setIndex(o, x, s)
-    case "function": return lifted(o)(Ident, always(x), s)
+    case "function": return lifted(o)(Ident, always(x), s, void 0)
     default:         return modifyComposed(o, always(x), s)
   }
 }
@@ -217,7 +217,7 @@ function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const, id, s)
+    case "function": return lifted(l)(Const, id, s, void 0)
     default:         return getComposed(l, s)
   }
 }
@@ -330,7 +330,7 @@ export const modify = curry3((o, xi2x, s) => {
   switch (typeof o) {
     case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
     case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "function": return lifted(o)(Ident, xi2x, s)
+    case "function": return lifted(o)(Ident, xi2x, s, void 0)
     default:         return modifyComposed(o, xi2x, s)
   }
 })
@@ -405,7 +405,8 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 
 export const collectMap = curry3(collectMapU)
 
-export const foldMapOf = curry4((m, t, xi2y, s) => lift(t)(ConstOf(m), xi2y, s))
+export const foldMapOf =
+  curry4((m, t, xi2y, s) => lift(t)(ConstOf(m), xi2y, s, void 0))
 
 // Creating new traversals
 
