@@ -1,6 +1,9 @@
 import {
+  array0,
+  assert,
   acyclicEqualsU,
   always,
+  applyU,
   assocPartialU,
   curry2,
   curry3,
@@ -10,7 +13,8 @@ import {
   isArray,
   isDefined,
   isObject,
-  keys
+  keys,
+  sndU
 } from "infestines"
 
 //
@@ -25,35 +29,17 @@ function mapPartialIndexU(xi2y, xs) {
 
 //
 
-const array0 = Object.freeze([])
+const Ident = {map: applyU, of: id, ap: applyU}
 
-//
-
-const apply = (x2y, x) => x2y(x)
-
-const snd = (_, c) => c
-
-//
-
-const Ident = {map: apply, of: id, ap: apply}
-
-const Const = {map: snd}
+const Const = {map: sndU}
 
 function ConstOf(Monoid) {
   const concat = Monoid.concat
   return {
-    map: snd,
+    map: sndU,
     of: always((0,Monoid.empty)()),
     ap: (x2yA, xA) => concat(xA, x2yA)
   }
-}
-
-//
-
-const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
-  if (p(x))
-    return x
-  throw new Error(msg)
 }
 
 //
@@ -91,9 +77,10 @@ function toArray(n) {
   }
 }
 
-const Collect = {map: snd, of() {}, ap}
+const Collect = {map: sndU, of() {}, ap}
 
-const collectMapU = (t, xi2y, s) => toArray(lift(t)(Collect, xi2y, s, void 0)) || []
+const collectMapU = (t, xi2y, s) =>
+  toArray(toFunction(t)(Collect, xi2y, s, void 0)) || []
 
 //
 
@@ -125,7 +112,7 @@ const getProp = (k, o) => isObject(o) ? o[k] : void 0
 const setProp = (k, v, o) =>
   isDefined(v) ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
-const liftProp = k => (F, xi2yF, x, _) =>
+const funProp = k => (F, xi2yF, x, _) =>
   (0,F.map)(v => setProp(k, v, x), xi2yF(getProp(k, x), k))
 
 //
@@ -169,27 +156,27 @@ function setIndex(i, x, xs) {
   }
 }
 
-const liftIndex = i => (F, xi2yF, xs, _) =>
+const funIndex = i => (F, xi2yF, xs, _) =>
   (0,F.map)(y => setIndex(i, y, xs), xi2yF(getIndex(i, xs), i))
 
 //
 
 const seemsOptic = x => typeof x === "function" && x.length === 4
 
-const lifted = o => assert(o, seemsOptic, "Expecting an optic.")
+const optic = o => assert(o, seemsOptic, "Expecting an optic.")
 
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
 function composed(oi0, os) {
   switch (os.length - oi0) {
     case 0:  return identity
-    case 1:  return lift(os[oi0])
+    case 1:  return toFunction(os[oi0])
     default: return (F, xi2yF, x, i) => {
       let n = os.length
-      xi2yF = close(lift(os[--n]), F, xi2yF)
+      xi2yF = close(toFunction(os[--n]), F, xi2yF)
       while (oi0 < --n)
-        xi2yF = close(lift(os[n]), F, xi2yF)
-      return lift(os[oi0])(F, xi2yF, x, i)
+        xi2yF = close(toFunction(os[n]), F, xi2yF)
+      return toFunction(os[oi0])(F, xi2yF, x, i)
     }
   }
 }
@@ -198,7 +185,7 @@ function setU(o, x, s) {
   switch (typeof o) {
     case "string":   return setProp(o, x, s)
     case "number":   return setIndex(o, x, s)
-    case "function": return lifted(o)(Ident, always(x), s, void 0)
+    case "function": return optic(o)(Ident, always(x), s, void 0)
     default:         return modifyComposed(o, always(x), s)
   }
 }
@@ -217,7 +204,7 @@ function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const, id, s, void 0)
+    case "function": return optic(l)(Const, id, s, void 0)
     default:         return getComposed(l, s)
   }
 }
@@ -315,11 +302,11 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 
 //
 
-export function lift(o) {
+export function toFunction(o) {
   switch (typeof o) {
-    case "string":   return liftProp(o)
-    case "number":   return liftIndex(o)
-    case "function": return lifted(o)
+    case "string":   return funProp(o)
+    case "number":   return funIndex(o)
+    case "function": return optic(o)
     default:         return composed(0,o)
   }
 }
@@ -330,7 +317,7 @@ export const modify = curry3((o, xi2x, s) => {
   switch (typeof o) {
     case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
     case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "function": return lifted(o)(Ident, xi2x, s, void 0)
+    case "function": return optic(o)(Ident, xi2x, s, void 0)
     default:         return modifyComposed(o, xi2x, s)
   }
 })
@@ -365,7 +352,7 @@ export const choice = (...ls) => choose(x => {
 })
 
 export const choose = xiM2o => (C, xi2yC, x, i) =>
-  lift(xiM2o(x, i))(C, xi2yC, x, i)
+  toFunction(xiM2o(x, i))(C, xi2yC, x, i)
 
 export const when = p => (C, xi2yC, x, i) =>
   p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
@@ -381,7 +368,7 @@ export function zero(C, xi2yC, x, i) {
 
 export function lazy(o2o) {
   let memo = (C, xi2yC, x, i) => {
-    memo = lift(o2o(rec))
+    memo = toFunction(o2o(rec))
     return memo(C, xi2yC, x, i)
   }
   const rec = (C, xi2yC, x, i) => memo(C, xi2yC, x, i)
@@ -399,7 +386,7 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 export const collectMap = curry3(collectMapU)
 
 export const foldMapOf =
-  curry4((m, t, xi2y, s) => lift(t)(ConstOf(m), xi2y, s, void 0))
+  curry4((m, t, xi2y, s) => toFunction(t)(ConstOf(m), xi2y, s, void 0))
 
 // Creating new traversals
 
@@ -407,7 +394,7 @@ export function branch(template) {
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
-    vals.push(lift(template[k]))
+    vals.push(toFunction(template[k]))
   }
   return branchOn(keys, vals)
 }
