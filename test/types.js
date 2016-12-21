@@ -14,19 +14,21 @@ const T_applicative = T.object({
   ap: T.fn([T.any, T.any], T.any)
 })
 
-const T_optic = T.lazy(T_optic => T.or(
+const T_opticOf = Category => T.lazy(T_optic => T.or(
   T.integer,
   T.string,
   T.array(T_optic),
-  T.fn([T.or(T_applicative, T_functor),
+  T.fn([Category,
         T.fn([T_maybeData, T_index], T_maybeData),
         T_maybeData,
         T_index],
        T_maybeData)))
 
-const T_traversal = T_optic
-const T_lens = T_optic
-const T_isomorphism = T_optic
+const T_optic = T_opticOf(T.or(T_applicative, T_functor))
+
+const T_traversal = T_opticOf(T_applicative)
+const T_lens = T_opticOf(T.or(T_applicative, T_functor))
+const T_isomorphism = T_lens
 
 //
 
