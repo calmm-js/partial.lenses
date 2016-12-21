@@ -339,13 +339,6 @@ export const remove = curry2((o, s) => setU(o, void 0, s))
 
 export const set = curry3(setU)
 
-// Indexing
-
-export function ix(o) {
-  o = lift(o)
-  return (F, xi2yF, x, i) => o(F, (x, j) => xi2yF(x, [j, i]), x, i)
-}
-
 // Nesting
 
 export function compose() {
