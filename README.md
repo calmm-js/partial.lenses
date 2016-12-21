@@ -42,8 +42,8 @@ data structure parts.  [Try Lenses!](http://calmm-js.github.io/partial.lenses/)
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
-      * [`L.collectMap(traversal, (maybeValue, Index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
-      * [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, Index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
+      * [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
+      * [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
@@ -728,7 +728,7 @@ L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
 Note that `L.collect(t, s)` is equivalent
 to [`L.collectMap(t, R.identity, s)`](#L-collectMap).
 
-##### <a name="L-collectMap"></a> [≡](#contents) [`L.collectMap(traversal, (maybeValue, Index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
+##### <a name="L-collectMap"></a> [≡](#contents) [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
 
 `L.collectMap` returns an array of the elements focused on by the given
 traversal or lens from a data structure and mapped by the given function to a
@@ -768,7 +768,7 @@ L.foldMapOf(Collect,
 The internal implementation of `L.collectMap` is optimized and faster than the
 above naïve implementation.
 
-##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, Index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
+##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
 
 `L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
 `aM2r`, and fold, using the given `concat` and `empty` operations, over the
