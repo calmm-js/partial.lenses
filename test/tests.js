@@ -408,6 +408,16 @@ describe("L.branch", () => {
   testEq('L.set(L.branch({a: ["x",0], b: []}), 0, null)', {a:{x:[0]},b:0})
 })
 
+describe("indexing", () => {
+  testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)', ["number", "undefined"])
+  testEq('L.modify(["x", 0], (x, i) => [x, i], {x: ["y"]})', {x: [["y", 0]]})
+  testEq('L.modify(["x", L.required([])], (x, i) => [x, i], {x: ["y"]})', {x: [["y"], "x"]})
+  testEq('L.modify(L.sequence, (x, i) => i & 1 ? -x : x, [1,2,3,4])', [1,-2,3,-4])
+  testEq('L.modify([L.sequence, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])', [1,-2,3,-4])
+  testEq('L.collectMap(L.sequence, (x, i) => [x, i], ["a", "b"])', [["a", 0], ["b", 1]])
+  testEq('L.collectMap(L.sequence, (x, i) => [x, i], {x: 101, y: 42})', [[101, "x"], [42, "y"]])
+})
+
 describe("BST", () => {
   const randomInt = (min, max) =>
     Math.floor(Math.random() * (max - min)) + min
