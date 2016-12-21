@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "6.1.0",
+  "version": "7.0.0",
   "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
   "main": "lib/partial.lenses.js",
   "scripts": {
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "infestines": "^0.1.4"
+    "infestines": "^0.2.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
@@ -38,7 +38,7 @@
     "babel-plugin-check-es2015-constants": "^6.8.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
     "babel-plugin-transform-es2015-block-scoped-functions": "^6.8.0",
-    "babel-plugin-transform-es2015-block-scoping": "^6.20.0",
+    "babel-plugin-transform-es2015-block-scoping": "^6.21.0",
     "babel-plugin-transform-es2015-classes": "^6.18.0",
     "babel-plugin-transform-es2015-computed-properties": "^6.8.0",
     "babel-plugin-transform-es2015-destructuring": "^6.19.0",
@@ -48,7 +48,7 @@
     "babel-plugin-transform-es2015-literals": "^6.8.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.18.0",
     "babel-plugin-transform-es2015-object-super": "^6.8.0",
-    "babel-plugin-transform-es2015-parameters": "^6.18.0",
+    "babel-plugin-transform-es2015-parameters": "^6.21.0",
     "babel-plugin-transform-es2015-shorthand-properties": "^6.18.0",
     "babel-plugin-transform-es2015-spread": "^6.8.0",
     "babel-plugin-transform-es2015-sticky-regex": "^6.8.0",

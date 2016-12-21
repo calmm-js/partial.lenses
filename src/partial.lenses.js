@@ -1,6 +1,9 @@
 import {
+  array0,
+  assert,
   acyclicEqualsU,
   always,
+  applyU,
   assocPartialU,
   curry2,
   curry3,
@@ -11,33 +14,37 @@ import {
   isDefined,
   isObject,
   keys,
-  mapPartialU
+  sndU
 } from "infestines"
 
 //
 
-const emptyArray = []
+function mapPartialIndexU(xi2y, xs) {
+  const ys = [], n=xs.length
+  for (let i=0, y; i<n; ++i)
+    if (isDefined(y = xi2y(xs[i], i)))
+      ys.push(y)
+  return ys.length ? ys : void 0
+}
 
 //
 
-const apply = (x2y, x) => x2y(x)
+const Ident = {map: applyU, of: id, ap: applyU}
 
-const snd = (_, c) => c
-
-//
-
-const Ident = {map: apply, of: id, ap: apply}
-
-const Const = {map: snd}
+const Const = {map: sndU}
 
 function ConstOf(Monoid) {
   const concat = Monoid.concat
   return {
-    map: snd,
+    map: sndU,
     of: always((0,Monoid.empty)()),
     ap: (x2yA, xA) => concat(xA, x2yA)
   }
 }
+
+//
+
+const reqApplicative = f => assert(f, id, "Traversals require an applicative.")
 
 //
 
@@ -63,45 +70,33 @@ function pushTo(n, ys) {
 }
 
 function toArray(n) {
-  const ys = []
-  if (isDefined(n))
+  if (isDefined(n)) {
+    const ys = []
     pushTo(n, ys)
-  return ys
+    return ys
+  }
 }
 
-const Collect = {map: snd, of() {}, ap}
+const Collect = {map: sndU, of() {}, ap}
 
-const collectMapU = (t, to, s) => toArray(lift(t)(Collect, to, s))
+const collectMapU = (t, xi2y, s) =>
+  toArray(toFunction(t)(Collect, xi2y, s, void 0)) || []
 
 //
 
-function traverse(A, x2yA, xs) {
+function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
-  let s = (0,A.of)(undefined), i = xs.length
-  while (i)
-    s = ap(map(rconcat, s), x2yA(xs[--i]))
+  let s = reqApplicative(A.of)(void 0), i = xs.length
+  while (i--)
+    s = ap(map(rconcat, s), xi2yA(xs[i], i))
   return map(toArray, s)
 }
 
 //
 
-const unArray = x => isArray(x) ? x : undefined
+const array0ToUndefined = xs => xs.length ? xs : void 0
 
-const mkArray = x => isArray(x) ? x : emptyArray
-
-//
-
-const assert = process.env.NODE_ENV === "production" ? id : (x, p, msg) => {
-  if (process.env.NODE_ENV === "production" || p(x))
-    return x
-  throw new Error(msg)
-}
-
-//
-
-const emptyArrayToUndefined = xs => xs.length ? xs : undefined
-
-const emptyObjectToUndefined = o => {
+const object0ToUndefined = o => {
   if (!isObject(o))
     return o
   for (const k in o)
@@ -110,26 +105,15 @@ const emptyObjectToUndefined = o => {
 
 //
 
-const toPartial = x2y => x => isDefined(x) ? x2y(x) : x
-
-//
-
-const isntConst = x => x !== Const
-
-const notGet = A =>
-  assert(A, isntConst, "Traversals cannot be `get`. Consider `collect`.")
-
-//
-
 const isProp = x => typeof x === "string"
 
-const getProp = (k, o) => isObject(o) ? o[k] : undefined
+const getProp = (k, o) => isObject(o) ? o[k] : void 0
 
 const setProp = (k, v, o) =>
   isDefined(v) ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
-const liftProp = k => (F, x2yF, x) =>
-  (0,F.map)(v => setProp(k, v, x), x2yF(getProp(k, x)))
+const funProp = k => (F, xi2yF, x, _) =>
+  (0,F.map)(v => setProp(k, v, x), xi2yF(getProp(k, x), k))
 
 //
 
@@ -137,17 +121,17 @@ const isIndex = x => Number.isInteger(x) && 0 <= x
 
 const nulls = n => Array(n).fill(null)
 
-const getIndex = (i, xs) => isArray(xs) ? xs[i] : undefined
+const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
   if (isDefined(x)) {
     if (!isArray(xs))
-      return i < 0 ? undefined : nulls(i).concat([x])
+      return i < 0 ? void 0 : nulls(i).concat([x])
     const n = xs.length
     if (n <= i)
       return xs.concat(nulls(i - n), [x])
     if (i < 0)
-      return !n ? undefined : xs
+      return !n ? void 0 : xs
     const ys = Array(n)
     for (let j=0; j<n; ++j)
       ys[j] = xs[j]
@@ -157,11 +141,11 @@ function setIndex(i, x, xs) {
     if (isArray(xs)) {
       const n = xs.length
       if (!n)
-        return undefined
+        return void 0
       if (i < 0 || n <= i)
         return xs
       if (n === 1)
-        return undefined
+        return void 0
       const ys = Array(n-1)
       for (let j=0; j<i; ++j)
         ys[j] = xs[j]
@@ -172,43 +156,47 @@ function setIndex(i, x, xs) {
   }
 }
 
-const liftIndex = i => (F, x2yF, xs) =>
-  (0,F.map)(y => setIndex(i, y, xs), x2yF(getIndex(i, xs)))
+const funIndex = i => (F, xi2yF, xs, _) =>
+  (0,F.map)(y => setIndex(i, y, xs), xi2yF(getIndex(i, xs), i))
 
 //
 
-const seemsLens = x => typeof x === "function" && x.length === 3
+const seemsOptic = x => typeof x === "function" && x.length === 4
 
-const lifted = l => assert(l, seemsLens, "Expecting a lens.")
+const optic = o => assert(o, seemsOptic, "Expecting an optic.")
 
-const close = (l, F, x2yF) => x => l(F, x2yF, x)
+const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
-function composed(i, ls) {
-  switch (ls.length - i) {
+function composed(oi0, os) {
+  switch (os.length - oi0) {
     case 0:  return identity
-    case 1:  return lift(ls[i])
-    default: return (F, x2yF, x) => {
-      let n = ls.length
-      x2yF = close(lift(ls[--n]), F, x2yF)
-      while (i < --n)
-        x2yF = close(lift(ls[n]), F, x2yF)
-      return lift(ls[i])(F, x2yF, x)
+    case 1:  return toFunction(os[oi0])
+    default: return (F, xi2yF, x, i) => {
+      let n = os.length
+      xi2yF = close(toFunction(os[--n]), F, xi2yF)
+      while (oi0 < --n)
+        xi2yF = close(toFunction(os[n]), F, xi2yF)
+      return toFunction(os[oi0])(F, xi2yF, x, i)
     }
   }
 }
 
-function setU(l, x, s) {
-  switch (typeof l) {
-    case "string":   return setProp(l, x, s)
-    case "number":   return setIndex(l, x, s)
-    case "function": return lifted(l)(Ident, always(x), s)
-    default:         return modifyComposed(l, always(x), s)
+function setU(o, x, s) {
+  switch (typeof o) {
+    case "string":   return setProp(o, x, s)
+    case "number":   return setIndex(o, x, s)
+    case "function": return optic(o)(Ident, always(x), s, void 0)
+    default:         return modifyComposed(o, always(x), s)
   }
 }
 
-function getComposed(ls, s)  {
-  for (let i=0, n=ls.length; i<n; ++i)
-    s = getU(ls[i], s)
+function getComposed(ls, s) {
+  for (let i=0, n=ls.length, l; i<n; ++i)
+    switch (typeof (l = ls[i])) {
+      case "string": s = getProp(l, s); break
+      case "number": s = getIndex(l, s); break
+      default: return composed(i, ls)(Const, id, s, ls[i-1])
+    }
   return s
 }
 
@@ -216,54 +204,39 @@ function getU(l, s) {
   switch (typeof l) {
     case "string":   return getProp(l, s)
     case "number":   return getIndex(l, s)
-    case "function": return lifted(l)(Const, id, s)
+    case "function": return optic(l)(Const, id, s, void 0)
     default:         return getComposed(l, s)
   }
 }
 
-function modifyComposed(ls, x2x, x) {
-  let n = ls.length
-
+function modifyComposed(os, xi2x, x) {
+  let n = os.length
   const xs = []
-
-  for (let i=0; i<n; ++i) {
+  for (let i=0, o; i<n; ++i) {
     xs.push(x)
-    const l = ls[i]
-    switch (typeof l) {
+    switch (typeof (o = os[i])) {
       case "string":
-        x = getProp(l, x)
+        x = getProp(o, x)
         break
       case "number":
-        x = getIndex(l, x)
+        x = getIndex(o, x)
         break
       default:
-        x = composed(i, ls)(Ident, x2x, x)
+        x = composed(i, os)(Ident, xi2x, x, os[i-1])
         n = i
         break
     }
   }
-
-  if (n === ls.length)
-    x = x2x(x)
-
+  if (n === os.length)
+    x = xi2x(x, os[n-1])
   while (0 <= --n) {
-    const l = ls[n]
-    switch (typeof l) {
-      case "string": x = setProp(l, x, xs[n]); break
-      case "number": x = setIndex(l, x, xs[n]); break
+    const o = os[n]
+    switch (typeof o) {
+      case "string": x = setProp(o, x, xs[n]); break
+      case "number": x = setIndex(o, x, xs[n]); break
     }
   }
-
   return x
-}
-
-function modifyU(l, x2x, s) {
-  switch (typeof l) {
-    case "string":   return setProp(l, x2x(getProp(l, s)), s)
-    case "number":   return setIndex(l, x2x(getIndex(l, s)), s)
-    case "function": return lifted(l)(Ident, x2x, s)
-    default:         return modifyComposed(l, x2x, s)
-  }
 }
 
 //
@@ -283,7 +256,7 @@ function getPick(template, x) {
 
 const setPick = (template, x) => value => {
   if (!isObject(value))
-    value = undefined
+    value = void 0
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
@@ -296,41 +269,60 @@ const show = (labels, dir) => x =>
 
 function branchOn(keys, vals) {
   const n = keys.length
-  return (A, x2yA, x) => {
-    notGet(A)
+  return (A, xi2yA, x, _) => {
     const ap = A.ap,
           wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = (0,A.of)(wait(x, n-1))
+    let r = reqApplicative(A.of)(wait(x, n-1))
     if (!isObject(x))
-      x = undefined
+      x = void 0
     for (let i=n-1; 0<=i; --i) {
-      const v = x && x[keys[i]]
-      r = ap(r, (vals ? vals[i](A, x2yA, v) : x2yA(v)))
+      const k = keys[i], v = x && x[k]
+      r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
     }
-    return (0,A.map)(emptyObjectToUndefined, r)
+    return (0,A.map)(object0ToUndefined, r)
   }
 }
 
-const normalizer = fn => (F, inner, x) => (0,F.map)(fn, inner(fn(x)))
+const normalizer = xi2x => (F, xi2yF, x, i) =>
+  (0,F.map)(x => xi2x(x, i), xi2yF(xi2x(x, i), i))
 
 const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
 
+function findIndex(xi2b, xs) {
+  for (let i=0, n=xs.length; i<n; ++i)
+    if (xi2b(xs[i], i))
+      return i
+  return -1
+}
+
+function partitionIntoIndex(xi2b, xs, ts, fs) {
+  for (let i=0, n=xs.length, x; i<n; ++i)
+    (xi2b(x = xs[i], i) ? ts : fs).push(x)
+}
+
 //
 
-export function lift(l) {
-  switch (typeof l) {
-    case "string":   return liftProp(l)
-    case "number":   return liftIndex(l)
-    case "function": return lifted(l)
-    default:         return composed(0,l)
+export function toFunction(o) {
+  switch (typeof o) {
+    case "string":   return funProp(o)
+    case "number":   return funIndex(o)
+    case "function": return optic(o)
+    default:         return composed(0,o)
   }
 }
 
 // Operations on optics
 
-export const modify = curry3(modifyU)
+export const modify = curry3((o, xi2x, s) => {
+  switch (typeof o) {
+    case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
+    case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
+    case "function": return optic(o)(Ident, xi2x, s, void 0)
+    default:         return modifyComposed(o, xi2x, s)
+  }
+})
 
-export const remove = curry2((l, s) => setU(l, undefined, s))
+export const remove = curry2((o, s) => setU(o, void 0, s))
 
 export const set = curry3(setU)
 
@@ -351,33 +343,35 @@ export function compose() {
 
 // Querying
 
-export const chain = curry2((x2yO, xO) =>
-  [xO, choose(xM => isDefined(xM) ? x2yO(xM) : zero)])
+export const chain = curry2((xi2yO, xO) =>
+  [xO, choose((xM, i) => isDefined(xM) ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
-  const i = ls.findIndex(l => isDefined(getU(l, x)))
+  const i = findIndex(l => isDefined(getU(l, x)), ls)
   return i < 0 ? zero : ls[i]
 })
 
-export const choose = xM2o => (F, x2yF, x) => lift(xM2o(x))(F, x2yF, x)
+export const choose = xiM2o => (C, xi2yC, x, i) =>
+  toFunction(xiM2o(x, i))(C, xi2yC, x, i)
 
-export const when = p => (C, x2yC, x) => p(x) ? x2yC(x) : zero(C, x2yC, x)
+export const when = p => (C, xi2yC, x, i) =>
+  p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
 
 export const optional = when(isDefined)
 
-export function zero(C, x2yC, x) {
+export function zero(C, xi2yC, x, i) {
   const of = C.of
-  return of ? of(x) : (0,C.map)(always(x), x2yC(undefined))
+  return of ? of(x) : (0,C.map)(always(x), xi2yC(void 0, i))
 }
 
 // Recursing
 
-export function lazy(toLens) {
-  let memo = (F, fn, x) => {
-    memo = lift(toLens(rec))
-    return memo(F, fn, x)
+export function lazy(o2o) {
+  let memo = (C, xi2yC, x, i) => {
+    memo = toFunction(o2o(rec))
+    return memo(C, xi2yC, x, i)
   }
-  const rec = (F, fn, x) => memo(F, fn, x)
+  const rec = (C, xi2yC, x, i) => memo(C, xi2yC, x, i)
   return rec
 }
 
@@ -391,32 +385,31 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 
 export const collectMap = curry3(collectMapU)
 
-export const foldMapOf = curry4((m, t, to, s) => lift(t)(ConstOf(m), to, s))
+export const foldMapOf =
+  curry4((m, t, xi2y, s) => toFunction(t)(ConstOf(m), xi2y, s, void 0))
 
 // Creating new traversals
 
 export function branch(template) {
-  const keys = []
-  const vals = []
+  const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
-    vals.push(lift(template[k]))
+    vals.push(toFunction(template[k]))
   }
   return branchOn(keys, vals)
 }
 
 // Traversals and combinators
 
-export function sequence(A, x2yA, xs) {
-  notGet(A)
+export function sequence(A, xi2yA, xs, _) {
   if (isArray(xs))
     return A === Ident
-    ? emptyArrayToUndefined(mapPartialU(x2yA, xs))
-    : (0,A.map)(emptyArrayToUndefined, traverse(A, x2yA, xs))
+    ? mapPartialIndexU(xi2yA, xs)
+    : traversePartialIndex(A, xi2yA, xs)
   else if (isObject(xs))
-    return branchOn(keys(xs))(A, x2yA, xs)
+    return branchOn(keys(xs))(A, xi2yA, xs)
   else
-    return (0,A.of)(xs)
+    return reqApplicative(A.of)(xs)
 }
 
 // Operations on lenses
@@ -425,8 +418,8 @@ export const get = curry2(getU)
 
 // Creating new lenses
 
-export const lens =
-  curry2((get, set) => (F, x2yF, x) => (0,F.map)(y => set(y, x), x2yF(get(x))))
+export const lens = curry2((get, set) => (F, xi2yF, x, i) =>
+  (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
 // Computing derived props
 
@@ -441,7 +434,7 @@ export const augment = template => lens(
   (y, x) => {
     if (isObject(y)) {
       if (!isObject(x))
-        x = undefined
+        x = void 0
       let z
       const set = (k, v) => {
         if (!z)
@@ -461,29 +454,38 @@ export const augment = template => lens(
 
 // Enforcing invariants
 
-export const defaults = out => (F, x2yF, x) =>
-  (0,F.map)(replacer(out, undefined), x2yF(isDefined(x) ? x : out))
+export const defaults = out => (F, xi2yF, x, i) =>
+  (0,F.map)(replacer(out), xi2yF(isDefined(x) ? x : out, i))
 
-export const required = inn => replace(inn, undefined)
+export const required = inn => replace(inn, void 0)
 
 export const define = v => normalizer(x => isDefined(x) ? x : v)
 
-export const normalize = x2x => normalizer(toPartial(x2x))
+export const normalize = xi2x =>
+  normalizer((x, i) => isDefined(x) ? xi2x(x, i) : void 0)
 
-export const rewrite = y2y => (F, x2yF, x) => (0,F.map)(toPartial(y2y), x2yF(x))
+export const rewrite = yi2y => (F, xi2yF, x, i) =>
+  (0,F.map)(y => isDefined(y) ? yi2y(y, i) : void 0, xi2yF(x, i))
 
 // Lensing arrays
 
-export const append = lens(snd, (x, xs) =>
-  isDefined(x) ? isArray(xs) ? xs.concat([x]) : [x] : unArray(xs))
+export const append = (F, xi2yF, xs, i) =>
+  (0,F.map)(x => array0ToUndefined((isArray(xs) ? xs : array0)
+                                   .concat(isDefined(x) ? [x] : array0)),
+            xi2yF(void 0, i))
 
-export const filter = p => lens(xs => unArray(xs) && xs.filter(p), (ys, xs) =>
-  emptyArrayToUndefined(mkArray(ys).concat(mkArray(xs).filter(x => !p(x)))))
+export const filter = xi2b => (F, xi2yF, xs, i) => {
+  let ts, fs = array0
+  if (isArray(xs))
+    partitionIntoIndex(xi2b, xs, ts = [], fs = [])
+  return (0,F.map)(ts => array0ToUndefined(isArray(ts)?ts.concat(fs):fs),
+                   xi2yF(ts, i))
+}
 
-export const find = predicate => choose(xs => {
+export const find = xi2b => choose(xs => {
   if (!isArray(xs))
     return 0
-  const i = xs.findIndex(predicate)
+  const i = findIndex(xi2b, xs)
   return i < 0 ? append : i
 })
 
@@ -502,17 +504,15 @@ export const prop = x =>
 
 export function props() {
   const n = arguments.length, template = {}
-  for (let i=0; i<n; ++i) {
-    const k = arguments[i]
-    template[k] = k
-  }
+  for (let i=0, k; i<n; ++i)
+    template[k = arguments[i]] = k
   return pick(template)
 }
 
 // Providing defaults
 
-export const valueOr = v => (_F, x2yF, x) =>
-  x2yF(isDefined(x) && x !== null ? x : v)
+export const valueOr = v => (_F, xi2yF, x, i) =>
+  xi2yF(isDefined(x) && x !== null ? x : v, i)
 
 // Adapting to data
 
@@ -521,17 +521,18 @@ export const orElse =
 
 // Read-only mapping
 
-export const to = x2y => (F, y2zF, x) => (0,F.map)(always(x), y2zF(x2y(x)))
+export const to = wi2x => (F, xi2yF, w, i) =>
+  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
 
 export const just = x => to(always(x))
 
 // Transforming data
 
-export const pick = template => (F, x2yF, x) =>
-  (0,F.map)(setPick(template, x), x2yF(getPick(template, x)))
+export const pick = template => (F, xi2yF, x, i) =>
+  (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 
-export const replace = curry2((inn, out) => (F, x2yF, x) =>
-  (0,F.map)(replacer(out, inn), x2yF(replacer(inn, out)(x))))
+export const replace = curry2((inn, out) => (F, xi2yF, x, i) =>
+  (0,F.map)(replacer(out, inn), xi2yF(replacer(inn, out)(x), i)))
 
 // Operations on isomorphisms
 
@@ -540,11 +541,11 @@ export const getInverse = curry2(setU)
 // Creating new isomorphisms
 
 export const iso =
-  curry2((bwd, fwd) => (F, x2yF, x) => (0,F.map)(fwd, x2yF(bwd(x))))
+  curry2((bwd, fwd) => (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
 // Isomorphisms and combinators
 
-export const identity = (_F, x2yF, x) => x2yF(x)
+export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 
-export const inverse = iso => (F, inner, x) =>
-  (0,F.map)(x => getU(iso, x), inner(setU(iso, x)))
+export const inverse = iso => (F, xi2yF, x, i) =>
+  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))

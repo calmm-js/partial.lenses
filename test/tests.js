@@ -6,6 +6,7 @@ import P, * as L from "../src/partial.lenses"
 
 import * as BST from "./bst"
 import * as C from "./core"
+import * as T from "./types"
 
 function show(x) {
   switch (typeof x) {
@@ -17,16 +18,24 @@ function show(x) {
   }
 }
 
-const run = expr => eval(`(P, L, R, id, I, C) => ${expr}`)(P, L, R, id, I, C)
+const run = expr => eval(`(P, L, R, id, I, C, T) => ${expr}`)(P, L, R, id, I, C, T)
 
-const testEq = (expr, expect) => it(`${expr} => ${show(expect)}`, () => {
-  const actual = run(expr)
-  if (!I.acyclicEqualsU(actual, expect))
-    throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
-  const core = run(expr.replace(/\bL\./g, "C."))
-  if (!I.acyclicEqualsU(actual, core))
-    throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
-})
+function testEq(expr, expect) {
+  it(`${expr} => ${show(expect)}`, () => {
+    const actual = run(expr)
+    if (!I.acyclicEqualsU(actual, expect))
+      throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+
+    const exprTy = expr.replace(/\bL\.([a-zA-Z0-9]*)/g, "T.$1(L.$1)")
+    const typed = run(exprTy)
+    if (!I.acyclicEqualsU(actual, typed))
+      throw new Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
+
+    const core = run(exprTy.replace(/\bL\./g, "C."))
+    if (!I.acyclicEqualsU(actual, core))
+      throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
+  })
+}
 
 const testThrows = expr => it(`${expr} => throws`, () => {
   let raised
@@ -45,7 +54,7 @@ const testThrows = expr => it(`${expr} => throws`, () => {
 const empties = [undefined, null, false, true, "a", 0, 0.0/0.0, {}, []]
 
 describe("compose", () => {
-  testEq('L.compose()', L.identity)
+  testEq('L.get(L.compose(), "any")', "any")
   testEq('L.compose("x")', "x")
   testEq('L.compose(101)', 101)
   testEq('L.compose(101, "x")', [101, "x"])
@@ -397,6 +406,16 @@ describe("L.branch", () => {
   testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
   testEq('L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}), x => x+1, {a:{x:1},b:2,c:[3],d:4,extra:"one"})', {"a":{"x":2},"b":3,"c":[4],"d":5,extra:"one"})
   testEq('L.set(L.branch({a: ["x",0], b: []}), 0, null)', {a:{x:[0]},b:0})
+})
+
+describe("indexing", () => {
+  testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)', ["number", "undefined"])
+  testEq('L.modify(["x", 0], (x, i) => [x, i], {x: ["y"]})', {x: [["y", 0]]})
+  testEq('L.modify(["x", L.required([])], (x, i) => [x, i], {x: ["y"]})', {x: [["y"], "x"]})
+  testEq('L.modify(L.sequence, (x, i) => i & 1 ? -x : x, [1,2,3,4])', [1,-2,3,-4])
+  testEq('L.modify([L.sequence, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])', [1,-2,3,-4])
+  testEq('L.collectMap(L.sequence, (x, i) => [x, i], ["a", "b"])', [["a", 0], ["b", 1]])
+  testEq('L.collectMap(L.sequence, (x, i) => [x, i], {x: 101, y: 42})', [[101, "x"], [42, "y"]])
 })
 
 describe("BST", () => {

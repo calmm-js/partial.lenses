@@ -1,5 +1,13 @@
 # Changelog
 
+## 7.0.0
+
+Added minimal support for indexing.  Various operations and combinators now
+provide an index value, either a number for an array index, or a string for an
+object property, or undefined in case there is no meaningful index, for the
+immediate index being addressed to the user-defined function taken by the
+operation or combinator.
+
 ## 6.0.0
 
 Removed `L.fromArrayBy`.  It was introduced as an experiment, but the use cases
