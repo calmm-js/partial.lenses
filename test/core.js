@@ -1,21 +1,23 @@
-import * as I from "infestines"
 import * as L from "../src/partial.lenses"
+import * as R from "ramda"
 
 //
 
-const Collect = {empty: I.always([]), concat: (x, y) => x.concat(y)}
-const toCollect = x => I.isDefined(x) ? [x] : []
+const isDefined = x => x !== undefined
+
+const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
+const toCollect = x => isDefined(x) ? [x] : []
 
 // Optics
 
 export const modify = L.modify
-export const remove = I.curry2((o, s) => set(o, undefined, s))
-export const set = I.curry3((o, x, s) => modify(o, I.always(x), s))
+export const remove = R.curry((o, s) => set(o, undefined, s))
+export const set = R.curry((o, x, s) => modify(o, R.always(x), s))
 
 export const compose = L.compose
 
-export const chain = I.curry2((x2yO, xO) => [xO, choose((xM, i) => I.isDefined(xM) ? x2yO(xM, i) : zero)])
-export const choice = (...ls) => choose(x => {const i = ls.findIndex(l => I.isDefined(get(l, x))); return 0 <= i ? ls[i] : zero})
+export const chain = R.curry((x2yO, xO) => [xO, choose((xM, i) => isDefined(xM) ? x2yO(xM, i) : zero)])
+export const choice = (...ls) => choose(x => {const i = ls.findIndex(l => isDefined(get(l, x))); return 0 <= i ? ls[i] : zero})
 export const choose = L.choose
 export const when = p => choose((x, i) => p(x, i) ? identity : zero)
 export const zero = L.zero
@@ -26,13 +28,13 @@ export const log = L.log
 
 // Traversals
 
-export const collect = I.curry2((t, s) => collectMap(t, I.id, s))
-export const collectMap = I.curry3((t, to, s) => foldMapOf(Collect, t, I.pipe2(to, toCollect), s))
+export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
+export const collectMap = R.curry((t, to, s) => foldMapOf(Collect, t, R.pipe(to, toCollect), s))
 export const foldMapOf = L.foldMapOf
 
 export const branch = L.branch
 
-export const optional = when(I.isDefined)
+export const optional = when(isDefined)
 export const sequence = L.sequence
 
 // Lenses
@@ -45,34 +47,34 @@ export const augment = L.augment
 
 export const defaults = v => replace(undefined, v)
 export const define = v => [required(v), defaults(v)]
-export const normalize = xi2x => lens((x, i) => I.isDefined(x) ? xi2x(x, i) : x, (x, _, i) => I.isDefined(x) ? xi2x(x, i) : x)
+export const normalize = xi2x => lens((x, i) => isDefined(x) ? xi2x(x, i) : x, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
 export const required = v => replace(v, undefined)
-export const rewrite = xi2x => lens(I.id, (x, _, i) => I.isDefined(x) ? xi2x(x, i) : x)
+export const rewrite = xi2x => lens(R.identity, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
 
-export const append = choose(s => I.isArray(s) ? s.length : 0)
+export const append = choose(s => R.is(Array, s) ? s.length : 0)
 export const filter = L.filter
-export const find = p => choose(xs => {if (!I.isArray(xs)) return append; const i = xs.findIndex((x, i) => p(x, i)); return i < 0 ? append : i})
-export const findWith = (...ls) => {const lls = compose(...ls); return [find(x => I.isDefined(get(lls, x))), lls]}
+export const find = p => choose(xs => {if (!R.is(Array, xs)) return append; const i = xs.findIndex((x, i) => p(x, i)); return i < 0 ? append : i})
+export const findWith = (...ls) => {const lls = compose(...ls); return [find(x => isDefined(get(lls, x))), lls]}
 export const index = L.index
 
 export const prop = L.prop
-export const props = (...ps) => pick(I.zipObjPartialU(ps, ps))
+export const props = (...ps) => pick(R.zipObj(ps, ps))
 
-export const valueOr = v => lens(s => s === null || s === undefined ? v : s, I.id)
+export const valueOr = v => lens(s => s === null || s === undefined ? v : s, R.identity)
 
-export const orElse = I.curry2((d, l) => choose(x => I.isDefined(get(l, x)) ? l : d))
+export const orElse = R.curry((d, l) => choose(x => isDefined(get(l, x)) ? l : d))
 
-export const just = v => to(I.always(v))
+export const just = v => to(R.always(v))
 export const to = a2b => lens(a2b, (_, s) => s)
 
 export const pick = L.pick
-export const replace = I.curry2((i, o) => iso(x => I.acyclicEqualsU(i, x) ? o : x, x => I.acyclicEqualsU(o, x) ? i : x))
+export const replace = R.curry((i, o) => iso(x => R.equals(i, x) ? o : x, x => R.equals(o, x) ? i : x))
 
 // Isomorphisms
 
-export const getInverse = I.curry2((i, s) => set(i, s, undefined))
+export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
 export const iso = lens
 
-export const identity = iso(I.id, I.id)
+export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))
