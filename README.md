@@ -526,10 +526,10 @@ Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.chain(toOptic, optic)` is equivalent to
 
 ```jsx
-L.compose(optic, L.choose(maybeValue =>
+L.compose(optic, L.choose((maybeValue, index) =>
   maybeValue === undefined
   ? L.zero
-  : toOptic(maybeValue)))
+  : toOptic(maybeValue, index)))
 ```
 
 Note that with the [`L.just`](#L-just), `L.chain`, [`L.choice`](#L-choice)
@@ -615,7 +615,7 @@ L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0, -1, 2, -3, 4])
 ```
 
 Note that `L.when(p)` is equivalent
-to [`L.choose(x => p(x) ? L.identity : L.zero)`](#L-choose).
+to [`L.choose((x, i) => p(x, i) ? L.identity : L.zero)`](#L-choose).
 
 #### Recursing
 
