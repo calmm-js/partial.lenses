@@ -442,10 +442,10 @@ L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
 <h4 id="querying">Querying</h4>
 <h5 id="-a-name-l-chain-a-contents-l-chain-value-index-optic-lens-l-chain-l-chain-a-index-poptic-s-b-plens-s-a-poptic-s-b-"><a name="L-chain"></a> <a href="#contents">≡</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; PLens s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, lens)</code></a></h5>
 <p><code>L.chain(toOptic, optic)</code> is equivalent to</p>
-<pre><code class="hljs lang-jsx">L.compose(optic, L.choose(maybeValue =&gt;
+<pre><code class="hljs lang-jsx">L.compose(optic, L.choose((maybeValue, index) =&gt;
   maybeValue === undefined
   ? L.zero
-  : toOptic(maybeValue)))
+  : toOptic(maybeValue, index)))
 </code></pre>
 <p>Note that with the <a href="#L-just"><code>L.just</code></a>, <code>L.chain</code>, <a href="#L-choice"><code>L.choice</code></a>
 and <a href="#L-zero"><code>L.zero</code></a> combinators, one can consider optics as subsuming the
@@ -493,7 +493,7 @@ selectively turn a lens into a read-only lens whose view is <code>undefined</cod
 <pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
 </code></pre>
 <p>Note that <code>L.when(p)</code> is equivalent
-to <a href="#L-choose"><code>L.choose(x =&gt; p(x) ? L.identity : L.zero)</code></a>.</p>
+to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
 <h4 id="recursing">Recursing</h4>
 <h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
@@ -879,7 +879,7 @@ other words, for all <code>x</code>, <code>y</code> and <code>z</code>:</p>
 <pre><code class="hljs lang-jsx">   L.get(L.just(z), x) = z
 L.set(L.just(z), y, x) = x
 </code></pre>
-<p>Note that <code>L.just(x)</code> is equivalent to <a href="#L-to"><code>L.to(_ =&gt; x)</code></a>.</p>
+<p>Note that <code>L.just(x)</code> is equivalent to <a href="#L-to"><code>L.to(R.always(x))</code></a>.</p>
 <p><code>L.just</code> can be seen as the unit function of the monad formed
 with <a href="#L-chain"><code>L.chain</code></a>.</p>
 <h5 id="-a-name-l-to-a-contents-l-to-maybevalue-index-maybevalue-l-to-l-to-a-index-b-plens-a-b-"><a name="L-to"></a> <a href="#contents">≡</a> <a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue)</code></a></h5>
@@ -1200,12 +1200,12 @@ var isoList = L.iso(fromList, toList)
 <code>R.compose(R.lensProp(p0), ...ps.map(R.lensProp))</code>, but that is not the case.</p>
 <p>With partial lenses you can robustly compose a path lens from prop
 lenses <a href="#L-compose"><code>L.compose(L.prop(p0), ...ps.map(L.prop))</code></a> or just use the
-shorthand notation <code>[p0, ...ps]</code>.  In JavaScript, missing (and mismatching) data
-can be mapped to <code>undefined</code>, which is what partial lenses also do, because
-<code>undefined</code> is not a valid <a href="http://json.org/">JSON</a> value.  When a part of a
-data structure is missing, an attempt to view it returns <code>undefined</code>.  When a
-part is missing, setting it to a defined value inserts the new part.  Setting an
-existing part to <code>undefined</code> removes it.</p>
+shorthand notation <a href="#L-compose"><code>[p0, ...ps]</code></a>.  In JavaScript, missing (and
+mismatching) data can be mapped to <code>undefined</code>, which is what partial lenses
+also do, because <code>undefined</code> is not a valid <a href="http://json.org/">JSON</a> value.
+When a part of a data structure is missing, an attempt to view it returns
+<code>undefined</code>.  When a part is missing, setting it to a defined value inserts the
+new part.  Setting an existing part to <code>undefined</code> removes it.</p>
 <h3 id="performance">Performance</h3>
 <p>Here are a few benchmarks on partial lenses (as <code>L</code> version 6.0.0) and some
 roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code> version
