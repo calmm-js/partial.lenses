@@ -1252,7 +1252,7 @@ other words, for all `x`, `y` and `z`:
 L.set(L.just(z), y, x) = x
 ```
 
-Note that `L.just(x)` is equivalent to [`L.to(_ => x)`](#L-to).
+Note that `L.just(x)` is equivalent to [`L.to(R.always(x))`](#L-to).
 
 `L.just` can be seen as the unit function of the monad formed
 with [`L.chain`](#L-chain).
