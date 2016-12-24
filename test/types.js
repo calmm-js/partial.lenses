@@ -14,20 +14,23 @@ const T_applicative = T.object({
   ap: T.fn([T.any, T.any], T.any)
 })
 
-const T_opticOf = Category => T.lazy(T_optic => T.or(
-  T.integer,
-  T.string,
-  T.array(T_optic),
+const T_opticFnOf = Category =>
   T.fn([Category,
         T.fn([T_maybeData, T_index], T_maybeData),
         T_maybeData,
         T_index],
-       T_maybeData)))
+       T_maybeData)
+
+const T_opticOf = Category => T.lazy(T_optic => T.or(
+  T.integer,
+  T.string,
+  T.array(T_optic),
+  T_opticFnOf(Category)))
 
 const T_optic = T_opticOf(T.or(T_applicative, T_functor))
 
 const T_traversal = T_opticOf(T_applicative)
-const T_lens = T_opticOf(T.or(T_applicative, T_functor))
+const T_lens = T_optic
 const T_isomorphism = T_lens
 
 //
@@ -51,6 +54,9 @@ export const zero = T_optic
 export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 
 export const log = T.fnVar(T.string, T_optic)
+
+export const toFunction = T.fn([T_optic],
+                               T_opticFnOf(T.or(T_applicative, T_functor)))
 
 export const collect = T.fn([T_traversal, T_maybeData], T.array(T_data))
 export const collectMap = T.fn([T_traversal,
