@@ -617,6 +617,24 @@ L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0, -1, 2, -3, 4])
 Note that `L.when(p)` is equivalent
 to [`L.choose((x, i) => p(x, i) ? L.identity : L.zero)`](#L-choose).
 
+#### <a name="L-zero"></a> [≡](#contents) [`L.zero`](#L-zero "L.zero: POptic s a")
+
+`L.zero` is the identity element of [`L.choice`](#L-choice)
+and [`L.chain`](L-chain).  As a traversal, `L.zero` is a traversal of no
+elements and as a lens, i.e. when used with [`L.get`](#L-get), `L.zero` is a
+read-only lens whose view is always `undefined`.
+
+For example:
+
+```js
+L.collect([L.sequence,
+           L.choose(x => (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? "x" :
+                          L.zero))],
+          [1, {x: 2}, [3,4]])
+// [ 2, 3, 4 ]
+```
+
 #### Recursing
 
 ##### <a name="L-lazy"></a> [≡](#contents) [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
@@ -683,24 +701,6 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // get x: 10
 // set x: "11"
 // { x: '11' }
-```
-
-#### <a name="L-zero"></a> [≡](#contents) [`L.zero`](#L-zero "L.zero: POptic s a")
-
-`L.zero` is the identity element of [`L.choice`](#L-choice)
-and [`L.chain`](L-chain).  As a traversal, `L.zero` is a traversal of no
-elements and as a lens, i.e. when used with [`L.get`](#L-get), `L.zero` is a
-read-only lens whose view is always `undefined`.
-
-For example:
-
-```js
-L.collect([L.sequence,
-           L.choose(x => (R.is(Array, x) ? L.sequence :
-                          R.is(Object, x) ? "x" :
-                          L.zero))],
-          [1, {x: 2}, [3,4]])
-// [ 2, 3, 4 ]
 ```
 
 ### Traversals

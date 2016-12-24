@@ -494,6 +494,18 @@ selectively turn a lens into a read-only lens whose view is <code>undefined</cod
 </code></pre>
 <p>Note that <code>L.when(p)</code> is equivalent
 to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
+<h4 id="-a-name-l-zero-a-contents-l-zero-l-zero-l-zero-poptic-s-a-"><a name="L-zero"></a> <a href="#contents">≡</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero</code></a></h4>
+<p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a>
+and <a href="L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
+elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
+read-only lens whose view is always <code>undefined</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect([L.sequence,
+           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
+                          R.is(Object, x) ? &quot;x&quot; :
+                          L.zero))],
+          [1, {x: 2}, [3,4]])
+</code></pre>
 <h4 id="recursing">Recursing</h4>
 <h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
@@ -530,18 +542,6 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;x&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
-</code></pre>
-<h4 id="-a-name-l-zero-a-contents-l-zero-l-zero-l-zero-poptic-s-a-"><a name="L-zero"></a> <a href="#contents">≡</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero</code></a></h4>
-<p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a>
-and <a href="L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
-elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
-read-only lens whose view is always <code>undefined</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.sequence,
-           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
-                          R.is(Object, x) ? &quot;x&quot; :
-                          L.zero))],
-          [1, {x: 2}, [3,4]])
 </code></pre>
 <h3 id="traversals">Traversals</h3>
 <p>A traversal operates over a collection of focuses that can
