@@ -20,7 +20,8 @@ function show(x) {
 
 const run = expr => eval(`(P, L, R, id, I, C, T) => ${expr}`)(P, L, R, id, I, C, T)
 
-function testEq(expr, expect) {
+function testEq(exprIn, expect) {
+  const expr = exprIn.replace(/[ \n]+/g, " ")
   it(`${expr} => ${show(expect)}`, () => {
     const actual = run(expr)
     if (!I.acyclicEqualsU(actual, expect))
