@@ -30,6 +30,8 @@ export const lazy = L.lazy
 
 export const log = L.log
 
+export const toFunction = L.toFunction
+
 // Traversals
 
 export const collect = R.curry((t, s) => collectMap(t, R.identity, s))

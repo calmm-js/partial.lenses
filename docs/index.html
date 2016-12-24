@@ -64,6 +64,10 @@ data structure parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try 
 <li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></li>
 </ul>
 </li>
+<li><a href="#internals">Internals</a><ul>
+<li><a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic)</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#traversals">Traversals</a><ul>
@@ -543,6 +547,30 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
+<h4 id="internals">Internals</h4>
+<h5 id="-a-name-l-tofunction-a-contents-l-tofunction-optic-l-tofunction-l-tofunction-poptic-s-a-functor-applicative-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a name="L-toFunction"></a> <a href="#contents">≡</a> <a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic)</code></a></h5>
+<p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>,
+an <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.
+This can be useful for implementing new combinators and operations that cannot
+otherwise be implemented using the combinators provided by this library.</p>
+<p>For <a href="#isomorphisms">isomorphisms</a> and <a href="#lenses">lenses</a>, the returned function
+will have the signature</p>
+<pre><code class="hljs lang-jsx">(Functor c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t
+</code></pre>
+<p>and for <a href="#traversals">traversals</a> the signature will be</p>
+<pre><code class="hljs lang-jsx">(Applicative c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t
+</code></pre>
+<p>Note that the above signatures are written using the &quot;tupled&quot; parameter notation
+<code>(...) -&gt; ...</code> to denote that the functions are not curried.</p>
+<p>The
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a> and
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a> arguments
+are expected to conform to
+their
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static Land</a>
+specifications.</p>
+<p>Note that, in conjunction with partial optics, the <code>Functor</code> and <code>Applicative</code>
+algebras are typically expected to allow for partiality.</p>
 <h3 id="traversals">Traversals</h3>
 <p>A traversal operates over a collection of focuses that can
 be

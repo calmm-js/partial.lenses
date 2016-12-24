@@ -517,6 +517,12 @@ describe("indexing", () => {
          [[101, "x"], [42, "y"]])
 })
 
+describe("L.toFunction", () => {
+  testEq("typeof L.toFunction(1)", "function")
+  testEq("typeof L.toFunction('x')", "function")
+  testEq("typeof L.toFunction(L.find(R.identity))", "function")
+})
+
 describe("BST", () => {
   const randomInt = (min, max) =>
     Math.floor(Math.random() * (max - min)) + min

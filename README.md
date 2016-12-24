@@ -39,6 +39,8 @@ data structure parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
     * [Debugging](#debugging)
       * [`L.log(...labels)`](#L-log "L.log: (...Any) -> POptic s s")
+    * [Internals](#internals)
+      * [`L.toFunction(optic)`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
@@ -702,6 +704,42 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 // set x: "11"
 // { x: '11' }
 ```
+
+#### Internals
+
+##### <a name="L-toFunction"></a> [≡](#contents) [`L.toFunction(optic)`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+
+`L.toFunction` converts a given optic, which can be a [string](#L-prop),
+an [integer](#L-index), an [array](#L-compose), or a function to a function.
+This can be useful for implementing new combinators and operations that cannot
+otherwise be implemented using the combinators provided by this library.
+
+For [isomorphisms](#isomorphisms) and [lenses](#lenses), the returned function
+will have the signature
+
+```jsx
+(Functor c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+```
+
+and for [traversals](#traversals) the signature will be
+
+```jsx
+(Applicative c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+```
+
+Note that the above signatures are written using the "tupled" parameter notation
+`(...) -> ...` to denote that the functions are not curried.
+
+The
+[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor) and
+[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative) arguments
+are expected to conform to
+their
+[Static Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
+specifications.
+
+Note that, in conjunction with partial optics, the `Functor` and `Applicative`
+algebras are typically expected to allow for partiality.
 
 ### Traversals
 
