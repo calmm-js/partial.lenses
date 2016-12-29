@@ -62,6 +62,7 @@
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
     "eslint": "^3.12.2",
+    "flunc-optics": "0.0.2",
     "immutable": "^3.8.1",
     "marked": "^0.3.6",
     "mocha": "^3.2.0",
