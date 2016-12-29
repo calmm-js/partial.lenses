@@ -47,10 +47,10 @@ const toList = x => x !== undefined ? [x] : []
 
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
-const flatten = L.lazy(rec => {
-  const nest = L.lift([L.sequence, rec])
+const flatten = [L.optional, L.lazy(rec => {
+  const nest = L.toFunction([L.sequence, rec])
   return L.choose(x => I.isArray(x) ? nest : L.identity)
-})
+})]
 
 const naiveBST = L.rewrite(n => {
   if (undefined !== n.value) return n
