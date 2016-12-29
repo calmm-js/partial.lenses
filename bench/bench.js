@@ -5,6 +5,7 @@ const L = require("../lib/partial.lenses")
 const P = require("ramda-lens")
 const R = require("ramda")
 const O = require("flunc-optics")
+const {sprintf} = require("sprintf-js")
 
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
@@ -87,132 +88,161 @@ const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
 const bst = fromPairs(bstPairs)
 
 const bs = [
-  'L.foldMapOf(Sum, L.sequence, id, xs100)',
-  'P.sumOf(P.traversed, xs100)',
-  'R.sum(xs100)',
-  'O.Fold.sumOf(O.Traversal.traversed, xs100)',
-
-  'L.collect(L.sequence, xs100)',
-  'O.Fold.toListOf(O.Traversal.traversed, xs100)',
-
-  'L.modify(L.sequence, inc, xs100)',
-  'P.over(P.traversed, inc, xs100)',
-  'R.map(inc, xs100)',
-  'O.Setter.over(O.Traversal.traversed, inc, xs100)',
-
-  'L.get(1, xs)',
-  'R.nth(1, xs)',
-  'R.view(l_1, xs)',
-
-  'L.set(1, 0, xs)',
-  'R.update(1, 0, xs)',
-  'R.set(l_1, 0, xs)',
-
-  'L.get("y", xyz)',
-  'R.prop("y", xyz)',
-  'R.view(l_y, xyz)',
-
-  'L.set("y", 0, xyz)',
-  'R.assoc("y", 0, xyz)',
-  'R.set(l_y, 0, xyz)',
-
-  'L.get([0,"x",0,"y"], axay)',
-  'R.path([0,"x",0,"y"], axay)',
-  'R.view(l_0x0y, axay)',
-  'R.view(l_0_x_0_y, axay)',
-
-  'L.set([0,"x",0,"y"], 0, axay)',
-  'R.assocPath([0,"x",0,"y"], 0, axay)',
-  'R.set(l_0x0y, 0, axay)',
-  'R.set(l_0_x_0_y, 0, axay)',
-
-  'L.modify([0,"x",0,"y"], inc, axay)',
-  'R.over(l_0x0y, inc, axay)',
-  'R.over(l_0_x_0_y, inc, axay)',
-
-  'L.remove(1, xs)',
-  'R.remove(1, 1, xs)',
-
-  'L.remove("y", xyz)',
-  'R.dissoc("y", xyz)',
-
-  'L.get(["x","y","z"], xyzn)',
-  'R.path(["x","y","z"], xyzn)',
-  'R.view(l_xyz, xyzn)',
-  'R.view(l_x_y_z, xyzn)',
-  'O.Getter.view(o_x_y_z, xyzn)',
-
-  'L.set(["x","y","z"], 0, xyzn)',
-  'R.assocPath(["x","y","z"], 0, xyzn)',
-  'R.set(l_xyz, 0, xyzn)',
-  'R.set(l_x_y_z, 0, xyzn)',
-  'O.Setter.set(o_x_y_z, 0, xyzn)',
-
-  'L.remove(50, xs100)',
-  'R.remove(50, 1, xs100)',
-
-  'L.set(50, 2, xs100)',
-  'R.set(l_50, 2, xs100)',
-  'R.update(50, 2, xs100)',
-
-  'L.remove(500, xs1000)',
-  'L.set(500, 2, xs1000)',
-  'R.remove(500, 1, xs1000)',
-  'R.update(500, 2, xs1000)',
-
-  'L.remove(5000, xs10000)',
-  'L.set(5000, 2, xs10000)',
-  'R.remove(5000, 1, xs10000)',
-  'R.update(5000, 2, xs10000)',
-
-  'L.modify(values, x => x + x, bst)',
-  'L.collect(values, bst)',
-
-  'fromPairs(bstPairs)',
-
-  'L.get(L.defaults(1), undefined)',
-  'L.get(L.defaults(1), 2)',
-
-  'L.get(L.define(1), undefined)',
-  'L.get(L.define(1), 2)',
-
-  'L.get(L.valueOr(1), undefined)',
-  'L.get(L.valueOr(1), null)',
-  'L.get(L.valueOr(1), 2)',
-
-  'L.foldMapOf(List, L.sequence, toList, xs100)',
-
-  'L.collect([L.sequence, L.sequence, L.sequence], xsss100)',
-  'R.chain(R.chain(R.identity), xsss100)',
-
-  'L.collect(flatten, xsss100)',
-  'R.flatten(xsss100)',
-
-  'L.modify(flatten, inc, xsss100)',
-
-  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
-  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
-  'R.map(R.map(R.map(inc)), xsss100)',
-
-  'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
-  'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
-  'R.map(R.map(R.map(inc)), xsss100)',
-
-  'L.get(d0x0y, axay)',
-  'L.set(d0x0y, 1, undefined)',
-
-  'L.set(L.findWith("x"), 2, axay)',
-
-  'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
-
-  'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
-  'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
-
-  'L.get(L.fromArrayBy("id"), ids)'
+  [
+    'L.foldMapOf(Sum, L.sequence, id, xs100)',
+    'P.sumOf(P.traversed, xs100)',
+    'R.sum(xs100)',
+    'O.Fold.sumOf(O.Traversal.traversed, xs100)',
+  ], [
+    'L.collect(L.sequence, xs100)',
+    'O.Fold.toListOf(O.Traversal.traversed, xs100)',
+  ], [
+    'L.modify(L.sequence, inc, xs100)',
+    'P.over(P.traversed, inc, xs100)',
+    'R.map(inc, xs100)',
+    'O.Setter.over(O.Traversal.traversed, inc, xs100)',
+  ], [
+    'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
+    'P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)',
+    'R.map(R.map(R.map(inc)), xsss100)',
+    `O.Setter.over(R.compose(O.Traversal.traversed,
+                             O.Traversal.traversed,
+                             O.Traversal.traversed),
+                   inc,
+                   xsss100)`,
+  ], [
+    'L.get(1, xs)',
+    'R.nth(1, xs)',
+    'R.view(l_1, xs)',
+  ], [
+    'L.set(1, 0, xs)',
+    'R.update(1, 0, xs)',
+    'R.set(l_1, 0, xs)',
+  ], [
+    'L.get("y", xyz)',
+    'R.prop("y", xyz)',
+    'R.view(l_y, xyz)',
+  ], [
+    'L.set("y", 0, xyz)',
+    'R.assoc("y", 0, xyz)',
+    'R.set(l_y, 0, xyz)',
+  ], [
+    'L.get([0,"x",0,"y"], axay)',
+    'R.path([0,"x",0,"y"], axay)',
+    'R.view(l_0x0y, axay)',
+    'R.view(l_0_x_0_y, axay)',
+  ], [
+    'L.set([0,"x",0,"y"], 0, axay)',
+    'R.assocPath([0,"x",0,"y"], 0, axay)',
+    'R.set(l_0x0y, 0, axay)',
+    'R.set(l_0_x_0_y, 0, axay)',
+  ], [
+    'L.modify([0,"x",0,"y"], inc, axay)',
+    'R.over(l_0x0y, inc, axay)',
+    'R.over(l_0_x_0_y, inc, axay)',
+  ], [
+    'L.remove(1, xs)',
+    'R.remove(1, 1, xs)',
+  ], [
+    'L.remove("y", xyz)',
+    'R.dissoc("y", xyz)',
+  ], [
+    'L.get(["x","y","z"], xyzn)',
+    'R.path(["x","y","z"], xyzn)',
+    'R.view(l_xyz, xyzn)',
+    'R.view(l_x_y_z, xyzn)',
+    'O.Getter.view(o_x_y_z, xyzn)',
+  ], [
+    'L.set(["x","y","z"], 0, xyzn)',
+    'R.assocPath(["x","y","z"], 0, xyzn)',
+    'R.set(l_xyz, 0, xyzn)',
+    'R.set(l_x_y_z, 0, xyzn)',
+    'O.Setter.set(o_x_y_z, 0, xyzn)',
+  ], [
+    'L.remove(50, xs100)',
+    'R.remove(50, 1, xs100)',
+  ], [
+    'L.set(50, 2, xs100)',
+    'R.set(l_50, 2, xs100)',
+    'R.update(50, 2, xs100)',
+  ], [
+    'L.remove(500, xs1000)',
+    'R.remove(500, 1, xs1000)',
+  ], [
+    'L.set(500, 2, xs1000)',
+    'R.update(500, 2, xs1000)',
+  ], [
+    'L.remove(5000, xs10000)',
+    'R.remove(5000, 1, xs10000)',
+  ], [
+    'L.set(5000, 2, xs10000)',
+    'R.update(5000, 2, xs10000)',
+  ], [
+    'L.modify(values, x => x + x, bst)',
+    'L.collect(values, bst)',
+  ], [
+    'fromPairs(bstPairs)',
+  ], [
+    'L.get(L.defaults(1), undefined)',
+    'L.get(L.defaults(1), 2)',
+  ], [
+    'L.get(L.define(1), undefined)',
+    'L.get(L.define(1), 2)',
+  ], [
+    'L.get(L.valueOr(1), undefined)',
+    'L.get(L.valueOr(1), null)',
+    'L.get(L.valueOr(1), 2)',
+  ], [
+    'L.foldMapOf(List, L.sequence, toList, xs100)',
+  ], [
+    'L.collect([L.sequence, L.sequence, L.sequence], xsss100)',
+    'R.chain(R.chain(R.identity), xsss100)',
+  ], [
+    'L.collect(flatten, xsss100)',
+    'R.flatten(xsss100)',
+  ], [
+    'L.modify(flatten, inc, xsss100)',
+  ], [
+    'L.get(d0x0y, axay)',
+  ], [
+    'L.set(d0x0y, 1, undefined)',
+  ], [
+    'L.set(L.findWith("x"), 2, axay)',
+  ], [
+    'L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})',
+  ], [
+    'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
+    'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
+  ]
 ]
 
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = 10
-const s = new Benchmark.Suite()
-bs.forEach(b => s.add(b, eval("() => " + b)))
-s.on('cycle', e => console.log(String(e.target))).run()
+
+function complete() {
+  const bs = I.seq(this,
+                   R.values,
+                   R.filter(R.is(Benchmark)),
+                   R.sortBy(R.prop("hz")),
+                   R.reverse)
+  const fastest = I.seq(bs,
+                        R.map(R.prop("hz")),
+                        R.reduce(R.max, 0))
+  bs.forEach(b => {
+    console.log(sprintf('%12s/s  %6.2fx  %s',
+                        Math.round(b.hz).toLocaleString(),
+                        fastest/b.hz, b.name))
+  })
+  console.log()
+}
+
+bs.forEach(bs => {
+  global.gc()
+  const s = new Benchmark.Suite()
+  bs.forEach(b => {
+    b = b.replace(/[ \n]+/g, " ")
+    s.add(b, eval("() => " + b))
+  })
+  s.on('complete', complete)
+  s.run()
+})

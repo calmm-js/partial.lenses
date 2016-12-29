@@ -4,7 +4,7 @@
   "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
   "main": "lib/partial.lenses.js",
   "scripts": {
-    "bench": "NODE_ENV=production node bench/bench.js",
+    "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
     "dist": "babel src --source-maps inline --out-dir lib",
     "docs": "./scripts/generate-docs",
     "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
@@ -70,6 +70,7 @@
     "nyc": "^10.0.0",
     "ramda": "^0.23.0",
     "ramda-lens": "^0.1.1",
+    "sprintf-js": "^1.0.3",
     "uglifyify": "^3.0.4"
   }
 }
