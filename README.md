@@ -810,14 +810,14 @@ above naïve implementation.
 
 ##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
 
-`L.foldMapOf({empty, concat}, t, aM2r, s)` performs a map, using given function
-`aM2r`, and fold, using the given `concat` and `empty` operations, over the
+`L.foldMapOf({empty, concat}, t, xMi2r, s)` performs a map, using given function
+`xMi2r`, and fold, using the given `concat` and `empty` operations, over the
 elements focused on by the given traversal or lens `t` from the given data
 structure `s`.  The `concat` operation and the constant returned by `empty()`
 should form
 a
 [monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values returned by `aM2r`.
+the values returned by `xMi2r`.
 
 For example:
 

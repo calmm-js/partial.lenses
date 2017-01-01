@@ -386,7 +386,7 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 export const collectMap = curry3(collectMapU)
 
 export const foldMapOf =
-  curry4((m, t, xi2y, s) => toFunction(t)(ConstOf(m), xi2y, s, void 0))
+  curry4((m, t, xMi2y, s) => toFunction(t)(ConstOf(m), xMi2y, s, void 0))
 
 // Creating new traversals
 
