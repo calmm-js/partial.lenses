@@ -94,7 +94,7 @@ Benchmark.options.maxTime = 10
 R.forEach(bs => {
   global.gc()
   const s = new Benchmark.Suite()
-  bs.forEach(b => {
+  bs.reverse().forEach(b => {
     b = b.replace(/[ \n]+/g, " ")
     s.add(b, eval("() => " + b))
   })
