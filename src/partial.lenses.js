@@ -53,10 +53,9 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 
 //
 
-function mkFoldDefined(empty, tacnoc) {
+export function mkFoldBy(empty, tacnoc, by) {
   const a = ConstFlip(empty, tacnoc)
-  const f = x => isDefined(x) ? x : empty
-  return curry2((t, s) => run(t, a, f, s))
+  return curry2((t, s) => run(t, a, by, s))
 }
 
 //
@@ -412,14 +411,17 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 
 export const collectMap = curry3(collectMapU)
 
-export const foldOf = curry3((m, t, s) => run(t, ConstOf(m), id, s))
-
 export const foldMapOf =
   curry4((m, t, xMi2y, s) => run(t, ConstOf(m), xMi2y, s))
 
-export const sumOf = mkFoldDefined(0, (y, x) => x + y)
+export const foldOf = curry3((m, t, s) => run(t, ConstOf(m), id, s))
 
-export const productOf = mkFoldDefined(1, (y, x) => x * y)
+export const productOf = mkFoldBy(1, (y, x) => x * y, replacer(void 0, 1))
+
+export const sumOf = mkFoldBy(0, (y, x) => x + y, replacer(void 0, 0))
+
+export const foldlOf = curry4((t, f, r, s) =>
+  foldl(f, r, run(t, Collect, pair, s)))
 
 export const foldrOf = curry4((t, f, r, s) => {
   const xs = collectMapU(t, pair, s)
@@ -429,9 +431,6 @@ export const foldrOf = curry4((t, f, r, s) => {
   }
   return r
 })
-
-export const foldlOf = curry4((t, f, r, s) =>
-  foldl(f, r, run(t, Collect, pair, s)))
 
 // Creating new traversals
 

@@ -66,23 +66,24 @@ export const collectMap = T.fn([T_traversal,
                                 T.fn([T_maybeData, T_index], T_maybeData),
                                 T_maybeData],
                                T.array(T_data))
-export const foldOf = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
+
 export const foldMapOf = T.fn([T_monoid,
                                T_traversal,
                                T.fn([T_maybeData, T_index], T.any),
                                T_maybeData],
                               T.any)
+export const foldOf = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
-export const sumOf = T.fn([T_traversal, T_maybeData], T.number)
-export const productOf = sumOf
+export const productOf = T.fn([T_traversal, T_maybeData], T.number)
+export const sumOf = productOf
 
-export const foldrOf =
+export const foldlOf =
   T.fn([T_traversal,
         T.fn([T.any, T_maybeData, T_index], T.any),
         T.any,
         T_maybeData],
        T.any)
-export const foldlOf = foldrOf
+export const foldrOf = foldlOf
 
 export const branch = T.fn([T.props(T_traversal)], T_traversal)
 

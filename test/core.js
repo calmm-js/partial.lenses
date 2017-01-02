@@ -47,11 +47,11 @@ export const collectMap = R.curry((t, to, s) =>
 export const foldOf = R.curry((m, t, s) => foldMapOf(m, t, R.identity, s))
 export const foldMapOf = L.foldMapOf
 
-export const sumOf = foldDefinedOf({empty: () => 0, concat: R.add})
 export const productOf = foldDefinedOf({empty: () => 1, concat: R.multiply})
+export const sumOf = foldDefinedOf({empty: () => 0, concat: R.add})
 
-export const foldrOf = foldxOf(R.compose)
 export const foldlOf = foldxOf(R.pipe)
+export const foldrOf = foldxOf(R.compose)
 
 export const branch = L.branch
 
