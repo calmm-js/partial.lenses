@@ -48,6 +48,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
       * [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
+      * [`L.foldOf({empty: () => value, concat: (value, value) => value}, traversal, maybeData)`](#L-foldOf "L.foldOf: {empty: () -> a, concat: (a, a) -> a} -> PTraversal s a -> Maybe s -> a")
+      * [`L.foldlOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldlOf "L.foldlOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+      * [`L.foldrOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldrOf "L.foldrOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+      * [`L.productOf(traversal, maybeData)`](#L-productOf "L.productOf: PTraversal s Number -> Maybe s -> Number")
+      * [`L.sumOf(traversal, maybeData)`](#L-sumOf "L.sumOf: PTraversal s Number -> Maybe s -> Number")
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
@@ -826,6 +831,70 @@ For example:
 ```js
 const Sum = {empty: () => 0, concat: (x, y) => x + y}
 L.foldMapOf(Sum, L.sequence, x => x, [1, 2, 3])
+// 6
+```
+
+##### <a name="L-foldOf"></a> [≡](#contents) [`L.foldOf({empty: () => value, concat: (value, value) => value}, traversal, maybeData)`](#L-foldOf "L.foldOf: {empty: () -> a, concat: (a, a) -> a} -> PTraversal s a -> Maybe s -> a")
+
+`L.foldOf({empty, concat}, t, s)` performs a fold, using the given `concat` and
+`empty` operations, over the elements focused on by the given traversal or lens
+`t` from the given data structure `s`.  The `concat` operation and the constant
+returned by `empty()` should form
+a
+[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
+the values focused on by `t`.
+
+For example:
+
+```js
+L.foldOf(Sum, L.sequence, [1, 2, 3])
+// 6
+```
+
+##### <a name="L-foldlOf"></a> [≡](#contents) [`L.foldlOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldlOf "L.foldlOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+
+`L.foldlOf` performs a fold from left over the elements focused on by the given
+traversal.
+
+For example:
+
+```js
+L.foldlOf(L.sequence, (x, y) => x + y, 0, [1,2,3])
+// 6
+```
+
+##### <a name="L-foldrOf"></a> [≡](#contents) [`L.foldrOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldrOf "L.foldrOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+
+`L.foldrOf` performs a fold from right over the elements focused on by the given
+traversal.
+
+For example:
+
+```js
+L.foldrOf(L.sequence, (x, y) => x * y, 1, [1,2,3])
+// 6
+```
+
+##### <a name="L-productOf"></a> [≡](#contents) [`L.productOf(traversal, maybeData)`](#L-productOf "L.productOf: PTraversal s Number -> Maybe s -> Number")
+
+`L.productOf` computes the product of the optional numbers targeted by the
+traversal.
+
+For example:
+
+```js
+L.productOf(L.sequence, [1,2,3])
+// 6
+```
+
+##### <a name="L-sumOf"></a> [≡](#contents) [`L.sumOf(traversal, maybeData)`](#L-sumOf "L.sumOf: PTraversal s Number -> Maybe s -> Number")
+
+`L.sumOf` computes the sum of the optional numbers targeted by the traversal.
+
+For example:
+
+```js
+L.sumOf(L.sequence, [1,2,3])
 // 6
 ```
 
@@ -1833,10 +1902,10 @@ new part.  Setting an existing part to `undefined` removes it.
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (as `L` version 7.0.0) and some
-roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R` version
-0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P` version
-0.1.1).
+Here are a few benchmark results on partial lenses (as `L` version 7.0.0) and
+some roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R`
+version 0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P`
+version 0.1.1).
 
 ```jsx
 L.foldMapOf(Sum, L.sequence, id, xs100) x  1,337,324 ops/sec ±0.45% (181 runs sampled)
