@@ -49,6 +49,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
       * [`L.foldMapOf({empty: () => value, concat: (value, value) => value}, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: {empty: () -> r, concat: (r, r) -> r} -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
       * [`L.foldOf({empty: () => value, concat: (value, value) => value}, traversal, maybeData)`](#L-foldOf "L.foldOf: {empty: () -> a, concat: (a, a) -> a} -> PTraversal s a -> Maybe s -> a")
+      * [`L.foldlOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldlOf "L.foldlOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+      * [`L.foldrOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldrOf "L.foldrOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
       * [`L.productOf(traversal, maybeData)`](#L-productOf "L.productOf: PTraversal s Number -> Maybe s -> Number")
       * [`L.sumOf(traversal, maybeData)`](#L-sumOf "L.sumOf: PTraversal s Number -> Maybe s -> Number")
     * [Creating new traversals](#creating-new-traversals)
@@ -846,6 +848,30 @@ For example:
 
 ```js
 L.foldOf(Sum, L.sequence, [1, 2, 3])
+// 6
+```
+
+##### <a name="L-foldlOf"></a> [≡](#contents) [`L.foldlOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldlOf "L.foldlOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+
+`L.foldlOf` performs a fold from left over the elements focused on by the given
+traversal.
+
+For example:
+
+```js
+L.foldlOf(L.sequence, (x, y) => x + y, 0, [1,2,3])
+// 6
+```
+
+##### <a name="L-foldrOf"></a> [≡](#contents) [`L.foldrOf(traversal, (value, maybeValue, index) => value, value, maybeData)`](#L-foldrOf "L.foldrOf: PTraversal s a -> ((r, Maybe a, Index) -> r) -> r -> Maybe s -> r")
+
+`L.foldrOf` performs a fold from right over the elements focused on by the given
+traversal.
+
+For example:
+
+```js
+L.foldrOf(L.sequence, (x, y) => x * y, 1, [1,2,3])
 // 6
 ```
 
