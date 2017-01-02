@@ -1981,5 +1981,6 @@ dozens of lens libraries for various languages.  Here are just a few links:
 * [ekmett/lens](https://github.com/ekmett/lens)
 * [julien-truffaut/Monocle](https://github.com/julien-truffaut/Monocle)
 * [xyncro/aether](https://github.com/xyncro/aether)
+* [Flunc Optics](https://github.com/flunc/optics)
 
 Feel free to suggest more links!
