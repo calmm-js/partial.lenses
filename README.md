@@ -845,7 +845,6 @@ the values focused on by `t`.
 For example:
 
 ```js
-const Sum = {empty: () => 0, concat: (x, y) => x + y}
 L.foldOf(Sum, L.sequence, [1, 2, 3])
 // 6
 ```
