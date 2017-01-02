@@ -1833,10 +1833,10 @@ new part.  Setting an existing part to `undefined` removes it.
 
 ### Performance
 
-Here are a few benchmarks on partial lenses (as `L` version 7.0.0) and some
-roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R` version
-0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P` version
-0.1.1).
+Here are a few benchmark results on partial lenses (as `L` version 7.0.0) and
+some roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R`
+version 0.22.1) and [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P`
+version 0.1.1).
 
 ```jsx
 L.foldMapOf(Sum, L.sequence, id, xs100) x  1,337,324 ops/sec ±0.45% (181 runs sampled)

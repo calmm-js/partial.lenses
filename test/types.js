@@ -70,6 +70,17 @@ export const foldMapOf = T.fn([T.object({empty: T.fn([], T.any),
                                T_maybeData],
                               T.any)
 
+export const sumOf = T.fn([T_traversal, T_maybeData], T.number)
+export const productOf = sumOf
+
+export const foldrOf =
+  T.fn([T_traversal,
+        T.fn([T.any, T_maybeData, T_index], T.any),
+        T.any,
+        T_maybeData],
+       T.any)
+export const foldlOf = foldrOf
+
 export const branch = T.fn([T.props(T_traversal)], T_traversal)
 
 export const sequence = T_traversal

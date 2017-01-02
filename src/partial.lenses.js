@@ -19,6 +19,10 @@ import {
 
 //
 
+function pair(x0, x1) {return [x0, x1]}
+
+//
+
 function mapPartialIndexU(xi2y, xs) {
   const ys = [], n=xs.length
   for (let i=0, y; i<n; ++i)
@@ -49,23 +53,31 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 
 //
 
+function mkFoldDefined(empty, tacnoc) {
+  const a = ConstFlip(empty, tacnoc)
+  const f = x => isDefined(x) ? x : empty
+  return curry2((t, s) => run(t, a, f, s))
+}
+
+//
+
 const reqApplicative = f => assert(f, id, "Traversals require an applicative.")
 
 //
 
 function Concat(l, r) {this.l = l; this.r = r}
 
-const isConcat = n => n && n.constructor === Concat
+const isConcat = n => n.constructor === Concat
 
 const ap = (r, l) => isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
 
 const rconcat = t => h => ap(t, h)
 
 function pushTo(n, ys) {
-  while (isConcat(n)) {
+  while (n && isConcat(n)) {
     const l = n.l
     n = n.r
-    if (isConcat(l)) {
+    if (l && isConcat(l)) {
       pushTo(l.l, ys)
       pushTo(l.r, ys)
     } else
@@ -81,6 +93,19 @@ function toArray(n) {
     return ys
   }
 }
+
+function foldlRec(f, r, n) {
+  while (isConcat(n)) {
+    const l = n.l
+    n = n.r
+    r = isConcat(l)
+      ? foldlRec(f, foldlRec(f, r, l.l), l.r)
+      : f(r, l[0], l[1])
+  }
+  return f(r, n[0], n[1])
+}
+
+const foldl = (f, r, n) => isDefined(n) ? foldlRec(f, r, n) : r
 
 const Collect = ConstFlip(void 0, ap)
 
@@ -389,6 +414,21 @@ export const collectMap = curry3(collectMapU)
 
 export const foldMapOf =
   curry4((m, t, xMi2y, s) => run(t, ConstOf(m), xMi2y, s))
+
+export const sumOf = mkFoldDefined(0, (y, x) => x + y)
+export const productOf = mkFoldDefined(1, (y, x) => x * y)
+
+export const foldrOf = curry4((t, f, r, s) => {
+  const xs = collectMapU(t, pair, s)
+  for (let i=xs.length-1; 0<=i; --i) {
+    const x = xs[i]
+    r = f(r, x[0], x[1])
+  }
+  return r
+})
+
+export const foldlOf = curry4((t, f, r, s) =>
+  foldl(f, r, run(t, Collect, pair, s)))
 
 // Creating new traversals
 
