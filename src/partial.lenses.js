@@ -42,7 +42,6 @@ function ConstOf(m) {
         empty = m.empty
   return ConstFlip(empty(), (l, r) => concat(r, l))
 }
-}
 
 //
 
