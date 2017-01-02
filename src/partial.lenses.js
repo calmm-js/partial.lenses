@@ -45,6 +45,10 @@ function ConstOf(m) {
 
 //
 
+const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
+
+//
+
 const reqApplicative = f => assert(f, id, "Traversals require an applicative.")
 
 //
@@ -81,7 +85,7 @@ function toArray(n) {
 const Collect = ConstFlip(void 0, ap)
 
 const collectMapU = (t, xi2y, s) =>
-  toArray(toFunction(t)(Collect, xi2y, s, void 0)) || []
+  toArray(run(t, Collect, xi2y, s)) || []
 
 //
 
@@ -177,7 +181,7 @@ function composed(oi0, os) {
       xi2yF = close(toFunction(os[--n]), F, xi2yF)
       while (oi0 < --n)
         xi2yF = close(toFunction(os[n]), F, xi2yF)
-      return toFunction(os[oi0])(F, xi2yF, x, i)
+      return run(os[oi0], F, xi2yF, x, i)
     }
   }
 }
@@ -353,7 +357,7 @@ export const choice = (...ls) => choose(x => {
 })
 
 export const choose = xiM2o => (C, xi2yC, x, i) =>
-  toFunction(xiM2o(x, i))(C, xi2yC, x, i)
+  run(xiM2o(x, i), C, xi2yC, x, i)
 
 export const when = p => (C, xi2yC, x, i) =>
   p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
@@ -387,7 +391,7 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 export const collectMap = curry3(collectMapU)
 
 export const foldMapOf =
-  curry4((m, t, xMi2y, s) => toFunction(t)(ConstOf(m), xMi2y, s, void 0))
+  curry4((m, t, xMi2y, s) => run(t, ConstOf(m), xMi2y, s))
 
 // Creating new traversals
 
