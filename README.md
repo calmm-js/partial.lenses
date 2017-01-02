@@ -740,8 +740,10 @@ their
 [Static Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
 specifications.
 
-Note that, in conjunction with partial optics, the `Functor` and `Applicative`
-algebras are typically expected to allow for partiality.
+Note that, in conjunction with partial optics, it may be advantageous to have
+the `Functor` and `Applicative` algebras to allow for partiality.  With
+traversals it is also possible, for example, to simply post compose optics
+with [`L.optional`](#L-optional) to eliminate `undefined` elements.
 
 ### Traversals
 
