@@ -29,17 +29,19 @@ function mapPartialIndexU(xi2y, xs) {
 
 //
 
-const Ident = {map: applyU, of: id, ap: applyU}
+const Applicative = (map, of, ap) => ({map, of, ap})
+
+const Ident = Applicative(applyU, id, applyU)
 
 const Const = {map: sndU}
 
-function ConstOf(Monoid) {
-  const concat = Monoid.concat
-  return {
-    map: sndU,
-    of: always((0,Monoid.empty)()),
-    ap: (x2yA, xA) => concat(xA, x2yA)
-  }
+const ConstFlip = (empty, tacnoc) => Applicative(sndU, always(empty), tacnoc)
+
+function ConstOf(m) {
+  const concat = m.concat,
+        empty = m.empty
+  return ConstFlip(empty(), (l, r) => concat(r, l))
+}
 }
 
 //
@@ -77,7 +79,7 @@ function toArray(n) {
   }
 }
 
-const Collect = {map: sndU, of() {}, ap}
+const Collect = ConstFlip(void 0, ap)
 
 const collectMapU = (t, xi2y, s) =>
   toArray(toFunction(t)(Collect, xi2y, s, void 0)) || []
