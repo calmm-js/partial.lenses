@@ -372,11 +372,8 @@ export function zero(C, xi2yC, x, i) {
 // Recursing
 
 export function lazy(o2o) {
-  let memo = (C, xi2yC, x, i) => {
-    memo = toFunction(o2o(rec))
-    return memo(C, xi2yC, x, i)
-  }
-  const rec = (C, xi2yC, x, i) => memo(C, xi2yC, x, i)
+  let memo = (C, xi2yC, x, i) => (memo = toFunction(o2o(rec)))(C, xi2yC, x, i)
+  function rec(C, xi2yC, x, i) {return memo(C, xi2yC, x, i)}
   return rec
 }
 
