@@ -412,10 +412,13 @@ export const collect = curry2((t, s) => collectMapU(t, id, s))
 
 export const collectMap = curry3(collectMapU)
 
+export const foldOf = curry3((m, t, s) => run(t, ConstOf(m), id, s))
+
 export const foldMapOf =
   curry4((m, t, xMi2y, s) => run(t, ConstOf(m), xMi2y, s))
 
 export const sumOf = mkFoldDefined(0, (y, x) => x + y)
+
 export const productOf = mkFoldDefined(1, (y, x) => x * y)
 
 export const foldrOf = curry4((t, f, r, s) => {

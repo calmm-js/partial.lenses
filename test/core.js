@@ -8,7 +8,7 @@ const isDefined = x => x !== undefined
 const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
 const toCollect = x => isDefined(x) ? [x] : []
 
-const foldOf = concat => R.curry((t, f, r, s) =>
+const foldxOf = concat => R.curry((t, f, r, s) =>
   foldMapOf({empty: () => R.identity, concat},
             t, (x, i) => r => f(r, x, i), s)(r))
 const foldDefinedOf = m => R.curry((t, s) =>
@@ -43,13 +43,15 @@ export const toFunction = L.toFunction
 export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
 export const collectMap = R.curry((t, to, s) =>
   foldMapOf(Collect, t, R.pipe(to, toCollect), s))
+
+export const foldOf = R.curry((m, t, s) => foldMapOf(m, t, R.identity, s))
 export const foldMapOf = L.foldMapOf
 
 export const sumOf = foldDefinedOf({empty: () => 0, concat: R.add})
 export const productOf = foldDefinedOf({empty: () => 1, concat: R.multiply})
 
-export const foldrOf = foldOf(R.compose)
-export const foldlOf = foldOf(R.pipe)
+export const foldrOf = foldxOf(R.compose)
+export const foldlOf = foldxOf(R.pipe)
 
 export const branch = L.branch
 

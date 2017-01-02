@@ -18,8 +18,11 @@ function show(x) {
   }
 }
 
+const a100000 = Array(100000).fill(1)
+
 const run = expr =>
-  eval(`(P, L, X, R, id, I, C, T) => ${expr}`)(P, L, L, R, id, I, C, T)
+  eval(`(P, L, X, R, id, I, C, T, a100000) => ${expr}`)(
+         P, L, L, R, id, I, C, T, a100000)
 
 function testEq(exprIn, expect) {
   const expr = exprIn.replace(/[ \n]+/g, " ")
@@ -415,7 +418,7 @@ describe("L.collect", () => {
   testEq(`L.collect(["a", L.sequence, "b", L.sequence, "c", L.sequence],
                     {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})`,
          [1,2])
-  testEq('X.collect(X.sequence, Array(100000).fill(1)).length', 100000)
+  testEq('X.collect(X.sequence, a100000).length', 100000)
 })
 
 describe("L.collectMap", () => {
@@ -438,6 +441,7 @@ describe("L.foldMapOf", () => {
 })
 
 describe("folds", () => {
+  testEq(`X.foldOf(Sum, X.sequence, a100000)`, 100000)
   testEq(`L.sumOf([L.sequence, "x"], undefined)`, 0)
   testEq(`L.productOf([L.sequence, "x"], undefined)`, 1)
   testEq(`L.sumOf([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
@@ -449,7 +453,7 @@ describe("folds", () => {
   testEq(`L.foldlOf([L.sequence, L.sequence], (x,y) => [x,y], 0, [[1,2],[3]])`,
          [[[0,1],2],3])
   ;['foldlOf', 'foldrOf'].forEach(fold => {
-    testEq(`X.${fold}(X.sequence, (x,y) => x+y, 0, Array(100000).fill(1))`,
+    testEq(`X.${fold}(X.sequence, (x,y) => x+y, 0, a100000)`,
            100000)
   })
 })
