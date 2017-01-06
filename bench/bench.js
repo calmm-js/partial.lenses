@@ -109,7 +109,7 @@ R.forEach(bs => {
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
   ], [
     'L.foldMapOf(Sum, L.sequence, id, xs100)',
-    'L.sumOf(L.sequence, id, xs100)',
+    'L.sumOf(L.sequence, xs100)',
     'O.Fold.sumOf(O.Traversal.traversed, xs100)',
     'P.sumOf(P.traversed, xs100)',
     'R.sum(xs100)',
