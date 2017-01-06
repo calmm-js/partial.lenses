@@ -5,7 +5,7 @@ const L = require("../lib/partial.lenses")
 const P = require("ramda-lens")
 const R = require("ramda")
 const O = require("flunc-optics")
-const {sprintf} = require("sprintf-js")
+const sprintf = require("sprintf-js").sprintf
 
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
