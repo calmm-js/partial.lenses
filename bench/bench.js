@@ -76,7 +76,7 @@ const search = key => L.lazy(rec => {
 const valueOf = key => [search(key), "value"]
 
 const fromPairs =
-  R.reduce((t, [k, v]) => L.set(valueOf(k), v, t), undefined)
+  R.reduce((t, kv) => L.set(valueOf(kv[0]), kv[1], t), undefined)
 
 const values = L.lazy(rec => [
   L.optional,
