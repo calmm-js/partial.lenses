@@ -89,7 +89,7 @@ const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
 const bst = fromPairs(bstPairs)
 
 const Benchmark = require("benchmark")
-Benchmark.options.maxTime = 10
+Benchmark.options.maxTime = Number(process.argv[2]) || 10
 
 R.forEach(bs => {
   global.gc()
