@@ -1,0 +1,19 @@
+{
+  "name": "partial.lenses",
+  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
+  "main": "dist/partial.lenses.js",
+  "license": "MIT",
+  "keywords": [
+    "partial",
+    "lens",
+    "isomorphism",
+    "traversal",
+    "json",
+    "immutable"
+  ],
+  "homepage": "https://github.com/calmm-js/partial.lenses",
+  "dependencies": {
+    "infestines": "^0.1.5"
+  },
+  "ignore": ["*", "!dist/*"]
+}
