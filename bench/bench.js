@@ -1,7 +1,7 @@
 'use strict';
 
 const I = require("infestines")
-const L = require("../lib/partial.lenses")
+const L = require("../dist/partial.lenses.min")
 const P = require("ramda-lens")
 const R = require("ramda")
 const O = require("flunc-optics")

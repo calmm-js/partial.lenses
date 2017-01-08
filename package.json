@@ -5,8 +5,9 @@
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
-    "dist": "npm run dist:bowerify & npm run dist:commonjs & wait",
-    "dist:bowerify": "NODE_ENV=dev browserify src/partial.lenses.js -t envify -t babelify --no-bundle-external -d -s L -o dist/partial.lenses.js",
+    "dist": "npm run dist:bowerify & npm run dist:bowerify.min & npm run dist:commonjs & wait",
+    "dist:bowerify": "    NODE_ENV=dev        browserify src/partial.lenses.js -t babelify --no-bundle-external -d -s L -g envify              -o dist/partial.lenses.js",
+    "dist:bowerify.min": "NODE_ENV=production browserify src/partial.lenses.js -t babelify --no-bundle-external    -s L -g envify -g uglifyify -o dist/partial.lenses.min.js",
     "dist:commonjs": "babel src --source-maps inline --out-dir lib",
     "docs": "./scripts/generate-docs",
     "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
