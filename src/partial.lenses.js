@@ -412,18 +412,24 @@ export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
 
 // Operations on traversals
 
+export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
+
+export const concat = concatAs(id)
+
+export const foldMapOf = curry((m, t, xMi2y, s) => concatAs(xMi2y, m, t, s)) // deprecated
+
+export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
+
+export const merge = mergeAs(id)
+
+// Folds over traversals
+
 export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
 
 export const collectMap = curry((t, xi2y, s) => collectAs(xi2y, t, s)) // deprecated
-
-export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
-
-export const concat = concatAs(id)
-
-export const foldMapOf = curry((m, t, xMi2y, s) => concatAs(xMi2y, m, t, s)) // deprecated
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
@@ -436,10 +442,6 @@ export const foldr = curry((f, r, t, s) => {
   }
   return r
 })
-
-export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
-
-export const merge = mergeAs(id)
 
 export const maximum = merge(Mum((x, y) => x > y))
 

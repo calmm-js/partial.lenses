@@ -61,6 +61,31 @@ export const log = T.fnVar(T.string, T_optic)
 export const toFunction = T.fn([T_optic],
                                T_opticFnOf(T.or(T_applicative, T_functor)))
 
+export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
+                              T_monoid,
+                              T_traversal,
+                              T_maybeData],
+                             T.any)
+export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
+
+// deprecated
+export const foldMapOf = T.fn([T_monoid,
+                               T_traversal,
+                               T.fn([T_maybeData, T_index], T.any),
+                               T_maybeData],
+                              T.any)
+
+export const mergeAs = concatAs
+export const merge = concat
+
+export const foldl =
+  T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
+        T.any,
+        T_traversal,
+        T_maybeData],
+       T.any)
+export const foldr = foldl
+
 export const collect = T.fn([T_traversal, T_maybeData], T.array(T_data))
 export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
                                T_traversal,
@@ -73,36 +98,11 @@ export const collectMap = T.fn([T_traversal,
                                 T_maybeData],
                                T.array(T_data))
 
-export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
-                              T_monoid,
-                              T_traversal,
-                              T_maybeData],
-                             T.any)
-export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
-
-export const mergeAs = concatAs
-export const merge = concat
-
-// deprecated
-export const foldMapOf = T.fn([T_monoid,
-                               T_traversal,
-                               T.fn([T_maybeData, T_index], T.any),
-                               T_maybeData],
-                              T.any)
-
 export const maximum = T.fn([T_traversal, T_maybeData], T.any)
 export const minimum = T.fn([T_traversal, T_maybeData], T.any)
 
 export const product = T.fn([T_traversal, T_maybeData], T.number)
 export const sum = product
-
-export const foldl =
-  T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
-        T.any,
-        T_traversal,
-        T_maybeData],
-       T.any)
-export const foldr = foldl
 
 export const branch = T.fn([T.props(T_traversal)], T_traversal)
 

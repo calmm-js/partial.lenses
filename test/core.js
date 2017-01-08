@@ -31,6 +31,7 @@ export const choice = (...ls) => choose(x => {
 })
 export const choose = L.choose
 export const when = p => choose((x, i) => p(x, i) ? identity : zero)
+export const optional = when(isDefined)
 export const zero = L.zero
 
 export const lazy = L.lazy
@@ -41,15 +42,22 @@ export const toFunction = L.toFunction
 
 // Traversals
 
+export const concatAs = L.concatAs
+export const concat = concatAs(R.identity)
+
+export const foldMapOf = R.curry((m, t, f, s) => concatAs(f, m, t, s)) // deprecated
+
+export const merge = concat
+export const mergeAs = concatAs
+
+export const foldl = foldx(R.pipe)
+export const foldr = foldx(R.compose)
+
 export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
 export const collectAs = R.curry((to, t, s) =>
   concatAs(R.pipe(to, toCollect), Collect, t, s))
 
-export const concatAs = L.concatAs
-export const concat = concatAs(R.identity)
-
-export const merge = concat
-export const mergeAs = concatAs
+export const collectMap = R.curry((t, to, s) => collectAs(to, t, s)) // deprecated
 
 export const maximum = concat({empty: () => {}, concat: maxPartial})
 export const minimum = concat({empty: () => {}, concat: minPartial})
@@ -57,16 +65,9 @@ export const minimum = concat({empty: () => {}, concat: minPartial})
 export const product = concatDefined({empty: () => 1, concat: R.multiply})
 export const sum = concatDefined({empty: () => 0, concat: R.add})
 
-export const foldl = foldx(R.pipe)
-export const foldr = foldx(R.compose)
-
 export const branch = L.branch
 
-export const optional = when(isDefined)
 export const sequence = L.sequence
-
-export const collectMap = R.curry((t, to, s) => collectAs(to, t, s)) // deprecated
-export const foldMapOf = R.curry((m, t, f, s) => concatAs(f, m, t, s)) // deprecated
 
 // Lenses
 
