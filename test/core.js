@@ -8,11 +8,12 @@ const isDefined = x => x !== undefined
 const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
 const toCollect = x => isDefined(x) ? [x] : []
 
-const foldxOf = concat => R.curry((t, f, r, s) =>
-  foldMapOf({empty: () => R.identity, concat},
-            t, (x, i) => r => f(r, x, i), s)(r))
-const foldDefinedOf = m => R.curry((t, s) =>
-  foldMapOf(m, [t, optional], R.identity, s))
+const maxPartial = (x, y) => isDefined(x) && (!isDefined(y) || x > y) ? x : y
+const minPartial = (x, y) => isDefined(x) && (!isDefined(y) || x < y) ? x : y
+
+const foldx = concat => R.curry((f, r, t, s) =>
+  concatAs((x, i) => r => f(r, x, i), {empty: () => R.identity, concat}, t, s)(r))
+const concatDefined = m => R.curry((t, s) => concat(m, [t, optional], s))
 
 // Optics
 
@@ -41,22 +42,31 @@ export const toFunction = L.toFunction
 // Traversals
 
 export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
-export const collectMap = R.curry((t, to, s) =>
-  foldMapOf(Collect, t, R.pipe(to, toCollect), s))
+export const collectAs = R.curry((to, t, s) =>
+  concatAs(R.pipe(to, toCollect), Collect, t, s))
 
-export const foldOf = R.curry((m, t, s) => foldMapOf(m, t, R.identity, s))
-export const foldMapOf = L.foldMapOf
+export const concatAs = L.concatAs
+export const concat = concatAs(R.identity)
 
-export const productOf = foldDefinedOf({empty: () => 1, concat: R.multiply})
-export const sumOf = foldDefinedOf({empty: () => 0, concat: R.add})
+export const merge = concat
+export const mergeAs = concatAs
 
-export const foldlOf = foldxOf(R.pipe)
-export const foldrOf = foldxOf(R.compose)
+export const maximum = concat({empty: () => {}, concat: maxPartial})
+export const minimum = concat({empty: () => {}, concat: minPartial})
+
+export const product = concatDefined({empty: () => 1, concat: R.multiply})
+export const sum = concatDefined({empty: () => 0, concat: R.add})
+
+export const foldl = foldx(R.pipe)
+export const foldr = foldx(R.compose)
 
 export const branch = L.branch
 
 export const optional = when(isDefined)
 export const sequence = L.sequence
+
+export const collectMap = R.curry((t, to, s) => collectAs(to, t, s)) // deprecated
+export const foldMapOf = R.curry((m, t, f, s) => concatAs(f, m, t, s)) // deprecated
 
 // Lenses
 

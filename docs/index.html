@@ -74,14 +74,23 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </li>
 <li><a href="#traversals">Traversals</a><ul>
 <li><a href="#operations-on-traversals">Operations on traversals</a><ul>
+<li><a href="#L-concat" title="L.concat: Monoid a -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.concat(monoid, traversal, maybeData)</code></a></li>
+<li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></li>
+<li><del><a href="#L-foldMapOf" title="L.foldMapOf: Monoid r -&gt; PTraversal s a -&gt; ((Maybe a, Index) -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf(monoid, traversal, (maybeValue, index) =&gt; value, maybeData)</code></a></del></li>
+<li><a href="#L-merge" title="L.merge: Monoid a -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.merge(monoid, traversal, maybeData)</code></a></li>
+<li><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></li>
+</ul>
+</li>
+<li><a href="#folds-over-traversals">Folds over traversals</a><ul>
+<li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
+<li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
-<li><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; ((Maybe a, Index) -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></li>
-<li><a href="#L-foldMapOf" title="L.foldMapOf: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; ((Maybe a, Index) -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, (maybeValue, index) =&gt; value, maybeData)</code></a></li>
-<li><a href="#L-foldOf" title="L.foldOf: {empty: () -&gt; a, concat: (a, a) -&gt; a} -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.foldOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, maybeData)</code></a></li>
-<li><a href="#L-foldlOf" title="L.foldlOf: PTraversal s a -&gt; ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; Maybe s -&gt; r"><code>L.foldlOf(traversal, (value, maybeValue, index) =&gt; value, value, maybeData)</code></a></li>
-<li><a href="#L-foldrOf" title="L.foldrOf: PTraversal s a -&gt; ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; Maybe s -&gt; r"><code>L.foldrOf(traversal, (value, maybeValue, index) =&gt; value, value, maybeData)</code></a></li>
-<li><a href="#L-productOf" title="L.productOf: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.productOf(traversal, maybeData)</code></a></li>
-<li><a href="#L-sumOf" title="L.sumOf: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sumOf(traversal, maybeData)</code></a></li>
+<li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData)</code></a></li>
+<li><del><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; ((Maybe a, Index) -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></del></li>
+<li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></li>
+<li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></li>
+<li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></li>
+<li><a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData)</code></a></li>
 </ul>
 </li>
 <li><a href="#creating-new-traversals">Creating new traversals</a><ul>
@@ -346,10 +355,10 @@ with <a href="#L-choose"><code>L.defaults</code></a>.  We&#39;ll get back to tha
 <p>Now, we can use the above traversal to <a href="#L-collect"><code>collect</code></a> all the texts:</p>
 <pre><code class="hljs lang-js">L.collect(texts, sampleTexts)
 </code></pre>
-<p>More generally, we can <a href="#L-foldMapOf">map and fold</a> over texts.  For example, we
+<p>More generally, we can <a href="#L-concatAs">map and fold</a> over texts.  For example, we
 can compute the length of the longest text:</p>
 <pre><code class="hljs lang-js">var Max = {empty: () =&gt; 0, concat: Math.max}
-L.foldMapOf(Max, texts, R.length, sampleTexts)
+L.concatAs(R.length, Max, texts, sampleTexts)
 </code></pre>
 <p>Of course, we can also modify texts.  For example, we could uppercase all the
 titles:</p>
@@ -581,21 +590,116 @@ the <code>Functor</code> and <code>Applicative</code> algebras to allow for part
 traversals it is also possible, for example, to simply post compose optics
 with <a href="#L-optional"><code>L.optional</code></a> to eliminate <code>undefined</code> elements.</p>
 <h3 id="traversals">Traversals</h3>
-<p>A traversal operates over a collection of focuses that can
+<p>A traversal operates over a collection of focuses that can, for example,
 be
 <a href="#L-collect">collected</a>,
-<a href="#L-foldMapOf">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
+<a href="#L-concatAs">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
 and <a href="#L-remove">removed</a>.</p>
 <h4 id="operations-on-traversals">Operations on traversals</h4>
+<h5 id="-a-name-l-concat-a-contents-l-concat-monoid-traversal-maybedata-l-concat-l-concat-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-concat"></a> <a href="#contents">≡</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.concat(monoid, traversal, maybeData)</code></a></h5>
+<p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
+<code>empty</code> operations, over the elements focused on by the given traversal or lens
+<code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
+returned by <code>empty()</code> should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values focused on by <code>t</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
+L.concat(Sum, L.sequence, [1, 2, 3])
+</code></pre>
+<p>See also: <a href="#L-merge"><code>L.merge</code></a>.</p>
+<h5 id="-a-name-l-concatas-a-contents-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-concatAs"></a> <a href="#contents">≡</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></h5>
+<p><code>L.concatAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
+<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
+elements focused on by the given traversal or lens <code>t</code> from the given data
+structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
+should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values returned by <code>xMi2r</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.sequence, [1, 2, 3])
+</code></pre>
+<p>See also: <a href="#L-mergeAs"><code>L.mergeAs</code></a>.</p>
+<h5 id="-a-name-l-foldmapof-a-contents-l-foldmapof-monoid-traversal-maybevalue-index-value-maybedata-l-foldmapof-l-foldmapof-monoid-r-ptraversal-s-a-maybe-a-index-r-maybe-s-r-"><a name="L-foldMapOf"></a> <a href="#contents">≡</a> <a href="#L-foldMapOf" title="L.foldMapOf: Monoid r -&gt; PTraversal s a -&gt; ((Maybe a, Index) -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf(monoid, traversal, (maybeValue, index) =&gt; value, maybeData)</code></a></h5>
+<p><strong>NOTE: <code>L.foldMapOf</code> has been deprecated and will be removed.
+Use <a href="#L-concatAs"><code>L.concatAs</code></a> or <a href="#L-mergeAs"><code>L.mergeAs</code></a>.</strong></p>
+<p><code>L.foldMapOf({empty, concat}, t, xMi2r, s)</code> performs a map, using given function
+<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
+elements focused on by the given traversal or lens <code>t</code> from the given data
+structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
+should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values returned by <code>xMi2r</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.foldMapOf(Sum, L.sequence, x =&gt; x, [1, 2, 3])
+</code></pre>
+<h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <a href="#L-merge" title="L.merge: Monoid a -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.merge(monoid, traversal, maybeData)</code></a></h5>
+<p><code>L.merge({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
+<code>empty</code> operations, over the elements focused on by the given traversal or lens
+<code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
+returned by <code>empty()</code> should form
+a
+<a href="https://en.wikipedia.org/wiki/Monoid#Commutative_monoid">commutative</a> <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values focused on by <code>t</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
+L.merge(Sum, L.sequence, [1, 2, 3])
+</code></pre>
+<p>See also: <a href="#L-concat"><code>L.concat</code></a>.</p>
+<h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></h5>
+<p><code>L.mergeAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
+<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
+elements focused on by the given traversal or lens <code>t</code> from the given data
+structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
+should form
+a
+<a href="https://en.wikipedia.org/wiki/Monoid#Commutative_monoid">commutative</a> <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values returned by <code>xMi2r</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.mergeAs(x =&gt; x, Sum, L.sequence, [1, 2, 3])
+</code></pre>
+<p>See also: <a href="#L-concatAs"><code>L.concatAs</code></a>.</p>
+<h4 id="folds-over-traversals">Folds over traversals</h4>
 <h5 id="-a-name-l-collect-a-contents-l-collect-traversal-maybedata-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="L-collect"></a> <a href="#contents">≡</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
 <p><code>L.collect</code> returns an array of the defined elements focused on by the given
 traversal or lens from a data structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p>Note that <code>L.collect(t, s)</code> is equivalent
-to <a href="#L-collectMap"><code>L.collectMap(t, R.identity, s)</code></a>.</p>
+<p>Note that <code>L.collect</code> is equivalent
+to <a href="#L-collectAs"><code>L.collectAs(R.identity)</code></a>.</p>
+<h5 id="-a-name-l-collectas-a-contents-l-collectas-maybevalue-index-maybevalue-traversal-maybedata-l-collectas-l-collectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-b-"><a name="L-collectAs"></a> <a href="#contents">≡</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData)</code></a></h5>
+<p><code>L.collectAs</code> returns an array of the elements focused on by the given traversal
+or lens from a data structure and mapped by the given function to a defined
+value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
+that a partial <em>lens</em> always targets an element, but <code>L.collectAs</code> implicitly
+skips elements that are mapped to <code>undefined</code> by the given function.  Given a
+traversal, there can be any number of elements in the array returned by
+<code>L.collectMap</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<p><code>L.collectAs(toMaybe, traversal, maybeData)</code> is equivalent
+to
+<a href="#L-concatAs"><code>L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)</code></a> where
+<code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
+<pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
+var toCollect = x =&gt; x !== undefined ? [x] : []
+</code></pre>
+<p>So:</p>
+<pre><code class="hljs lang-js">L.concatAs(R.pipe(R.negate, toCollect),
+           Collect,
+           [&quot;xs&quot;, L.sequence, &quot;x&quot;],
+           {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
+above naïve implementation.</p>
 <h5 id="-a-name-l-collectmap-a-contents-l-collectmap-traversal-maybevalue-index-maybevalue-maybedata-l-collectmap-l-collectmap-ptraversal-s-a-maybe-a-index-maybe-b-maybe-s-b-"><a name="L-collectMap"></a> <a href="#contents">≡</a> <a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; ((Maybe a, Index) -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></h5>
+<p><strong>NOTE: <code>L.collectMap</code> has been deprecated and will be removed.
+Use <a href="#L-collectAs"><code>L.collectAs</code></a>.</strong></p>
 <p><code>L.collectMap</code> returns an array of the elements focused on by the given
 traversal or lens from a data structure and mapped by the given function to a
 defined value.  Given a lens, there will be 0 or 1 elements in the returned
@@ -608,65 +712,53 @@ Given a traversal, there can be any number of elements in the array returned by
 </code></pre>
 <p><code>L.collectMap(traversal, toMaybe, maybeData)</code> is equivalent
 to
-<a href="#L-foldMapOf"><code>L.foldMapOf(Collect, traversal, R.pipe(toMaybe, toCollect), maybeData)</code></a> where
+<a href="#L-concatAs"><code>L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)</code></a> where
 <code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
 <pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
 var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>So:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(Collect,
-            [&quot;xs&quot;, L.sequence, &quot;x&quot;],
-            R.pipe(R.negate, toCollect),
-            {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.concatAs(R.pipe(R.negate, toCollect),
+           Collect,
+           [&quot;xs&quot;, L.sequence, &quot;x&quot;],
+           {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collectMap</code> is optimized and faster than the
 above naïve implementation.</p>
-<h5 id="-a-name-l-foldmapof-a-contents-l-foldmapof-empty-value-concat-value-value-value-traversal-maybevalue-index-value-maybedata-l-foldmapof-l-foldmapof-empty-r-concat-r-r-r-ptraversal-s-a-maybe-a-index-r-maybe-s-r-"><a name="L-foldMapOf"></a> <a href="#contents">≡</a> <a href="#L-foldMapOf" title="L.foldMapOf: {empty: () -&gt; r, concat: (r, r) -&gt; r} -&gt; PTraversal s a -&gt; ((Maybe a, Index) -&gt; r) -&gt; Maybe s -&gt; r"><code>L.foldMapOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, (maybeValue, index) =&gt; value, maybeData)</code></a></h5>
-<p><code>L.foldMapOf({empty, concat}, t, xMi2r, s)</code> performs a map, using given function
-<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
-elements focused on by the given traversal or lens <code>t</code> from the given data
-structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
-should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values returned by <code>xMi2r</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
-L.foldMapOf(Sum, L.sequence, x =&gt; x, [1, 2, 3])
-</code></pre>
-<h5 id="-a-name-l-foldof-a-contents-l-foldof-empty-value-concat-value-value-value-traversal-maybedata-l-foldof-l-foldof-empty-a-concat-a-a-a-ptraversal-s-a-maybe-s-a-"><a name="L-foldOf"></a> <a href="#contents">≡</a> <a href="#L-foldOf" title="L.foldOf: {empty: () -&gt; a, concat: (a, a) -&gt; a} -&gt; PTraversal s a -&gt; Maybe s -&gt; a"><code>L.foldOf({empty: () =&gt; value, concat: (value, value) =&gt; value}, traversal, maybeData)</code></a></h5>
-<p><code>L.foldOf({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
-<code>empty</code> operations, over the elements focused on by the given traversal or lens
-<code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
-returned by <code>empty()</code> should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values focused on by <code>t</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.foldOf(Sum, L.sequence, [1, 2, 3])
-</code></pre>
-<h5 id="-a-name-l-foldlof-a-contents-l-foldlof-traversal-value-maybevalue-index-value-value-maybedata-l-foldlof-l-foldlof-ptraversal-s-a-r-maybe-a-index-r-r-maybe-s-r-"><a name="L-foldlOf"></a> <a href="#contents">≡</a> <a href="#L-foldlOf" title="L.foldlOf: PTraversal s a -&gt; ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; Maybe s -&gt; r"><code>L.foldlOf(traversal, (value, maybeValue, index) =&gt; value, value, maybeData)</code></a></h5>
-<p><code>L.foldlOf</code> performs a fold from left over the elements focused on by the given
+<h5 id="-a-name-l-foldl-a-contents-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldl"></a> <a href="#contents">≡</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></h5>
+<p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldlOf(L.sequence, (x, y) =&gt; x + y, 0, [1,2,3])
+<pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.sequence, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-foldrof-a-contents-l-foldrof-traversal-value-maybevalue-index-value-value-maybedata-l-foldrof-l-foldrof-ptraversal-s-a-r-maybe-a-index-r-r-maybe-s-r-"><a name="L-foldrOf"></a> <a href="#contents">≡</a> <a href="#L-foldrOf" title="L.foldrOf: PTraversal s a -&gt; ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; Maybe s -&gt; r"><code>L.foldrOf(traversal, (value, maybeValue, index) =&gt; value, value, maybeData)</code></a></h5>
-<p><code>L.foldrOf</code> performs a fold from right over the elements focused on by the given
+<h5 id="-a-name-l-foldr-a-contents-l-foldr-value-maybevalue-index-value-value-traversal-maybedata-l-foldr-l-foldr-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldr"></a> <a href="#contents">≡</a> <a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></h5>
+<p><code>L.foldr</code> performs a fold from right over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldrOf(L.sequence, (x, y) =&gt; x * y, 1, [1,2,3])
+<pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.sequence, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-productof-a-contents-l-productof-traversal-maybedata-l-productof-l-productof-ptraversal-s-number-maybe-s-number-"><a name="L-productOf"></a> <a href="#contents">≡</a> <a href="#L-productOf" title="L.productOf: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.productOf(traversal, maybeData)</code></a></h5>
-<p><code>L.productOf</code> computes the product of the optional numbers targeted by the
+<h5 id="-a-name-l-maximum-a-contents-l-maximum-traversal-maybedata-l-maximum-l-maximum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-maximum"></a> <a href="#contents">≡</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></h5>
+<p><code>L.maximum</code> computes a maximum of the optional ordered elements targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.productOf(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.maximum(L.sequence, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-sumof-a-contents-l-sumof-traversal-maybedata-l-sumof-l-sumof-ptraversal-s-number-maybe-s-number-"><a name="L-sumOf"></a> <a href="#contents">≡</a> <a href="#L-sumOf" title="L.sumOf: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sumOf(traversal, maybeData)</code></a></h5>
-<p><code>L.sumOf</code> computes the sum of the optional numbers targeted by the traversal.</p>
+<h5 id="-a-name-l-minimum-a-contents-l-minimum-traversal-maybedata-l-minimum-l-minimum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-minimum"></a> <a href="#contents">≡</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></h5>
+<p><code>L.minimum</code> computes a minimum of the optional ordered elements targeted by the
+traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.sumOf(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.minimum(L.sequence, [1,2,3])
+</code></pre>
+<h5 id="-a-name-l-product-a-contents-l-product-traversal-maybedata-l-product-l-product-ptraversal-s-number-maybe-s-number-"><a name="L-product"></a> <a href="#contents">≡</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></h5>
+<p><code>L.product</code> computes the product of the optional numbers targeted by the
+traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.product(L.sequence, [1,2,3])
+</code></pre>
+<h5 id="-a-name-l-sum-a-contents-l-sum-traversal-maybedata-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a name="L-sum"></a> <a href="#contents">≡</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData)</code></a></h5>
+<p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.sum(L.sequence, [1,2,3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
@@ -1163,7 +1255,7 @@ values of a BST:</p>
 <p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
 example:</p>
 <pre><code class="hljs lang-js">var Concat = {empty: () =&gt; &quot;&quot;, concat: R.concat}
-L.foldMapOf(Concat, values, R.toUpper, sampleBST)
+L.concatAs(R.toUpper, Concat, values, sampleBST)
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(values, R.toUpper, sampleBST)
 </code></pre>
@@ -1246,10 +1338,10 @@ var isoList = L.iso(fromList, toList)
 <pre><code class="hljs lang-js">L.remove([seqList, L.when(c =&gt; c &lt; &quot;i&quot;)], sampleList)
 </code></pre>
 <p>And:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(Concat,
-            [seqList, L.when(c =&gt; c &lt;= &quot;i&quot;)],
-            R.toUpper,
-            sampleList)
+<pre><code class="hljs lang-js">L.concatAs(R.toUpper,
+           Concat,
+           [seqList, L.when(c =&gt; c &lt;= &quot;i&quot;)],
+           sampleList)
 </code></pre>
 <h2 id="background">Background</h2>
 <h3 id="motivation">Motivation</h3>
@@ -1278,72 +1370,18 @@ When a part of a data structure is missing, an attempt to view it returns
 <code>undefined</code>.  When a part is missing, setting it to a defined value inserts the
 new part.  Setting an existing part to <code>undefined</code> removes it.</p>
 <h3 id="performance">Performance</h3>
-<p>Here are a few benchmarks on partial lenses (as <code>L</code> version 7.0.0) and some
-roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code> version
-0.22.1) and <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code> version
-0.1.1).</p>
-<pre><code class="hljs lang-jsx">L.foldMapOf(Sum, L.sequence, id, xs100) x  1,337,324 ops/sec ±0.45% (181 runs sampled)
-P.sumOf(P.traversed, xs100)             x     24,106 ops/sec ±0.74% (176 runs sampled)
-R.sum(xs100)                            x    150,500 ops/sec ±0.42% (183 runs sampled)
-
-L.collect(L.sequence, xs100)            x    365,753 ops/sec ±0.35% (186 runs sampled)
-
-L.modify(L.sequence, inc, xs100)        x  1,938,072 ops/sec ±0.41% (186 runs sampled)
-P.over(P.traversed, inc, xs100)         x     13,878 ops/sec ±0.40% (186 runs sampled)
-R.map(inc, xs100)                       x  1,888,542 ops/sec ±0.61% (179 runs sampled)
-
-L.get(1, xs)                            x 32,967,889 ops/sec ±0.57% (178 runs sampled)
-R.nth(1, xs)                            x  4,123,781 ops/sec ±0.49% (182 runs sampled)
-R.view(l_1, xs)                         x  2,076,189 ops/sec ±0.49% (184 runs sampled)
-
-L.set(1, 0, xs)                         x 23,596,499 ops/sec ±0.72% (174 runs sampled)
-R.update(1, 0, xs)                      x  8,546,924 ops/sec ±0.57% (181 runs sampled)
-R.set(l_1, 0, xs)                       x  1,404,358 ops/sec ±0.60% (185 runs sampled)
-
-L.get(&quot;y&quot;, xyz)                         x 29,682,533 ops/sec ±0.69% (180 runs sampled)
-R.prop(&quot;y&quot;, xyz)                        x 33,155,055 ops/sec ±0.60% (181 runs sampled)
-R.view(l_y, xyz)                        x  4,213,044 ops/sec ±0.64% (183 runs sampled)
-
-L.set(&quot;y&quot;, 0, xyz)                      x  7,793,075 ops/sec ±0.57% (180 runs sampled)
-R.assoc(&quot;y&quot;, 0, xyz)                    x 14,028,585 ops/sec ±0.63% (181 runs sampled)
-R.set(l_y, 0, xyz)                      x  2,123,106 ops/sec ±0.61% (179 runs sampled)
-
-L.get([0,&quot;x&quot;,0,&quot;y&quot;], axay)              x 14,814,258 ops/sec ±0.54% (183 runs sampled)
-R.view(l_0_x_0_y, axay)                 x    691,158 ops/sec ±0.52% (182 runs sampled)
-
-L.set([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)           x  2,937,521 ops/sec ±0.66% (181 runs sampled)
-R.set(l_0_x_0_y, 0, axay)               x    435,045 ops/sec ±0.42% (182 runs sampled)
-
-L.modify([0,&quot;x&quot;,0,&quot;y&quot;], inc, axay)      x  2,993,505 ops/sec ±0.48% (185 runs sampled)
-R.over(l_0_x_0_y, inc, axay)            x    455,403 ops/sec ±0.49% (179 runs sampled)
-
-L.remove(1, xs)                         x 23,924,497 ops/sec ±0.65% (180 runs sampled)
-R.remove(1, 1, xs)                      x  7,988,537 ops/sec ±0.45% (185 runs sampled)
-
-L.remove(&quot;y&quot;, xyz)                      x 13,408,665 ops/sec ±0.59% (181 runs sampled)
-R.dissoc(&quot;y&quot;, xyz)                      x 14,958,407 ops/sec ±0.57% (182 runs sampled)
-
-L.get([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)              x 15,010,201 ops/sec ±0.50% (179 runs sampled)
-R.path([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)             x 15,048,600 ops/sec ±0.51% (179 runs sampled)
-R.view(l_xyz, xyzn)                     x  3,671,135 ops/sec ±0.40% (188 runs sampled)
-R.view(l_x_y_z, xyzn)                   x  1,415,362 ops/sec ±0.54% (183 runs sampled)
-
-L.set([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)           x  2,657,421 ops/sec ±0.53% (179 runs sampled)
-R.assocPath([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)     x  2,486,357 ops/sec ±0.48% (187 runs sampled)
-R.set(l_xyz, 0, xyzn)                   x  1,218,885 ops/sec ±0.61% (185 runs sampled)
-R.set(l_x_y_z, 0, xyzn)                 x    855,619 ops/sec ±0.47% (185 runs sampled)
-
-L.remove(50, xs100)                     x  4,955,091 ops/sec ±0.44% (183 runs sampled)
-R.remove(50, 1, xs100)                  x  1,011,525 ops/sec ±0.36% (185 runs sampled)
-
-L.set(50, 2, xs100)                     x  4,885,978 ops/sec ±0.43% (177 runs sampled)
-R.set(l_50, 2, xs100)                   x    792,095 ops/sec ±0.47% (188 runs sampled)
-R.update(50, 2, xs100)                  x  1,693,000 ops/sec ±0.45% (178 runs sampled)
+<p>Here are a few benchmark results on partial lenses (as <code>L</code> version 7.2.0) and
+some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
+version 0.23.0), <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code>
+version 0.1.1), and <a href="https://github.com/flunc/optics">Flunc Optics</a> (as <code>O</code>
+version 0.0.2).  As always with benchmarks, you should take these numbers with a
+pinch of salt and preferably try and measure your actual use cases!</p>
+<pre><code class="hljs lang-jsx">
 </code></pre>
-<p>At the time of writing, various operations on <em>partial lenses have been
-optimized for common cases</em>, but there is definitely a lot of room for
-improvement.  The goal is to make partial lenses fast enough that performance
-isn&#39;t the reason why you might not want to use them.</p>
+<p>Various operations on <em>partial lenses have been optimized for common cases</em>, but
+there is definitely a lot of room for improvement.  The goal is to make partial
+lenses fast enough that performance isn&#39;t the reason why you might not want to
+use them.</p>
 <p>See <a href="https://github.com/calmm-js/partial.lenses/blob/master/bench/bench.js">bench.js</a> for details.</p>
 <h3 id="lenses-all-the-way">Lenses all the way</h3>
 <p>As said in the first sentence of this document, lenses are convenient for

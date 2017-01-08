@@ -1,13 +1,12 @@
 import {
-  array0,
-  assert,
   acyclicEqualsU,
   always,
   applyU,
+  arityN,
+  array0,
   assocPartialU,
-  curry2,
-  curry3,
-  curry4,
+  curry,
+  curryN,
   dissocPartialU,
   id,
   isArray,
@@ -20,6 +19,10 @@ import {
 //
 
 function pair(x0, x1) {return [x0, x1]}
+
+const flip = bop => (x, y) => bop(y, x)
+
+const unto = c => x => isDefined(x) ? x : c
 
 //
 
@@ -39,28 +42,29 @@ const Ident = Applicative(applyU, id, applyU)
 
 const Const = {map: sndU}
 
-const ConstFlip = (empty, tacnoc) => Applicative(sndU, always(empty), tacnoc)
+const TacnocOf = (empty, tacnoc) => Applicative(sndU, always(empty), tacnoc)
 
-function ConstOf(m) {
-  const concat = m.concat,
-        empty = m.empty
-  return ConstFlip(empty(), (l, r) => concat(r, l))
-}
+const Monoid = (empty, concat) => ({empty: () => empty, concat})
+
+const Mum = ord =>
+  Monoid(void 0, (y, x) => isDefined(x) && (!isDefined(y) || ord(x, y)) ? x : y)
 
 //
 
 const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 
+const constAs = toConst => curryN(4, (xMi2y, m) => {
+  const C = toConst(m)
+  return (t, s) => run(t, C, xMi2y, s)
+})
+
 //
 
-export function mkFoldBy(empty, tacnoc, by) {
-  const a = ConstFlip(empty, tacnoc)
-  return curry2((t, s) => run(t, a, by, s))
+function reqApplicative(f) {
+  if (process.env.NODE_ENV !== "production" && !f)
+    throw new Error("Traversals require an applicative.")
+  return f
 }
-
-//
-
-const reqApplicative = f => assert(f, id, "Traversals require an applicative.")
 
 //
 
@@ -93,23 +97,20 @@ function toArray(n) {
   }
 }
 
-function foldlRec(f, r, n) {
+function foldRec(f, r, n) {
   while (isConcat(n)) {
     const l = n.l
     n = n.r
     r = isConcat(l)
-      ? foldlRec(f, foldlRec(f, r, l.l), l.r)
+      ? foldRec(f, foldRec(f, r, l.l), l.r)
       : f(r, l[0], l[1])
   }
   return f(r, n[0], n[1])
 }
 
-const foldl = (f, r, n) => isDefined(n) ? foldlRec(f, r, n) : r
+const fold = (f, r, n) => isDefined(n) ? foldRec(f, r, n) : r
 
-const Collect = ConstFlip(void 0, ap)
-
-const collectMapU = (t, xi2y, s) =>
-  toArray(run(t, Collect, xi2y, s)) || []
+const Collect = TacnocOf(void 0, ap)
 
 //
 
@@ -192,7 +193,11 @@ const funIndex = i => (F, xi2yF, xs, _) =>
 
 const seemsOptic = x => typeof x === "function" && x.length === 4
 
-const optic = o => assert(o, seemsOptic, "Expecting an optic.")
+function optic(o) {
+  if (process.env.NODE_ENV !== "production" && !seemsOptic(o))
+    throw new Error("Expecting an optic.")
+  return o
+}
 
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
@@ -315,7 +320,7 @@ function branchOn(keys, vals) {
 const normalizer = xi2x => (F, xi2yF, x, i) =>
   (0,F.map)(x => xi2x(x, i), xi2yF(xi2x(x, i), i))
 
-const replacer = (inn, out) => x => acyclicEqualsU(x, inn) ? out : x
+const replaced = (inn, out, x) => acyclicEqualsU(x, inn) ? out : x
 
 function findIndex(xi2b, xs) {
   for (let i=0, n=xs.length; i<n; ++i)
@@ -342,7 +347,7 @@ export function toFunction(o) {
 
 // Operations on optics
 
-export const modify = curry3((o, xi2x, s) => {
+export const modify = curry((o, xi2x, s) => {
   switch (typeof o) {
     case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
     case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
@@ -351,9 +356,9 @@ export const modify = curry3((o, xi2x, s) => {
   }
 })
 
-export const remove = curry2((o, s) => setU(o, void 0, s))
+export const remove = curry((o, s) => setU(o, void 0, s))
 
-export const set = curry3(setU)
+export const set = curry(setU)
 
 // Nesting
 
@@ -372,7 +377,7 @@ export function compose() {
 
 // Querying
 
-export const chain = curry2((xi2yO, xO) =>
+export const chain = curry((xi2yO, xO) =>
   [xO, choose((xM, i) => isDefined(xM) ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
@@ -407,30 +412,42 @@ export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
 
 // Operations on traversals
 
-export const collect = curry2((t, s) => collectMapU(t, id, s))
+export const collectAs = curry((xi2y, t, s) =>
+  toArray(run(t, Collect, xi2y, s)) || [])
 
-export const collectMap = curry3(collectMapU)
+export const collect = collectAs(id)
 
-export const foldMapOf =
-  curry4((m, t, xMi2y, s) => run(t, ConstOf(m), xMi2y, s))
+export const collectMap = curry((t, xi2y, s) => collectAs(xi2y, t, s)) // deprecated
 
-export const foldOf = curry3((m, t, s) => run(t, ConstOf(m), id, s))
+export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
 
-export const productOf = mkFoldBy(1, (y, x) => x * y, replacer(void 0, 1))
+export const concat = concatAs(id)
 
-export const sumOf = mkFoldBy(0, (y, x) => x + y, replacer(void 0, 0))
+export const foldMapOf = curry((m, t, xMi2y, s) => concatAs(xMi2y, m, t, s)) // deprecated
 
-export const foldlOf = curry4((t, f, r, s) =>
-  foldl(f, r, run(t, Collect, pair, s)))
+export const foldl = curry((f, r, t, s) =>
+  fold(f, r, run(t, Collect, pair, s)))
 
-export const foldrOf = curry4((t, f, r, s) => {
-  const xs = collectMapU(t, pair, s)
+export const foldr = curry((f, r, t, s) => {
+  const xs = collectAs(pair, t, s)
   for (let i=xs.length-1; 0<=i; --i) {
     const x = xs[i]
     r = f(r, x[0], x[1])
   }
   return r
 })
+
+export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
+
+export const merge = mergeAs(id)
+
+export const maximum = merge(Mum((x, y) => x > y))
+
+export const minimum = merge(Mum((x, y) => x < y))
+
+export const product = mergeAs(unto(1), Monoid(1, (y, x) => x * y))
+
+export const sum = mergeAs(unto(0), Monoid(0, (y, x) => x + y))
 
 // Creating new traversals
 
@@ -458,11 +475,11 @@ export function sequence(A, xi2yA, xs, _) {
 
 // Operations on lenses
 
-export const get = curry2(getU)
+export const get = curry(getU)
 
 // Creating new lenses
 
-export const lens = curry2((get, set) => (F, xi2yF, x, i) =>
+export const lens = curry((get, set) => (F, xi2yF, x, i) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
 // Computing derived props
@@ -498,12 +515,14 @@ export const augment = template => lens(
 
 // Enforcing invariants
 
-export const defaults = out => (F, xi2yF, x, i) =>
-  (0,F.map)(replacer(out), xi2yF(isDefined(x) ? x : out, i))
+export const defaults = out => {
+  const o2u = x => replaced(out, void 0, x)
+  return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(isDefined(x) ? x : out, i))
+}
 
 export const required = inn => replace(inn, void 0)
 
-export const define = v => normalizer(x => isDefined(x) ? x : v)
+export const define = v => normalizer(unto(v))
 
 export const normalize = xi2x =>
   normalizer((x, i) => isDefined(x) ? xi2x(x, i) : void 0)
@@ -538,13 +557,19 @@ export function findWith(...ls) {
   return [find(x => isDefined(getU(lls, x))), lls]
 }
 
-export const index = x =>
-  assert(x, isIndex, "`index` expects a non-negative integer.")
+export function index(x) {
+  if (process.env.NODE_ENV !== "production" && !isIndex(x))
+    throw new Error("`index` expects a non-negative integer.")
+  return x
+}
 
 // Lensing objects
 
-export const prop = x =>
-  assert(x, isProp, "`prop` expects a string.")
+export function prop(x) {
+  if (process.env.NODE_ENV !== "production" && !isProp(x))
+    throw new Error("`prop` expects a string.")
+  return x
+}
 
 export function props() {
   const n = arguments.length, template = {}
@@ -561,7 +586,7 @@ export const valueOr = v => (_F, xi2yF, x, i) =>
 // Adapting to data
 
 export const orElse =
-  curry2((d, l) => choose(x => isDefined(getU(l, x)) ? l : d))
+  curry((d, l) => choose(x => isDefined(getU(l, x)) ? l : d))
 
 // Read-only mapping
 
@@ -575,17 +600,19 @@ export const just = x => to(always(x))
 export const pick = template => (F, xi2yF, x, i) =>
   (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 
-export const replace = curry2((inn, out) => (F, xi2yF, x, i) =>
-  (0,F.map)(replacer(out, inn), xi2yF(replacer(inn, out)(x), i)))
+export const replace = curry((inn, out) => {
+  const o2i = x => replaced(out, inn, x)
+  return (F, xi2yF, x, i) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
+})
 
 // Operations on isomorphisms
 
-export const getInverse = curry2(setU)
+export const getInverse = arityN(2, setU)
 
 // Creating new isomorphisms
 
 export const iso =
-  curry2((bwd, fwd) => (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
+  curry((bwd, fwd) => (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
 // Isomorphisms and combinators
 

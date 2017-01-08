@@ -430,20 +430,38 @@ describe("L.foldMapOf", () => {
          6)
 })
 
+describe("L.concatAs", () => {
+  testEq('L.concatAs(x => x+1, Sum, L.sequence, null)', 0)
+  testEq('L.concatAs(x => x+1, Sum, [L.sequence], [])', 0)
+  testEq('L.concatAs(x => x+1, Sum, L.sequence, [1, 2, 3])', 9)
+  testEq(`L.concatAs(x => x+1,
+                     Sum,
+                     [L.sequence, "x", L.optional],
+                     [{x:1}, {y:2}, {x:3}])`,
+         6)
+})
+
 describe("folds", () => {
-  testEq(`X.foldOf(Sum, X.sequence, a100000)`, 100000)
-  testEq(`L.sumOf([L.sequence, "x"], undefined)`, 0)
-  testEq(`L.productOf([L.sequence, "x"], undefined)`, 1)
-  testEq(`L.sumOf([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
-  testEq(`L.productOf([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
-  testEq(`L.foldrOf([L.sequence, L.sequence], (x,y) => [x,y], 0, [])`, 0)
-  testEq(`L.foldlOf([L.sequence, L.sequence], (x,y) => [x,y], 0, [])`, 0)
-  testEq(`L.foldrOf([L.sequence, L.sequence], (x,y) => [x,y], 0, [[1,2],[3]])`,
+  testEq(`X.concat(Sum, X.sequence, a100000)`, 100000)
+  testEq(`X.concatAs(id, Sum, X.sequence, a100000)`, 100000)
+  testEq(`X.merge(Sum, X.sequence, a100000)`, 100000)
+  testEq(`X.mergeAs(id, Sum, X.sequence, a100000)`, 100000)
+  testEq(`L.maximum([L.sequence, "x"], [])`, undefined)
+  testEq(`L.minimum([L.sequence, "x"], [])`, undefined)
+  testEq(`L.maximum(L.sequence, [1,2,3])`, 3)
+  testEq(`L.minimum(L.sequence, [1,2,3])`, 1)
+  testEq(`L.sum([L.sequence, "x"], undefined)`, 0)
+  testEq(`L.product([L.sequence, "x"], undefined)`, 1)
+  testEq(`L.sum([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
+  testEq(`L.product([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
+  testEq(`L.foldr((x,y) => [x,y], 0, [L.sequence, L.sequence], [])`, 0)
+  testEq(`L.foldl((x,y) => [x,y], 0, [L.sequence, L.sequence], [])`, 0)
+  testEq(`L.foldr((x,y) => [x,y], 0, [L.sequence, L.sequence], [[1,2],[3]])`,
          [[[0,3],2],1])
-  testEq(`L.foldlOf([L.sequence, L.sequence], (x,y) => [x,y], 0, [[1,2],[3]])`,
+  testEq(`L.foldl((x,y) => [x,y], 0, [L.sequence, L.sequence], [[1,2],[3]])`,
          [[[0,1],2],3])
-  ;['foldlOf', 'foldrOf'].forEach(fold => {
-    testEq(`X.${fold}(X.sequence, (x,y) => x+y, 0, a100000)`,
+  ;['foldl', 'foldr'].forEach(fold => {
+    testEq(`X.${fold}((x,y) => x+y, 0, X.sequence, a100000)`,
            100000)
   })
 })
