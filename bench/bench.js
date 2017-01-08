@@ -13,6 +13,7 @@ const axay = [{x: [{y: 1}]}]
 const xs100 = Array(100).fill(1)
 const xs1000 = Array(1000).fill(1)
 const xs10000 = Array(10000).fill(1)
+const xs100000 = Array(100000).fill(1)
 const ids = R.range(0, 10000).map(i => ({id: i, value: i}))
 
 const xsss100 = Array(100).fill([[1]])
@@ -105,6 +106,9 @@ R.forEach(bs => {
     `L.foldr(add, 0, L.sequence, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
   ], [
+    `L.foldr(add, 0, L.sequence, xs100000)`,
+    `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`,
+  ], [
     `L.foldl(add, 0, L.sequence, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
   ], [
@@ -113,6 +117,9 @@ R.forEach(bs => {
     'O.Fold.sumOf(O.Traversal.traversed, xs100)',
     'P.sumOf(P.traversed, xs100)',
     'R.sum(xs100)',
+  ], [
+    'L.maximum(L.sequence, xs100)',
+    'O.Fold.maximumOf(O.Traversal.traversed, xs100)',
   ], [
     'L.merge(Sum, [L.sequence, L.sequence, L.sequence], xsss100)',
     'L.sum([L.sequence, L.sequence, L.sequence], xsss100)',
@@ -256,7 +263,7 @@ function complete() {
                         R.map(R.prop("hz")),
                         R.reduce(R.max, 0))
   bs.forEach(b => {
-    console.log(sprintf('%12s/s %7.2fx  %s',
+    console.log(sprintf('%12s/s %8.2fx  %s',
                         Math.round(b.hz).toLocaleString(),
                         fastest/b.hz, b.name))
   })
