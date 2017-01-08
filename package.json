@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "infestines": "^0.3.0"
+    "infestines": "^0.3.1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
