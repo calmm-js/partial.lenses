@@ -128,16 +128,11 @@ describe('L.get', () => {
 })
 
 describe('L.index', () => {
-  if (process.env.NODE_ENV !== "production") {
-    testThrows('L.index("x")')
-    testThrows('L.index(-1)')
-    testThrows('L.index()')
-  }
   testEq('L.remove(1, "lol")', undefined)
   testEq('L.set(-11, 0, [])', undefined)
   testEq('L.set(-11, 0, [1])', [1])
   testEq('L.set(-1, 0, "lol")', undefined)
-  testEq('L.modify(1, x => x + 1, [1, 2])', [1, 3])
+  testEq('L.modify(L.index(1), x => x + 1, [1, 2])', [1, 3])
   testEq('L.set([0], undefined, [null])', undefined)
   testEq('L.set([L.required([]), 0], undefined, [null])', [])
   testEq('L.set([1], 4, [1, 2, 3])', [1, 4, 3])
@@ -160,16 +155,11 @@ describe('L.index', () => {
 })
 
 describe('L.prop', () => {
-  if (process.env.NODE_ENV !== "production") {
-    testThrows('L.prop(2)')
-    testThrows('L.prop(x => x)')
-    testThrows('L.prop()')
-  }
   testEq('Object.keys(L.set("y", 1, {x: 2, z: 3}))', ["x", "z", "y"])
   testEq('Object.keys(L.set("y", 1, {x: 2, y: 0, z: 3}))', ["x", "y", "z"])
   testEq('Object.keys(L.remove("y", {z: 2, y: 0, x: 3}))', ["z", "x"])
   testEq('L.modify("x", x => x + 1, {x: 1})', {x: 2})
-  testEq('L.set(["x"], undefined, {x: 1})', undefined)
+  testEq('L.set([L.prop("x")], undefined, {x: 1})', undefined)
   testEq('L.set(["x", L.required(null)], undefined, {x: 1})', {x: null})
   testEq('L.set(["x", L.required(null)], 2, {x: 1})', {x: 2})
   testEq('L.remove("y", {x: 1, y: 2})', {x: 1})
@@ -544,6 +534,22 @@ describe("L.toFunction", () => {
   testEq("typeof L.toFunction('x')", "function")
   testEq("typeof L.toFunction(L.find(R.identity))", "function")
 })
+
+if (process.env.NODE_ENV !== "production") {
+  describe("debug", () => {
+    testThrows('L.index("x")')
+    testThrows('L.index(-1)')
+    testThrows('L.index()')
+
+    testThrows('L.prop(2)')
+    testThrows('L.prop(x => x)')
+    testThrows('L.prop()')
+
+    testThrows('L.get(L.sequence, [])')
+
+    testThrows('L.get(x => x, 0)')
+  })
+}
 
 describe("BST", () => {
   const randomInt = (min, max) =>
