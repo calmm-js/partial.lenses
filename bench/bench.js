@@ -263,7 +263,7 @@ function complete() {
                         R.map(R.prop("hz")),
                         R.reduce(R.max, 0))
   bs.forEach(b => {
-    console.log(sprintf('%12s/s %8.2fx  %s',
+    console.log(sprintf('%12s/s %8.2fx   %s',
                         Math.round(b.hz).toLocaleString(),
                         fastest/b.hz, b.name))
   })
