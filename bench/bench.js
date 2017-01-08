@@ -102,20 +102,20 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.foldrOf(L.sequence, add, 0, xs100)`,
+    `L.foldr(add, 0, L.sequence, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
   ], [
-    `L.foldlOf(L.sequence, add, 0, xs100)`,
+    `L.foldl(add, 0, L.sequence, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
   ], [
-    'L.foldMapOf(Sum, L.sequence, id, xs100)',
-    'L.sumOf(L.sequence, xs100)',
+    'L.merge(Sum, L.sequence, xs100)',
+    'L.sum(L.sequence, xs100)',
     'O.Fold.sumOf(O.Traversal.traversed, xs100)',
     'P.sumOf(P.traversed, xs100)',
     'R.sum(xs100)',
   ], [
-    'L.foldMapOf(Sum, [L.sequence, L.sequence, L.sequence], id, xsss100)',
-    'L.sumOf([L.sequence, L.sequence, L.sequence], xsss100)',
+    'L.merge(Sum, [L.sequence, L.sequence, L.sequence], xsss100)',
+    'L.sum([L.sequence, L.sequence, L.sequence], xsss100)',
     `O.Fold.sumOf(R.compose(O.Traversal.traversed,
                             O.Traversal.traversed,
                             O.Traversal.traversed),
@@ -232,7 +232,7 @@ R.forEach(bs => {
     'L.get(L.valueOr(1), null)',
     'L.get(L.valueOr(1), undefined)',
   ], [
-    'L.foldMapOf(List, L.sequence, toList, xs100)',
+    'L.concatAs(toList, List, L.sequence, xs100)',
   ], [
     'L.modify(flatten, inc, xsss100)',
   ], [
