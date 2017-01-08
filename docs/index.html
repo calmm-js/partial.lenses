@@ -645,8 +645,7 @@ a
 <a href="https://en.wikipedia.org/wiki/Monoid#Commutative_monoid">commutative</a> <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values focused on by <code>t</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
-L.merge(Sum, L.sequence, [1, 2, 3])
+<pre><code class="hljs lang-js">L.merge(Sum, L.sequence, [1, 2, 3])
 </code></pre>
 <p>See also: <a href="#L-concat"><code>L.concat</code></a>.</p>
 <h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></h5>
