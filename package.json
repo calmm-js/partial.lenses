@@ -5,14 +5,15 @@
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
-    "dist": "babel src --source-maps inline --out-dir lib",
+    "dist": "npm run dist:bowerify & npm run dist:commonjs & wait",
+    "dist:bowerify": "NODE_ENV=dev browserify src/partial.lenses.js -t envify -t babelify --no-bundle-external -d -s L -o dist/partial.lenses.js",
+    "dist:commonjs": "babel src --source-maps inline --out-dir lib",
     "docs": "./scripts/generate-docs",
     "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
-    "test": "nyc mocha",
-    "bowerify": "NODE_ENV=production browserify src/partial.lenses.js -t envify -t babelify --no-bundle-external -d -s partialLenses -o dist/partial.lenses.js"
+    "test": "nyc mocha"
   },
   "repository": {
     "type": "git",
