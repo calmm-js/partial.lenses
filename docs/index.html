@@ -1395,8 +1395,9 @@ special <code>Maybe</code> types, but the benefits do not seem worth the trouble
 all, <code>undefined</code> already exists in JavaScript and is not a valid JSON value.
 Inventing a new value to represent nothingness doesn&#39;t seem to add much.  OTOH,
 wrapping values with <code>Just</code> objects introduces a significant performance
-overhead due to extra allocations.  Operations with optics do not necessarily
-require large numbers of allocations and can be made highly efficient.</p>
+overhead due to extra allocations.  Operations with optics do not otherwise
+necessarily require large numbers of allocations and can be made highly
+efficient.</p>
 <p>Not having an explicit <code>Just</code> object means that dealing with values such as
 <code>Just Nothing</code> requires special consideration.</p>
 <h4 id="allowing-strings-l-prop-and-integers-l-index-as-optics">Allowing <a href="#L-prop">strings</a> and <a href="#L-index">integers</a> as optics</h4>
@@ -1409,11 +1410,12 @@ structures.</p>
 implementation needs to be careful to deal with them at any point a user defined
 value needs to be interpreted as an optic.</p>
 <h4 id="treating-an-array-of-optics-as-a-composition-l-compose-of-optics">Treating an <a href="#L-compose">array of optics as a composition</a> of optics</h4>
-<p>Aside from the brevity, this allows the library to be optimized to deal with
-simple paths highly efficiently and eliminate the need for separate primitives
+<p>Aside from the brevity, treating an array of optics as a composition allows the
+library to be optimized to deal with simple paths highly efficiently and
+eliminate the need for separate primitives
 like <a href="http://ramdajs.com/docs/#assocPath"><code>assocPath</code></a>
 and <a href="http://ramdajs.com/docs/#dissocPath"><code>dissocPath</code></a> for performance reasons.
-Client code can also manipulated such simple paths as data.</p>
+Client code can also manipulate such simple paths as data.</p>
 <h4 id="applicatives">Applicatives</h4>
 <p>One interesting consequence of partiality is that it becomes possible
 to <a href="#isomorphisms">invert isomorphisms</a> without explicitly making it possible to

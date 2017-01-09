@@ -2075,8 +2075,9 @@ special `Maybe` types, but the benefits do not seem worth the trouble.  First of
 all, `undefined` already exists in JavaScript and is not a valid JSON value.
 Inventing a new value to represent nothingness doesn't seem to add much.  OTOH,
 wrapping values with `Just` objects introduces a significant performance
-overhead due to extra allocations.  Operations with optics do not necessarily
-require large numbers of allocations and can be made highly efficient.
+overhead due to extra allocations.  Operations with optics do not otherwise
+necessarily require large numbers of allocations and can be made highly
+efficient.
 
 Not having an explicit `Just` object means that dealing with values such as
 `Just Nothing` requires special consideration.
@@ -2095,11 +2096,12 @@ value needs to be interpreted as an optic.
 
 #### Treating an [array of optics as a composition](#L-compose) of optics
 
-Aside from the brevity, this allows the library to be optimized to deal with
-simple paths highly efficiently and eliminate the need for separate primitives
+Aside from the brevity, treating an array of optics as a composition allows the
+library to be optimized to deal with simple paths highly efficiently and
+eliminate the need for separate primitives
 like [`assocPath`](http://ramdajs.com/docs/#assocPath)
 and [`dissocPath`](http://ramdajs.com/docs/#dissocPath) for performance reasons.
-Client code can also manipulated such simple paths as data.
+Client code can also manipulate such simple paths as data.
 
 #### Applicatives
 
