@@ -105,12 +105,15 @@ R.forEach(bs => {
   [
     `L.foldr(add, 0, L.sequence, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
+    `R.reduceRight(add, 0, xs100)`,
   ], [
     `L.foldr(add, 0, L.sequence, xs100000)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`,
+    `R.reduceRight(add, 0, xs100000)`,
   ], [
     `L.foldl(add, 0, L.sequence, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
+    `R.reduce(add, 0, xs100)`,
   ], [
     'L.merge(Sum, L.sequence, xs100)',
     'L.sum(L.sequence, xs100)',
