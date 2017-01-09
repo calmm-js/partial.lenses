@@ -15,5 +15,5 @@
   "dependencies": {
     "infestines": "^0.3.1"
   },
-  "ignore": ["*", "!LICENSE.md", "!dist/*"]
+  "ignore": ["*", "!*.md", "!dist/*"]
 }
