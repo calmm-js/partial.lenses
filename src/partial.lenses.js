@@ -135,8 +135,6 @@ const object0ToUndefined = o => {
 
 //
 
-const isProp = x => typeof x === "string"
-
 const getProp = (k, o) => isObject(o) ? o[k] : void 0
 
 const setProp = (k, v, o) =>
@@ -146,8 +144,6 @@ const funProp = k => (F, xi2yF, x, _) =>
   (0,F.map)(v => setProp(k, v, x), xi2yF(getProp(k, x), k))
 
 //
-
-const isIndex = x => Number.isInteger(x) && 0 <= x
 
 const nulls = n => Array(n).fill(null)
 
@@ -572,7 +568,7 @@ export function findWith(...ls) {
 }
 
 export function index(x) {
-  if (process.env.NODE_ENV !== "production" && !isIndex(x))
+  if (process.env.NODE_ENV !== "production" && !(Number.isInteger(x) && 0 <= x))
     throw new Error("`index` expects a non-negative integer.")
   return x
 }
@@ -580,7 +576,7 @@ export function index(x) {
 // Lensing objects
 
 export function prop(x) {
-  if (process.env.NODE_ENV !== "production" && !isProp(x))
+  if (process.env.NODE_ENV !== "production" && typeof x !== "string")
     throw new Error("`prop` expects a string.")
   return x
 }
