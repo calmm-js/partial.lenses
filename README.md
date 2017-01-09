@@ -2091,7 +2091,7 @@ applications that create large numbers of lenses to address elements in data
 structures.
 
 The downside of allowing such special values as optics is that the internal
-implementation needs to be careful to deal with them at any point a user defined
+implementation needs to be careful to deal with them at any point a user given
 value needs to be interpreted as an optic.
 
 #### Treating an [array of optics as a composition](#L-compose) of optics
