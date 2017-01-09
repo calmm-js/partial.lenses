@@ -6,8 +6,8 @@
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
     "dist": "npm run dist:bowerify & npm run dist:bowerify.min & npm run dist:commonjs & wait",
-    "dist:bowerify": "    NODE_ENV=dev        browserify src/partial.lenses.js -t babelify --no-bundle-external -d -s L -g envify              -o dist/partial.lenses.js",
-    "dist:bowerify.min": "NODE_ENV=production browserify src/partial.lenses.js -t babelify --no-bundle-external    -s L -g envify -g uglifyify -o dist/partial.lenses.min.js",
+    "dist:bowerify": "    NODE_ENV=dev        browserify src/partial.lenses.js -t babelify --no-bundle-external -d -s L -g envify                               > dist/partial.lenses.js",
+    "dist:bowerify.min": "NODE_ENV=production browserify src/partial.lenses.js -t babelify --no-bundle-external    -s L -g envify -g uglifyify | uglifyjs -m -c > dist/partial.lenses.min.js",
     "dist:commonjs": "babel src --source-maps inline --out-dir lib",
     "docs": "./scripts/generate-docs",
     "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
@@ -61,8 +61,8 @@
     "babel-polyfill": "^6.20.0",
     "babel-preset-es2015": "^6.18.0",
     "babel-register": "^6.18.0",
-    "benchmark": "^2.1.3",
     "babelify": "^7.3.0",
+    "benchmark": "^2.1.3",
     "browserify": "^13.3.0",
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
@@ -76,6 +76,7 @@
     "ramda": "^0.23.0",
     "ramda-lens": "^0.1.1",
     "sprintf-js": "^1.0.3",
+    "uglify-js": "^2.7.5",
     "uglifyify": "^3.0.4"
   }
 }
