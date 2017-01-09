@@ -60,10 +60,10 @@ const constAs = toConst => curryN(4, (xMi2y, m) => {
 
 //
 
-function reqApplicative(f) {
-  if (process.env.NODE_ENV !== "production" && !f)
+function of(f) {
+  if (process.env.NODE_ENV !== "production" && !f.of)
     throw new Error("Traversals require an applicative.")
-  return f
+  return f.of
 }
 
 //
@@ -116,7 +116,7 @@ const Collect = TacnocOf(void 0, ap)
 
 function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
-  let s = reqApplicative(A.of)(void 0), i = xs.length
+  let s = of(A)(void 0), i = xs.length
   while (i--)
     s = ap(map(rconcat, s), xi2yA(xs[i], i))
   return map(toArray, s)
@@ -187,10 +187,9 @@ const funIndex = i => (F, xi2yF, xs, _) =>
 
 //
 
-const seemsOptic = x => typeof x === "function" && x.length === 4
-
 function optic(o) {
-  if (process.env.NODE_ENV !== "production" && !seemsOptic(o))
+  if (process.env.NODE_ENV !== "production" &&
+      !(typeof o === "function" && o.length === 4))
     throw new Error("Expecting an optic.")
   return o
 }
@@ -302,7 +301,7 @@ function branchOn(keys, vals) {
   return (A, xi2yA, x, _) => {
     const ap = A.ap,
           wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = reqApplicative(A.of)(wait(x, n-1))
+    let r = of(A)(wait(x, n-1))
     if (!isObject(x))
       x = void 0
     for (let i=n-1; 0<=i; --i) {
@@ -480,7 +479,7 @@ export function sequence(A, xi2yA, xs, _) {
   else if (isObject(xs))
     return branchOn(keys(xs))(A, xi2yA, xs)
   else
-    return reqApplicative(A.of)(xs)
+    return of(A)(xs)
 }
 
 // Operations on lenses
