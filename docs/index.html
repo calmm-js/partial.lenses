@@ -82,11 +82,11 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
-<li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
-<li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData)</code></a></li>
 <li><del><a href="#L-collectMap" title="L.collectMap: PTraversal s a -&gt; ((Maybe a, Index) -&gt; Maybe b) -&gt; Maybe s -&gt; [b]"><code>L.collectMap(traversal, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></del></li>
+<li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
+<li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
 <li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></li>
 <li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></li>
 <li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></li>
@@ -677,7 +677,7 @@ value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
 that a partial <em>lens</em> always targets an element, but <code>L.collectAs</code> implicitly
 skips elements that are mapped to <code>undefined</code> by the given function.  Given a
 traversal, there can be any number of elements in the array returned by
-<code>L.collectMap</code>.</p>
+<code>L.collectAs</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>

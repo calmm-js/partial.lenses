@@ -51,11 +51,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> PTraversal s a -> Maybe s -> a")
       * [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> PTraversal s a -> Maybe s -> r")
     * [Folds over traversals](#folds-over-traversals)
-      * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
-      * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData)`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
       * ~~[`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")~~
+      * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
+      * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.maximum(traversal, maybeData)`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimum(traversal, maybeData)`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
       * [`L.product(traversal, maybeData)`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
@@ -892,7 +892,7 @@ value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
 that a partial *lens* always targets an element, but `L.collectAs` implicitly
 skips elements that are mapped to `undefined` by the given function.  Given a
 traversal, there can be any number of elements in the array returned by
-`L.collectMap`.
+`L.collectAs`.
 
 For example:
 
