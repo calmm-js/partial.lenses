@@ -110,6 +110,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
   * [Interfacing with Immutable.js](#interfacing)
 * [Background](#background)
   * [Motivation](#motivation)
+  * [Design choices](#design-choices)
   * [Performance](#performance)
   * [Lenses all the way](#lenses-all-the-way)
   * [Related work](#related-work)
@@ -2039,6 +2040,101 @@ also do, because `undefined` is not a valid [JSON](http://json.org/) value.
 When a part of a data structure is missing, an attempt to view it returns
 `undefined`.  When a part is missing, setting it to a defined value inserts the
 new part.  Setting an existing part to `undefined` removes it.
+
+### Design choices
+
+There are several lens and optics libraries for JavaScript.  In this section I'd
+like to very briefly elaborate on a number design choices made during the course
+of developing this library.
+
+#### Partiality
+
+Making all optics partial allows optics to not only view and update existing
+elements, but also to insert, replace (as in replace with data of different
+type) and remove elements and to do so in a seamless and efficient way.  In a
+library based on total lenses, one needs to e.g. explicitly compose lenses with
+prisms to deal with partiality.  This not only makes the optic compositions more
+complex, but can also have a significant negative effect on performance.
+
+The downside of implicit partiality is the potential to create incorrect optics
+that signal errors later than when using total optics.
+
+#### Focus on JSON
+
+JSON is the data-interchange format of choice today.  By being able to
+effectively and efficiently manipulate JSON data structures directly, one can
+avoid using special internal representations of data and make things simpler
+(e.g. no need to convert from JSON to efficient immutable collections and back).
+
+#### Use of `undefined`
+
+`undefined` is a natural choice in JavaScript, especially when dealing with
+JSON, to represent nothingness.  Some libraries use `null`, but that is arguably
+a poor choice, because `null` is a valid JSON value.  Some libraries implement
+special `Maybe` types, but the benefits do not seem worth the trouble.  First of
+all, `undefined` already exists in JavaScript and is not a valid JSON value.
+Inventing a new value to represent nothingness doesn't seem to add much.  OTOH,
+wrapping values with `Just` objects introduces a significant performance
+overhead due to extra allocations.  Operations with optics do not necessarily
+require large numbers of allocations and can be made highly efficient.
+
+Not having an explicit `Just` object means that dealing with values such as
+`Just Nothing` requires special consideration.
+
+#### Allowing [strings](#L-prop) and [integers](#L-index) as optics
+
+Aside from the brevity, allowing strings and non-negative integers to be
+directly used as optics allows one to avoid allocating closures for such optics.
+This can provide significant time and, more importantly, space savings in
+applications that create large numbers of lenses to address elements in data
+structures.
+
+The downside of allowing such special values as optics is that the internal
+implementation needs to be careful to deal with them at any point a user defined
+value needs to be interpreted as an optic.
+
+#### Treating an [array of optics as a composition](#L-compose) of optics
+
+Aside from the brevity, this allows the library to be optimized to deal with
+simple paths highly efficiently and eliminate the need for separate primitives
+like [`assocPath`](http://ramdajs.com/docs/#assocPath)
+and [`dissocPath`](http://ramdajs.com/docs/#dissocPath) for performance reasons.
+Client code can also manipulated such simple paths as data.
+
+#### Applicatives
+
+One interesting consequence of partiality is that it becomes possible
+to [invert isomorphisms](#isomorphisms) without explicitly making it possible to
+extract the forward and backward functions from an isomorphism.  A simple
+internal implementation based on functors and applicatives seems to be expressive
+enough for a wide variety of operations.
+
+#### [`L.branch`](#L-branch)
+
+By providing combinators for creating new traversals, lenses and isomorphisms,
+client code need not depend on the internal implementation of optics.  The
+current version of this library exposes the internal implementation
+via [`L.toFunction`](#L-toFunction), but it would not be unreasonable to not
+provide such an operation.  Only very few applications need to know the internal
+representation of optics.
+
+#### Indexing
+
+Indexing in partial lenses is unnested, very simple and based on the indices and
+keys of the underlying data structures.  When indexing was added, it essentially
+introduced no performance degradation, but since then a few operations have been
+added that do require extra allocations to support indexing.  It is also
+possible to compose optics so as to create nested indices or paths, but
+currently no combinator is directly provided for that.
+
+#### Static Land
+
+The algebraic structures used in partial lenses follow
+the [Static Land](https://github.com/rpominov/static-land) specification rather
+than the [Fantasy Land](https://github.com/fantasyland/fantasy-land)
+specification.  Static Land does not require wrapping values in objects, which
+translates to a significant performance advantage throughout the library,
+because fewer allocations are required.
 
 ### Performance
 

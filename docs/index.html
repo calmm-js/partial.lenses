@@ -32,7 +32,7 @@ collections.  A partial lens can <em>view</em> optional data, <em>insert</em> ne
 <em>update</em> existing data and <em>remove</em> existing data and can, for example, provide
 <em>defaults</em> and maintain <em>required</em> data structure
 parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
-<p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/github/calmm-js/partial.lenses?branch=master"><img src="https://img.shields.io/codecov/c/github/calmm-js/partial.lenses/master.svg" alt="Code Coverage"></a>
+<p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a> <a href="https://badge.fury.io/bo/partial.lenses"><img src="https://badge.fury.io/bo/partial.lenses.svg" alt="Bower version"></a> <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://travis-ci.org/calmm-js/partial.lenses"><img src="https://travis-ci.org/calmm-js/partial.lenses.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/github/calmm-js/partial.lenses?branch=master"><img src="https://img.shields.io/codecov/c/github/calmm-js/partial.lenses/master.svg" alt="Code Coverage"></a>
  <a href="https://david-dm.org/calmm-js/partial.lenses"><img src="https://david-dm.org/calmm-js/partial.lenses.svg" alt=""></a> <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2 id="contents">Contents</h2>
 <ul>
@@ -183,6 +183,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </li>
 <li><a href="#background">Background</a><ul>
 <li><a href="#motivation">Motivation</a></li>
+<li><a href="#design-choices">Design choices</a></li>
 <li><a href="#performance">Performance</a></li>
 <li><a href="#lenses-all-the-way">Lenses all the way</a></li>
 <li><a href="#related-work">Related work</a></li>
@@ -1368,6 +1369,78 @@ also do, because <code>undefined</code> is not a valid <a href="http://json.org/
 When a part of a data structure is missing, an attempt to view it returns
 <code>undefined</code>.  When a part is missing, setting it to a defined value inserts the
 new part.  Setting an existing part to <code>undefined</code> removes it.</p>
+<h3 id="design-choices">Design choices</h3>
+<p>There are several lens and optics libraries for JavaScript.  In this section I&#39;d
+like to very briefly elaborate on a number design choices made during the course
+of developing this library.</p>
+<h4 id="partiality">Partiality</h4>
+<p>Making all optics partial allows optics to not only view and update existing
+elements, but also to insert, replace (as in replace with data of different
+type) and remove elements and to do so in a seamless and efficient way.  In a
+library based on total lenses, one needs to e.g. explicitly compose lenses with
+prisms to deal with partiality.  This not only makes the optic compositions more
+complex, but can also have a significant negative effect on performance.</p>
+<p>The downside of implicit partiality is the potential to create incorrect optics
+that signal errors later than when using total optics.</p>
+<h4 id="focus-on-json">Focus on JSON</h4>
+<p>JSON is the data-interchange format of choice today.  By being able to
+effectively and efficiently manipulate JSON data structures directly, one can
+avoid using special internal representations of data and make things simpler
+(e.g. no need to convert from JSON to efficient immutable collections and back).</p>
+<h4 id="use-of-undefined-">Use of <code>undefined</code></h4>
+<p><code>undefined</code> is a natural choice in JavaScript, especially when dealing with
+JSON, to represent nothingness.  Some libraries use <code>null</code>, but that is arguably
+a poor choice, because <code>null</code> is a valid JSON value.  Some libraries implement
+special <code>Maybe</code> types, but the benefits do not seem worth the trouble.  First of
+all, <code>undefined</code> already exists in JavaScript and is not a valid JSON value.
+Inventing a new value to represent nothingness doesn&#39;t seem to add much.  OTOH,
+wrapping values with <code>Just</code> objects introduces a significant performance
+overhead due to extra allocations.  Operations with optics do not necessarily
+require large numbers of allocations and can be made highly efficient.</p>
+<p>Not having an explicit <code>Just</code> object means that dealing with values such as
+<code>Just Nothing</code> requires special consideration.</p>
+<h4 id="allowing-strings-l-prop-and-integers-l-index-as-optics">Allowing <a href="#L-prop">strings</a> and <a href="#L-index">integers</a> as optics</h4>
+<p>Aside from the brevity, allowing strings and non-negative integers to be
+directly used as optics allows one to avoid allocating closures for such optics.
+This can provide significant time and, more importantly, space savings in
+applications that create large numbers of lenses to address elements in data
+structures.</p>
+<p>The downside of allowing such special values as optics is that the internal
+implementation needs to be careful to deal with them at any point a user defined
+value needs to be interpreted as an optic.</p>
+<h4 id="treating-an-array-of-optics-as-a-composition-l-compose-of-optics">Treating an <a href="#L-compose">array of optics as a composition</a> of optics</h4>
+<p>Aside from the brevity, this allows the library to be optimized to deal with
+simple paths highly efficiently and eliminate the need for separate primitives
+like <a href="http://ramdajs.com/docs/#assocPath"><code>assocPath</code></a>
+and <a href="http://ramdajs.com/docs/#dissocPath"><code>dissocPath</code></a> for performance reasons.
+Client code can also manipulated such simple paths as data.</p>
+<h4 id="applicatives">Applicatives</h4>
+<p>One interesting consequence of partiality is that it becomes possible
+to <a href="#isomorphisms">invert isomorphisms</a> without explicitly making it possible to
+extract the forward and backward functions from an isomorphism.  A simple
+internal implementation based on functors and applicatives seems to be expressive
+enough for a wide variety of operations.</p>
+<h4 id="-l-branch-l-branch-"><a href="#L-branch"><code>L.branch</code></a></h4>
+<p>By providing combinators for creating new traversals, lenses and isomorphisms,
+client code need not depend on the internal implementation of optics.  The
+current version of this library exposes the internal implementation
+via <a href="#L-toFunction"><code>L.toFunction</code></a>, but it would not be unreasonable to not
+provide such an operation.  Only very few applications need to know the internal
+representation of optics.</p>
+<h4 id="indexing">Indexing</h4>
+<p>Indexing in partial lenses is unnested, very simple and based on the indices and
+keys of the underlying data structures.  When indexing was added, it essentially
+introduced no performance degradation, but since then a few operations have been
+added that do require extra allocations to support indexing.  It is also
+possible to compose optics so as to create nested indices or paths, but
+currently no combinator is directly provided for that.</p>
+<h4 id="static-land">Static Land</h4>
+<p>The algebraic structures used in partial lenses follow
+the <a href="https://github.com/rpominov/static-land">Static Land</a> specification rather
+than the <a href="https://github.com/fantasyland/fantasy-land">Fantasy Land</a>
+specification.  Static Land does not require wrapping values in objects, which
+translates to a significant performance advantage throughout the library,
+because fewer allocations are required.</p>
 <h3 id="performance">Performance</h3>
 <p>Here are a few benchmark results on partial lenses (as <code>L</code> version 7.2.0) and
 some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
