@@ -60,10 +60,9 @@ const constAs = toConst => curryN(4, (xMi2y, m) => {
 
 //
 
-function of(f) {
-  if (process.env.NODE_ENV !== "production" && !f.of)
+function reqApplicative(f) {
+  if (!f.of)
     throw new Error("Traversals require an applicative.")
-  return f.of
 }
 
 //
@@ -116,7 +115,9 @@ const Collect = TacnocOf(void 0, ap)
 
 function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
-  let s = of(A)(void 0), i = xs.length
+  if (process.env.NODE_ENV !== "production")
+    reqApplicative(A)
+  let s = (0,A.of)(void 0), i = xs.length
   while (i--)
     s = ap(map(rconcat, s), xi2yA(xs[i], i))
   return map(toArray, s)
@@ -187,11 +188,9 @@ const funIndex = i => (F, xi2yF, xs, _) =>
 
 //
 
-function optic(o) {
-  if (process.env.NODE_ENV !== "production" &&
-      !(typeof o === "function" && o.length === 4))
+function reqOptic(o) {
+  if (!(typeof o === "function" && o.length === 4))
     throw new Error("Expecting an optic.")
-  return o
 }
 
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
@@ -212,10 +211,16 @@ function composed(oi0, os) {
 
 function setU(o, x, s) {
   switch (typeof o) {
-    case "string":   return setProp(o, x, s)
-    case "number":   return setIndex(o, x, s)
-    case "function": return optic(o)(Ident, always(x), s, void 0)
-    default:         return modifyComposed(o, always(x), s)
+    case "string":
+      return setProp(o, x, s)
+    case "number":
+      return setIndex(o, x, s)
+    case "function":
+      if (process.env.NODE_ENV !== "production")
+        reqOptic(o)
+      return o(Ident, always(x), s, void 0)
+    default:
+      return modifyComposed(o, always(x), s)
   }
 }
 
@@ -231,10 +236,16 @@ function getComposed(ls, s) {
 
 function getU(l, s) {
   switch (typeof l) {
-    case "string":   return getProp(l, s)
-    case "number":   return getIndex(l, s)
-    case "function": return optic(l)(Const, id, s, void 0)
-    default:         return getComposed(l, s)
+    case "string":
+      return getProp(l, s)
+    case "number":
+      return getIndex(l, s)
+    case "function":
+      if (process.env.NODE_ENV !== "production")
+        reqOptic(l)
+      return l(Const, id, s, void 0)
+    default:
+      return getComposed(l, s)
   }
 }
 
@@ -301,7 +312,9 @@ function branchOn(keys, vals) {
   return (A, xi2yA, x, _) => {
     const ap = A.ap,
           wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    let r = of(A)(wait(x, n-1))
+    if (process.env.NODE_ENV !== "production")
+      reqApplicative(A)
+    let r = (0,A.of)(wait(x, n-1))
     if (!isObject(x))
       x = void 0
     for (let i=n-1; 0<=i; --i) {
@@ -333,10 +346,16 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 
 export function toFunction(o) {
   switch (typeof o) {
-    case "string":   return funProp(o)
-    case "number":   return funIndex(o)
-    case "function": return optic(o)
-    default:         return composed(0,o)
+    case "string":
+      return funProp(o)
+    case "number":
+      return funIndex(o)
+    case "function":
+      if (process.env.NODE_ENV !== "production")
+        reqOptic(o)
+      return o
+    default:
+      return composed(0,o)
   }
 }
 
@@ -344,10 +363,16 @@ export function toFunction(o) {
 
 export const modify = curry((o, xi2x, s) => {
   switch (typeof o) {
-    case "string":   return setProp(o, xi2x(getProp(o, s), o), s)
-    case "number":   return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "function": return optic(o)(Ident, xi2x, s, void 0)
-    default:         return modifyComposed(o, xi2x, s)
+    case "string":
+      return setProp(o, xi2x(getProp(o, s), o), s)
+    case "number":
+      return setIndex(o, xi2x(getIndex(o, s), o), s)
+    case "function":
+      if (process.env.NODE_ENV !== "production")
+        reqOptic(o)
+      return o(Ident, xi2x, s, void 0)
+    default:
+      return modifyComposed(o, xi2x, s)
   }
 })
 
@@ -472,14 +497,17 @@ export function branch(template) {
 // Traversals and combinators
 
 export function sequence(A, xi2yA, xs, _) {
-  if (isArray(xs))
+  if (isArray(xs)) {
     return A === Ident
-    ? mapPartialIndexU(xi2yA, xs)
-    : traversePartialIndex(A, xi2yA, xs)
-  else if (isObject(xs))
+      ? mapPartialIndexU(xi2yA, xs)
+      : traversePartialIndex(A, xi2yA, xs)
+  } else if (isObject(xs)) {
     return branchOn(keys(xs))(A, xi2yA, xs)
-  else
-    return of(A)(xs)
+  } else {
+    if (process.env.NODE_ENV !== "production")
+      reqApplicative(A)
+    return (0,A.of)(xs)
+  }
 }
 
 // Operations on lenses
@@ -566,16 +594,16 @@ export function findWith(...ls) {
   return [find(x => isDefined(getU(lls, x))), lls]
 }
 
-export function index(x) {
-  if (process.env.NODE_ENV !== "production" && !(Number.isInteger(x) && 0 <= x))
+export const index = process.env.NODE_ENV === "production" ? id : x => {
+  if (!Number.isInteger(x) || x < 0)
     throw new Error("`index` expects a non-negative integer.")
   return x
 }
 
 // Lensing objects
 
-export function prop(x) {
-  if (process.env.NODE_ENV !== "production" && typeof x !== "string")
+export const prop = process.env.NODE_ENV === "production" ? id : x => {
+  if (typeof x !== "string")
     throw new Error("`prop` expects a string.")
   return x
 }
