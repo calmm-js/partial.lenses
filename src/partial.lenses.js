@@ -602,7 +602,7 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
 
 // Lensing objects
 
-export const fromClassTo = (From, To) => {
+export const fromClassTo = curry((From, To) => {
   const to =
     To === Object
     ? id
@@ -616,7 +616,7 @@ export const fromClassTo = (From, To) => {
                     : Object.getPrototypeOf(x).constructor === From
                       ? Object.assign({}, x)
                       : void 0, i))
-}
+})
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
   if (typeof x !== "string")
