@@ -24,20 +24,24 @@ const run = expr =>
   eval(`(P, L, X, R, id, I, C, T, a100000) => ${expr}`)(
          P, L, L, R, id, I, C, T, a100000)
 
+const equals = (x, y) =>
+  R.identical(x, y) ||
+  Object.getPrototypeOf(x) === Object.getPrototypeOf(y) && R.equals(x, y)
+
 function testEq(exprIn, expect) {
   const expr = exprIn.replace(/[ \n]+/g, " ")
   it(`${expr} => ${show(expect)}`, () => {
     const actual = run(expr)
-    if (!R.equals(actual, expect))
+    if (!equals(actual, expect))
       throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 
     const exprTy = expr.replace(/\bL\.([a-zA-Z0-9]*)/g, "T.$1(L.$1)")
     const typed = run(exprTy)
-    if (!R.equals(actual, typed))
+    if (!equals(actual, typed))
       throw new Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
 
     const core = run(exprTy.replace(/\bL\./g, "C."))
-    if (!R.equals(actual, core))
+    if (!equals(actual, core))
       throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
   })
 }
