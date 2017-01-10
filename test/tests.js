@@ -25,8 +25,8 @@ const run = expr =>
          P, L, L, R, id, I, C, T, a100000)
 
 const equals = (x, y) =>
-  R.identical(x, y) ||
-  Object.getPrototypeOf(x) === Object.getPrototypeOf(y) && R.equals(x, y)
+  (x && Object.getPrototypeOf(x)) === (y && Object.getPrototypeOf(y)) &&
+  R.equals(x, y)
 
 function testEq(exprIn, expect) {
   const expr = exprIn.replace(/[ \n]+/g, " ")
