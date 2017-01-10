@@ -653,6 +653,17 @@ export const iso =
 
 // Isomorphisms and combinators
 
+export const fromClass = Class => {
+  const toClass = x => isObject(x)
+    ? Object.assign(Object.create(Class.prototype), x)
+    : void 0
+  return (F, xi2yF, x, i) =>
+    (0,F.map)(toClass,
+              xi2yF(Object.getPrototypeOf(x).constructor === Class
+                    ? Object.assign({}, x)
+                    : void 0, i))
+}
+
 export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 
 export const inverse = iso => (F, xi2yF, x, i) =>

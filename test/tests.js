@@ -535,6 +535,17 @@ describe("L.branch", () => {
   testEq('L.set(L.branch({a: ["x",0], b: []}), 0, null)', {a:{x:[0]},b:0})
 })
 
+function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+describe("L.fromClass", () => {
+  testEq('L.get([L.fromClass(XYZ), "y"], new XYZ(1,2,3))', 2)
+  testEq('L.set([L.fromClass(XYZ), "x"], -1, new XYZ(1,2,3))', new XYZ(-1,2,3))
+})
+
 describe("indexing", () => {
   testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)',
          ["number", "undefined"])

@@ -148,5 +148,6 @@ export const iso = T.fn([T.fn([T_maybeData], T_maybeData),
                          T.fn([T_maybeData], T_maybeData)],
                         T_isomorphism)
 
+export const fromClass = T.fn([T.any], T_isomorphism)
 export const identity = T_isomorphism
 export const inverse = T.fn([T_isomorphism], T_isomorphism)

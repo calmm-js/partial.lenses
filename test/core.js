@@ -122,5 +122,6 @@ export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
 export const iso = lens
 
+export const fromClass = L.fromClass
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))
