@@ -616,7 +616,7 @@ export const fromClassTo = curry((From, To) => {
   return (F, xi2yF, x, i) => (0,F.map)(to, xi2yF(objectFrom(From, x), i))
 })
 
-export const fromObject = fromClassTo(Object, Object)
+export const fromObject = fromClass(Object)
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
   if (typeof x !== "string")
@@ -669,7 +669,7 @@ export const iso =
 
 // Isomorphisms and combinators
 
-export const fromClass = Class => fromClassTo(Class, Class)
+export function fromClass(Class) {return fromClassTo(Class, Class)}
 
 export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 
