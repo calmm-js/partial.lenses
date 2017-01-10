@@ -28,16 +28,16 @@ function testEq(exprIn, expect) {
   const expr = exprIn.replace(/[ \n]+/g, " ")
   it(`${expr} => ${show(expect)}`, () => {
     const actual = run(expr)
-    if (!I.acyclicEqualsU(actual, expect))
+    if (!R.equals(actual, expect))
       throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 
     const exprTy = expr.replace(/\bL\.([a-zA-Z0-9]*)/g, "T.$1(L.$1)")
     const typed = run(exprTy)
-    if (!I.acyclicEqualsU(actual, typed))
+    if (!R.equals(actual, typed))
       throw new Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
 
     const core = run(exprTy.replace(/\bL\./g, "C."))
-    if (!I.acyclicEqualsU(actual, core))
+    if (!R.equals(actual, core))
       throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
   })
 }
