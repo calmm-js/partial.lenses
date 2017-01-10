@@ -129,6 +129,7 @@ export const find = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.integer], T_lens)
 
+export const fromClassTo = T.fn([T.any, T.any], T_isomorphism)
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)
 

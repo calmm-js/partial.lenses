@@ -100,6 +100,7 @@ export const findWith = (...ls) => {
 }
 export const index = L.index
 
+export const fromClassTo = L.fromClassTo
 export const prop = L.prop
 export const props = (...ps) => pick(R.zipObj(ps, ps))
 
@@ -122,6 +123,6 @@ export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
 export const iso = lens
 
-export const fromClass = L.fromClass
+export const fromClass = Class => fromClassTo(Class, Class)
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))
