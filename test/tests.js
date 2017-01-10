@@ -555,6 +555,12 @@ describe("L.fromClassTo", () => {
          {x:-1,y:2,z:3})
 })
 
+describe("L.fromObject", () => {
+  testEq('L.remove([L.fromObject, "y"], new XYZ(1,2,3))', {x:1,z:3})
+  testEq('L.set([L.fromObject, "y"], -2, {x:1,y:2,z:3})', {x:1,y:-2,z:3})
+  testEq('L.set([L.fromObject, "x"], -1, new XYZ(1,2,3))', {x:-1,y:2,z:3})
+})
+
 describe("indexing", () => {
   testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)',
          ["number", "undefined"])

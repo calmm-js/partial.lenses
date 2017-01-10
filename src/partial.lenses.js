@@ -616,6 +616,8 @@ export const fromClassTo = curry((From, To) => {
   return (F, xi2yF, x, i) => (0,F.map)(to, xi2yF(objectFrom(From, x), i))
 })
 
+export const fromObject = fromClassTo(Object, Object)
+
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
   if (typeof x !== "string")
     throw new Error("`prop` expects a string.")
