@@ -24,6 +24,11 @@ const flip = bop => (x, y) => bop(y, x)
 
 const unto = c => x => isDefined(x) ? x : c
 
+const objectFrom = (Class, x) =>
+  x instanceof Class
+  ? x.constructor === Object ? x : Object.assign({}, x)
+  : void 0
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -603,19 +608,12 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
 // Lensing objects
 
 export const fromClassTo = curry((From, To) => {
-  const to =
-    To === Object
-    ? id
-    : x => isObject(x)
-      ? Object.assign(Object.create(To.prototype), x)
-      : void 0
-  return (F, xi2yF, x, i) =>
-    (0,F.map)(to,
-              xi2yF(From === Object
-                    ? isObject(x) ? x : void 0
-                    : Object.getPrototypeOf(x).constructor === From
-                      ? Object.assign({}, x)
-                      : void 0, i))
+  if (To === Object)
+    return (F, xi2yF, x, i) => xi2yF(objectFrom(From, x), i)
+  const to = x => isDefined(x)
+    ? Object.assign(Object.create(To.prototype), x)
+    : void 0
+  return (F, xi2yF, x, i) => (0,F.map)(to, xi2yF(objectFrom(From, x), i))
 })
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
