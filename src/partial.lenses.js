@@ -22,14 +22,14 @@ function pair(x0, x1) {return [x0, x1]}
 
 const flip = bop => (x, y) => bop(y, x)
 
-const unto = c => x => isDefined(x) ? x : c
+const unto = c => x => void 0 !== x ? x : c
 
 //
 
 function mapPartialIndexU(xi2y, xs) {
   const ys = [], n=xs.length
   for (let i=0, y; i<n; ++i)
-    if (isDefined(y = xi2y(xs[i], i)))
+    if (void 0 !== (y = xi2y(xs[i], i)))
       ys.push(y)
   return ys.length ? ys : void 0
 }
@@ -47,7 +47,7 @@ const TacnocOf = (empty, tacnoc) => Applicative(sndU, always(empty), tacnoc)
 const Monoid = (empty, concat) => ({empty: () => empty, concat})
 
 const Mum = ord =>
-  Monoid(void 0, (y, x) => isDefined(x) && (!isDefined(y) || ord(x, y)) ? x : y)
+  Monoid(void 0, (y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
 
 //
 
@@ -71,7 +71,7 @@ function Concat(l, r) {this.l = l; this.r = r}
 
 const isConcat = n => n.constructor === Concat
 
-const ap = (r, l) => isDefined(l) ? isDefined(r) ? new Concat(l, r) : l : r
+const ap = (r, l) => void 0 !== l ? void 0 !== r ? new Concat(l, r) : l : r
 
 const rconcat = t => h => ap(t, h)
 
@@ -89,7 +89,7 @@ function pushTo(n, ys) {
 }
 
 function toArray(n) {
-  if (isDefined(n)) {
+  if (void 0 !== n) {
     const ys = []
     pushTo(n, ys)
     return ys
@@ -107,7 +107,7 @@ function foldRec(f, r, n) {
   return f(r, n[0], n[1])
 }
 
-const fold = (f, r, n) => isDefined(n) ? foldRec(f, r, n) : r
+const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
 const Collect = TacnocOf(void 0, ap)
 
@@ -139,7 +139,7 @@ const object0ToUndefined = o => {
 const getProp = (k, o) => isObject(o) ? o[k] : void 0
 
 const setProp = (k, v, o) =>
-  isDefined(v) ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+  void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
 
 const funProp = k => (F, xi2yF, x, _) =>
   (0,F.map)(v => setProp(k, v, x), xi2yF(getProp(k, x), k))
@@ -151,7 +151,7 @@ const nulls = n => Array(n).fill(null)
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
-  if (isDefined(x)) {
+  if (void 0 !== x) {
     if (!isArray(xs))
       return i < 0 ? void 0 : nulls(i).concat([x])
     const n = xs.length
@@ -285,7 +285,7 @@ function getPick(template, x) {
   let r
   for (const k in template) {
     const v = getU(template[k], x)
-    if (isDefined(v)) {
+    if (void 0 !== v) {
       if (!r)
         r = {}
       r[k] = v
@@ -398,10 +398,10 @@ export function compose() {
 // Querying
 
 export const chain = curry((xi2yO, xO) =>
-  [xO, choose((xM, i) => isDefined(xM) ? xi2yO(xM, i) : zero)])
+  [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
-  const i = findIndex(l => isDefined(getU(l, x)), ls)
+  const i = findIndex(l => void 0 !== getU(l, x), ls)
   return i < 0 ? zero : ls[i]
 })
 
@@ -554,7 +554,7 @@ export const augment = template => lens(
 
 export const defaults = out => {
   const o2u = x => replaced(out, void 0, x)
-  return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(isDefined(x) ? x : out, i))
+  return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
 export const required = inn => replace(inn, void 0)
@@ -562,16 +562,16 @@ export const required = inn => replace(inn, void 0)
 export const define = v => normalizer(unto(v))
 
 export const normalize = xi2x =>
-  normalizer((x, i) => isDefined(x) ? xi2x(x, i) : void 0)
+  normalizer((x, i) => void 0 !== x ? xi2x(x, i) : void 0)
 
 export const rewrite = yi2y => (F, xi2yF, x, i) =>
-  (0,F.map)(y => isDefined(y) ? yi2y(y, i) : void 0, xi2yF(x, i))
+  (0,F.map)(y => void 0 !== y ? yi2y(y, i) : void 0, xi2yF(x, i))
 
 // Lensing arrays
 
 export const append = (F, xi2yF, xs, i) =>
   (0,F.map)(x => array0ToUndefined((isArray(xs) ? xs : array0)
-                                   .concat(isDefined(x) ? [x] : array0)),
+                                   .concat(void 0 !== x ? [x] : array0)),
             xi2yF(void 0, i))
 
 export const filter = xi2b => (F, xi2yF, xs, i) => {
@@ -591,7 +591,7 @@ export const find = xi2b => choose(xs => {
 
 export function findWith(...ls) {
   const lls = compose(...ls)
-  return [find(x => isDefined(getU(lls, x))), lls]
+  return [find(x => void 0 !== getU(lls, x)), lls]
 }
 
 export const index = process.env.NODE_ENV === "production" ? id : x => {
@@ -618,12 +618,12 @@ export function props() {
 // Providing defaults
 
 export const valueOr = v => (_F, xi2yF, x, i) =>
-  xi2yF(isDefined(x) && x !== null ? x : v, i)
+  xi2yF(void 0 !== x && x !== null ? x : v, i)
 
 // Adapting to data
 
 export const orElse =
-  curry((d, l) => choose(x => isDefined(getU(l, x)) ? l : d))
+  curry((d, l) => choose(x => void 0 !== getU(l, x) ? l : d))
 
 // Read-only mapping
 
