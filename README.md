@@ -45,11 +45,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.toFunction(optic)`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
-      * [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> PTraversal s a -> Maybe s -> a")
-      * [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> PTraversal s a -> Maybe s -> r")
+      * [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
+      * [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
       * ~~[`L.foldMapOf(monoid, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: Monoid r -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")~~
-      * [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> PTraversal s a -> Maybe s -> a")
-      * [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> PTraversal s a -> Maybe s -> r")
+      * [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
+      * [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
     * [Folds over traversals](#folds-over-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData)`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
@@ -768,7 +768,7 @@ and [removed](#L-remove).
 
 #### Operations on traversals
 
-##### <a name="L-concat"></a> [≡](#contents) [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> PTraversal s a -> Maybe s -> a")
+##### <a name="L-concat"></a> [≡](#contents) [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
 
 `L.concat({empty, concat}, t, s)` performs a fold, using the given `concat` and
 `empty` operations, over the elements focused on by the given traversal or lens
@@ -786,9 +786,12 @@ L.concat(Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
+Note that `L.concat` is staged so that after given the first argument a
+computation step is performed.
+
 See also: [`L.merge`](#L-merge).
 
-##### <a name="L-concatAs"></a> [≡](#contents) [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> PTraversal s a -> Maybe s -> r")
+##### <a name="L-concatAs"></a> [≡](#contents) [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
 
 `L.concatAs(xMi2r, {empty, concat}, t, s)` performs a map, using given function
 `xMi2r`, and fold, using the given `concat` and `empty` operations, over the
@@ -805,6 +808,9 @@ For example:
 L.concatAs(x => x, Sum, L.sequence, [1, 2, 3])
 // 6
 ```
+
+Note that `L.concatAs` is staged so that after given the first two arguments a
+computation step is performed.
 
 See also: [`L.mergeAs`](#L-mergeAs).
 
@@ -829,7 +835,7 @@ L.foldMapOf(Sum, L.sequence, x => x, [1, 2, 3])
 // 6
 ```
 
-##### <a name="L-merge"></a> [≡](#contents) [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> PTraversal s a -> Maybe s -> a")
+##### <a name="L-merge"></a> [≡](#contents) [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
 
 `L.merge({empty, concat}, t, s)` performs a fold, using the given `concat` and
 `empty` operations, over the elements focused on by the given traversal or lens
@@ -846,9 +852,12 @@ L.merge(Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
+Note that `L.merge` is staged so that after given the first argument a
+computation step is performed.
+
 See also: [`L.concat`](#L-concat).
 
-##### <a name="L-mergeAs"></a> [≡](#contents) [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> PTraversal s a -> Maybe s -> r")
+##### <a name="L-mergeAs"></a> [≡](#contents) [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
 
 `L.mergeAs(xMi2r, {empty, concat}, t, s)` performs a map, using given function
 `xMi2r`, and fold, using the given `concat` and `empty` operations, over the
@@ -865,6 +874,9 @@ For example:
 L.mergeAs(x => x, Sum, L.sequence, [1, 2, 3])
 // 6
 ```
+
+Note that `L.mergeAs` is staged so that after given the first two arguments a
+computation step is performed.
 
 See also: [`L.concatAs`](#L-concatAs).
 
