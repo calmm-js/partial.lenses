@@ -2,7 +2,7 @@ import * as I from "infestines"
 import * as R from "ramda"
 import {id} from "infestines"
 
-import P, * as L from "../src/partial.lenses"
+import * as L from "../src/partial.lenses"
 
 import * as BST from "./bst"
 import * as C from "./core"
@@ -21,8 +21,8 @@ function show(x) {
 const a100000 = Array(100000).fill(1)
 
 const run = expr =>
-  eval(`(P, L, X, R, id, I, C, T, a100000) => ${expr}`)(
-         P, L, L, R, id, I, C, T, a100000)
+  eval(`(L, X, R, id, I, C, T, a100000) => ${expr}`)(
+         L, L, R, id, I, C, T, a100000)
 
 const equals = (x, y) =>
   (x && Object.getPrototypeOf(x)) === (y && Object.getPrototypeOf(y)) &&
