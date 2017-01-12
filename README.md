@@ -786,8 +786,8 @@ L.concat(Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
-Note that `L.concat` is staged so that after given the first argument a
-computation step is performed.
+Note that `L.concat` is staged so that after given the first argument,
+`L.concat(m)`, a computation step is performed.
 
 See also: [`L.merge`](#L-merge).
 
@@ -809,8 +809,8 @@ L.concatAs(x => x, Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
-Note that `L.concatAs` is staged so that after given the first two arguments a
-computation step is performed.
+Note that `L.concatAs` is staged so that after given the first two arguments,
+`L.concatAs(f, m)`, a computation step is performed.
 
 See also: [`L.mergeAs`](#L-mergeAs).
 
@@ -852,8 +852,8 @@ L.merge(Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
-Note that `L.merge` is staged so that after given the first argument a
-computation step is performed.
+Note that `L.merge` is staged so that after given the first argument,
+`L.merge(m)`, a computation step is performed.
 
 See also: [`L.concat`](#L-concat).
 
@@ -875,8 +875,8 @@ L.mergeAs(x => x, Sum, L.sequence, [1, 2, 3])
 // 6
 ```
 
-Note that `L.mergeAs` is staged so that after given the first two arguments a
-computation step is performed.
+Note that `L.mergeAs` is staged so that after given the first two arguments,
+`L.mergeAs(f, m)`, a computation step is performed.
 
 See also: [`L.concatAs`](#L-concatAs).
 
