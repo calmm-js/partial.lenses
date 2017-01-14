@@ -178,22 +178,20 @@ function setIndex(i, x, xs) {
     throw new Error("partial.lenses: negative indices not supported")
   if (void 0 !== x) {
     if (!seemsArrayLike(xs))
-      return i < 0 ? void 0 : setAt(clearRange(Array(i+1), 0, i), i, x)
+      return setAt(clearRange(Array(i+1), 0, i), i, x)
     const n = xs.length
-    if (n <= i)
-      return setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
-    return copyToFrom(setAt(copyToFrom(Array(n), 0, xs, 0, i), i, x),
-                      i+1, xs, i+1, n)
+    return n <= i
+      ? setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
+      : copyToFrom(setAt(copyToFrom(Array(n), 0, xs, 0, i), i, x),
+                   i+1, xs, i+1, n)
   } else {
     if (seemsArrayLike(xs)) {
       const n = xs.length
-      if (!n)
-        return void 0
-      if (n <= i)
-        return fromArrayLike(xs)
-      if (n === 1)
-        return void 0
-      return copyToFrom(copyToFrom(Array(n-1), 0, xs, 0, i), i, xs, i+1, n)
+      if (n) {
+        return n <= i ? fromArrayLike(xs)
+          : n === 1 ? void 0
+          : copyToFrom(copyToFrom(Array(n-1), 0, xs, 0, i), i, xs, i+1, n)
+      }
     }
   }
 }
