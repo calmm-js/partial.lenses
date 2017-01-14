@@ -3,6 +3,11 @@ import * as R from "ramda"
 
 //
 
+const isNat = x => x === (x >> 0) && 0 <= x
+
+const seemsArrayLike = x =>
+  x instanceof Object && isNat(x.length) || typeof x === "string"
+
 const isDefined = x => x !== undefined
 
 const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
@@ -86,10 +91,10 @@ export const required = v => replace(v, undefined)
 export const rewrite = xi2x =>
   lens(R.identity, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
 
-export const append = choose(s => R.is(Array, s) ? s.length : 0)
+export const append = choose(s => seemsArrayLike(s) ? s.length : 0)
 export const filter = L.filter
 export const find = p => choose(xs => {
-  if (!R.is(Array, xs))
+  if (!seemsArrayLike(xs))
     return append
   const i = xs.findIndex((x, i) => p(x, i))
   return i < 0 ? append : i

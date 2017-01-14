@@ -3,13 +3,11 @@ import {
   always,
   applyU,
   arityN,
-  array0,
   assocPartialU,
   curry,
   curryN,
   dissocPartialU,
   id,
-  isArray,
   isDefined,
   isObject,
   keys,
@@ -24,6 +22,11 @@ const flip = bop => (x, y) => bop(y, x)
 
 const unto = c => x => void 0 !== x ? x : c
 
+const isNat = x => x === (x >> 0) && 0 <= x
+
+const seemsArrayLike = x =>
+  x instanceof Object && isNat(x.length) || typeof x === "string"
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -32,6 +35,24 @@ function mapPartialIndexU(xi2y, xs) {
     if (void 0 !== (y = xi2y(xs[i], i)))
       ys.push(y)
   return ys.length ? ys : void 0
+}
+
+function copyToFrom(ys, k, xs, i, j) {
+  while (i < j)
+    ys[k++] = xs[i++]
+  return ys
+}
+
+function setAt(xs, i, x) {
+  xs[i] = x
+  return xs
+}
+
+function fromArrayLike(xs) {
+  if (xs.constructor === Array)
+    return xs
+  const n = xs.length
+  return copyToFrom(Array(n), 0, xs, 0, n)
 }
 
 //
@@ -125,8 +146,6 @@ function traversePartialIndex(A, xi2yA, xs) {
 
 //
 
-const array0ToUndefined = xs => xs.length ? xs : void 0
-
 const object0ToUndefined = o => {
   if (!isObject(o))
     return o
@@ -136,7 +155,7 @@ const object0ToUndefined = o => {
 
 //
 
-const getProp = (k, o) => isObject(o) ? o[k] : void 0
+const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 const setProp = (k, v, o) =>
   void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
@@ -146,39 +165,35 @@ const funProp = k => (F, xi2yF, x, _) =>
 
 //
 
-const nulls = n => Array(n).fill(null)
+function clearRange(xs, i, j) {
+  while (i < j)
+    xs[i++] = null
+  return xs
+}
 
-const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
+const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
+  if (process.env.NODE_ENV !== "production" && i < 0)
+    throw new Error("partial.lenses: negative indices not supported")
   if (void 0 !== x) {
-    if (!isArray(xs))
-      return i < 0 ? void 0 : nulls(i).concat([x])
+    if (!seemsArrayLike(xs))
+      return i < 0 ? void 0 : setAt(clearRange(Array(i+1), 0, i), i, x)
     const n = xs.length
     if (n <= i)
-      return xs.concat(nulls(i - n), [x])
-    if (i < 0)
-      return !n ? void 0 : xs
-    const ys = Array(n)
-    for (let j=0; j<n; ++j)
-      ys[j] = xs[j]
-    ys[i] = x
-    return ys
+      return setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
+    return copyToFrom(setAt(copyToFrom(Array(n), 0, xs, 0, i), i, x),
+                      i+1, xs, i+1, n)
   } else {
-    if (isArray(xs)) {
+    if (seemsArrayLike(xs)) {
       const n = xs.length
       if (!n)
         return void 0
-      if (i < 0 || n <= i)
-        return xs
+      if (n <= i)
+        return fromArrayLike(xs)
       if (n === 1)
         return void 0
-      const ys = Array(n-1)
-      for (let j=0; j<i; ++j)
-        ys[j] = xs[j]
-      for (let j=i+1; j<n; ++j)
-        ys[j-1] = xs[j]
-      return ys
+      return copyToFrom(copyToFrom(Array(n-1), 0, xs, 0, i), i, xs, i+1, n)
     }
   }
 }
@@ -497,7 +512,7 @@ export function branch(template) {
 // Traversals and combinators
 
 export function sequence(A, xi2yA, xs, _) {
-  if (isArray(xs)) {
+  if (seemsArrayLike(xs)) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs)
@@ -570,20 +585,28 @@ export const rewrite = yi2y => (F, xi2yF, x, i) =>
 // Lensing arrays
 
 export const append = (F, xi2yF, xs, i) =>
-  (0,F.map)(x => array0ToUndefined((isArray(xs) ? xs : array0)
-                                   .concat(void 0 !== x ? [x] : array0)),
+  (0,F.map)(x => setIndex(seemsArrayLike(xs) ? xs.length : 0, x, xs),
             xi2yF(void 0, i))
 
 export const filter = xi2b => (F, xi2yF, xs, i) => {
-  let ts, fs = array0
-  if (isArray(xs))
+  let ts, fs
+  if (seemsArrayLike(xs))
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
-  return (0,F.map)(ts => array0ToUndefined(isArray(ts)?ts.concat(fs):fs),
-                   xi2yF(ts, i))
+  return (0,F.map)(
+    ts => {
+      const tsN = ts ? ts.length : 0,
+            fsN = fs ? fs.length : 0,
+            n = tsN + fsN
+      if (n)
+        return n === fsN
+        ? fs
+        : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
+    },
+    xi2yF(ts, i))
 }
 
 export const find = xi2b => choose(xs => {
-  if (!isArray(xs))
+  if (!seemsArrayLike(xs))
     return 0
   const i = findIndex(xi2b, xs)
   return i < 0 ? append : i

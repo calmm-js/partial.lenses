@@ -60,7 +60,7 @@ const testThrows = expr => it(`${expr} => throws`, () => {
     throw new Error(`Expected ${expr} to throw, returned ${show(result)}`)
 })
 
-const empties = [undefined, null, false, true, "a", 0, 0.0/0.0, {}, []]
+const empties = [undefined, null, false, true, "", 0, 0.0/0.0, {}, []]
 
 describe("compose", () => {
   testEq('L.get(L.compose(), "any")', "any")
@@ -132,10 +132,7 @@ describe('L.get', () => {
 })
 
 describe('L.index', () => {
-  testEq('L.remove(1, "lol")', undefined)
-  testEq('L.set(-11, 0, [])', undefined)
-  testEq('L.set(-11, 0, [1])', [1])
-  testEq('L.set(-1, 0, "lol")', undefined)
+  testEq('L.remove([L.rewrite(R.join("")), 1], "lol")', "ll")
   testEq('L.modify(L.index(1), x => x + 1, [1, 2])', [1, 3])
   testEq('L.set([0], undefined, [null])', undefined)
   testEq('L.set([L.required([]), 0], undefined, [null])', [])
@@ -153,7 +150,8 @@ describe('L.index', () => {
     testEq(`L.get(0, ${show(invalid)})`, undefined)
     testEq(`L.set(0, "f", ${show(invalid)})`, ["f"])
   })
-  testEq('L.set(L.index(0), "Hello", "x, world!")', ["Hello"])
+  testEq('L.set([L.rewrite(R.join("")), L.index(0)], "Hello", "x, world!")',
+         "Hello, world!")
   testEq('L.remove(0, [])', undefined)
   testEq('L.remove(1, [])', undefined)
 })
@@ -302,7 +300,7 @@ describe("L.filter", () => {
   testEq('L.set(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])', undefined)
   testEq('L.remove(L.filter(R.lt(0)), [3,1,4,1,5,9,2])', undefined)
   testEq('L.remove(L.filter(R.lt(2)), [3,1,4,1,5,9,2])', [1,1,2])
-  empties.filter(x => !(x instanceof Array)).forEach(invalid => {
+  empties.filter(x => !(x instanceof Array || typeof x === "string")).forEach(invalid => {
     testEq(`L.get(L.filter(R.always(true)), ${show(invalid)})`, undefined)
     testEq(`L.set(L.filter(R.always(true)), [1,"2",3], ${show(invalid)})`,
            [1,"2",3])
@@ -310,7 +308,8 @@ describe("L.filter", () => {
 })
 
 describe("L.append", () => {
-  testEq('L.remove(L.append, "anything")', undefined)
+  testEq('L.remove(L.append, 45)', undefined)
+  testEq('L.remove([L.rewrite(R.join("")), L.append], "anything")', "anything")
   empties.forEach(invalid => {
     testEq(`L.set(L.append, "a", ${show(invalid)})`, ["a"])
   })
@@ -327,7 +326,7 @@ describe("L.augment", () => {
          {x: 1, y: 2, z: 3})
   testEq('L.remove([L.augment({y: () => 1}), "x"], {x:0})', undefined)
   testEq('L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
-  empties.filter(x => !R.equals(x, {})).forEach(invalid => {
+  empties.filter(x => !R.contains(x, {})).forEach(invalid => {
     testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined)
   })
   empties.forEach(invalid => {
