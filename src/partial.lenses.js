@@ -180,17 +180,27 @@ function setIndex(i, x, xs) {
     if (!seemsArrayLike(xs))
       return setAt(clearRange(Array(i+1), 0, i), i, x)
     const n = xs.length
-    return n <= i
-      ? setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
-      : copyToFrom(setAt(copyToFrom(Array(n), 0, xs, 0, i), i, x),
-                   i+1, xs, i+1, n)
+    if (n <= i)
+      return setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
+    const ys = Array(n)
+    for (let j=0; j<n; ++j)
+      ys[j] = xs[j]
+    ys[i] = x
+    return ys
   } else {
     if (seemsArrayLike(xs)) {
       const n = xs.length
-      if (n) {
-        return n <= i ? fromArrayLike(xs)
-          : n === 1 ? void 0
-          : copyToFrom(copyToFrom(Array(n-1), 0, xs, 0, i), i, xs, i+1, n)
+      if (0 < n) {
+        if (n <= i)
+          return fromArrayLike(xs)
+        if (1 < n) {
+          const ys = Array(n-1)
+          for (let j=0; j<i; ++j)
+            ys[j] = xs[j]
+          for (let j=i+1; j<n; ++j)
+            ys[j-1] = xs[j]
+          return ys
+        }
       }
     }
   }
