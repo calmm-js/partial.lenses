@@ -558,6 +558,8 @@ describe("L.toFunction", () => {
 
 if (process.env.NODE_ENV !== "production") {
   describe("debug", () => {
+    testThrows('L.set(-1, 0, 0)')
+
     testThrows('L.index("x")')
     testThrows('L.index(-1)')
     testThrows('L.index()')
