@@ -118,6 +118,10 @@ describe('L.find', () => {
   testEq('L.set(L.find(R.equals(2)), 2, [])', [2])
   testEq('L.get(L.find(R.equals(2)), undefined)', undefined)
   testEq('L.get(L.find(R.equals(2)), [3])', undefined)
+  testEq(`L.remove([L.rewrite(R.join("")), L.find(R.equals("A"))], "LOLA")`,
+         "LOL")
+  testEq(`L.set([L.rewrite(R.join("")), L.find(R.equals("O"))], "A-", "LOLA")`,
+         "LA-LA")
 })
 
 describe('L.get', () => {
@@ -305,6 +309,7 @@ describe("L.filter", () => {
     testEq(`L.set(L.filter(R.always(true)), [1,"2",3], ${show(invalid)})`,
            [1,"2",3])
   })
+  testEq('L.remove(L.filter(c => "a" <= c), "JavaScript")', ["J", "S"])
 })
 
 describe("L.append", () => {
@@ -313,6 +318,7 @@ describe("L.append", () => {
   empties.forEach(invalid => {
     testEq(`L.set(L.append, "a", ${show(invalid)})`, ["a"])
   })
+  testEq('L.set(L.append, 1, Int8Array.of(3,1,4))', [3,1,4,1])
 })
 
 describe("L.augment", () => {
@@ -451,6 +457,7 @@ describe("folds", () => {
   testEq(`X.mergeAs(id, Sum, X.sequence, a100000)`, 100000)
   testEq(`L.maximum([L.sequence, "x"], [])`, undefined)
   testEq(`L.minimum([L.sequence, "x"], [])`, undefined)
+  testEq(`L.maximum(L.sequence, "JavaScript")`, "v")
   testEq(`L.maximum(L.sequence, [1,2,3])`, 3)
   testEq(`L.minimum(L.sequence, [1,2,3])`, 1)
   testEq(`L.sum([L.sequence, "x"], undefined)`, 0)
