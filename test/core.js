@@ -8,6 +8,8 @@ const isNat = x => x === (x >> 0) && 0 <= x
 const seemsArrayLike = x =>
   x instanceof Object && isNat(x.length) || typeof x === "string"
 
+const fromArrayLike = xs => R.map(i => xs[i], R.range(0, xs.length))
+
 const isDefined = x => x !== undefined
 
 const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
@@ -96,7 +98,7 @@ export const filter = L.filter
 export const find = p => choose(xs => {
   if (!seemsArrayLike(xs))
     return append
-  const i = xs.findIndex((x, i) => p(x, i))
+  const i = fromArrayLike(xs).findIndex((x, i) => p(x, i))
   return i < 0 ? append : i
 })
 export const findWith = (...ls) => {
