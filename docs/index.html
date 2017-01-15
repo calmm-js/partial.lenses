@@ -98,7 +98,9 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></li>
+<li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems</code></a></li>
+<li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values</code></a></li>
+<li><del><a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></del></li>
 </ul>
 </li>
 </ul>
@@ -344,13 +346,13 @@ multiple items.  Continuing on the tutorial example, let&#39;s define a traversa
 that targets all the texts:</p>
 <pre><code class="hljs lang-js">var texts = [&quot;contents&quot;,
                L.required([]),
-               L.sequence,
+               L.elems,
                L.choose(R.pipe(L.remove(&quot;text&quot;), L.defaults)),
                &quot;text&quot;]
 </code></pre>
-<p>What makes the above a traversal is the <a href="#L-sequence"><code>L.sequence</code></a> part.  Once
-a traversal is composed with a lens, the whole results is a traversal.  The
-other parts of the above composition should already be familiar from previous
+<p>What makes the above a traversal is the <a href="#L-elems"><code>L.elems</code></a> part.  Once a
+traversal is composed with a lens, the whole results is a traversal.  The other
+parts of the above composition should already be familiar from previous
 examples.  Note the use of <a href="#L-choose"><code>L.choose</code></a>
 with <a href="#L-choose"><code>L.defaults</code></a>.  We&#39;ll get back to that shortly.</p>
 <p>Now, we can use the above traversal to <a href="#L-collect"><code>collect</code></a> all the texts:</p>
@@ -410,7 +412,7 @@ wider range of situations than corresponding total optics.</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.sequence, &quot;x&quot;],
+<pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.elems, &quot;x&quot;],
          R.dec,
          {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
@@ -420,7 +422,7 @@ wider range of situations than corresponding total optics.</p>
 <pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.remove([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
+<pre><code class="hljs lang-js">L.remove([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
 <p>from a data structure.</p>
 <p>Note that <code>L.remove(optic, maybeData)</code> is equivalent
@@ -431,7 +433,7 @@ to <code>undefined</code> typically has the effect of removing the focused eleme
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
 <p>or, when using a <a href="#traversals">traversal</a>, elements</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
+<pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
 <p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
@@ -477,7 +479,7 @@ whose view is not <code>undefined</code> on the given data structure.  When the 
 all of the given lenses are <code>undefined</code>, the returned lens acts
 like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.sequence, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+<pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
 <h5 id="-a-name-l-choose-a-contents-l-choose-maybevalue-index-optic-l-choose-l-choose-maybe-s-index-poptic-s-a-poptic-s-a-"><a name="L-choose"></a> <a href="#contents">≡</a> <a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic)</code></a></h5>
 <p><code>L.choose</code> creates an optic whose operation is determined by the given function
@@ -500,10 +502,10 @@ examining the data structure being manipulated.</p>
 and the focus is <code>undefined</code>, the traversal is empty.  When used as a lens, and
 the focus is <code>undefined</code>, the lens will be read-only.</p>
 <p>As an example, consider the difference between:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
+<pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;], 3, [{x: 1}, {y: 2}])
 </code></pre>
 <p>and:</p>
-<pre><code class="hljs lang-js">L.set([L.sequence, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
+<pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
 </code></pre>
 <p>Note that <code>L.optional</code> is equivalent
 to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
@@ -511,7 +513,7 @@ to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
 selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.sequence, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
+<pre><code class="hljs lang-js">L.modify([L.elems, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
 </code></pre>
 <p>Note that <code>L.when(p)</code> is equivalent
 to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
@@ -521,8 +523,8 @@ and <a href="L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</c
 elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
 read-only lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.sequence,
-           L.choose(x =&gt; (R.is(Array, x) ? L.sequence :
+<pre><code class="hljs lang-js">L.collect([L.elems,
+           L.choose(x =&gt; (R.is(Array, x) ? L.elems :
                           R.is(Object, x) ? &quot;x&quot; :
                           L.zero))],
           [1, {x: 2}, [3,4]])
@@ -535,8 +537,11 @@ references to other optics and possibly construct a recursive optic.</p>
 <p>For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">var flatten = [L.optional, L.lazy(rec =&gt; {
-  const nest = [L.sequence, rec]
-  return L.choose(x =&gt; R.is(Object, x) ? nest : L.identity)
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.choose(x =&gt; (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>
@@ -607,7 +612,7 @@ a
 the values focused on by <code>t</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
-L.concat(Sum, L.sequence, [1, 2, 3])
+L.concat(Sum, L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that <code>L.concat</code> is staged so that after given the first argument,
 <code>L.concat(m)</code>, a computation step is performed.</p>
@@ -622,7 +627,7 @@ a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values returned by <code>xMi2r</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.sequence, [1, 2, 3])
+<pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that <code>L.concatAs</code> is staged so that after given the first two arguments,
 <code>L.concatAs(f, m)</code>, a computation step is performed.</p>
@@ -639,7 +644,7 @@ a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values returned by <code>xMi2r</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldMapOf(Sum, L.sequence, x =&gt; x, [1, 2, 3])
+<pre><code class="hljs lang-js">L.foldMapOf(Sum, L.elems, x =&gt; x, [1, 2, 3])
 </code></pre>
 <h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData)</code></a></h5>
 <p><code>L.merge({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
@@ -650,7 +655,7 @@ a
 <a href="https://en.wikipedia.org/wiki/Monoid#Commutative_monoid">commutative</a> <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values focused on by <code>t</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.merge(Sum, L.sequence, [1, 2, 3])
+<pre><code class="hljs lang-js">L.merge(Sum, L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that <code>L.merge</code> is staged so that after given the first argument,
 <code>L.merge(m)</code>, a computation step is performed.</p>
@@ -665,7 +670,7 @@ a
 <a href="https://en.wikipedia.org/wiki/Monoid#Commutative_monoid">commutative</a> <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
 the values returned by <code>xMi2r</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.mergeAs(x =&gt; x, Sum, L.sequence, [1, 2, 3])
+<pre><code class="hljs lang-js">L.mergeAs(x =&gt; x, Sum, L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that <code>L.mergeAs</code> is staged so that after given the first two arguments,
 <code>L.mergeAs(f, m)</code>, a computation step is performed.</p>
@@ -677,7 +682,7 @@ because it maps to the <a href="#L-toFunction">internal implementation</a> most 
 <p><code>L.collect</code> returns an array of the defined elements focused on by the given
 traversal or lens from a data structure.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>Note that <code>L.collect</code> is equivalent
 to <a href="#L-collectAs"><code>L.collectAs(R.identity)</code></a>.</p>
@@ -690,7 +695,7 @@ skips elements that are mapped to <code>undefined</code> by the given function. 
 traversal, there can be any number of elements in the array returned by
 <code>L.collectAs</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.sequence, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p><code>L.collectAs(toMaybe, traversal, maybeData)</code> is equivalent
 to
@@ -702,7 +707,7 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 <p>So:</p>
 <pre><code class="hljs lang-js">L.concatAs(R.pipe(R.negate, toCollect),
            Collect,
-           [&quot;xs&quot;, L.sequence, &quot;x&quot;],
+           [&quot;xs&quot;, L.elems, &quot;x&quot;],
            {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
@@ -718,7 +723,7 @@ implicitly skips elements that are mapped to <code>undefined</code> by the given
 Given a traversal, there can be any number of elements in the array returned by
 <code>L.collectMap</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collectMap([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.negate, {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.collectMap([&quot;xs&quot;, L.elems, &quot;x&quot;], R.negate, {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p><code>L.collectMap(traversal, toMaybe, maybeData)</code> is equivalent
 to
@@ -730,7 +735,7 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 <p>So:</p>
 <pre><code class="hljs lang-js">L.concatAs(R.pipe(R.negate, toCollect),
            Collect,
-           [&quot;xs&quot;, L.sequence, &quot;x&quot;],
+           [&quot;xs&quot;, L.elems, &quot;x&quot;],
            {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collectMap</code> is optimized and faster than the
@@ -739,43 +744,43 @@ above naïve implementation.</p>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-foldr-a-contents-l-foldr-value-maybevalue-index-value-value-traversal-maybedata-l-foldr-l-foldr-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldr"></a> <a href="#contents">≡</a> <a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></h5>
 <p><code>L.foldr</code> performs a fold from right over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-maximum-a-contents-l-maximum-traversal-maybedata-l-maximum-l-maximum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-maximum"></a> <a href="#contents">≡</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></h5>
 <p><code>L.maximum</code> computes a maximum of the optional ordered elements targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.maximum(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.maximum(L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-minimum-a-contents-l-minimum-traversal-maybedata-l-minimum-l-minimum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-minimum"></a> <a href="#contents">≡</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></h5>
 <p><code>L.minimum</code> computes a minimum of the optional ordered elements targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.minimum(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.minimum(L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-product-a-contents-l-product-traversal-maybedata-l-product-l-product-ptraversal-s-number-maybe-s-number-"><a name="L-product"></a> <a href="#contents">≡</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></h5>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.product(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.product(L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-sum-a-contents-l-sum-traversal-maybedata-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a name="L-sum"></a> <a href="#contents">≡</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData)</code></a></h5>
 <p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.sum(L.sequence, [1,2,3])
+<pre><code class="hljs lang-js">L.sum(L.elems, [1,2,3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
 <p><code>L.branch</code> creates a new traversal from a given template object that specifies
 how the new traversal should visit the properties of an object.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect(L.branch({first: L.sequence, second: L.identity}),
+<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: L.identity}),
           {first: [&quot;x&quot;], second: &quot;y&quot;})
 </code></pre>
 <p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
@@ -788,7 +793,20 @@ elements of an array:</p>
 </code></pre>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
+<h5 id="-a-name-l-elems-a-contents-l-elems-l-elems-l-elems-ptraversal-a-a-"><a name="L-elems"></a> <a href="#contents">≡</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems</code></a></h5>
+<p><code>L.elems</code> is a traversal over the elements of an array.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.elems, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
+</code></pre>
+<h5 id="-a-name-l-values-a-contents-l-values-l-values-l-values-ptraversal-p-a-ps-a-"><a name="L-values"></a> <a href="#contents">≡</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values</code></a></h5>
+<p><code>L.values</code> is a traversal over the values of an object.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
+</code></pre>
 <h5 id="-a-name-l-sequence-a-contents-l-sequence-l-sequence-l-sequence-ptraversal-a-p-a-ps-a-"><a name="L-sequence"></a> <a href="#contents">≡</a> <a href="#L-sequence" title="L.sequence: PTraversal ([a] | {p: a, ...ps}) a"><code>L.sequence</code></a></h5>
+<p><strong>NOTE: <code>L.sequence</code> has been deprecated and will be removed in the next major
+version.  Use <a href="#L-elems"><code>L.elems</code></a> when operating on arrays
+and <a href="#L-values"><code>L.values</code></a> when operating on (other) objects..</strong></p>
 <p><code>L.sequence</code> is a traversal over the values of an array or object.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.sequence, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
@@ -1342,7 +1360,7 @@ var toList = xs =&gt; R.is(Array, xs) &amp;&amp; xs.length ? Immutable.List(xs) 
 var isoList = L.iso(fromList, toList)
 </code></pre>
 <p>So, now we can <a href="#L-compose">compose</a> a traversal over <code>List</code> as:</p>
-<pre><code class="hljs lang-js">var seqList = [isoList, L.sequence]
+<pre><code class="hljs lang-js">var seqList = [isoList, L.elems]
 </code></pre>
 <p>And all the usual operations work as one would expect, for example:</p>
 <pre><code class="hljs lang-js">L.remove([seqList, L.when(c =&gt; c &lt; &quot;i&quot;)], sampleList)
