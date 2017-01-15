@@ -546,11 +546,11 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 
 export const augment = template => lens(
   x => {
-    const z = dissocPartialU(0, x)
-    if (z)
+    x = dissocPartialU(0, x)
+    if (x)
       for (const k in template)
-        z[k] = template[k](z)
-    return z
+        x[k] = template[k](x)
+    return x
   },
   (y, x) => {
     if (isObject(y)) {
