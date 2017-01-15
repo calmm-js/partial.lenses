@@ -47,13 +47,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
       * [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
-      * ~~[`L.foldMapOf(monoid, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: Monoid r -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")~~
       * [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
       * [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
     * [Folds over traversals](#folds-over-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData)`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
-      * ~~[`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")~~
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.maximum(traversal, maybeData)`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
@@ -814,27 +812,6 @@ Note that `L.concatAs` is staged so that after given the first two arguments,
 
 See also: [`L.mergeAs`](#L-mergeAs).
 
-##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf(monoid, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: Monoid r -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
-
-**NOTE: `L.foldMapOf` has been deprecated and will be removed.
-Use [`L.concatAs`](#L-concatAs) or [`L.mergeAs`](#L-mergeAs).**
-
-`L.foldMapOf({empty, concat}, t, xMi2r, s)` performs a map, using given function
-`xMi2r`, and fold, using the given `concat` and `empty` operations, over the
-elements focused on by the given traversal or lens `t` from the given data
-structure `s`.  The `concat` operation and the constant returned by `empty()`
-should form
-a
-[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values returned by `xMi2r`.
-
-For example:
-
-```js
-L.foldMapOf(Sum, L.sequence, x => x, [1, 2, 3])
-// 6
-```
-
 ##### <a name="L-merge"></a> [≡](#contents) [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
 
 `L.merge({empty, concat}, t, s)` performs a fold, using the given `concat` and
@@ -938,49 +915,6 @@ L.concatAs(R.pipe(R.negate, toCollect),
 ```
 
 The internal implementation of `L.collectAs` is optimized and faster than the
-above naïve implementation.
-
-##### <a name="L-collectMap"></a> [≡](#contents) [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
-
-**NOTE: `L.collectMap` has been deprecated and will be removed.
-Use [`L.collectAs`](#L-collectAs).**
-
-`L.collectMap` returns an array of the elements focused on by the given
-traversal or lens from a data structure and mapped by the given function to a
-defined value.  Given a lens, there will be 0 or 1 elements in the returned
-array.  Note that a partial *lens* always targets an element, but `L.collectMap`
-implicitly skips elements that are mapped to `undefined` by the given function.
-Given a traversal, there can be any number of elements in the array returned by
-`L.collectMap`.
-
-For example:
-
-```js
-L.collectMap(["xs", L.sequence, "x"], R.negate, {xs: [{x: 1}, {x: 2}]})
-// [ -1, -2 ]
-```
-
-`L.collectMap(traversal, toMaybe, maybeData)` is equivalent
-to
-[`L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)`](#L-concatAs) where
-`Collect` and `toCollect` are defined as follows:
-
-```js
-const Collect = {empty: R.always([]), concat: R.concat}
-const toCollect = x => x !== undefined ? [x] : []
-```
-
-So:
-
-```js
-L.concatAs(R.pipe(R.negate, toCollect),
-           Collect,
-           ["xs", L.sequence, "x"],
-           {xs: [{x: 1}, {x: 2}]})
-// [ -1, -2 ]
-```
-
-The internal implementation of `L.collectMap` is optimized and faster than the
 above naïve implementation.
 
 ##### <a name="L-foldl"></a> [≡](#contents) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")

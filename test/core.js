@@ -52,19 +52,15 @@ export const toFunction = L.toFunction
 export const concatAs = L.concatAs
 export const concat = concatAs(R.identity)
 
-export const foldMapOf = R.curry((m, t, f, s) => concatAs(f, m, t, s)) // deprecated
-
 export const merge = concat
 export const mergeAs = concatAs
 
 export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 
-export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
+export const collect = R.curry((t, s) => collectAs(R.identity, t, s))
 export const collectAs = R.curry((to, t, s) =>
   concatAs(R.pipe(to, toCollect), Collect, t, s))
-
-export const collectMap = R.curry((t, to, s) => collectAs(to, t, s)) // deprecated
 
 export const maximum = concat({empty: () => {}, concat: maxPartial})
 export const minimum = concat({empty: () => {}, concat: minPartial})

@@ -457,14 +457,6 @@ export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
 
 export const concat = concatAs(id)
 
-export const foldMapOf = curry((m, t, xMi2y, s) => {
-  if (process.env.NODE_ENV !== "production" && !foldMapOf.warned) {
-    foldMapOf.warned = 1
-    console.warn("partial.lenses: `foldMapOf` has been deprecated and will be removed.  Use `concatAs` or `mergeAs`.")
-  }
-  return concatAs(xMi2y, m, t, s)
-})
-
 export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
 
 export const merge = mergeAs(id)
@@ -475,14 +467,6 @@ export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
-
-export const collectMap = curry((t, xi2y, s) => {
-  if (process.env.NODE_ENV !== "production" && !collectMap.warned) {
-    collectMap.warned = 1
-    console.warn("partial.lenses: `collectMap` has been deprecated and will be removed.  Use `collectAs`.")
-  }
-  return collectAs(xi2y, t, s)
-})
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))

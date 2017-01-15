@@ -420,24 +420,13 @@ describe("L.collect", () => {
   testEq('X.collect(X.sequence, a100000).length', 100000)
 })
 
-describe("L.collectMap", () => {
-  testEq('L.collectMap(L.sequence, R.negate, [1,2,3])', [-1,-2,-3])
-  testEq('L.collectMap(L.sequence, x => x < 0 ? undefined : x+1, [0,-1,2,-3])',
+describe("L.collectAs", () => {
+  testEq('L.collectAs(R.negate, L.sequence, [1,2,3])', [-1,-2,-3])
+  testEq('L.collectAs(x => x < 0 ? undefined : x+1, L.sequence, [0,-1,2,-3])',
          [1, 3])
 })
 
 export const Sum = {empty: () => 0, concat: (x, y) => x + y}
-
-describe("L.foldMapOf", () => {
-  testEq('L.foldMapOf(Sum, L.sequence, x => x+1, null)', 0)
-  testEq('L.foldMapOf(Sum, [L.sequence], x => x+1, [])', 0)
-  testEq('L.foldMapOf(Sum, L.sequence, x => x+1, [1, 2, 3])', 9)
-  testEq(`L.foldMapOf(Sum,
-                      [L.sequence, "x", L.optional],
-                      x => x+1,
-                      [{x:1}, {y:2}, {x:3}])`,
-         6)
-})
 
 describe("L.concatAs", () => {
   testEq('L.concatAs(x => x+1, Sum, L.sequence, null)', 0)
@@ -551,9 +540,9 @@ describe("indexing", () => {
          [1,-2,3,-4])
   testEq('L.modify([L.sequence, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])',
          [1,-2,3,-4])
-  testEq('L.collectMap(L.sequence, (x, i) => [x, i], ["a", "b"])',
+  testEq('L.collectAs((x, i) => [x, i], L.sequence, ["a", "b"])',
          [["a", 0], ["b", 1]])
-  testEq('L.collectMap(L.sequence, (x, i) => [x, i], {x: 101, y: 42})',
+  testEq('L.collectAs((x, i) => [x, i], L.sequence, {x: 101, y: 42})',
          [[101, "x"], [42, "y"]])
 })
 

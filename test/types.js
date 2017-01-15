@@ -68,13 +68,6 @@ export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
                              T.any)
 export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
-// deprecated
-export const foldMapOf = T.fn([T_monoid,
-                               T_traversal,
-                               T.fn([T_maybeData, T_index], T.any),
-                               T_maybeData],
-                              T.any)
-
 export const mergeAs = concatAs
 export const merge = concat
 
@@ -91,12 +84,6 @@ export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
                                T_traversal,
                                T_maybeData],
                               T.array(T_data))
-
-// deprecated
-export const collectMap = T.fn([T_traversal,
-                                T.fn([T_maybeData, T_index], T_maybeData),
-                                T_maybeData],
-                               T.array(T_data))
 
 export const maximum = T.fn([T_traversal, T_maybeData], T.any)
 export const minimum = T.fn([T_traversal, T_maybeData], T.any)
