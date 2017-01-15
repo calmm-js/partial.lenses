@@ -367,6 +367,7 @@ describe("L.sequence", () => {
   testEq('L.remove(L.sequence, {x: 11, y: 22, z: 33})', undefined)
   testEq('L.modify(L.sequence, R.inc, {})', undefined)
   testEq('L.modify(L.sequence, R.inc, null)', null)
+  testEq('L.modify(L.elems, R.inc, null)', null)
 })
 
 describe("L.optional", () => {

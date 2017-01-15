@@ -63,7 +63,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
-      * [`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")
+      * [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
+      * [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
+      * ~~[`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")~~
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData)`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
@@ -1085,7 +1087,33 @@ See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 #### Traversals and combinators
 
+##### <a name="L-elems"></a> [≡](#contents) [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
+
+`L.elems` is a traversal over the elements of an array.
+
+For example:
+
+```js
+L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
+// { xs: [ { x: 2 }, { x: 3 } ] }
+```
+
+##### <a name="L-values"></a> [≡](#contents) [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
+
+`L.values` is a traversal over the values of an object.
+
+For example:
+
+```js
+L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
+// { a: -1, b: -2, c: -3 }
+```
+
 ##### <a name="L-sequence"></a> [≡](#contents) [`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")
+
+**NOTE: `L.sequence` has been deprecated and will be removed in the next major
+version.  Use [`L.elems`](#L-elems) when operating on arrays
+and [`L.values`](#L-values) when operating on (other) objects..**
 
 `L.sequence` is a traversal over the values of an array or object.
 

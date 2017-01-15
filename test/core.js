@@ -67,6 +67,8 @@ export const sum = concatDefined({empty: () => 0, concat: R.add})
 
 export const branch = L.branch
 
+export const elems = L.elems
+export const values = L.values
 export const sequence = L.sequence
 
 // Lenses
