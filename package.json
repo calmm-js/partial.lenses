@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "7.2.2",
+  "version": "8.0.0",
   "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
   "main": "lib/partial.lenses.js",
   "scripts": {
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "infestines": "^0.3.1"
+    "infestines": "^0.4.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
