@@ -63,7 +63,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props})`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
-      * [`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")
+      * [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
+      * [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
+      * ~~[`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")~~
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData)`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
@@ -339,14 +341,14 @@ that targets all the texts:
 ```js
 const texts = ["contents",
                L.required([]),
-               L.sequence,
+               L.elems,
                L.choose(R.pipe(L.remove("text"), L.defaults)),
                "text"]
 ```
 
-What makes the above a traversal is the [`L.sequence`](#L-sequence) part.  Once
-a traversal is composed with a lens, the whole results is a traversal.  The
-other parts of the above composition should already be familiar from previous
+What makes the above a traversal is the [`L.elems`](#L-elems) part.  Once a
+traversal is composed with a lens, the whole results is a traversal.  The other
+parts of the above composition should already be familiar from previous
 examples.  Note the use of [`L.choose`](#L-choose)
 with [`L.defaults`](#L-choose).  We'll get back to that shortly.
 
@@ -445,7 +447,7 @@ L.modify(["elems", 0, "x"], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.modify(["elems", L.sequence, "x"],
+L.modify(["elems", L.elems, "x"],
          R.dec,
          {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
@@ -466,7 +468,7 @@ L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.remove([L.sequence, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
+L.remove([L.elems, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 // [ { x: 1 }, { y: 1 } ]
 ```
 
@@ -488,7 +490,7 @@ L.set(["a", 0, "x"], 11, {id: "z"})
 or, when using a [traversal](#traversals), elements
 
 ```js
-L.set([L.sequence, "x", L.when(x => x > 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
+L.set([L.elems, "x", L.when(x => x > 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 // [ { x: 1 }, { x: -1, y: 1 }, { x: -1 } ]
 ```
 
@@ -563,7 +565,7 @@ like [`L.zero`](#L-zero), which is the identity element of `L.choice`.
 For example:
 
 ```js
-L.modify([L.sequence, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+L.modify([L.elems, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 // [ { R: 1 }, { a: 2 }, { d: 3 } ]
 ```
 
@@ -605,14 +607,14 @@ the focus is `undefined`, the lens will be read-only.
 As an example, consider the difference between:
 
 ```js
-L.set([L.sequence, "x"], 3, [{x: 1}, {y: 2}])
+L.set([L.elems, "x"], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2, x: 3 } ]
 ```
 
 and:
 
 ```js
-L.set([L.sequence, "x", L.optional], 3, [{x: 1}, {y: 2}])
+L.set([L.elems, "x", L.optional], 3, [{x: 1}, {y: 2}])
 // [ { x: 3 }, { y: 2 } ]
 ```
 
@@ -627,7 +629,7 @@ selectively turn a lens into a read-only lens whose view is `undefined`.
 For example:
 
 ```js
-L.modify([L.sequence, L.when(x => x > 0)], R.negate, [0, -1, 2, -3, 4])
+L.modify([L.elems, L.when(x => x > 0)], R.negate, [0, -1, 2, -3, 4])
 // [ 0, -1, -2, -3, -4 ]
 ```
 
@@ -644,8 +646,8 @@ read-only lens whose view is always `undefined`.
 For example:
 
 ```js
-L.collect([L.sequence,
-           L.choose(x => (R.is(Array, x) ? L.sequence :
+L.collect([L.elems,
+           L.choose(x => (R.is(Array, x) ? L.elems :
                           R.is(Object, x) ? "x" :
                           L.zero))],
           [1, {x: 2}, [3,4]])
@@ -665,8 +667,11 @@ data structure of nested arrays and objects:
 
 ```js
 const flatten = [L.optional, L.lazy(rec => {
-  const nest = [L.sequence, rec]
-  return L.choose(x => R.is(Object, x) ? nest : L.identity)
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.choose(x => (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 ```
 
@@ -782,7 +787,7 @@ For example:
 
 ```js
 const Sum = {empty: () => 0, concat: (x, y) => x + y}
-L.concat(Sum, L.sequence, [1, 2, 3])
+L.concat(Sum, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -805,7 +810,7 @@ the values returned by `xMi2r`.
 For example:
 
 ```js
-L.concatAs(x => x, Sum, L.sequence, [1, 2, 3])
+L.concatAs(x => x, Sum, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -831,7 +836,7 @@ the values returned by `xMi2r`.
 For example:
 
 ```js
-L.foldMapOf(Sum, L.sequence, x => x, [1, 2, 3])
+L.foldMapOf(Sum, L.elems, x => x, [1, 2, 3])
 // 6
 ```
 
@@ -848,7 +853,7 @@ the values focused on by `t`.
 For example:
 
 ```js
-L.merge(Sum, L.sequence, [1, 2, 3])
+L.merge(Sum, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -871,7 +876,7 @@ the values returned by `xMi2r`.
 For example:
 
 ```js
-L.mergeAs(x => x, Sum, L.sequence, [1, 2, 3])
+L.mergeAs(x => x, Sum, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -893,7 +898,7 @@ traversal or lens from a data structure.
 For example:
 
 ```js
-L.collect(["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
+L.collect(["xs", L.elems, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
@@ -913,7 +918,7 @@ traversal, there can be any number of elements in the array returned by
 For example:
 
 ```js
-L.collectAs(R.negate, ["xs", L.sequence, "x"], {xs: [{x: 1}, {x: 2}]})
+L.collectAs(R.negate, ["xs", L.elems, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
 
@@ -932,7 +937,7 @@ So:
 ```js
 L.concatAs(R.pipe(R.negate, toCollect),
            Collect,
-           ["xs", L.sequence, "x"],
+           ["xs", L.elems, "x"],
            {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
@@ -956,7 +961,7 @@ Given a traversal, there can be any number of elements in the array returned by
 For example:
 
 ```js
-L.collectMap(["xs", L.sequence, "x"], R.negate, {xs: [{x: 1}, {x: 2}]})
+L.collectMap(["xs", L.elems, "x"], R.negate, {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
 
@@ -975,7 +980,7 @@ So:
 ```js
 L.concatAs(R.pipe(R.negate, toCollect),
            Collect,
-           ["xs", L.sequence, "x"],
+           ["xs", L.elems, "x"],
            {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
@@ -991,7 +996,7 @@ traversal.
 For example:
 
 ```js
-L.foldl((x, y) => x + y, 0, L.sequence, [1,2,3])
+L.foldl((x, y) => x + y, 0, L.elems, [1,2,3])
 // 6
 ```
 
@@ -1003,7 +1008,7 @@ traversal.
 For example:
 
 ```js
-L.foldr((x, y) => x * y, 1, L.sequence, [1,2,3])
+L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 // 6
 ```
 
@@ -1015,7 +1020,7 @@ traversal.
 For example:
 
 ```js
-L.maximum(L.sequence, [1,2,3])
+L.maximum(L.elems, [1,2,3])
 // 3
 ```
 
@@ -1027,7 +1032,7 @@ traversal.
 For example:
 
 ```js
-L.minimum(L.sequence, [1,2,3])
+L.minimum(L.elems, [1,2,3])
 // 1
 ```
 
@@ -1039,7 +1044,7 @@ traversal.
 For example:
 
 ```js
-L.product(L.sequence, [1,2,3])
+L.product(L.elems, [1,2,3])
 // 6
 ```
 
@@ -1050,7 +1055,7 @@ L.product(L.sequence, [1,2,3])
 For example:
 
 ```js
-L.sum(L.sequence, [1,2,3])
+L.sum(L.elems, [1,2,3])
 // 6
 ```
 
@@ -1064,7 +1069,7 @@ how the new traversal should visit the properties of an object.
 For example:
 
 ```js
-L.collect(L.branch({first: L.sequence, second: L.identity}),
+L.collect(L.branch({first: L.elems, second: L.identity}),
           {first: ["x"], second: "y"})
 // [ 'x', 'y' ]
 ```
@@ -1085,7 +1090,33 @@ See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 #### Traversals and combinators
 
+##### <a name="L-elems"></a> [≡](#contents) [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
+
+`L.elems` is a traversal over the elements of an array.
+
+For example:
+
+```js
+L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
+// { xs: [ { x: 2 }, { x: 3 } ] }
+```
+
+##### <a name="L-values"></a> [≡](#contents) [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
+
+`L.values` is a traversal over the values of an object.
+
+For example:
+
+```js
+L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
+// { a: -1, b: -2, c: -3 }
+```
+
 ##### <a name="L-sequence"></a> [≡](#contents) [`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")
+
+**NOTE: `L.sequence` has been deprecated and will be removed in the next major
+version.  Use [`L.elems`](#L-elems) when operating on arrays
+and [`L.values`](#L-values) when operating on (other) objects..**
 
 `L.sequence` is a traversal over the values of an array or object.
 
@@ -1992,7 +2023,7 @@ const isoList = L.iso(fromList, toList)
 So, now we can [compose](#L-compose) a traversal over `List` as:
 
 ```js
-const seqList = [isoList, L.sequence]
+const seqList = [isoList, L.elems]
 ```
 
 And all the usual operations work as one would expect, for example:

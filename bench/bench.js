@@ -51,7 +51,7 @@ const toList = x => x !== undefined ? [x] : []
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
 const flatten = [L.optional, L.lazy(rec => {
-  const nest = L.toFunction([L.sequence, rec])
+  const nest = L.toFunction([L.elems, rec])
   return L.choose(x => I.isArray(x) ? nest : L.identity)
 })]
 
@@ -103,39 +103,39 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.foldr(add, 0, L.sequence, xs100)`,
+    `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
   ], [
-    `L.foldr(add, 0, L.sequence, xs100000)`,
+    `L.foldr(add, 0, L.elems, xs100000)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`,
     `R.reduceRight(add, 0, xs100000)`,
   ], [
-    `L.foldl(add, 0, L.sequence, xs100)`,
+    `L.foldl(add, 0, L.elems, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduce(add, 0, xs100)`,
   ], [
-    'L.merge(Sum, L.sequence, xs100)',
-    'L.sum(L.sequence, xs100)',
+    'L.merge(Sum, L.elems, xs100)',
+    'L.sum(L.elems, xs100)',
     'O.Fold.sumOf(O.Traversal.traversed, xs100)',
     'P.sumOf(P.traversed, xs100)',
     'R.sum(xs100)',
   ], [
-    'L.maximum(L.sequence, xs100)',
+    'L.maximum(L.elems, xs100)',
     'O.Fold.maximumOf(O.Traversal.traversed, xs100)',
   ], [
-    'L.merge(Sum, [L.sequence, L.sequence, L.sequence], xsss100)',
-    'L.sum([L.sequence, L.sequence, L.sequence], xsss100)',
+    'L.merge(Sum, [L.elems, L.elems, L.elems], xsss100)',
+    'L.sum([L.elems, L.elems, L.elems], xsss100)',
     `O.Fold.sumOf(R.compose(O.Traversal.traversed,
                             O.Traversal.traversed,
                             O.Traversal.traversed),
                   xsss100)`,
     'P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)',
   ], [
-    'L.collect(L.sequence, xs100)',
+    'L.collect(L.elems, xs100)',
     'O.Fold.toListOf(O.Traversal.traversed, xs100)',
   ], [
-    'L.collect([L.sequence, L.sequence, L.sequence], xsss100)',
+    'L.collect([L.elems, L.elems, L.elems], xsss100)',
     `O.Fold.toListOf(R.compose(O.Traversal.traversed,
                                O.Traversal.traversed,
                                O.Traversal.traversed),
@@ -145,12 +145,12 @@ R.forEach(bs => {
     'L.collect(flatten, xsss100)',
     'R.flatten(xsss100)',
   ], [
-    'L.modify(L.sequence, inc, xs100)',
+    'L.modify(L.elems, inc, xs100)',
     'O.Setter.over(O.Traversal.traversed, inc, xs100)',
     'P.over(P.traversed, inc, xs100)',
     'R.map(inc, xs100)',
   ], [
-    'L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)',
+    'L.modify([L.elems, L.elems, L.elems], inc, xsss100)',
     `O.Setter.over(R.compose(O.Traversal.traversed,
                              O.Traversal.traversed,
                              O.Traversal.traversed),
@@ -242,7 +242,7 @@ R.forEach(bs => {
     'L.get(L.valueOr(1), null)',
     'L.get(L.valueOr(1), undefined)',
   ], [
-    'L.concatAs(toList, List, L.sequence, xs100)',
+    'L.concatAs(toList, List, L.elems, xs100)',
   ], [
     'L.modify(flatten, inc, xsss100)',
   ], [

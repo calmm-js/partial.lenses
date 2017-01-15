@@ -496,18 +496,34 @@ export function branch(template) {
 
 // Traversals and combinators
 
-export function sequence(A, xi2yA, xs, _) {
+export function elems(A, xi2yA, xs, _) {
   if (isArray(xs)) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs)
-  } else if (isObject(xs)) {
+  } else {
+    if (process.env.NODE_ENV !== "production")
+      reqApplicative(A)
+    return (0,A.of)(xs)
+  }
+}
+
+export function values(A, xi2yA, xs, _) {
+  if (isObject(xs)) {
     return branchOn(keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
       reqApplicative(A)
     return (0,A.of)(xs)
   }
+}
+
+export function sequence(A, xi2yA, xs, i) {
+  if (process.env.NODE_ENV !== "production" && !sequence.warned) {
+    sequence.warned = 1
+    console.warn("partial.lenses: `sequence` has been deprecated and will be removed in the next major version.  Use `elems` when operating on arrays and `values` when operating on (other) objects.")
+  }
+  return (isArray(xs) ? elems : values)(A, xi2yA, xs, i)
 }
 
 // Operations on lenses
