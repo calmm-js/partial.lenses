@@ -501,12 +501,20 @@ export function branch(template) {
 
 // Traversals and combinators
 
-export function sequence(A, xi2yA, xs, _) {
+export function elems(A, xi2yA, xs, _) {
   if (seemsArrayLike(xs)) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs)
-  } else if (xs instanceof Object) {
+  } else {
+    if (process.env.NODE_ENV !== "production")
+      reqApplicative(A)
+    return (0,A.of)(xs)
+  }
+}
+
+export function values(A, xi2yA, xs, _) {
+  if (xs instanceof Object) {
     return branchOn(keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")

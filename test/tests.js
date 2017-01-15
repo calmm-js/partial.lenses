@@ -241,8 +241,8 @@ describe("L.zero", () => {
   testEq('L.get(L.zero, "anything")', undefined)
   testEq('L.get([L.zero, L.valueOr("whatever")], "anything")', "whatever")
   testEq('L.set(L.zero, "anything", "original")', "original")
-  testEq('L.collect([L.sequence, L.zero], [1,3])', [])
-  testEq('L.remove([L.sequence, L.zero], [1,2])', [1,2])
+  testEq('L.collect([L.elems, L.zero], [1,3])', [])
+  testEq('L.remove([L.elems, L.zero], [1,2])', [1,2])
 })
 
 describe("L.to", () => {
@@ -340,56 +340,59 @@ describe("L.augment", () => {
   })
 })
 
-describe("L.sequence", () => {
-  testEq('L.modify(L.sequence, R.negate, [])', undefined)
-  testEq(`L.modify(["xs", L.sequence, "x", L.sequence],
+describe("L.elems", () => {
+  testEq('L.modify(L.elems, R.negate, [])', undefined)
+  testEq(`L.modify(["xs", L.elems, "x", L.elems],
                    R.add(1),
                    {xs: [{x: [1]}, {x: [2,3,4]}]})`,
          {xs: [{x: [2]}, {x: [3,4,5]}]})
-  testEq(`L.set(["xs", L.sequence, "x", L.sequence],
+  testEq(`L.set(["xs", L.elems, "x", L.elems],
                 101,
                 {xs: [{x: [1]}, {x: [2,3,4]}]})`,
          {xs: [{x: [101]}, {x: [101,101,101]}]})
-  testEq(`L.remove(["xs", L.sequence, "x", L.sequence],
+  testEq(`L.remove(["xs", L.elems, "x", L.elems],
                    {ys: "hip", xs: [{x: [1]}, {x: [2,3,4]}]})`,
          {ys: "hip"})
-  testEq(`L.modify(["xs", L.sequence, "x"],
+  testEq(`L.modify(["xs", L.elems, "x"],
                    x => x < 2 ? undefined : x,
                    {xs: [{x:3},{x:1},{x:4},{x:1,y:0},{x:5},{x:9},{x:2}]})`,
          {xs:[{x:3},{x:4},{y:0},{x:5},{x:9},{x:2}]})
-  testEq(`L.modify([L.sequence, ["x", L.sequence]],
+  testEq(`L.modify([L.elems, ["x", L.elems]],
                    R.add(1),
                    [{x: [1]}, {}, {x: []}, {x: [2, 3]}])`,
          [{x: [2]}, {x: [3, 4]}])
-  testEq(`L.modify([[L.sequence, "x"], L.sequence],
+  testEq(`L.modify([[L.elems, "x"], L.elems],
                    R.add(1),
                    [{x: [1]}, {y: "keep"}, {x: [], z: "these"}, {x: [2, 3]}])`,
          [{x: [2]}, {y: "keep"}, {z: "these"}, {x: [3, 4]}])
-  testEq('L.modify(L.sequence, R.negate, {x: 11, y: 22})', {x: -11, y: -22})
-  testEq(`L.remove([L.sequence, L.when(x => 11 < x && x < 33)],
+})
+
+describe("L.values", () => {
+  testEq('L.modify(L.values, R.negate, {x: 11, y: 22})', {x: -11, y: -22})
+  testEq(`L.remove([L.values, L.when(x => 11 < x && x < 33)],
                    {x: 11, y: 22, z: 33})`,
          {x: 11, z: 33})
-  testEq('L.remove(L.sequence, {x: 11, y: 22, z: 33})', undefined)
-  testEq('L.modify(L.sequence, R.inc, {})', undefined)
-  testEq('L.modify(L.sequence, R.inc, null)', null)
+  testEq('L.remove(L.values, {x: 11, y: 22, z: 33})', undefined)
+  testEq('L.modify(L.values, R.inc, {})', undefined)
+  testEq('L.modify(L.values, R.inc, null)', null)
 })
 
 describe("L.optional", () => {
   testEq('L.collect(L.optional, undefined)', [])
   testEq('L.collect(L.optional, 0)', [ 0 ])
-  testEq('L.collect([L.sequence, L.sequence], [[0, null], [false, NaN]])',
+  testEq('L.collect([L.elems, L.elems], [[0, null], [false, NaN]])',
          [0, null, false, NaN])
-  testEq(`L.collect([L.sequence, "x", L.optional],
+  testEq(`L.collect([L.elems, "x", L.optional],
                     [{x: 1}, {y: 2}, {x: 3, z: 1}])`,
          [1, 3])
-  testEq(`L.modify([L.sequence, "x", L.optional],
+  testEq(`L.modify([L.elems, "x", L.optional],
                    R.add(1),
                    [{x: 1}, {y: 2}, {x: 3, z: 1}])`,
          [{x: 2}, {y: 2}, {x: 4, z: 1}])
-  testEq(`L.collect([L.sequence, "x", L.optional, L.sequence],
+  testEq(`L.collect([L.elems, "x", L.optional, L.elems],
                     [{x: [1, 2]}, {y: 2}, {x: [3], z: 1}])`,
          [1, 2, 3])
-  testEq(`L.modify([L.sequence, "x", L.optional, L.sequence],
+  testEq(`L.modify([L.elems, "x", L.optional, L.elems],
                    x => x < 2 ? undefined : x-1,
                    [{x: [1, 2]}, {y: 2}, {x: [3], z: 1}])`,
          [{x: [1]}, {y: 2}, {x: [2], z: 1}])
@@ -399,68 +402,68 @@ describe("L.when", () => {
   testEq('L.get(L.when(x => x > 2), 1)', undefined)
   testEq('L.get([L.when(x => x > 2), L.just(2)], 1)', 2)
   testEq('L.get(L.when(x => x > 2), 3)', 3)
-  testEq('L.collect([L.sequence, L.when(x => x > 2)], [1,3,2,4])', [3,4])
-  testEq('L.modify([L.sequence, L.when(x => x > 2)], R.negate, [1,3,2,4])',
+  testEq('L.collect([L.elems, L.when(x => x > 2)], [1,3,2,4])', [3,4])
+  testEq('L.modify([L.elems, L.when(x => x > 2)], R.negate, [1,3,2,4])',
          [1,-3,2,-4])
 })
 
 describe("L.collect", () => {
-  testEq(`L.collect(["xs", L.sequence, "x", L.sequence],
+  testEq(`L.collect(["xs", L.elems, "x", L.elems],
                     {xs: [{x:[3,1]},{x:[4,1]},{x:[5,9,2]}]})`,
          [3,1,4,1,5,9,2])
-  testEq(`L.collect([L.sequence, "x", L.sequence],
+  testEq(`L.collect([L.elems, "x", L.elems],
                     [{x: [1]}, {}, {x: []}, {x: [2, 3]}])`,
          [1, 2, 3])
-  testEq('L.collect(L.sequence, [])', [])
+  testEq('L.collect(L.elems, [])', [])
   testEq('L.collect("x", {x: 101})', [101])
   testEq('L.collect("y", {x: 101})', [])
-  testEq(`L.collect(["a", L.sequence, "b", L.sequence, "c", L.sequence],
+  testEq(`L.collect(["a", L.elems, "b", L.elems, "c", L.elems],
                     {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})`,
          [1,2])
-  testEq('X.collect(X.sequence, a100000).length', 100000)
+  testEq('X.collect(X.elems, a100000).length', 100000)
 })
 
 describe("L.collectAs", () => {
-  testEq('L.collectAs(R.negate, L.sequence, [1,2,3])', [-1,-2,-3])
-  testEq('L.collectAs(x => x < 0 ? undefined : x+1, L.sequence, [0,-1,2,-3])',
+  testEq('L.collectAs(R.negate, L.elems, [1,2,3])', [-1,-2,-3])
+  testEq('L.collectAs(x => x < 0 ? undefined : x+1, L.elems, [0,-1,2,-3])',
          [1, 3])
 })
 
 export const Sum = {empty: () => 0, concat: (x, y) => x + y}
 
 describe("L.concatAs", () => {
-  testEq('L.concatAs(x => x+1, Sum, L.sequence, null)', 0)
-  testEq('L.concatAs(x => x+1, Sum, [L.sequence], [])', 0)
-  testEq('L.concatAs(x => x+1, Sum, L.sequence, [1, 2, 3])', 9)
+  testEq('L.concatAs(x => x+1, Sum, L.elems, null)', 0)
+  testEq('L.concatAs(x => x+1, Sum, [L.elems], [])', 0)
+  testEq('L.concatAs(x => x+1, Sum, L.elems, [1, 2, 3])', 9)
   testEq(`L.concatAs(x => x+1,
                      Sum,
-                     [L.sequence, "x", L.optional],
+                     [L.elems, "x", L.optional],
                      [{x:1}, {y:2}, {x:3}])`,
          6)
 })
 
 describe("folds", () => {
-  testEq(`X.concat(Sum, X.sequence, a100000)`, 100000)
-  testEq(`X.concatAs(id, Sum, X.sequence, a100000)`, 100000)
-  testEq(`X.merge(Sum, X.sequence, a100000)`, 100000)
-  testEq(`X.mergeAs(id, Sum, X.sequence, a100000)`, 100000)
-  testEq(`L.maximum([L.sequence, "x"], [])`, undefined)
-  testEq(`L.minimum([L.sequence, "x"], [])`, undefined)
-  testEq(`L.maximum(L.sequence, "JavaScript")`, "v")
-  testEq(`L.maximum(L.sequence, [1,2,3])`, 3)
-  testEq(`L.minimum(L.sequence, [1,2,3])`, 1)
-  testEq(`L.sum([L.sequence, "x"], undefined)`, 0)
-  testEq(`L.product([L.sequence, "x"], undefined)`, 1)
-  testEq(`L.sum([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
-  testEq(`L.product([L.sequence, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
-  testEq(`L.foldr((x,y) => [x,y], 0, [L.sequence, L.sequence], [])`, 0)
-  testEq(`L.foldl((x,y) => [x,y], 0, [L.sequence, L.sequence], [])`, 0)
-  testEq(`L.foldr((x,y) => [x,y], 0, [L.sequence, L.sequence], [[1,2],[3]])`,
+  testEq(`X.concat(Sum, X.elems, a100000)`, 100000)
+  testEq(`X.concatAs(id, Sum, X.elems, a100000)`, 100000)
+  testEq(`X.merge(Sum, X.elems, a100000)`, 100000)
+  testEq(`X.mergeAs(id, Sum, X.elems, a100000)`, 100000)
+  testEq(`L.maximum([L.elems, "x"], [])`, undefined)
+  testEq(`L.minimum([L.elems, "x"], [])`, undefined)
+  testEq(`L.maximum(L.elems, "JavaScript")`, "v")
+  testEq(`L.maximum(L.elems, [1,2,3])`, 3)
+  testEq(`L.minimum(L.elems, [1,2,3])`, 1)
+  testEq(`L.sum([L.elems, "x"], undefined)`, 0)
+  testEq(`L.product([L.elems, "x"], undefined)`, 1)
+  testEq(`L.sum([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
+  testEq(`L.product([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
+  testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
+  testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
+  testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,
          [[[0,3],2],1])
-  testEq(`L.foldl((x,y) => [x,y], 0, [L.sequence, L.sequence], [[1,2],[3]])`,
+  testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,
          [[[0,1],2],3])
   ;['foldl', 'foldr'].forEach(fold => {
-    testEq(`X.${fold}((x,y) => x+y, 0, X.sequence, a100000)`,
+    testEq(`X.${fold}((x,y) => x+y, 0, X.elems, a100000)`,
            100000)
   })
 })
@@ -498,7 +501,7 @@ describe("L.getInverse", () => {
 })
 
 export const flatten = L.lazy(rec => {
-  const nest = [L.sequence, rec]
+  const nest = [L.elems, rec]
   return L.choose(x => R.is(Array, x) ? nest : L.identity)
 })
 
@@ -536,13 +539,13 @@ describe("indexing", () => {
   testEq('L.modify(["x", 0], (x, i) => [x, i], {x: ["y"]})', {x: [["y", 0]]})
   testEq('L.modify(["x", L.required([])], (x, i) => [x, i], {x: ["y"]})',
          {x: [["y"], "x"]})
-  testEq('L.modify(L.sequence, (x, i) => i & 1 ? -x : x, [1,2,3,4])',
+  testEq('L.modify(L.elems, (x, i) => i & 1 ? -x : x, [1,2,3,4])',
          [1,-2,3,-4])
-  testEq('L.modify([L.sequence, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])',
+  testEq('L.modify([L.elems, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])',
          [1,-2,3,-4])
-  testEq('L.collectAs((x, i) => [x, i], L.sequence, ["a", "b"])',
+  testEq('L.collectAs((x, i) => [x, i], L.elems, ["a", "b"])',
          [["a", 0], ["b", 1]])
-  testEq('L.collectAs((x, i) => [x, i], L.sequence, {x: 101, y: 42})',
+  testEq('L.collectAs((x, i) => [x, i], L.values, {x: 101, y: 42})',
          [[101, "x"], [42, "y"]])
 })
 
@@ -564,7 +567,7 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('X.prop(x => x)')
     testThrows('X.prop()')
 
-    testThrows('X.get(L.sequence, [])')
+    testThrows('X.get(L.elems, [])')
 
     testThrows('X.get(x => x, 0)')
   })

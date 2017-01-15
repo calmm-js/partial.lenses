@@ -93,7 +93,8 @@ export const sum = product
 
 export const branch = T.fn([T.props(T_traversal)], T_traversal)
 
-export const sequence = T_traversal
+export const elems = T_traversal
+export const values = T_traversal
 
 export const get = T.fn([T_lens, T_maybeData], T_maybeData)
 
