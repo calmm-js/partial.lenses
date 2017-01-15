@@ -6,9 +6,14 @@ Relaxed treatment of objects and array like objects.  Previously various lenses
 and traversals required objects to have either `Object` or `Array` as the
 constructor.  Now any `instanceof Object` is allowed where previously `Object`
 constructor was required and a `String` or an `Object` with non-negative integer
-`length` is allowed where prviously `Array` constructor was required.  This
+`length` is allowed where previously `Array` constructor was required.  This
 address issue #40.  See the documentation of `L.index`, `L.prop`, `L.branch`,
 and `L.sequence` for more details and examples.
+
+Previously undocumented, but accidentally tested for behavior of index lenses to
+allow negative indices was removed.  The old behavior was to ignore negative
+indices.  The new behavior is to throw an `Error` in non-`production` builds.
+Behaviour in `production` builds is undefined.
 
 Removed deprecated `foldMapOf` and `collectMap`.  Use `concatAs` and `collectAs`
 instead.

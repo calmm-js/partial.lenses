@@ -2,7 +2,7 @@ import * as T from "./type"
 
 const T_maybeData = T.any
 const T_data = T.def
-const T_index = T.or(T.integer, T.string, T.undef)
+const T_index = T.or(T.nonNegative, T.string, T.undef)
 
 const T_functor = T.object({
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
@@ -114,7 +114,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
-export const index = T.fn([T.integer], T_lens)
+export const index = T.fn([T.nonNegative], T_lens)
 
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)

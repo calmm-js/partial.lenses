@@ -554,19 +554,19 @@ describe("L.toFunction", () => {
 
 if (process.env.NODE_ENV !== "production") {
   describe("debug", () => {
-    testThrows('L.set(-1, 0, 0)')
+    testThrows('X.set(-1, 0, 0)')
 
-    testThrows('L.index("x")')
-    testThrows('L.index(-1)')
-    testThrows('L.index()')
+    testThrows('X.index("x")')
+    testThrows('X.index(-1)')
+    testThrows('X.index()')
 
-    testThrows('L.prop(2)')
-    testThrows('L.prop(x => x)')
-    testThrows('L.prop()')
+    testThrows('X.prop(2)')
+    testThrows('X.prop(x => x)')
+    testThrows('X.prop()')
 
-    testThrows('L.get(L.sequence, [])')
+    testThrows('X.get(L.sequence, [])')
 
-    testThrows('L.get(x => x, 0)')
+    testThrows('X.get(x => x, 0)')
   })
 }
 
