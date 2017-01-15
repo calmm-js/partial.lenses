@@ -1,6 +1,6 @@
 # Changelog
 
-## 7.1.0
+## 7.3.0
 
 Deprecated `L.sequence` and introduced `L.elems`, which operates on arrays, and,
 `L.values`, which operates on objects, to be used instead.  `L.sequence`
