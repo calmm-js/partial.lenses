@@ -146,8 +146,8 @@ function traversePartialIndex(A, xi2yA, xs) {
 
 //
 
-const object0ToUndefined = o => {
-  if (!isObject(o))
+function object0ToUndefined(o) {
+  if (!(o instanceof Object))
     return o
   for (const k in o)
     return o
@@ -330,22 +330,20 @@ const setPick = (template, x) => value => {
 const show = (labels, dir) => x =>
   console.log.apply(console, labels.concat([dir, x])) || x
 
-function branchOn(keys, vals) {
+const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   const n = keys.length
-  return (A, xi2yA, x, _) => {
-    const ap = A.ap,
-          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    if (process.env.NODE_ENV !== "production")
-      reqApplicative(A)
-    let r = (0,A.of)(wait(x, n-1))
-    if (!isObject(x))
-      x = void 0
-    for (let i=n-1; 0<=i; --i) {
-      const k = keys[i], v = x && x[k]
-      r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
-    }
-    return (0,A.map)(object0ToUndefined, r)
+  const ap = A.ap,
+        wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
+  if (process.env.NODE_ENV !== "production")
+    reqApplicative(A)
+  let r = (0,A.of)(wait(x, n-1))
+  if (!(x instanceof Object))
+    x = void 0
+  for (let i=n-1; 0<=i; --i) {
+    const k = keys[i], v = x && x[k]
+    r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
   }
+  return (0,A.map)(object0ToUndefined, r)
 }
 
 const normalizer = xi2x => (F, xi2yF, x, i) =>
@@ -524,7 +522,7 @@ export function sequence(A, xi2yA, xs, _) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs)
-  } else if (isObject(xs)) {
+  } else if (xs instanceof Object) {
     return branchOn(keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
@@ -554,7 +552,7 @@ export const augment = template => lens(
   },
   (y, x) => {
     if (isObject(y)) {
-      if (!isObject(x))
+      if (!(x instanceof Object))
         x = void 0
       let z
       const set = (k, v) => {
