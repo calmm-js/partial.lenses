@@ -1370,6 +1370,22 @@ of a string or an object that has a non-negative integer `length`.
 * When setting a defined value to an index that is higher than the length of the
   array, the missing elements will be filled with `null`.
 
+For example:
+
+```js
+L.set(2, "z", ["x", "y", "c"])
+// [ 'x', 'y', 'z' ]
+```
+
+When manipulating strings or array-like non-`Array`
+object, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary:
+
+```js
+L.set([L.rewrite(R.join("")), 1], "a", "LoLa")
+// [ 'LaLa' ]
+```
+
 **NOTE:** There is a gotcha related to removing elements from an array.  Namely,
 when the last element is removed, the result is `undefined` rather than an empty
 array.  This is by design, because this allows the removal to propagate upwards.
