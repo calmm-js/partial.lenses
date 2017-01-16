@@ -2,7 +2,7 @@
 
 ## 8.0.0
 
-Relaxed treatment of objects and array like objects.  Previously various lenses
+Relaxed treatment of objects and array like objects.  Previously various optics
 required objects to have either `Object` or `Array` as the constructor.  Now any
 `instanceof Object` is allowed where previously `Object` constructor was
 required and a `String` or an `Object` with non-negative integer `length` is
