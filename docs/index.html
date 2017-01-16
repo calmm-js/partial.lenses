@@ -123,7 +123,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut)</code></a></li>
 </ul>
 </li>
-<li><a href="#lensing-arrays">Lensing arrays</a><ul>
+<li><a href="#array-like">Lensing array-like objects</a><ul>
 <li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append</code></a></li>
 <li><a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable)</code></a></li>
 <li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></li>
@@ -749,14 +749,44 @@ elements of an array:</p>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
 <h5 id="-a-name-l-elems-a-contents-l-elems-l-elems-l-elems-ptraversal-a-a-"><a name="L-elems"></a> <a href="#contents">≡</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems</code></a></h5>
-<p><code>L.elems</code> is a traversal over the elements of an array.</p>
+<p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
+object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.elems, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
 </code></pre>
+<p>Just like with other optics operating on <a href="#array-like">array-like</a> objects, when
+manipulating non-<code>Array</code> objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to
+convert the result to the desired type, if necessary:</p>
+<pre><code class="hljs lang-js">L.modify([L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
+         R.inc,
+         Int8Array.from([-1,4,0,2,4]))
+</code></pre>
 <h5 id="-a-name-l-values-a-contents-l-values-l-values-l-values-ptraversal-p-a-ps-a-"><a name="L-values"></a> <a href="#contents">≡</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values</code></a></h5>
-<p><code>L.values</code> is a traversal over the values of an object.</p>
+<p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
+written through, <code>L.values</code> always produces an <code>Object</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
+</code></pre>
+<p>When manipulating objects with a non-<code>Object</code> constructor</p>
+<pre><code class="hljs lang-js">function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+XYZ.prototype.norm = function () {
+  return (this.x * this.x +
+          this.y * this.y +
+          this.z * this.z)
+}
+</code></pre>
+<p>the <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired
+type, if necessary:</p>
+<pre><code class="hljs lang-js">var objectTo = R.curry((C, o) =&gt; Object.assign(Object.create(C.prototype), o))
+
+L.modify([L.rewrite(objectTo(XYZ)), L.values],
+         R.negate,
+         new XYZ(1,2,3))
 </code></pre>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.</p>
@@ -879,10 +909,25 @@ structure invariants after changes.</p>
 is that <a href="#L-normalize"><code>L.normalize</code></a> applies the transform in both directions
 while <code>L.rewrite</code> only applies the transform when writing.</p>
 <p>See the <a href="#bst-as-a-lens">BST as a lens</a> section for a meaningful example.</p>
-<h4 id="lensing-arrays">Lensing arrays</h4>
+<h4 id="-a-name-array-like-a-lensing-array-like-objects"><a name="array-like"></a> Lensing array-like objects</h4>
+<p>Objects that have a non-negative integer <code>length</code> and strings, which are not
+considered <code>Object</code> instances in JavaScript, are considered <em>array-like</em> objects
+by partial optics.</p>
+<p>When writing a defined value through an optic that operates on array-like
+objects, the result is always an <code>Array</code>.  For example:</p>
+<pre><code class="hljs lang-js">L.set(1, &quot;a&quot;, &quot;LoLa&quot;)
+</code></pre>
+<p>It may seem like the result should be of the same type as the object being
+manipulated, but that is problematic, because the focus of a <em>partial</em> optic is
+always optional.  Instead, when manipulating strings or array-like non-<code>Array</code>
+objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
+desired type, if necessary.  For example:</p>
+<pre><code class="hljs lang-js">L.set([L.rewrite(R.join(&quot;&quot;)), 1], &quot;a&quot;, &quot;LoLa&quot;)
+</code></pre>
 <h5 id="-a-name-l-append-a-contents-l-append-l-append-l-append-plens-a-a-"><a name="L-append"></a> <a href="#contents">≡</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append</code></a></h5>
-<p><code>L.append</code> is a write-only lens that can be used to append values to an array.
-The view of <code>L.append</code> is always <code>undefined</code>.</p>
+<p><code>L.append</code> is a write-only lens that can be used to append values to
+an <a href="#array-like">array-like</a> object.  The view of <code>L.append</code> is always
+<code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.append, [&quot;x&quot;])
 </code></pre>
@@ -894,52 +939,58 @@ The view of <code>L.append</code> is always <code>undefined</code>.</p>
 <code>i</code> set to the length of the focused array or 0 in case the focus is not a
 defined array.</p>
 <h5 id="-a-name-l-filter-a-contents-l-filter-value-index-testable-l-filter-l-filter-a-index-boolean-plens-a-a-"><a name="L-filter"></a> <a href="#contents">≡</a> <a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable)</code></a></h5>
-<p><code>L.filter</code> operates on arrays.  When not viewing an array, the result is
-<code>undefined</code>.  When viewing an array, only elements matching the given predicate
-will be returned.  When set, the resulting array will be formed by concatenating
-the set array and the complement of the filtered context.  If the resulting
-array would be empty, the whole result will be <code>undefined</code>.</p>
+<p><code>L.filter</code> operates on <a href="#array-like">array-like</a> objects.  When not viewing an
+array-like object, the result is <code>undefined</code>.  When viewing an array-like
+object, only elements matching the given predicate will be returned.  When set,
+the resulting array will be formed by concatenating the elements of the set
+array-like object and the elements of the complement of the filtered focus.  If
+the resulting array would be empty, the whole result will be <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.remove(L.filter(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
+<pre><code class="hljs lang-js">L.set(L.filter(x =&gt; x &lt;= &quot;2&quot;), &quot;abcd&quot;, &quot;3141592&quot;)
 </code></pre>
-<p><em>Note:</em> An alternative design for filter could implement a smarter algorithm to
-combine arrays when set.  For example, an algorithm based
+<p>An alternative design for filter could implement a smarter algorithm to combine
+arrays when set.  For example, an algorithm based
 on <a href="https://en.wikipedia.org/wiki/Edit_distance">edit distance</a> could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn&#39;t seem to make sense, because in most cases use
-of <a href="#L-normalize"><code>L.normalize</code></a> would be preferable.</p>
+of <a href="#L-normalize"><code>L.normalize</code></a> or <a href="#L-rewrite"><code>L.rewrite</code></a> would be
+preferable.</p>
 <h5 id="-a-name-l-find-a-contents-l-find-value-index-testable-l-find-l-find-a-index-boolean-plens-a-a-"><a name="L-find"></a> <a href="#contents">≡</a> <a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></h5>
-<p><code>L.find</code> operates on arrays like <a href="#L-index"><code>L.index</code></a>, but the index to be
-viewed is determined by finding the first element from the input array that
-matches the given predicate.  When no matching element is found the effect is
-same as with <a href="#L-append"><code>L.append</code></a>.</p>
+<p><code>L.find</code> operates on <a href="#array-like">array-like</a> objects
+like <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding
+the first element from the focus that matches the given predicate.  When no
+matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
 <h5 id="-a-name-l-findwith-a-contents-l-findwith-lenses-l-findwith-l-findwith-plens-s-s1-plens-sn-a-plens-s-a-"><a name="L-findWith"></a> <a href="#contents">≡</a> <a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses)</code></a></h5>
-<p><code>L.findWith(...lenses)</code> chooses an index from an array through which the given
-lens, <a href="#L-compose"><code>[...lenses]</code></a>, focuses on a defined item and then returns a
-lens that focuses on that item.</p>
+<p><code>L.findWith(...lenses)</code> chooses an index from an <a href="#array-like">array-like</a>
+object through which the given lens, <a href="#L-compose"><code>[...lenses]</code></a>, focuses on a
+defined item and then returns a lens that focuses on that item.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.findWith(&quot;x&quot;), [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.findWith(&quot;x&quot;), 3, [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
 <h5 id="-a-name-l-index-a-contents-l-index-integer-l-index-l-index-integer-plens-a-a-"><a name="L-index"></a> <a href="#contents">≡</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(integer)</code></a></h5>
-<p><code>L.index(integer)</code> or just <code>integer</code> focuses on the specified array index.</p>
+<p><code>L.index(integer)</code> or just <code>integer</code> focuses on the element at specified index
+of an <a href="#array-like">array-like</a> object.</p>
 <ul>
-<li>When not viewing a defined array index, the result is <code>undefined</code>.</li>
+<li>When not viewing an index with a defined element, the result is <code>undefined</code>.</li>
 <li>When setting to <code>undefined</code>, the element is removed from the resulting array,
 shifting all higher indices down by one.  If the result would be an empty
 array, the whole result will be <code>undefined</code>.</li>
 <li>When setting a defined value to an index that is higher than the length of the
-array, the missing elements will be filled with <code>null</code>.</li>
+array-like object, the missing elements will be filled with <code>null</code>.</li>
 </ul>
-<p><strong>NOTE:</strong> There is a gotcha related to removing elements from an array.  Namely,
-when the last element is removed, the result is <code>undefined</code> rather than an empty
-array.  This is by design, because this allows the removal to propagate upwards.
-It is not uncommon, however, to have cases where removing the last element from
-an array must not remove the array itself.  Consider the following examples
-without <a href="#L-required"><code>L.required([])</code></a>:</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set(2, &quot;z&quot;, [&quot;x&quot;, &quot;y&quot;, &quot;c&quot;])
+</code></pre>
+<p><strong>NOTE:</strong> There is a gotcha related to removing elements from array-like
+objects.  Namely, when the last element is removed, the result is <code>undefined</code>
+rather than an empty array.  This is by design, because this allows the removal
+to propagate upwards.  It is not uncommon, however, to have cases where removing
+the last element from an array-like object must not remove the array itself.
+Consider the following examples without <a href="#L-required"><code>L.required([])</code></a>:</p>
 <pre><code class="hljs lang-js">L.remove(0, [&quot;a&quot;, &quot;b&quot;])
 </code></pre>
 <pre><code class="hljs lang-js">L.remove(0, [&quot;b&quot;])
@@ -968,6 +1019,7 @@ use <a href="#L-define"><code>L.define</code></a>.</p>
 <p><code>L.prop(string)</code> or <code>string</code> focuses on the specified object property.</p>
 <ul>
 <li>When not viewing a defined object property, the result is <code>undefined</code>.</li>
+<li>When writing to a property, the result is always an <code>Object</code>.</li>
 <li>When setting property to <code>undefined</code>, the property is removed from the result.
 If the result would be an empty object, the whole result will be <code>undefined</code>.</li>
 </ul>
@@ -976,6 +1028,11 @@ If the result would be an empty object, the whole result will be <code>undefined
 <pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 1, y: 2, z: 3})
 </code></pre>
 <pre><code class="hljs lang-js">L.set(&quot;y&quot;, -2, {x: 1, y: 2, z: 3})
+</code></pre>
+<p>When manipulating objects whose constructor is not
+<code>Object</code>, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
+desired type, if necessary:</p>
+<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(XYZ)), &quot;z&quot;], 3, new XYZ(3,1,4))
 </code></pre>
 <h5 id="-a-name-l-props-a-contents-l-props-propnames-l-props-l-props-p1-a1-ps-plens-p1-a1-ps-o-p1-a1-ps-"><a name="L-props"></a> <a href="#contents">≡</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames)</code></a></h5>
 <p><code>L.props</code> focuses on a subset of properties of an object, allowing one to treat
