@@ -536,10 +536,9 @@ data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">var flatten = [L.optional, L.lazy(rec =&gt; {
   const elems = [L.elems, rec]
   const values = [L.values, rec]
-  return L.choose(x =&gt;
-    x instanceof Array ? elems :
-    x instanceof Object ? values :
-    L.identity)
+  return L.choose(x =&gt; (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>

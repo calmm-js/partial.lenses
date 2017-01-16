@@ -22,6 +22,17 @@ Behaviour in `production` builds is undefined.
 Removed deprecated `foldMapOf` and `collectMap`.  Use `concatAs` and `collectAs`
 instead.
 
+## 7.3.0
+
+Deprecated `L.sequence` and introduced `L.elems`, which operates on arrays, and,
+`L.values`, which operates on objects, to be used instead.  `L.sequence`
+originally only operated on arrays, but it was generalized to operate on objects
+in 6.0.0.  Unfortunately that turned out to be a mistake, because in the next
+major version, 8.0.0, the plan is to relax the treatment of objects and array
+like objects.  The problem is that, with the generalized semantics, the type of
+the result, object or array, when writing through `L.sequence` would depend on
+the input in an uncontrollable manner.  Apologies for the inconvenience!
+
 ## 7.0.0
 
 Added minimal support for indexing.  Various operations and combinators now
