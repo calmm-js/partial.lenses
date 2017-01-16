@@ -151,6 +151,10 @@ const nulls = n => Array(n).fill(null)
 const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
+  if (process.env.NODE_ENV !== "production" && !setIndex.warned && i < 0) {
+    setIndex.warned=1
+    console.warn("partial.lenses: Use of negative indices for index lenses will not be supported in the next major version.")
+  }
   if (void 0 !== x) {
     if (!isArray(xs))
       return i < 0 ? void 0 : nulls(i).concat([x])
