@@ -76,7 +76,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.normalize((value, index) => value)`](#L-normalize "L.normalize: ((s, Index) -> s) -> PLens s s")
       * [`L.required(valueOut)`](#L-required "L.required: s -> PLens s s")
       * [`L.rewrite((valueOut, index) => valueOut)`](#L-rewrite "L.rewrite: ((s, Index) -> s) -> PLens s s")
-    * [Lensing arrays](#lensing-arrays)
+    * [Lensing strings and array-like objects](#lensing-strings-and-array-like-objects)
       * [`L.append`](#L-append "L.append: PLens [a] a")
       * [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
       * [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
@@ -1280,7 +1280,7 @@ while `L.rewrite` only applies the transform when writing.
 
 See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
-#### Lensing arrays
+#### Lensing strings and array-like objects
 
 ##### <a name="L-append"></a> [≡](#contents) [`L.append`](#L-append "L.append: PLens [a] a")
 
