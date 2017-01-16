@@ -1025,7 +1025,9 @@ See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 ##### <a name="L-elems"></a> [≡](#contents) [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
 
-`L.elems` is a traversal over the elements of an array.
+`L.elems` is a traversal over the elements of a string or an array-like object
+that has a non-negative integer `length`.  When written through, `L.elems`
+always produces an `Array`.
 
 For example:
 
@@ -1034,15 +1036,55 @@ L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 
+When manipulating strings or array-like non-`Array`
+object, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary:
+
+```js
+L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
+         R.inc,
+         Int8Array.from([-1,4,0,2,4]))
+// Int8Array [ 0, 5, 1, 3, 5 ]
+```
+
 ##### <a name="L-values"></a> [≡](#contents) [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
 
-`L.values` is a traversal over the values of an object.
+`L.values` is a traversal over the values of an `instanceof Object`.  When
+written through, `L.values` always produces an `Object`.
 
 For example:
 
 ```js
 L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 // { a: -1, b: -2, c: -3 }
+```
+
+When manipulating objects with a non-`Object` constructor
+
+```js
+function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+XYZ.prototype.norm = function () {
+  return (this.x * this.x +
+          this.y * this.y +
+          this.z * this.z)
+}
+```
+
+the [`L.rewrite`](#L-rewrite) can be used to convert the result to the desired
+type, if necessary:
+
+```js
+const objectTo = R.curry((C, o) => Object.assign(Object.create(C.prototype), o))
+
+L.modify([L.rewrite(objectTo(XYZ)), L.values],
+         R.negate,
+         new XYZ(1,2,3))
+// XYZ { x: -1, y: -2, z: -3 }
 ```
 
 ### Lenses
