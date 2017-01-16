@@ -1427,6 +1427,7 @@ use [`L.define`](#L-define).
 `L.prop(string)` or `string` focuses on the specified object property.
 
 * When not viewing a defined object property, the result is `undefined`.
+* When writing to a property, the result is always an `Object`.
 * When setting property to `undefined`, the property is removed from the result.
   If the result would be an empty object, the whole result will be `undefined`.
 
@@ -1438,9 +1439,19 @@ For example:
 L.get("y", {x: 1, y: 2, z: 3})
 // 2
 ```
+
 ```js
 L.set("y", -2, {x: 1, y: 2, z: 3})
 // { x: 1, y: -2, z: 3 }
+```
+
+When manipulating objects whose constructor is not
+`Object`, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary:
+
+```js
+L.set([L.rewrite(objectTo(XYZ)), "z"], 3, new XYZ(3,1,4))
+// XYZ { x: 3, y: 1, z: 3 }
 ```
 
 ##### <a name="L-props"></a> [≡](#contents) [`L.props(...propNames)`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
