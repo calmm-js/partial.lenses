@@ -1359,9 +1359,11 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 
 ##### <a name="L-index"></a> [≡](#contents) [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
 
-`L.index(integer)` or just `integer` focuses on the specified array index.
+`L.index(integer)` or just `integer` focuses on the element at specified index
+of a string or an object that has a non-negative integer `length`.
 
-* When not viewing a defined array index, the result is `undefined`.
+* When not viewing an index with a defined element, the result is `undefined`.
+* When writing through an index lens, the result is always an `Array`.
 * When setting to `undefined`, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
