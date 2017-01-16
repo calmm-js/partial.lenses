@@ -1320,6 +1320,10 @@ L.get(L.append, ["x"])
 L.set(L.append, "x", undefined)
 // [ 'x' ]
 ```
+```js
+L.set(L.append, "x", ["z", "y"])
+// [ 'z', 'y', 'x' ]
+```
 
 Note that `L.append` is equivalent to [`L.index(i)`](#L-index) with the index
 `i` set to the length of the focused array or 0 in case the focus is not a
