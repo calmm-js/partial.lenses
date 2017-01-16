@@ -3,13 +3,11 @@ import {
   always,
   applyU,
   arityN,
-  array0,
   assocPartialU,
   curry,
   curryN,
   dissocPartialU,
   id,
-  isArray,
   isDefined,
   isObject,
   keys,
@@ -24,6 +22,11 @@ const flip = bop => (x, y) => bop(y, x)
 
 const unto = c => x => void 0 !== x ? x : c
 
+const isNat = x => x === (x >> 0) && 0 <= x
+
+const seemsArrayLike = x =>
+  x instanceof Object && isNat(x.length) || typeof x === "string"
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -32,6 +35,24 @@ function mapPartialIndexU(xi2y, xs) {
     if (void 0 !== (y = xi2y(xs[i], i)))
       ys.push(y)
   return ys.length ? ys : void 0
+}
+
+function copyToFrom(ys, k, xs, i, j) {
+  while (i < j)
+    ys[k++] = xs[i++]
+  return ys
+}
+
+function setAt(xs, i, x) {
+  xs[i] = x
+  return xs
+}
+
+function fromArrayLike(xs) {
+  if (xs.constructor === Array)
+    return xs
+  const n = xs.length
+  return copyToFrom(Array(n), 0, xs, 0, n)
 }
 
 //
@@ -125,10 +146,8 @@ function traversePartialIndex(A, xi2yA, xs) {
 
 //
 
-const array0ToUndefined = xs => xs.length ? xs : void 0
-
-const object0ToUndefined = o => {
-  if (!isObject(o))
+function object0ToUndefined(o) {
+  if (!(o instanceof Object))
     return o
   for (const k in o)
     return o
@@ -136,7 +155,7 @@ const object0ToUndefined = o => {
 
 //
 
-const getProp = (k, o) => isObject(o) ? o[k] : void 0
+const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 const setProp = (k, v, o) =>
   void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
@@ -146,43 +165,43 @@ const funProp = k => (F, xi2yF, x, _) =>
 
 //
 
-const nulls = n => Array(n).fill(null)
+function clearRange(xs, i, j) {
+  while (i < j)
+    xs[i++] = null
+  return xs
+}
 
-const getIndex = (i, xs) => isArray(xs) ? xs[i] : void 0
+const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
-  if (process.env.NODE_ENV !== "production" && !setIndex.warned && i < 0) {
-    setIndex.warned=1
-    console.warn("partial.lenses: Use of negative indices for index lenses will not be supported in the next major version.")
-  }
+  if (process.env.NODE_ENV !== "production" && i < 0)
+    throw new Error("partial.lenses: Negative indices not supported")
   if (void 0 !== x) {
-    if (!isArray(xs))
-      return i < 0 ? void 0 : nulls(i).concat([x])
+    if (!seemsArrayLike(xs))
+      return setAt(clearRange(Array(i+1), 0, i), i, x)
     const n = xs.length
     if (n <= i)
-      return xs.concat(nulls(i - n), [x])
-    if (i < 0)
-      return !n ? void 0 : xs
+      return setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
     const ys = Array(n)
     for (let j=0; j<n; ++j)
       ys[j] = xs[j]
     ys[i] = x
     return ys
   } else {
-    if (isArray(xs)) {
+    if (seemsArrayLike(xs)) {
       const n = xs.length
-      if (!n)
-        return void 0
-      if (i < 0 || n <= i)
-        return xs
-      if (n === 1)
-        return void 0
-      const ys = Array(n-1)
-      for (let j=0; j<i; ++j)
-        ys[j] = xs[j]
-      for (let j=i+1; j<n; ++j)
-        ys[j-1] = xs[j]
-      return ys
+      if (0 < n) {
+        if (n <= i)
+          return fromArrayLike(xs)
+        if (1 < n) {
+          const ys = Array(n-1)
+          for (let j=0; j<i; ++j)
+            ys[j] = xs[j]
+          for (let j=i+1; j<n; ++j)
+            ys[j-1] = xs[j]
+          return ys
+        }
+      }
     }
   }
 }
@@ -311,22 +330,20 @@ const setPick = (template, x) => value => {
 const show = (labels, dir) => x =>
   console.log.apply(console, labels.concat([dir, x])) || x
 
-function branchOn(keys, vals) {
+const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   const n = keys.length
-  return (A, xi2yA, x, _) => {
-    const ap = A.ap,
-          wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
-    if (process.env.NODE_ENV !== "production")
-      reqApplicative(A)
-    let r = (0,A.of)(wait(x, n-1))
-    if (!isObject(x))
-      x = void 0
-    for (let i=n-1; 0<=i; --i) {
-      const k = keys[i], v = x && x[k]
-      r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
-    }
-    return (0,A.map)(object0ToUndefined, r)
+  const ap = A.ap,
+        wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
+  if (process.env.NODE_ENV !== "production")
+    reqApplicative(A)
+  let r = (0,A.of)(wait(x, n-1))
+  if (!(x instanceof Object))
+    x = void 0
+  for (let i=n-1; 0<=i; --i) {
+    const k = keys[i], v = x && x[k]
+    r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
   }
+  return (0,A.map)(object0ToUndefined, r)
 }
 
 const normalizer = xi2x => (F, xi2yF, x, i) =>
@@ -440,14 +457,6 @@ export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
 
 export const concat = concatAs(id)
 
-export const foldMapOf = curry((m, t, xMi2y, s) => {
-  if (process.env.NODE_ENV !== "production" && !foldMapOf.warned) {
-    foldMapOf.warned = 1
-    console.warn("partial.lenses: `foldMapOf` has been deprecated and will be removed.  Use `concatAs` or `mergeAs`.")
-  }
-  return concatAs(xMi2y, m, t, s)
-})
-
 export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
 
 export const merge = mergeAs(id)
@@ -458,14 +467,6 @@ export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
-
-export const collectMap = curry((t, xi2y, s) => {
-  if (process.env.NODE_ENV !== "production" && !collectMap.warned) {
-    collectMap.warned = 1
-    console.warn("partial.lenses: `collectMap` has been deprecated and will be removed.  Use `collectAs`.")
-  }
-  return collectAs(xi2y, t, s)
-})
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
@@ -501,7 +502,7 @@ export function branch(template) {
 // Traversals and combinators
 
 export function elems(A, xi2yA, xs, _) {
-  if (isArray(xs)) {
+  if (seemsArrayLike(xs)) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs)
@@ -513,21 +514,13 @@ export function elems(A, xi2yA, xs, _) {
 }
 
 export function values(A, xi2yA, xs, _) {
-  if (isObject(xs)) {
+  if (xs instanceof Object) {
     return branchOn(keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
       reqApplicative(A)
     return (0,A.of)(xs)
   }
-}
-
-export function sequence(A, xi2yA, xs, i) {
-  if (process.env.NODE_ENV !== "production" && !sequence.warned) {
-    sequence.warned = 1
-    console.warn("partial.lenses: `sequence` has been deprecated and will be removed in the next major version.  Use `elems` when operating on arrays and `values` when operating on (other) objects.")
-  }
-  return (isArray(xs) ? elems : values)(A, xi2yA, xs, i)
 }
 
 // Operations on lenses
@@ -543,15 +536,15 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 
 export const augment = template => lens(
   x => {
-    const z = dissocPartialU(0, x)
-    if (z)
+    x = dissocPartialU(0, x)
+    if (x)
       for (const k in template)
-        z[k] = template[k](z)
-    return z
+        x[k] = template[k](x)
+    return x
   },
   (y, x) => {
     if (isObject(y)) {
-      if (!isObject(x))
+      if (!(x instanceof Object))
         x = void 0
       let z
       const set = (k, v) => {
@@ -590,20 +583,28 @@ export const rewrite = yi2y => (F, xi2yF, x, i) =>
 // Lensing arrays
 
 export const append = (F, xi2yF, xs, i) =>
-  (0,F.map)(x => array0ToUndefined((isArray(xs) ? xs : array0)
-                                   .concat(void 0 !== x ? [x] : array0)),
+  (0,F.map)(x => setIndex(seemsArrayLike(xs) ? xs.length : 0, x, xs),
             xi2yF(void 0, i))
 
 export const filter = xi2b => (F, xi2yF, xs, i) => {
-  let ts, fs = array0
-  if (isArray(xs))
+  let ts, fs
+  if (seemsArrayLike(xs))
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
-  return (0,F.map)(ts => array0ToUndefined(isArray(ts)?ts.concat(fs):fs),
-                   xi2yF(ts, i))
+  return (0,F.map)(
+    ts => {
+      const tsN = ts ? ts.length : 0,
+            fsN = fs ? fs.length : 0,
+            n = tsN + fsN
+      if (n)
+        return n === fsN
+        ? fs
+        : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
+    },
+    xi2yF(ts, i))
 }
 
 export const find = xi2b => choose(xs => {
-  if (!isArray(xs))
+  if (!seemsArrayLike(xs))
     return 0
   const i = findIndex(xi2b, xs)
   return i < 0 ? append : i

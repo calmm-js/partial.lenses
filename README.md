@@ -47,13 +47,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.concat(monoid, traversal, maybeData)`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
       * [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
-      * ~~[`L.foldMapOf(monoid, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: Monoid r -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")~~
       * [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
       * [`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData)`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
     * [Folds over traversals](#folds-over-traversals)
       * [`L.collect(traversal, maybeData)`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData)`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
-      * ~~[`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")~~
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.maximum(traversal, maybeData)`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
@@ -65,7 +63,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
       * [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
-      * ~~[`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")~~
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData)`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
@@ -79,7 +76,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.normalize((value, index) => value)`](#L-normalize "L.normalize: ((s, Index) -> s) -> PLens s s")
       * [`L.required(valueOut)`](#L-required "L.required: s -> PLens s s")
       * [`L.rewrite((valueOut, index) => valueOut)`](#L-rewrite "L.rewrite: ((s, Index) -> s) -> PLens s s")
-    * [Lensing arrays](#lensing-arrays)
+    * [Lensing array-like objects](#array-like)
       * [`L.append`](#L-append "L.append: PLens [a] a")
       * [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
       * [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
@@ -819,27 +816,6 @@ Note that `L.concatAs` is staged so that after given the first two arguments,
 
 See also: [`L.mergeAs`](#L-mergeAs).
 
-##### <a name="L-foldMapOf"></a> [≡](#contents) [`L.foldMapOf(monoid, traversal, (maybeValue, index) => value, maybeData)`](#L-foldMapOf "L.foldMapOf: Monoid r -> PTraversal s a -> ((Maybe a, Index) -> r) -> Maybe s -> r")
-
-**NOTE: `L.foldMapOf` has been deprecated and will be removed.
-Use [`L.concatAs`](#L-concatAs) or [`L.mergeAs`](#L-mergeAs).**
-
-`L.foldMapOf({empty, concat}, t, xMi2r, s)` performs a map, using given function
-`xMi2r`, and fold, using the given `concat` and `empty` operations, over the
-elements focused on by the given traversal or lens `t` from the given data
-structure `s`.  The `concat` operation and the constant returned by `empty()`
-should form
-a
-[monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values returned by `xMi2r`.
-
-For example:
-
-```js
-L.foldMapOf(Sum, L.elems, x => x, [1, 2, 3])
-// 6
-```
-
 ##### <a name="L-merge"></a> [≡](#contents) [`L.merge(monoid, traversal, maybeData)`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")
 
 `L.merge({empty, concat}, t, s)` performs a fold, using the given `concat` and
@@ -943,49 +919,6 @@ L.concatAs(R.pipe(R.negate, toCollect),
 ```
 
 The internal implementation of `L.collectAs` is optimized and faster than the
-above naïve implementation.
-
-##### <a name="L-collectMap"></a> [≡](#contents) [`L.collectMap(traversal, (maybeValue, index) => maybeValue, maybeData)`](#L-collectMap "L.collectMap: PTraversal s a -> ((Maybe a, Index) -> Maybe b) -> Maybe s -> [b]")
-
-**NOTE: `L.collectMap` has been deprecated and will be removed.
-Use [`L.collectAs`](#L-collectAs).**
-
-`L.collectMap` returns an array of the elements focused on by the given
-traversal or lens from a data structure and mapped by the given function to a
-defined value.  Given a lens, there will be 0 or 1 elements in the returned
-array.  Note that a partial *lens* always targets an element, but `L.collectMap`
-implicitly skips elements that are mapped to `undefined` by the given function.
-Given a traversal, there can be any number of elements in the array returned by
-`L.collectMap`.
-
-For example:
-
-```js
-L.collectMap(["xs", L.elems, "x"], R.negate, {xs: [{x: 1}, {x: 2}]})
-// [ -1, -2 ]
-```
-
-`L.collectMap(traversal, toMaybe, maybeData)` is equivalent
-to
-[`L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)`](#L-concatAs) where
-`Collect` and `toCollect` are defined as follows:
-
-```js
-const Collect = {empty: R.always([]), concat: R.concat}
-const toCollect = x => x !== undefined ? [x] : []
-```
-
-So:
-
-```js
-L.concatAs(R.pipe(R.negate, toCollect),
-           Collect,
-           ["xs", L.elems, "x"],
-           {xs: [{x: 1}, {x: 2}]})
-// [ -1, -2 ]
-```
-
-The internal implementation of `L.collectMap` is optimized and faster than the
 above naïve implementation.
 
 ##### <a name="L-foldl"></a> [≡](#contents) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData)`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
@@ -1092,7 +1025,8 @@ See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 ##### <a name="L-elems"></a> [≡](#contents) [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
 
-`L.elems` is a traversal over the elements of an array.
+`L.elems` is a traversal over the elements of an [array-like](#array-like)
+object.  When written through, `L.elems` always produces an `Array`.
 
 For example:
 
@@ -1101,9 +1035,21 @@ L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 
+Just like with other optics operating on [array-like](#array-like) objects, when
+manipulating non-`Array` objects, [`L.rewrite`](#L-rewrite) can be used to
+convert the result to the desired type, if necessary:
+
+```js
+L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
+         R.inc,
+         Int8Array.from([-1,4,0,2,4]))
+// Int8Array [ 0, 5, 1, 3, 5 ]
+```
+
 ##### <a name="L-values"></a> [≡](#contents) [`L.values`](#L-values "L.values: PTraversal {p: a, ...ps} a")
 
-`L.values` is a traversal over the values of an object.
+`L.values` is a traversal over the values of an `instanceof Object`.  When
+written through, `L.values` always produces an `Object`.
 
 For example:
 
@@ -1112,23 +1058,32 @@ L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 // { a: -1, b: -2, c: -3 }
 ```
 
-##### <a name="L-sequence"></a> [≡](#contents) [`L.sequence`](#L-sequence "L.sequence: PTraversal ([a] | {p: a, ...ps}) a")
-
-**NOTE: `L.sequence` has been deprecated and will be removed in the next major
-version.  Use [`L.elems`](#L-elems) when operating on arrays
-and [`L.values`](#L-values) when operating on (other) objects..**
-
-`L.sequence` is a traversal over the values of an array or object.
-
-For example:
+When manipulating objects with a non-`Object` constructor
 
 ```js
-L.modify(["xs", L.sequence, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
-// { xs: [ { x: 2 }, { x: 3 } ] }
+function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+XYZ.prototype.norm = function () {
+  return (this.x * this.x +
+          this.y * this.y +
+          this.z * this.z)
+}
 ```
+
+the [`L.rewrite`](#L-rewrite) can be used to convert the result to the desired
+type, if necessary:
+
 ```js
-L.modify(L.sequence, R.negate, {a: 1, b: 2, c: 3})
-// { a: -1, b: -2, c: -3 }
+const objectTo = R.curry((C, o) => Object.assign(Object.create(C.prototype), o))
+
+L.modify([L.rewrite(objectTo(XYZ)), L.values],
+         R.negate,
+         new XYZ(1,2,3))
+// XYZ { x: -1, y: -2, z: -3 }
 ```
 
 ### Lenses
@@ -1324,12 +1279,36 @@ while `L.rewrite` only applies the transform when writing.
 
 See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
-#### Lensing arrays
+#### <a name="array-like"></a> Lensing array-like objects
+
+Objects that have a non-negative integer `length` and strings, which are not
+considered `Object` instances in JavaScript, are considered *array-like* objects
+by partial optics.
+
+When writing a defined value through an optic that operates on array-like
+objects, the result is always an `Array`.  For example:
+
+```js
+L.set(1, "a", "LoLa")
+// [ 'L', 'a', 'L', 'a' ]
+```
+
+It may seem like the result should be of the same type as the object being
+manipulated, but that is problematic, because the focus of a *partial* optic is
+always optional.  Instead, when manipulating strings or array-like non-`Array`
+objects, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary.  For example:
+
+```js
+L.set([L.rewrite(R.join("")), 1], "a", "LoLa")
+// 'LaLa'
+```
 
 ##### <a name="L-append"></a> [≡](#contents) [`L.append`](#L-append "L.append: PLens [a] a")
 
-`L.append` is a write-only lens that can be used to append values to an array.
-The view of `L.append` is always `undefined`.
+`L.append` is a write-only lens that can be used to append values to
+an [array-like](#array-like) object.  The view of `L.append` is always
+`undefined`.
 
 For example:
 
@@ -1352,32 +1331,34 @@ defined array.
 
 ##### <a name="L-filter"></a> [≡](#contents) [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
 
-`L.filter` operates on arrays.  When not viewing an array, the result is
-`undefined`.  When viewing an array, only elements matching the given predicate
-will be returned.  When set, the resulting array will be formed by concatenating
-the set array and the complement of the filtered context.  If the resulting
-array would be empty, the whole result will be `undefined`.
+`L.filter` operates on [array-like](#array-like) objects.  When not viewing an
+array-like object, the result is `undefined`.  When viewing an array-like
+object, only elements matching the given predicate will be returned.  When set,
+the resulting array will be formed by concatenating the elements of the set
+array-like object and the elements of the complement of the filtered focus.  If
+the resulting array would be empty, the whole result will be `undefined`.
 
 For example:
 
 ```js
-L.remove(L.filter(x => x <= 2), [3,1,4,1,5,9,2])
-// [ 3, 4, 5, 9 ]
+L.set(L.filter(x => x <= "2"), "abcd", "3141592")
+// [ 'a', 'b', 'c', 'd', '3', '4', '5', '9' ]
 ```
 
-*Note:* An alternative design for filter could implement a smarter algorithm to
-combine arrays when set.  For example, an algorithm based
+An alternative design for filter could implement a smarter algorithm to combine
+arrays when set.  For example, an algorithm based
 on [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use
-of [`L.normalize`](#L-normalize) would be preferable.
+of [`L.normalize`](#L-normalize) or [`L.rewrite`](#L-rewrite) would be
+preferable.
 
 ##### <a name="L-find"></a> [≡](#contents) [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
 
-`L.find` operates on arrays like [`L.index`](#L-index), but the index to be
-viewed is determined by finding the first element from the input array that
-matches the given predicate.  When no matching element is found the effect is
-same as with [`L.append`](#L-append).
+`L.find` operates on [array-like](#array-like) objects
+like [`L.index`](#L-index), but the index to be viewed is determined by finding
+the first element from the focus that matches the given predicate.  When no
+matching element is found the effect is same as with [`L.append`](#L-append).
 
 ```js
 L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
@@ -1386,9 +1367,9 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 
 ##### <a name="L-findWith"></a> [≡](#contents) [`L.findWith(...lenses)`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
-`L.findWith(...lenses)` chooses an index from an array through which the given
-lens, [`[...lenses]`](#L-compose), focuses on a defined item and then returns a
-lens that focuses on that item.
+`L.findWith(...lenses)` chooses an index from an [array-like](#array-like)
+object through which the given lens, [`[...lenses]`](#L-compose), focuses on a
+defined item and then returns a lens that focuses on that item.
 
 For example:
 
@@ -1403,21 +1384,29 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 
 ##### <a name="L-index"></a> [≡](#contents) [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
 
-`L.index(integer)` or just `integer` focuses on the specified array index.
+`L.index(integer)` or just `integer` focuses on the element at specified index
+of an [array-like](#array-like) object.
 
-* When not viewing a defined array index, the result is `undefined`.
+* When not viewing an index with a defined element, the result is `undefined`.
 * When setting to `undefined`, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
 * When setting a defined value to an index that is higher than the length of the
-  array, the missing elements will be filled with `null`.
+  array-like object, the missing elements will be filled with `null`.
 
-**NOTE:** There is a gotcha related to removing elements from an array.  Namely,
-when the last element is removed, the result is `undefined` rather than an empty
-array.  This is by design, because this allows the removal to propagate upwards.
-It is not uncommon, however, to have cases where removing the last element from
-an array must not remove the array itself.  Consider the following examples
-without [`L.required([])`](#L-required):
+For example:
+
+```js
+L.set(2, "z", ["x", "y", "c"])
+// [ 'x', 'y', 'z' ]
+```
+
+**NOTE:** There is a gotcha related to removing elements from array-like
+objects.  Namely, when the last element is removed, the result is `undefined`
+rather than an empty array.  This is by design, because this allows the removal
+to propagate upwards.  It is not uncommon, however, to have cases where removing
+the last element from an array-like object must not remove the array itself.
+Consider the following examples without [`L.required([])`](#L-required):
 
 ```js
 L.remove(0, ["a", "b"])
@@ -1471,6 +1460,7 @@ use [`L.define`](#L-define).
 `L.prop(string)` or `string` focuses on the specified object property.
 
 * When not viewing a defined object property, the result is `undefined`.
+* When writing to a property, the result is always an `Object`.
 * When setting property to `undefined`, the property is removed from the result.
   If the result would be an empty object, the whole result will be `undefined`.
 
@@ -1485,6 +1475,15 @@ L.get("y", {x: 1, y: 2, z: 3})
 ```js
 L.set("y", -2, {x: 1, y: 2, z: 3})
 // { x: 1, y: -2, z: 3 }
+```
+
+When manipulating objects whose constructor is not
+`Object`, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary:
+
+```js
+L.set([L.rewrite(objectTo(XYZ)), "z"], 3, new XYZ(3,1,4))
+// XYZ { x: 3, y: 1, z: 3 }
 ```
 
 ##### <a name="L-props"></a> [≡](#contents) [`L.props(...propNames)`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
@@ -2186,7 +2185,7 @@ because fewer allocations are required.
 
 ### Performance
 
-Here are a few benchmark results on partial lenses (as `L` version 7.2.2) and
+Here are a few benchmark results on partial lenses (as `L` version 8.0.0) and
 some roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R`
 version 0.23.0), [Ramda Lens](https://github.com/ramda/ramda-lens) (as `P`
 version 0.1.1), and [Flunc Optics](https://github.com/flunc/optics) (as `O`
@@ -2194,106 +2193,112 @@ version 0.0.2).  As always with benchmarks, you should take these numbers with a
 pinch of salt and preferably try and measure your actual use cases!
 
 ```jsx
-   7,492,311/s     1.00x   R.reduceRight(add, 0, xs100)
-     425,823/s    17.59x   L.foldr(add, 0, L.sequence, xs100)
-       4,088/s  1832.74x   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)
+   7,296,069/s     1.00x   R.reduceRight(add, 0, xs100)
+     449,560/s    16.23x   L.foldr(add, 0, L.elems, xs100)
+       4,042/s  1805.18x   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)
 
-      11,173/s     1.00x   R.reduceRight(add, 0, xs100000)
-          55/s   201.53x   L.foldr(add, 0, L.sequence, xs100000)
+      11,122/s     1.00x   R.reduceRight(add, 0, xs100000)
+          51/s   218.87x   L.foldr(add, 0, L.elems, xs100000)
            0/s Infinityx   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)
 
-     637,358/s     1.00x   L.foldl(add, 0, L.sequence, xs100)
-     211,442/s     3.01x   R.reduce(add, 0, xs100)
-       3,042/s   209.51x   O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)
+     628,287/s     1.00x   L.foldl(add, 0, L.elems, xs100)
+     211,035/s     2.98x   R.reduce(add, 0, xs100)
+       3,039/s   206.74x   O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)
 
-   1,251,914/s     1.00x   L.sum(L.sequence, xs100)
-     522,776/s     2.39x   L.merge(Sum, L.sequence, xs100)
-     132,040/s     9.48x   R.sum(xs100)
-      23,009/s    54.41x   P.sumOf(P.traversed, xs100)
-       4,453/s   281.12x   O.Fold.sumOf(O.Traversal.traversed, xs100)
+   3,872,855/s     1.00x   L.sum(L.elems, xs100)
+     538,949/s     7.19x   L.merge(Sum, L.elems, xs100)
+     129,127/s    29.99x   R.sum(xs100)
+      22,934/s   168.87x   P.sumOf(P.traversed, xs100)
+       4,299/s   900.88x   O.Fold.sumOf(O.Traversal.traversed, xs100)
 
-     577,707/s     1.00x   L.maximum(L.sequence, xs100)
-       3,266/s   176.89x   O.Fold.maximumOf(O.Traversal.traversed, xs100)
+     553,842/s     1.00x   L.maximum(L.elems, xs100)
+       3,302/s   167.74x   O.Fold.maximumOf(O.Traversal.traversed, xs100)
 
-     153,977/s     1.00x   L.sum([L.sequence, L.sequence, L.sequence], xsss100)
-     152,806/s     1.01x   L.merge(Sum, [L.sequence, L.sequence, L.sequence], xsss100)
-       3,738/s    41.19x   P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)
-         864/s   178.11x   O.Fold.sumOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
+     151,813/s     1.00x   L.sum([L.elems, L.elems, L.elems], xsss100)
+     146,936/s     1.03x   L.merge(Sum, [L.elems, L.elems, L.elems], xsss100)
+       4,343/s    34.96x   P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)
+         876/s   173.38x   O.Fold.sumOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
 
-     260,672/s     1.00x   L.collect(L.sequence, xs100)
-       3,523/s    74.00x   O.Fold.toListOf(O.Traversal.traversed, xs100)
+     259,829/s     1.00x   L.collect(L.elems, xs100)
+       3,537/s    73.46x   O.Fold.toListOf(O.Traversal.traversed, xs100)
 
-     118,313/s     1.00x   L.collect([L.sequence, L.sequence, L.sequence], xsss100)
-       9,192/s    12.87x   R.chain(R.chain(R.identity), xsss100)
-         806/s   146.86x   O.Fold.toListOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
+     117,718/s     1.00x   L.collect([L.elems, L.elems, L.elems], xsss100)
+       8,960/s    13.14x   R.chain(R.chain(R.identity), xsss100)
+         768/s   153.30x   O.Fold.toListOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
 
-      63,225/s     1.00x   R.flatten(xsss100)
-      36,874/s     1.71x   L.collect(flatten, xsss100)
+      66,556/s     1.00x   R.flatten(xsss100)
+      37,652/s     1.77x   L.collect(flatten, xsss100)
 
-   1,771,934/s     1.00x   L.modify(L.sequence, inc, xs100)
-     660,947/s     2.68x   R.map(inc, xs100)
-      14,837/s   119.43x   O.Setter.over(O.Traversal.traversed, inc, xs100)
-      13,733/s   129.03x   P.over(P.traversed, inc, xs100)
+   1,798,116/s     1.00x   L.modify(L.elems, inc, xs100)
+     661,871/s     2.72x   R.map(inc, xs100)
+      15,094/s   119.12x   O.Setter.over(O.Traversal.traversed, inc, xs100)
+      14,061/s   127.88x   P.over(P.traversed, inc, xs100)
 
-     113,534/s     1.00x   L.modify([L.sequence, L.sequence, L.sequence], inc, xsss100)
-       9,226/s    12.31x   R.map(R.map(R.map(inc)), xsss100)
-       3,566/s    31.83x   P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)
-       2,971/s    38.21x   O.Setter.over(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), inc, xsss100)
+     116,898/s     1.00x   L.modify([L.elems, L.elems, L.elems], inc, xsss100)
+       9,392/s    12.45x   R.map(R.map(R.map(inc)), xsss100)
+       3,554/s    32.89x   P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)
+       2,770/s    42.20x   O.Setter.over(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), inc, xsss100)
 
-  29,172,490/s     1.00x   L.get(1, xs)
-   3,866,405/s     7.55x   R.nth(1, xs)
-   1,513,800/s    19.27x   R.view(l_1, xs)
+  29,472,002/s     1.00x   L.get(1, xs)
+   3,890,347/s     7.58x   R.nth(1, xs)
+   1,479,475/s    19.92x   R.view(l_1, xs)
 
-  21,011,228/s     1.00x   L.set(1, 0, xs)
-   7,004,752/s     3.00x   R.update(1, 0, xs)
-     992,337/s    21.17x   R.set(l_1, 0, xs)
+  23,379,900/s     1.00x   L.set(1, 0, xs)
+   6,351,723/s     3.68x   R.update(1, 0, xs)
+     937,206/s    24.95x   R.set(l_1, 0, xs)
 
-  27,199,285/s     1.00x   L.get("y", xyz)
-  22,947,351/s     1.19x   R.prop("y", xyz)
-   2,165,620/s    12.56x   R.view(l_y, xyz)
+  28,367,488/s     1.00x   L.get("y", xyz)
+  23,367,709/s     1.21x   R.prop("y", xyz)
+   2,288,165/s    12.40x   R.view(l_y, xyz)
 
-  12,419,880/s     1.00x   L.set("y", 0, xyz)
-   7,407,092/s     1.68x   R.assoc("y", 0, xyz)
-   1,288,598/s     9.64x   R.set(l_y, 0, xyz)
+  11,809,436/s     1.00x   L.set("y", 0, xyz)
+   6,678,536/s     1.77x   R.assoc("y", 0, xyz)
+   1,244,358/s     9.49x   R.set(l_y, 0, xyz)
 
-  14,491,708/s     1.00x   R.path([0,"x",0,"y"], axay)
-  11,967,689/s     1.21x   L.get([0,"x",0,"y"], axay)
-   2,315,020/s     6.26x   R.view(l_0x0y, axay)
-     478,421/s    30.29x   R.view(l_0_x_0_y, axay)
+  14,761,341/s     1.00x   R.path([0,"x",0,"y"], axay)
+  13,738,836/s     1.07x   L.get([0,"x",0,"y"], axay)
+   2,141,450/s     6.89x   R.view(l_0x0y, axay)
+     445,018/s    33.17x   R.view(l_0_x_0_y, axay)
 
-   3,396,792/s     1.00x   L.set([0,"x",0,"y"], 0, axay)
-     817,534/s     4.15x   R.assocPath([0,"x",0,"y"], 0, axay)
-     524,182/s     6.48x   R.set(l_0x0y, 0, axay)
-     322,032/s    10.55x   R.set(l_0_x_0_y, 0, axay)
+   3,488,043/s     1.00x   L.set([0,"x",0,"y"], 0, axay)
+     793,589/s     4.40x   R.assocPath([0,"x",0,"y"], 0, axay)
+     502,771/s     6.94x   R.set(l_0x0y, 0, axay)
+     317,909/s    10.97x   R.set(l_0_x_0_y, 0, axay)
 
-   3,738,580/s     1.00x   L.modify([0,"x",0,"y"], inc, axay)
-     543,909/s     6.87x   R.over(l_0x0y, inc, axay)
-     338,682/s    11.04x   R.over(l_0_x_0_y, inc, axay)
+   3,880,060/s     1.00x   L.modify([0,"x",0,"y"], inc, axay)
+     528,936/s     7.34x   R.over(l_0x0y, inc, axay)
+     323,929/s    11.98x   R.over(l_0_x_0_y, inc, axay)
 
-  21,145,936/s     1.00x   L.remove(1, xs)
-   3,793,080/s     5.57x   R.remove(1, 1, xs)
+  22,639,591/s     1.00x   L.remove(1, xs)
+   3,340,893/s     6.78x   R.remove(1, 1, xs)
 
-  14,047,593/s     1.00x   L.remove("y", xyz)
-   2,610,101/s     5.38x   R.dissoc("y", xyz)
+  13,762,438/s     1.00x   L.remove("y", xyz)
+   2,664,145/s     5.17x   R.dissoc("y", xyz)
 
-  14,864,609/s     1.00x   R.path(["x","y","z"], xyzn)
-  14,749,906/s     1.01x   L.get(["x","y","z"], xyzn)
-   2,330,568/s     6.38x   R.view(l_xyz, xyzn)
-     822,564/s    18.07x   R.view(l_x_y_z, xyzn)
-     155,527/s    95.58x   O.Getter.view(o_x_y_z, xyzn)
+  15,204,144/s     1.00x   L.get(["x","y","z"], xyzn)
+  15,086,761/s     1.01x   R.path(["x","y","z"], xyzn)
+   2,212,557/s     6.87x   R.view(l_xyz, xyzn)
+     774,715/s    19.63x   R.view(l_x_y_z, xyzn)
+     164,657/s    92.34x   O.Getter.view(o_x_y_z, xyzn)
 
-   4,008,332/s     1.00x   L.set(["x","y","z"], 0, xyzn)
-   1,397,225/s     2.87x   R.assocPath(["x","y","z"], 0, xyzn)
-     696,856/s     5.75x   R.set(l_xyz, 0, xyzn)
-     505,205/s     7.93x   R.set(l_x_y_z, 0, xyzn)
-     211,872/s    18.92x   O.Setter.set(o_x_y_z, 0, xyzn)
+   3,842,530/s     1.00x   L.set(["x","y","z"], 0, xyzn)
+   1,460,412/s     2.63x   R.assocPath(["x","y","z"], 0, xyzn)
+     708,530/s     5.42x   R.set(l_xyz, 0, xyzn)
+     504,670/s     7.61x   R.set(l_x_y_z, 0, xyzn)
+     216,523/s    17.75x   O.Setter.set(o_x_y_z, 0, xyzn)
 
-   3,977,240/s     1.00x   L.remove(50, xs100)
-   1,731,173/s     2.30x   R.remove(50, 1, xs100)
+   3,991,426/s     1.00x   L.remove(50, xs100)
+   1,778,880/s     2.24x   R.remove(50, 1, xs100)
 
-   4,220,432/s     1.00x   L.set(50, 2, xs100)
-   1,712,618/s     2.46x   R.update(50, 2, xs100)
-     694,197/s     6.08x   R.set(l_50, 2, xs100)
+   4,295,597/s     1.00x   L.set(50, 2, xs100)
+   1,733,796/s     2.48x   R.update(50, 2, xs100)
+     683,917/s     6.28x   R.set(l_50, 2, xs100)
+
+     645,834/s     1.00x   R.remove(500, 1, xs1000)
+     514,916/s     1.25x   L.remove(500, xs1000)
+
+     611,644/s     1.00x   L.set(500, 2, xs1000)
+     246,186/s     2.48x   R.update(500, 2, xs1000)
 ```
 
 Various operations on *partial lenses have been optimized for common cases*, but

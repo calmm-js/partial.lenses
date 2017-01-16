@@ -3,6 +3,13 @@ import * as R from "ramda"
 
 //
 
+const isNat = x => x === (x >> 0) && 0 <= x
+
+const seemsArrayLike = x =>
+  x instanceof Object && isNat(x.length) || typeof x === "string"
+
+const fromArrayLike = xs => R.map(i => xs[i], R.range(0, xs.length))
+
 const isDefined = x => x !== undefined
 
 const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
@@ -45,19 +52,15 @@ export const toFunction = L.toFunction
 export const concatAs = L.concatAs
 export const concat = concatAs(R.identity)
 
-export const foldMapOf = R.curry((m, t, f, s) => concatAs(f, m, t, s)) // deprecated
-
 export const merge = concat
 export const mergeAs = concatAs
 
 export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 
-export const collect = R.curry((t, s) => collectMap(t, R.identity, s))
+export const collect = R.curry((t, s) => collectAs(R.identity, t, s))
 export const collectAs = R.curry((to, t, s) =>
   concatAs(R.pipe(to, toCollect), Collect, t, s))
-
-export const collectMap = R.curry((t, to, s) => collectAs(to, t, s)) // deprecated
 
 export const maximum = concat({empty: () => {}, concat: maxPartial})
 export const minimum = concat({empty: () => {}, concat: minPartial})
@@ -69,7 +72,6 @@ export const branch = L.branch
 
 export const elems = L.elems
 export const values = L.values
-export const sequence = L.sequence
 
 // Lenses
 
@@ -88,12 +90,12 @@ export const required = v => replace(v, undefined)
 export const rewrite = xi2x =>
   lens(R.identity, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
 
-export const append = choose(s => R.is(Array, s) ? s.length : 0)
+export const append = choose(s => seemsArrayLike(s) ? s.length : 0)
 export const filter = L.filter
 export const find = p => choose(xs => {
-  if (!R.is(Array, xs))
+  if (!seemsArrayLike(xs))
     return append
-  const i = xs.findIndex((x, i) => p(x, i))
+  const i = fromArrayLike(xs).findIndex((x, i) => p(x, i))
   return i < 0 ? append : i
 })
 export const findWith = (...ls) => {

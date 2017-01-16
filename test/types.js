@@ -2,7 +2,7 @@ import * as T from "./type"
 
 const T_maybeData = T.any
 const T_data = T.def
-const T_index = T.or(T.integer, T.string, T.undef)
+const T_index = T.or(T.nonNegative, T.string, T.undef)
 
 const T_functor = T.object({
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
@@ -68,13 +68,6 @@ export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
                              T.any)
 export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
-// deprecated
-export const foldMapOf = T.fn([T_monoid,
-                               T_traversal,
-                               T.fn([T_maybeData, T_index], T.any),
-                               T_maybeData],
-                              T.any)
-
 export const mergeAs = concatAs
 export const merge = concat
 
@@ -92,12 +85,6 @@ export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
                                T_maybeData],
                               T.array(T_data))
 
-// deprecated
-export const collectMap = T.fn([T_traversal,
-                                T.fn([T_maybeData, T_index], T_maybeData),
-                                T_maybeData],
-                               T.array(T_data))
-
 export const maximum = T.fn([T_traversal, T_maybeData], T.any)
 export const minimum = T.fn([T_traversal, T_maybeData], T.any)
 
@@ -108,7 +95,6 @@ export const branch = T.fn([T.props(T_traversal)], T_traversal)
 
 export const elems = T_traversal
 export const values = T_traversal
-export const sequence = T_traversal
 
 export const get = T.fn([T_lens, T_maybeData], T_maybeData)
 
@@ -129,7 +115,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
-export const index = T.fn([T.integer], T_lens)
+export const index = T.fn([T.nonNegative], T_lens)
 
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)

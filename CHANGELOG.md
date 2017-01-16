@@ -1,5 +1,27 @@
 # Changelog
 
+## 8.0.0
+
+Relaxed treatment of objects and array like objects.  Previously various optics
+required objects to have either `Object` or `Array` as the constructor.  Now any
+`instanceof Object` is allowed where previously `Object` constructor was
+required and a `String` or an `Object` with non-negative integer `length` is
+allowed where previously `Array` constructor was required.  This addresses
+issue [40](https://github.com/calmm-js/partial.lenses/issues/40).  See the
+documentation of `L.prop` and `L.index` for more details.  The `L.branch`,
+`L.elems` and `L.values` traversals have similarly relaxed treatment.
+
+The previously deprecated `L.sequence` traversal was removed.  You need to
+explicitly choose either `L.elems` or `L.values`.
+
+Previously undocumented, but accidentally tested for behavior of index lenses to
+allow negative indices was removed.  The old behavior was to ignore negative
+indices.  The new behavior is to throw an `Error` in non-`production` builds.
+Behaviour in `production` builds is undefined.
+
+Removed deprecated `foldMapOf` and `collectMap`.  Use `concatAs` and `collectAs`
+instead.
+
 ## 7.4.0
 
 Index lenses previously supported using negative indices so that writing through
