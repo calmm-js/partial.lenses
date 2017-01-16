@@ -62,7 +62,7 @@ const constAs = toConst => curryN(4, (xMi2y, m) => {
 
 function reqApplicative(f) {
   if (!f.of)
-    throw new Error("Traversals require an applicative.")
+    throw new Error("partial.lenses: Traversals require an applicative.")
 }
 
 //
@@ -190,7 +190,7 @@ const funIndex = i => (F, xi2yF, xs, _) =>
 
 function reqOptic(o) {
   if (!(typeof o === "function" && o.length === 4))
-    throw new Error("Expecting an optic.")
+    throw new Error("partial.lenses: Expecting an optic.")
 }
 
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
@@ -612,7 +612,7 @@ export function findWith(...ls) {
 
 export const index = process.env.NODE_ENV === "production" ? id : x => {
   if (!Number.isInteger(x) || x < 0)
-    throw new Error("`index` expects a non-negative integer.")
+    throw new Error("partial.lenses: `index` expects a non-negative integer.")
   return x
 }
 
@@ -620,7 +620,7 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
   if (typeof x !== "string")
-    throw new Error("`prop` expects a string.")
+    throw new Error("partial.lenses: `prop` expects a string.")
   return x
 }
 
