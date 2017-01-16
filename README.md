@@ -1035,9 +1035,9 @@ L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 
-Just like with other optics operating on array-like objects, when manipulating
-non-`Array` objects, [`L.rewrite`](#L-rewrite) can be used to convert the result
-to the desired type, if necessary:
+Just like with other optics operating on [array-like](#array-like) objects, when
+manipulating non-`Array` objects, [`L.rewrite`](#L-rewrite) can be used to
+convert the result to the desired type, if necessary:
 
 ```js
 L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
@@ -1328,11 +1328,11 @@ defined array.
 ##### <a name="L-filter"></a> [≡](#contents) [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
 
 `L.filter` operates on [array-like](#array-like) objects.  When not viewing an
-array-like object, the result is `undefined`.  When viewing an array, only
-elements matching the given predicate will be returned.  When set, the resulting
-array will be formed by concatenating the elements of the set array-like object
-and the elements of the complement of the filtered focus.  If the resulting
-array would be empty, the whole result will be `undefined`.
+array-like object, the result is `undefined`.  When viewing an array-like
+object, only elements matching the given predicate will be returned.  When set,
+the resulting array will be formed by concatenating the elements of the set
+array-like object and the elements of the complement of the filtered focus.  If
+the resulting array would be empty, the whole result will be `undefined`.
 
 For example:
 
@@ -1341,8 +1341,8 @@ L.set(L.filter(x => x <= "2"), "abcd", "3141592")
 // [ 'a', 'b', 'c', 'd', '3', '4', '5', '9' ]
 ```
 
-*Note:* An alternative design for filter could implement a smarter algorithm to
-combine arrays when set.  For example, an algorithm based
+An alternative design for filter could implement a smarter algorithm to combine
+arrays when set.  For example, an algorithm based
 on [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use
@@ -1388,7 +1388,7 @@ of an [array-like](#array-like) object.
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
 * When setting a defined value to an index that is higher than the length of the
-  array, the missing elements will be filled with `null`.
+  array-like object, the missing elements will be filled with `null`.
 
 For example:
 
@@ -1397,12 +1397,12 @@ L.set(2, "z", ["x", "y", "c"])
 // [ 'x', 'y', 'z' ]
 ```
 
-**NOTE:** There is a gotcha related to removing elements from an array.  Namely,
-when the last element is removed, the result is `undefined` rather than an empty
-array.  This is by design, because this allows the removal to propagate upwards.
-It is not uncommon, however, to have cases where removing the last element from
-an array must not remove the array itself.  Consider the following examples
-without [`L.required([])`](#L-required):
+**NOTE:** There is a gotcha related to removing elements from array-like
+objects.  Namely, when the last element is removed, the result is `undefined`
+rather than an empty array.  This is by design, because this allows the removal
+to propagate upwards.  It is not uncommon, however, to have cases where removing
+the last element from an array-like object must not remove the array itself.
+Consider the following examples without [`L.required([])`](#L-required):
 
 ```js
 L.remove(0, ["a", "b"])
