@@ -76,7 +76,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.normalize((value, index) => value)`](#L-normalize "L.normalize: ((s, Index) -> s) -> PLens s s")
       * [`L.required(valueOut)`](#L-required "L.required: s -> PLens s s")
       * [`L.rewrite((valueOut, index) => valueOut)`](#L-rewrite "L.rewrite: ((s, Index) -> s) -> PLens s s")
-    * [Lensing strings and array-like objects](#lensing-strings-and-array-like-objects)
+    * [Lensing array-like objects](#array-like)
       * [`L.append`](#L-append "L.append: PLens [a] a")
       * [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
       * [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
@@ -1025,9 +1025,8 @@ See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
 ##### <a name="L-elems"></a> [≡](#contents) [`L.elems`](#L-elems "L.elems: PTraversal [a] a")
 
-`L.elems` is a traversal over the elements of a string or an array-like object
-that has a non-negative integer `length`.  When written through, `L.elems`
-always produces an `Array`.
+`L.elems` is a traversal over the elements of an [array-like](#array-like)
+object.  When written through, `L.elems` always produces an `Array`.
 
 For example:
 
@@ -1036,9 +1035,9 @@ L.modify(["xs", L.elems, "x"], R.inc, {xs: [{x: 1}, {x: 2}]})
 // { xs: [ { x: 2 }, { x: 3 } ] }
 ```
 
-When manipulating strings or array-like non-`Array`
-object, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
-desired type, if necessary:
+Just like with other optics operating on array-like objects, when manipulating
+non-`Array` objects, [`L.rewrite`](#L-rewrite) can be used to convert the result
+to the desired type, if necessary:
 
 ```js
 L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
@@ -1280,12 +1279,36 @@ while `L.rewrite` only applies the transform when writing.
 
 See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
-#### Lensing strings and array-like objects
+#### <a name="array-like"></a> Lensing array-like objects
+
+Objects that have a non-negative integer `length` and strings, which are not
+considered `Object` instances in JavaScript, are considered *array-like* objects
+by partial optics.
+
+When writing a defined value through an optic that operates on array-like
+objects, the result is always an `Array`.  For example:
+
+```js
+L.set(1, "a", "LoLa")
+// [ 'L', 'a', 'L', 'a' ]
+```
+
+It may seem like the result should be of the same type as the object being
+manipulated, but that is problematic, because the focus of a *partial* optic is
+always optional.  Instead, when manipulating strings or array-like non-`Array`
+objects, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary.  For example:
+
+```js
+L.set([L.rewrite(R.join("")), 1], "a", "LoLa")
+// 'LaLa'
+```
 
 ##### <a name="L-append"></a> [≡](#contents) [`L.append`](#L-append "L.append: PLens [a] a")
 
-`L.append` is a write-only lens that can be used to append values to an array.
-The view of `L.append` is always `undefined`.
+`L.append` is a write-only lens that can be used to append values to
+an [array-like](#array-like) object.  The view of `L.append` is always
+`undefined`.
 
 For example:
 
@@ -1297,10 +1320,6 @@ L.get(L.append, ["x"])
 L.set(L.append, "x", undefined)
 // [ 'x' ]
 ```
-```js
-L.set(L.append, "x", ["z", "y"])
-// [ 'z', 'y', 'x' ]
-```
 
 Note that `L.append` is equivalent to [`L.index(i)`](#L-index) with the index
 `i` set to the length of the focused array or 0 in case the focus is not a
@@ -1308,17 +1327,18 @@ defined array.
 
 ##### <a name="L-filter"></a> [≡](#contents) [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
 
-`L.filter` operates on arrays.  When not viewing an array, the result is
-`undefined`.  When viewing an array, only elements matching the given predicate
-will be returned.  When set, the resulting array will be formed by concatenating
-the set array and the complement of the filtered context.  If the resulting
+`L.filter` operates on [array-like](#array-like) objects.  When not viewing an
+array-like object, the result is `undefined`.  When viewing an array, only
+elements matching the given predicate will be returned.  When set, the resulting
+array will be formed by concatenating the elements of the set array-like object
+and the elements of the complement of the filtered focus.  If the resulting
 array would be empty, the whole result will be `undefined`.
 
 For example:
 
 ```js
-L.remove(L.filter(x => x <= 2), [3,1,4,1,5,9,2])
-// [ 3, 4, 5, 9 ]
+L.set(L.filter(x => x <= "2"), "abcd", "3141592")
+// [ 'a', 'b', 'c', 'd', '3', '4', '5', '9' ]
 ```
 
 *Note:* An alternative design for filter could implement a smarter algorithm to
@@ -1326,14 +1346,15 @@ combine arrays when set.  For example, an algorithm based
 on [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use
-of [`L.normalize`](#L-normalize) would be preferable.
+of [`L.normalize`](#L-normalize) or [`L.rewrite`](#L-rewrite) would be
+preferable.
 
 ##### <a name="L-find"></a> [≡](#contents) [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
 
-`L.find` operates on arrays like [`L.index`](#L-index), but the index to be
-viewed is determined by finding the first element from the input array that
-matches the given predicate.  When no matching element is found the effect is
-same as with [`L.append`](#L-append).
+`L.find` operates on [array-like](#array-like) objects
+like [`L.index`](#L-index), but the index to be viewed is determined by finding
+the first element from the focus that matches the given predicate.  When no
+matching element is found the effect is same as with [`L.append`](#L-append).
 
 ```js
 L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
@@ -1342,9 +1363,9 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 
 ##### <a name="L-findWith"></a> [≡](#contents) [`L.findWith(...lenses)`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
 
-`L.findWith(...lenses)` chooses an index from an array through which the given
-lens, [`[...lenses]`](#L-compose), focuses on a defined item and then returns a
-lens that focuses on that item.
+`L.findWith(...lenses)` chooses an index from an [array-like](#array-like)
+object through which the given lens, [`[...lenses]`](#L-compose), focuses on a
+defined item and then returns a lens that focuses on that item.
 
 For example:
 
@@ -1360,10 +1381,9 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 ##### <a name="L-index"></a> [≡](#contents) [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
 
 `L.index(integer)` or just `integer` focuses on the element at specified index
-of a string or an object that has a non-negative integer `length`.
+of an [array-like](#array-like) object.
 
 * When not viewing an index with a defined element, the result is `undefined`.
-* When writing through an index lens, the result is always an `Array`.
 * When setting to `undefined`, the element is removed from the resulting array,
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
@@ -1375,15 +1395,6 @@ For example:
 ```js
 L.set(2, "z", ["x", "y", "c"])
 // [ 'x', 'y', 'z' ]
-```
-
-When manipulating strings or array-like non-`Array`
-object, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
-desired type, if necessary:
-
-```js
-L.set([L.rewrite(R.join("")), 1], "a", "LoLa")
-// [ 'LaLa' ]
 ```
 
 **NOTE:** There is a gotcha related to removing elements from an array.  Namely,
