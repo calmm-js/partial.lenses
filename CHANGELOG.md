@@ -22,6 +22,12 @@ Behaviour in `production` builds is undefined.
 Removed deprecated `foldMapOf` and `collectMap`.  Use `concatAs` and `collectAs`
 instead.
 
+## 7.4.0
+
+Index lenses previously supported using negative indices so that writing through
+a negative index was effectively a no-op.  This behavior will not be supported
+in the next major version.
+
 ## 7.3.0
 
 Deprecated `L.sequence` and introduced `L.elems`, which operates on arrays, and,
