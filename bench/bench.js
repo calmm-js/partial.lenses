@@ -114,6 +114,7 @@ R.forEach(bs => {
     `L.modify(L.values, inc, xs10o)`,
     `L.modify(L.values, inc, xs100o)`,
     `L.modify(L.values, inc, xs1000o)`,
+    `L.modify(L.values, inc, xs10000o)`,
   ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
