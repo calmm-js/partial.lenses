@@ -10,11 +10,17 @@ const sprintf = require("sprintf-js").sprintf
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
 const axay = [{x: [{y: 1}]}]
+const xs10 = Array(10).fill(1)
 const xs100 = Array(100).fill(1)
 const xs1000 = Array(1000).fill(1)
 const xs10000 = Array(10000).fill(1)
 const xs100000 = Array(100000).fill(1)
 const ids = R.range(0, 10000).map(i => ({id: i, value: i}))
+
+const xs10o = Object.assign(xs10)
+const xs100o = Object.assign(xs100)
+const xs1000o = Object.assign(xs1000)
+const xs10000o = Object.assign(xs10000)
 
 const xsss100 = Array(100).fill([[1]])
 
@@ -103,6 +109,13 @@ R.forEach(bs => {
   s.run()
 }, [
   [
+    `L.modify(L.values, inc, xyz)`,
+  ], [
+    `L.modify(L.values, inc, xs10o)`,
+    `L.modify(L.values, inc, xs100o)`,
+    `L.modify(L.values, inc, xs1000o)`,
+    `L.modify(L.values, inc, xs10000o)`,
+  ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
