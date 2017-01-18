@@ -369,7 +369,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   const ap = A.ap,
         wait = (xs, i) => 0 <= i ? x => wait([x, xs], i-1)
                                  : branchOnMerge(x, keys, xs)
-  let xsA = of(wait({}, n-1))
+  let xsA = of(wait(0, n-1))
   for (let i=n-1; 0<=i; --i) {
     const k = keys[i], v = x[k]
     xsA = ap(xsA, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
