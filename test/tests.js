@@ -526,6 +526,8 @@ describe("L.inverse", () => {
 describe("L.branch", () => {
   testEq('L.modify(L.branch({}), x => x+1, null)', null)
   testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
+  testEq('L.modify(L.branch({}), x => x+1, {})', undefined)
+  testEq('L.modify(L.branch({}), x => x+1, {x: 1})', {x: 1})
   testEq(`L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}),
                    x => x+1,
                    {a:{x:1},b:2,c:[3],d:4,extra:"one"})`,
