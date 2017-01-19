@@ -326,6 +326,8 @@ describe("L.slice", () => {
   testEq(`L.get(L.slice(undefined, undefined), 45)`, undefined)
   testEq(`L.get(L.slice(undefined, undefined), [])`, [])
   testEq(`L.get(L.slice(undefined, undefined), "")`, [])
+  testEq(`L.set(L.slice(undefined, undefined), [], [101])`, undefined)
+  testEq(`L.set(L.slice(undefined, undefined), undefined, [101])`, undefined)
   testEq(`L.set(L.slice(undefined, undefined), "abba", 45)`, ["a","b","b","a"])
   testEq(`L.set([L.rewrite(R.join("")), L.slice(-1, -1)], "world", "Hello, !")`,
          "Hello, world!")
