@@ -665,13 +665,11 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
         e = sliceIndex(xsN, xsN, end),
         ysN = Math.max(0, e - b)
   if (xsN)
-    ys = Array(ysN)
-  for (let i=0; i < ysN; ++i)
-    ys[i] = xs[i + b]
+    ys = copyToFrom(Array(ysN), 0, xs, b, e)
   return (0,F.map)(
     zs => {
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN
-      return copyToFrom(copyToFrom(copyToFrom(Array(bPzsN + xsN - e),
+      return copyToFrom(copyToFrom(copyToFrom(Array(xsN - e + bPzsN),
                                               0,
                                               xs, 0, b),
                                    b,
