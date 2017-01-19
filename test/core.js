@@ -3,6 +3,8 @@ import * as R from "ramda"
 
 //
 
+const clamp = (min, max, x) => Math.max(min, Math.min(x, max))
+
 const isNat = x => x === (x >> 0) && 0 <= x
 
 const seemsArrayLike = x =>
@@ -112,7 +114,22 @@ export const findWith = (...ls) => {
   return [find(x => isDefined(get(lls, x))), lls]
 }
 export const index = L.index
-export const slice = L.slice
+export const slice = R.curry((b, e) => lens(
+  xs => seemsArrayLike(xs) ? fromArrayLike(xs).slice(b, e) : undefined,
+  (ys, xs) => {
+    xs = seemsArrayLike(xs) ? fromArrayLike(xs) : []
+    return [].concat(xs.slice(0,
+                              clamp(0, xs.length,
+                                    undefined === b ? 0 :
+                                    b < 0 ? xs.length + b :
+                                    b)),
+                     fromArrayLike(ys || ""),
+                     xs.slice(clamp(0, xs.length,
+                                    undefined === e ? xs.length :
+                                    e < 0 ? xs.length + e :
+                                    e)))
+  }
+))
 
 export const prop = L.prop
 export const props = (...ps) => pick(R.zipObj(ps, ps))

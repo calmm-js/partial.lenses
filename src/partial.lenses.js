@@ -659,13 +659,10 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
 }
 
 export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
-  let ys
-  const xsN = seemsArrayLike(xs) ? xs.length : 0,
+  const seems = seemsArrayLike(xs),
+        xsN = seems && xs.length,
         b = sliceIndex(xsN, 0, begin),
-        e = sliceIndex(xsN, xsN, end),
-        ysN = Math.max(0, e - b)
-  if (xsN)
-    ys = copyToFrom(Array(ysN), 0, xs, b, e)
+        e = sliceIndex(xsN, xsN, end)
   return (0,F.map)(
     zs => {
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN
@@ -677,7 +674,9 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
                         bPzsN,
                         xs, e, xsN)
     },
-    xsi2yF(ys, i))
+    xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) :
+           undefined,
+           i))
 })
 
 // Lensing objects
