@@ -91,7 +91,16 @@ export const rewrite = xi2x =>
   lens(R.identity, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
 
 export const append = choose(s => seemsArrayLike(s) ? s.length : 0)
-export const filter = L.filter
+export const filter = p => lens(
+  xs => seemsArrayLike(xs)
+    ? fromArrayLike(xs).filter((x, i) => p(x, i))
+    : undefined,
+  (ys, xs) => {
+    const zs = [].concat(
+      fromArrayLike(ys || []),
+      seemsArrayLike(xs) ? fromArrayLike(xs).filter((x, i) => !p(x, i)) : [])
+    return zs.length ? zs : undefined
+  })
 export const find = p => choose(xs => {
   if (!seemsArrayLike(xs))
     return append
