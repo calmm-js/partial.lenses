@@ -17,6 +17,9 @@ import {
 
 //
 
+const sliceIndex = (l, d, i) =>
+  void 0 === i ? d : Math.min(Math.max(0, i < 0 ? l + i : i), l)
+
 function pair(x0, x1) {return [x0, x1]}
 
 const flip = bop => (x, y) => bop(y, x)
@@ -654,6 +657,30 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
     throw new Error("partial.lenses: `index` expects a non-negative integer.")
   return x
 }
+
+export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
+  let ys
+  const xsN = seemsArrayLike(xs) ? xs.length : 0,
+        b = sliceIndex(xsN, 0, begin),
+        e = sliceIndex(xsN, xsN, end),
+        ysN = Math.max(0, e - b)
+  if (xsN)
+    ys = Array(ysN)
+  for (let i=0; i < ysN; ++i)
+    ys[i] = xs[i + b]
+  return (0,F.map)(
+    zs => {
+      const zsN = zs ? zs.length : 0, bPzsN = b + zsN
+      return copyToFrom(copyToFrom(copyToFrom(Array(bPzsN + xsN - e),
+                                              0,
+                                              xs, 0, b),
+                                   b,
+                                   zs, 0, zsN),
+                        bPzsN,
+                        xs, e, xsN)
+    },
+    xsi2yF(ys, i))
+})
 
 // Lensing objects
 

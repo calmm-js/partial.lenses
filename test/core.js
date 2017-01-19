@@ -112,6 +112,7 @@ export const findWith = (...ls) => {
   return [find(x => isDefined(get(lls, x))), lls]
 }
 export const index = L.index
+export const slice = L.slice
 
 export const prop = L.prop
 export const props = (...ps) => pick(R.zipObj(ps, ps))

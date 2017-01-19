@@ -321,6 +321,16 @@ describe("L.filter", () => {
   testEq('L.remove(L.filter(c => "a" <= c), "JavaScript")', ["J", "S"])
 })
 
+describe("L.slice", () => {
+  testEq(`L.get(L.slice(undefined, undefined), undefined)`, undefined)
+  testEq(`L.get(L.slice(undefined, undefined), 45)`, undefined)
+  testEq(`L.set(L.slice(undefined, undefined), "abba", 45)`, ["a","b","b","a"])
+  testEq(`L.set([L.rewrite(R.join("")), L.slice(-1, -1)], "world", "Hello, !")`,
+         "Hello, world!")
+  testEq(`L.modify([L.slice(1,-1), L.elems], R.negate, [1,-2,-3,4])`, [1,2,3,4])
+  testEq(`L.modify([L.slice(-3,3), L.elems], R.negate, [1,-2,-3,4])`, [1,2,3,4])
+})
+
 describe("L.append", () => {
   testEq('L.remove(L.append, 45)', undefined)
   testEq('L.remove([L.rewrite(R.join("")), L.append], "anything")', "anything")
