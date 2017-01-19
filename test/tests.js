@@ -18,6 +18,15 @@ function show(x) {
   }
 }
 
+function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+XYZ.prototype.norm = function () {
+  return this.x*this.x + this.y*this.y + this.z*this.z
+}
+
 const a100000 = Array(100000).fill(1)
 
 const run = expr =>
@@ -375,6 +384,7 @@ describe("L.values", () => {
   testEq('L.remove(L.values, {x: 11, y: 22, z: 33})', undefined)
   testEq('L.modify(L.values, R.inc, {})', undefined)
   testEq('L.modify(L.values, R.inc, null)', null)
+  testEq('L.modify(L.values, R.inc, new XYZ(3,1,4))', {x: 4, y: 2, z: 5})
 })
 
 describe("L.optional", () => {
@@ -526,11 +536,14 @@ describe("L.inverse", () => {
 describe("L.branch", () => {
   testEq('L.modify(L.branch({}), x => x+1, null)', null)
   testEq('L.modify(L.branch({}), x => x+1, "anything")', "anything")
+  testEq('L.modify(L.branch({}), x => x+1, {})', undefined)
+  testEq('L.modify(L.branch({}), x => x+1, {x: 1})', {x: 1})
   testEq(`L.modify(L.branch({a: "x", b: [], c: 0, d: L.identity}),
                    x => x+1,
                    {a:{x:1},b:2,c:[3],d:4,extra:"one"})`,
          {"a":{"x":2},"b":3,"c":[4],"d":5,extra:"one"})
   testEq('L.set(L.branch({a: ["x",0], b: []}), 0, null)', {a:{x:[0]},b:0})
+  testEq('L.modify(L.branch({y: L.identity}), R.inc, new XYZ(3,1,4))', {x: 3, y: 2, z: 4})
 })
 
 describe("indexing", () => {

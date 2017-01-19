@@ -11,6 +11,7 @@ import {
   isDefined,
   isObject,
   keys,
+  object0,
   sndU
 } from "infestines"
 
@@ -330,20 +331,53 @@ const setPick = (template, x) => value => {
 const show = (labels, dir) => x =>
   console.log.apply(console, labels.concat([dir, x])) || x
 
+function branchOnMerge(x, keys, xs) {
+  const o = {}, n = keys.length
+  for (let i=0; i<n; ++i, xs=xs[1]) {
+    const v = xs[0]
+    o[keys[i]] = void 0 !== v ? v : o
+  }
+  let r
+  if (x.constructor !== Object)
+    x = Object.assign({}, x)
+  for (const k in x) {
+    const v = o[k]
+    if (o !== v) {
+      o[k] = o
+      if (!r)
+        r = {}
+      r[k] = void 0 !== v ? v : x[k]
+    }
+  }
+  for (let i=0; i<n; ++i) {
+    const k = keys[i]
+    const v = o[k]
+    if (o !== v) {
+      if (!r)
+        r = {}
+      r[k] = v
+    }
+  }
+  return r
+}
+
 const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
-  const n = keys.length
-  const ap = A.ap,
-        wait = (x, i) => 0 <= i ? y => wait(setProp(keys[i], y, x), i-1) : x
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  let r = (0,A.of)(wait(x, n-1))
+  const n = keys.length, of = A.of
+  if (!n)
+    return of(object0ToUndefined(x))
   if (!(x instanceof Object))
-    x = void 0
+    x = object0
+  const ap = A.ap,
+        wait = (i, xs) => 0 <= i ? x => wait(i-1, [x, xs])
+                                 : branchOnMerge(x, keys, xs)
+  let xsA = of(wait(n-1))
   for (let i=n-1; 0<=i; --i) {
-    const k = keys[i], v = x && x[k]
-    r = ap(r, (vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)))
+    const k = keys[i], v = x[k]
+    xsA = ap(xsA, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
   }
-  return (0,A.map)(object0ToUndefined, r)
+  return xsA
 }
 
 const normalizer = xi2x => (F, xi2yF, x, i) =>
