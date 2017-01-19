@@ -2317,7 +2317,7 @@ as [nesting](#L-compose), [adapting](#L-choose), [recursing](#L-lazy)
 and [restructuring](#L-pick) using lenses makes the notion of an individual
 element quite flexible and, even further, [traversals](#traversals) make it
 possible to [selectively](#L-when) target zero or more elements
-in [non-trivial](#L-branch) data structures a single operation.  It can be
+of [non-trivial](#L-branch) data structures in a single operation.  It can be
 tempting to try to do everything with lenses, but that will likely only lead to
 misery.  It is important to understand that lenses are just one of many
 functional abstractions for working with data structures and sometimes other
