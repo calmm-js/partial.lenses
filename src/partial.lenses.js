@@ -338,13 +338,27 @@ function branchOnMerge(x, keys, xs) {
     o[keys[i]] = void 0 !== v ? v : o
   }
   let r
-  for (const k in x) {
-    const v = o[k]
-    if (o !== v) {
-      o[k] = o
-      if (!r)
-        r = {}
-      r[k] = void 0 !== v ? v : x[k]
+  if (x.constructor === Object) {
+    for (const k in x) {
+      const v = o[k]
+      if (o !== v) {
+        o[k] = o
+        if (!r)
+          r = {}
+        r[k] = void 0 !== v ? v : x[k]
+      }
+    }
+  } else {
+    const ks = Object.keys(x), n = ks.length
+    for (let i=0; i<n; ++i) {
+      const k = ks[i]
+      const v = o[k]
+      if (o !== v) {
+        o[k] = o
+        if (!r)
+          r = {}
+        r[k] = void 0 !== v ? v : x[k]
+      }
     }
   }
   for (let i=0; i<n; ++i) {
