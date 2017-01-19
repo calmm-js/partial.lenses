@@ -332,22 +332,23 @@ const show = (labels, dir) => x =>
   console.log.apply(console, labels.concat([dir, x])) || x
 
 function branchOnMerge(x, keys, xs) {
-  const o = {}
-  for (let i=0, n=keys.length; i<n; ++i, xs=xs[1]) {
+  const o = {}, n = keys.length
+  for (let i=0; i<n; ++i, xs=xs[1]) {
     const v = xs[0]
     o[keys[i]] = void 0 !== v ? v : o
   }
   let r
   for (const k in x) {
     const v = o[k]
-    o[k] = o
     if (o !== v) {
+      o[k] = o
       if (!r)
         r = {}
-      r[k] = void 0 === v ? x[k] : v
+      r[k] = void 0 !== v ? v : x[k]
     }
   }
-  for (const k in o) {
+  for (let i=0; i<n; ++i) {
+    const k = keys[i]
     const v = o[k]
     if (o !== v) {
       if (!r)
@@ -367,9 +368,9 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (!(x instanceof Object))
     x = object0
   const ap = A.ap,
-        wait = (xs, i) => 0 <= i ? x => wait([x, xs], i-1)
+        wait = (i, xs) => 0 <= i ? x => wait(i-1, [x, xs])
                                  : branchOnMerge(x, keys, xs)
-  let xsA = of(wait(0, n-1))
+  let xsA = of(wait(n-1))
   for (let i=n-1; 0<=i; --i) {
     const k = keys[i], v = x[k]
     xsA = ap(xsA, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
