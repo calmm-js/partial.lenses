@@ -118,16 +118,17 @@ export const slice = R.curry((b, e) => lens(
   xs => seemsArrayLike(xs) ? fromArrayLike(xs).slice(b, e) : undefined,
   (ys, xs) => {
     xs = seemsArrayLike(xs) ? fromArrayLike(xs) : []
-    return [].concat(xs.slice(0,
-                              clamp(0, xs.length,
-                                    undefined === b ? 0 :
-                                    b < 0 ? xs.length + b :
-                                    b)),
-                     fromArrayLike(ys || ""),
-                     xs.slice(clamp(0, xs.length,
-                                    undefined === e ? xs.length :
-                                    e < 0 ? xs.length + e :
-                                    e)))
+    const zs = [].concat(xs.slice(0,
+                                  clamp(0, xs.length,
+                                        undefined === b ? 0 :
+                                        b < 0 ? xs.length + b :
+                                        b)),
+                         fromArrayLike(ys || ""),
+                         xs.slice(clamp(0, xs.length,
+                                        undefined === e ? xs.length :
+                                        e < 0 ? xs.length + e :
+                                        e)))
+    return zs.length ? zs : undefined
   }
 ))
 
