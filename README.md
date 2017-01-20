@@ -82,6 +82,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
       * [`L.findWith(...lenses)`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
       * [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
+      * [`L.slice(maybeBegin, maybeEnd)`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
     * [Lensing objects](#lensing-objects)
       * [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a")
       * [`L.props(...propNames)`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
@@ -1452,6 +1453,22 @@ In other words, [`L.required`](#L-required) works in both directions.  Thanks to
 the handling of `undefined` within partial lenses, this is often not a problem,
 but sometimes you need the "default" value both ways.  In that case you can
 use [`L.define`](#L-define).
+
+##### <a name="L-slice"></a> [≡](#contents) [`L.slice(maybeBegin, maybeEnd)`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
+
+`L.slice` focuses on a specified range of elements of
+an [array-like](#array-like) object.  The range is determined like with the
+standard
+[`slice`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) method
+of arrays.  Note that you can pass `undefined` to get the default for the begin
+or end index.
+
+For example:
+
+```js
+L.set(L.slice(1, -1), [0], [1,2,3,4])
+// [ 1, 0, 4 ]
+```
 
 #### Lensing objects
 
