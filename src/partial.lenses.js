@@ -17,8 +17,8 @@ import {
 
 //
 
-const sliceIndex = (l, d, i) =>
-  void 0 === i ? d : Math.min(Math.max(0, i < 0 ? l + i : i), l)
+const sliceIndex = (m, l, d, i) =>
+  void 0 === i ? d : Math.min(Math.max(m, i < 0 ? l + i : i), l)
 
 function pair(x0, x1) {return [x0, x1]}
 
@@ -661,8 +661,8 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
 export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
-        b = sliceIndex(xsN, 0, begin),
-        e = sliceIndex(xsN, xsN, end)
+        b = sliceIndex(0, xsN, 0, begin),
+        e = sliceIndex(b, xsN, xsN, end)
   return (0,F.map)(
     zs => {
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
