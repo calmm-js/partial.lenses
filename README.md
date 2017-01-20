@@ -1460,14 +1460,20 @@ use [`L.define`](#L-define).
 an [array-like](#array-like) object.  The range is determined like with the
 standard
 [`slice`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice) method
-of arrays.  Note that you can pass `undefined` to get the default for the begin
-or end index.
+of arrays, basically
+- non-negative values are relative to the beginning of the array-like object,
+- negative values are relative to the end of the array-like object, and
+- `undefined` gives the defaults: 0 for the begin and length for the end.
 
 For example:
 
 ```js
-L.set(L.slice(1, -1), [0], [1,2,3,4])
-// [ 1, 0, 4 ]
+L.get(L.slice(1, -1), [1,2,3,4])
+// [ 2, 3 ]
+```
+```js
+L.set(L.slice(-2, undefined), [0], [1,2,3,4])
+// [ 1, 2, 0 ]
 ```
 
 #### Lensing objects
