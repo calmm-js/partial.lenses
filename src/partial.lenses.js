@@ -174,46 +174,33 @@ const funProp = k => (F, xi2yF, x, _) =>
 
 //
 
-function clearRange(xs, i, j) {
-  if (process.env.NODE_ENV !== "production" && !clearRange.warned) {
-    clearRange.warned=1
-    console.warn("partial.lenses: In the next major version, `index` will not set undefined elements to `null`.")
-  }
-  while (i < j)
-    xs[i++] = null
-  return xs
-}
-
 const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
   if (process.env.NODE_ENV !== "production" && i < 0)
     throw new Error("partial.lenses: Negative indices are not supported by `index`.")
+  if (!seemsArrayLike(xs))
+    xs = ""
+  const n = xs.length
   if (void 0 !== x) {
-    if (!seemsArrayLike(xs))
-      return setAt(clearRange(Array(i+1), 0, i), i, x)
-    const n = xs.length
     if (n <= i)
-      return setAt(clearRange(copyToFrom(Array(i+1), 0, xs, 0, n), n, i), i, x)
+      return setAt(copyToFrom(Array(i+1), 0, xs, 0, i), i, x)
     const ys = Array(n)
     for (let j=0; j<n; ++j)
       ys[j] = xs[j]
     ys[i] = x
     return ys
   } else {
-    if (seemsArrayLike(xs)) {
-      const n = xs.length
-      if (0 < n) {
-        if (n <= i)
-          return fromArrayLike(xs)
-        if (1 < n) {
-          const ys = Array(n-1)
-          for (let j=0; j<i; ++j)
-            ys[j] = xs[j]
-          for (let j=i+1; j<n; ++j)
-            ys[j-1] = xs[j]
-          return ys
-        }
+    if (0 < n) {
+      if (n <= i)
+        return fromArrayLike(xs)
+      if (1 < n) {
+        const ys = Array(n-1)
+        for (let j=0; j<i; ++j)
+          ys[j] = xs[j]
+        for (let j=i+1; j<n; ++j)
+          ys[j-1] = xs[j]
+        return ys
       }
     }
   }
