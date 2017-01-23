@@ -34,8 +34,8 @@ const seemsArrayLike = x =>
 //
 
 function mapPartialIndexU(xi2y, xs) {
-  const n=xs.length, ys = Array(n)
-  let j=0
+  const n = xs.length, ys = Array(n)
+  let j = 0
   for (let i=0, y; i<n; ++i)
     if (void 0 !== (y = xi2y(xs[i], i)))
       ys[j++] = y
