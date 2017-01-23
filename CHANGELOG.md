@@ -4,7 +4,8 @@
 
 `L.augment`, `L.pick` and `L.props` can now be written with an `instanceof
 Object` or `undefined`.  Other values are considered errors.  Previously they
-could be written with anything, but only a plain `Object` was considered.
+could be written with anything, but only a plain `Object` was considered
+different from `undefined`.
 
 `L.slice` and `L.filter` can now be written with an array-like object or
 `undefined`.  Other values are considered errors.  This was the case earlier
