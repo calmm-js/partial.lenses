@@ -410,7 +410,7 @@ export function toFunction(o) {
         reqOptic(o)
       return o
     default:
-      return composed(0,o)
+      return composed(0, o)
   }
 }
 
