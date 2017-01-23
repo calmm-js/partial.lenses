@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "8.0.1",
+  "version": "8.1.0",
   "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
   "main": "lib/partial.lenses.js",
   "scripts": {
