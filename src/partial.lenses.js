@@ -34,11 +34,16 @@ const seemsArrayLike = x =>
 //
 
 function mapPartialIndexU(xi2y, xs) {
-  const ys = [], n=xs.length
+  const n=xs.length, ys = Array(n)
+  let j=0
   for (let i=0, y; i<n; ++i)
     if (void 0 !== (y = xi2y(xs[i], i)))
-      ys.push(y)
-  return ys.length ? ys : void 0
+      ys[j++] = y
+  if (j) {
+    if (j < n)
+      ys.length = j
+    return ys
+  }
 }
 
 function copyToFrom(ys, k, xs, i, j) {
