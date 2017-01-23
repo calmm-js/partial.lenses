@@ -331,14 +331,9 @@ function getPick(template, x) {
 }
 
 const setPick = (template, x) => value => {
-  if (!isObject(value)) {
-    if (process.env.NODE_ENV !== "production" && !setPick.warned &&
-        !(void 0 === value || value instanceof Object)) {
-      setPick.warned=1
-      console.warn("partial.lenses: In the next major version, `pick` can only be set with `undefined` or an instanceof Object.")
-    }
-    value = void 0
-  }
+  if (process.env.NODE_ENV !== "production" &&
+      !(void 0 === value || value instanceof Object))
+    throw new Error("partial.lenses: `pick` must be set with undefined or an object")
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
@@ -586,20 +581,27 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 
 // Computing derived props
 
-export const augment = template => lens(
-  x => {
-    x = dissocPartialU(0, x)
-    if (x)
-      for (const k in template)
-        x[k] = template[k](x)
-    return x
-  },
-  (y, x) => {
-    if (isObject(y)) {
+export const augment = template => {
+  if (process.env.NODE_ENV !== "production" && !isObject(template))
+    throw new Error("partial.lenses: `augment` expects a plain Object template")
+  return lens(
+    x => {
+      x = dissocPartialU(0, x)
+      if (x)
+        for (const k in template)
+          x[k] = template[k](x)
+      return x
+    },
+    (y, x) => {
+      if (process.env.NODE_ENV !== "production" &&
+          !(void 0 === y || y instanceof Object))
+        throw new Error("partial.lenses: `augment` must be set with undefined or an object")
+      if (y && y.constructor !== Object)
+        y = Object.assign({}, y)
       if (!(x instanceof Object))
         x = void 0
       let z
-      const set = (k, v) => {
+      function set(k, v) {
         if (!z)
           z = {}
         z[k] = v
@@ -612,8 +614,8 @@ export const augment = template => lens(
             set(k, x[k])
       }
       return z
-    }
-  })
+    })
+}
 
 // Enforcing invariants
 
@@ -644,6 +646,9 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
   return (0,F.map)(
     ts => {
+      if (process.env.NODE_ENV !== "production" &&
+          !(void 0 === ts || seemsArrayLike(ts)))
+        throw new Error("partial.lenses: `filter` must be set with undefined or an array-like object")
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
             n = tsN + fsN
@@ -680,6 +685,9 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
         e = sliceIndex(b, xsN, xsN, end)
   return (0,F.map)(
     zs => {
+      if (process.env.NODE_ENV !== "production" &&
+          !(void 0 === zs || seemsArrayLike(zs)))
+        throw new Error("partial.lenses: `slice` must be set with undefined or an array-like object")
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
       return n
         ? copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
@@ -728,8 +736,12 @@ export const just = x => to(always(x))
 
 // Transforming data
 
-export const pick = template => (F, xi2yF, x, i) =>
-  (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
+export const pick = template => {
+  if (process.env.NODE_ENV !== "production" && !isObject(template))
+    throw new Error("partial.lenses: `pick` expects a plain Object template")
+  return (F, xi2yF, x, i) =>
+    (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
+}
 
 export const replace = curry((inn, out) => {
   const o2i = x => replaced(out, inn, x)
