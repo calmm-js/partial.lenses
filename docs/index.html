@@ -129,6 +129,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></li>
 <li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses)</code></a></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(integer)</code></a></li>
+<li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd)</code></a></li>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
@@ -1014,6 +1015,22 @@ following example:</p>
 the handling of <code>undefined</code> within partial lenses, this is often not a problem,
 but sometimes you need the &quot;default&quot; value both ways.  In that case you can
 use <a href="#L-define"><code>L.define</code></a>.</p>
+<h5 id="-a-name-l-slice-a-contents-l-slice-maybebegin-maybeend-l-slice-l-slice-maybe-integer-maybe-integer-plens-a-a-"><a name="L-slice"></a> <a href="#contents">≡</a> <a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd)</code></a></h5>
+<p><code>L.slice</code> focuses on a specified range of elements of
+an <a href="#array-like">array-like</a> object.  The range is determined like with the
+standard
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"><code>slice</code></a> method
+of arrays, basically</p>
+<ul>
+<li>non-negative values are relative to the beginning of the array-like object,</li>
+<li>negative values are relative to the end of the array-like object, and</li>
+<li><code>undefined</code> gives the defaults: 0 for the begin and length for the end.</li>
+</ul>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.slice(1, -1), [1,2,3,4])
+</code></pre>
+<pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
+</code></pre>
 <h4 id="lensing-objects">Lensing objects</h4>
 <h5 id="-a-name-l-prop-a-contents-l-prop-propname-l-prop-l-prop-p-a-plens-p-a-ps-a-"><a name="L-prop"></a> <a href="#contents">≡</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a></h5>
 <p><code>L.prop(string)</code> or <code>string</code> focuses on the specified object property.</p>
