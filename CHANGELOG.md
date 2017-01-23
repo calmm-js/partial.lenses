@@ -15,7 +15,7 @@ already, but now it is asserted in non-production builds.
 of array-like objects was relaxed, but array producing optics did not
 consistently produce `null` elements.  With the relaxed semantics it seems that
 producing `null` values would complicate treatment of arrays, so it seems best
-to just produce arrays `undefined` for previously undefined elements.
+to just produce arrays with `undefined` for previously undefined elements.
 
 ## 8.0.0
 
