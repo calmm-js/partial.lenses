@@ -188,7 +188,7 @@ const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
   if (process.env.NODE_ENV !== "production" && i < 0)
-    throw new Error("partial.lenses: Negative indices not supported")
+    throw new Error("partial.lenses: Negative indices are not supported by `index`.")
   if (void 0 !== x) {
     if (!seemsArrayLike(xs))
       return setAt(clearRange(Array(i+1), 0, i), i, x)
