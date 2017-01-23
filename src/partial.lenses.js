@@ -667,10 +667,10 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
                                 zs, 0, zsN),
                      bPzsN,
                      xs, e, xsN)
-        : undefined
+        : void 0
     },
     xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) :
-           undefined,
+           void 0,
            i))
 })
 
