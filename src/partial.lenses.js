@@ -57,13 +57,6 @@ function setAt(xs, i, x) {
   return xs
 }
 
-function fromArrayLike(xs) {
-  if (xs.constructor === Array)
-    return xs
-  const n = xs.length
-  return copyToFrom(Array(n), 0, xs, 0, n)
-}
-
 //
 
 const Applicative = (map, of, ap) => ({map, of, ap})
@@ -190,7 +183,7 @@ function setIndex(i, x, xs) {
   } else {
     if (0 < n) {
       if (n <= i)
-        return fromArrayLike(xs)
+        return copyToFrom(Array(n), 0, xs, 0, n)
       if (1 < n) {
         const ys = Array(n-1)
         for (let j=0; j<i; ++j)
