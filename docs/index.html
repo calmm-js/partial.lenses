@@ -1496,118 +1496,112 @@ specification.  Static Land does not require wrapping values in objects, which
 translates to a significant performance advantage throughout the library,
 because fewer allocations are required.</p>
 <h3 id="performance">Performance</h3>
-<p>Here are a few benchmark results on partial lenses (as <code>L</code> version 8.0.0) and
+<p>Here are a few benchmark results on partial lenses (as <code>L</code> version 8.1.1) and
 some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
 version 0.23.0), <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code>
 version 0.1.1), and <a href="https://github.com/flunc/optics">Flunc Optics</a> (as <code>O</code>
 version 0.0.2).  As always with benchmarks, you should take these numbers with a
 pinch of salt and preferably try and measure your actual use cases!</p>
-<pre><code class="hljs lang-jsx">   7,296,069/s     1.00x   R.reduceRight(add, 0, xs100)
-     449,560/s    16.23x   L.foldr(add, 0, L.elems, xs100)
-       4,042/s  1805.18x   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)
+<pre><code class="hljs lang-jsx">   7,295,420/s     1.00x   R.reduceRight(add, 0, xs100)
+     429,390/s    16.99x   L.foldr(add, 0, L.elems, xs100)
+       4,260/s  1712.57x   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)
 
-      11,122/s     1.00x   R.reduceRight(add, 0, xs100000)
-          51/s   218.87x   L.foldr(add, 0, L.elems, xs100000)
+      11,249/s     1.00x   R.reduceRight(add, 0, xs100000)
+          52/s   217.25x   L.foldr(add, 0, L.elems, xs100000)
            0/s Infinityx   O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)
 
-     628,287/s     1.00x   L.foldl(add, 0, L.elems, xs100)
-     211,035/s     2.98x   R.reduce(add, 0, xs100)
-       3,039/s   206.74x   O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)
+     717,965/s     1.00x   L.foldl(add, 0, L.elems, xs100)
+     211,220/s     3.40x   R.reduce(add, 0, xs100)
+       3,007/s   238.76x   O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)
 
-   3,872,855/s     1.00x   L.sum(L.elems, xs100)
-     538,949/s     7.19x   L.merge(Sum, L.elems, xs100)
-     129,127/s    29.99x   R.sum(xs100)
-      22,934/s   168.87x   P.sumOf(P.traversed, xs100)
-       4,299/s   900.88x   O.Fold.sumOf(O.Traversal.traversed, xs100)
+   3,634,115/s     1.00x   L.sum(L.elems, xs100)
+     520,953/s     6.98x   L.merge(Sum, L.elems, xs100)
+     125,090/s    29.05x   R.sum(xs100)
+      22,558/s   161.10x   P.sumOf(P.traversed, xs100)
+       4,286/s   847.91x   O.Fold.sumOf(O.Traversal.traversed, xs100)
 
-     553,842/s     1.00x   L.maximum(L.elems, xs100)
-       3,302/s   167.74x   O.Fold.maximumOf(O.Traversal.traversed, xs100)
+     563,022/s     1.00x   L.maximum(L.elems, xs100)
+       3,300/s   170.61x   O.Fold.maximumOf(O.Traversal.traversed, xs100)
 
-     151,813/s     1.00x   L.sum([L.elems, L.elems, L.elems], xsss100)
-     146,936/s     1.03x   L.merge(Sum, [L.elems, L.elems, L.elems], xsss100)
-       4,343/s    34.96x   P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)
-         876/s   173.38x   O.Fold.sumOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
+     144,421/s     1.00x   L.sum([L.elems, L.elems, L.elems], xsss100)
+     140,521/s     1.03x   L.merge(Sum, [L.elems, L.elems, L.elems], xsss100)
+       4,694/s    30.77x   P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)
+         887/s   162.78x   O.Fold.sumOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
 
-     259,829/s     1.00x   L.collect(L.elems, xs100)
-       3,537/s    73.46x   O.Fold.toListOf(O.Traversal.traversed, xs100)
+     264,415/s     1.00x   L.collect(L.elems, xs100)
+       3,638/s    72.68x   O.Fold.toListOf(O.Traversal.traversed, xs100)
 
-     117,718/s     1.00x   L.collect([L.elems, L.elems, L.elems], xsss100)
-       8,960/s    13.14x   R.chain(R.chain(R.identity), xsss100)
-         768/s   153.30x   O.Fold.toListOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
+     115,576/s     1.00x   L.collect([L.elems, L.elems, L.elems], xsss100)
+       9,325/s    12.39x   R.chain(R.chain(R.identity), xsss100)
+         812/s   142.36x   O.Fold.toListOf(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), xsss100)
 
-      66,556/s     1.00x   R.flatten(xsss100)
-      37,652/s     1.77x   L.collect(flatten, xsss100)
+      65,905/s     1.00x   R.flatten(xsss100)
+      36,429/s     1.81x   L.collect(flatten, xsss100)
 
-   1,798,116/s     1.00x   L.modify(L.elems, inc, xs100)
-     661,871/s     2.72x   R.map(inc, xs100)
-      15,094/s   119.12x   O.Setter.over(O.Traversal.traversed, inc, xs100)
-      14,061/s   127.88x   P.over(P.traversed, inc, xs100)
+   2,870,299/s     1.00x   L.modify(L.elems, inc, xs100)
+     689,486/s     4.16x   R.map(inc, xs100)
+      15,031/s   190.96x   O.Setter.over(O.Traversal.traversed, inc, xs100)
+      14,016/s   204.79x   P.over(P.traversed, inc, xs100)
 
-     116,898/s     1.00x   L.modify([L.elems, L.elems, L.elems], inc, xsss100)
-       9,392/s    12.45x   R.map(R.map(R.map(inc)), xsss100)
-       3,554/s    32.89x   P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)
-       2,770/s    42.20x   O.Setter.over(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), inc, xsss100)
+     111,749/s     1.00x   L.modify([L.elems, L.elems, L.elems], inc, xsss100)
+       9,802/s    11.40x   R.map(R.map(R.map(inc)), xsss100)
+       3,610/s    30.96x   P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)
+       2,899/s    38.54x   O.Setter.over(R.compose(O.Traversal.traversed, O.Traversal.traversed, O.Traversal.traversed), inc, xsss100)
 
-  29,472,002/s     1.00x   L.get(1, xs)
-   3,890,347/s     7.58x   R.nth(1, xs)
-   1,479,475/s    19.92x   R.view(l_1, xs)
+  31,196,444/s     1.00x   L.get(1, xs)
+   3,954,832/s     7.89x   R.nth(1, xs)
+   1,542,510/s    20.22x   R.view(l_1, xs)
 
-  23,379,900/s     1.00x   L.set(1, 0, xs)
-   6,351,723/s     3.68x   R.update(1, 0, xs)
-     937,206/s    24.95x   R.set(l_1, 0, xs)
+  23,005,656/s     1.00x   L.set(1, 0, xs)
+   6,990,087/s     3.29x   R.update(1, 0, xs)
+     995,988/s    23.10x   R.set(l_1, 0, xs)
 
-  28,367,488/s     1.00x   L.get(&quot;y&quot;, xyz)
-  23,367,709/s     1.21x   R.prop(&quot;y&quot;, xyz)
-   2,288,165/s    12.40x   R.view(l_y, xyz)
+  27,035,455/s     1.00x   L.get(&quot;y&quot;, xyz)
+  24,187,528/s     1.12x   R.prop(&quot;y&quot;, xyz)
+   2,449,934/s    11.04x   R.view(l_y, xyz)
 
-  11,809,436/s     1.00x   L.set(&quot;y&quot;, 0, xyz)
-   6,678,536/s     1.77x   R.assoc(&quot;y&quot;, 0, xyz)
-   1,244,358/s     9.49x   R.set(l_y, 0, xyz)
+  12,630,470/s     1.00x   L.set(&quot;y&quot;, 0, xyz)
+   7,389,982/s     1.71x   R.assoc(&quot;y&quot;, 0, xyz)
+   1,301,899/s     9.70x   R.set(l_y, 0, xyz)
 
-  14,761,341/s     1.00x   R.path([0,&quot;x&quot;,0,&quot;y&quot;], axay)
-  13,738,836/s     1.07x   L.get([0,&quot;x&quot;,0,&quot;y&quot;], axay)
-   2,141,450/s     6.89x   R.view(l_0x0y, axay)
-     445,018/s    33.17x   R.view(l_0_x_0_y, axay)
+  14,135,487/s     1.00x   L.get([0,&quot;x&quot;,0,&quot;y&quot;], axay)
+  14,084,374/s     1.00x   R.path([0,&quot;x&quot;,0,&quot;y&quot;], axay)
+   2,288,135/s     6.18x   R.view(l_0x0y, axay)
+     474,643/s    29.78x   R.view(l_0_x_0_y, axay)
 
-   3,488,043/s     1.00x   L.set([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)
-     793,589/s     4.40x   R.assocPath([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)
-     502,771/s     6.94x   R.set(l_0x0y, 0, axay)
-     317,909/s    10.97x   R.set(l_0_x_0_y, 0, axay)
+   3,530,421/s     1.00x   L.set([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)
+     839,855/s     4.20x   R.assocPath([0,&quot;x&quot;,0,&quot;y&quot;], 0, axay)
+     537,673/s     6.57x   R.set(l_0x0y, 0, axay)
+     337,810/s    10.45x   R.set(l_0_x_0_y, 0, axay)
 
-   3,880,060/s     1.00x   L.modify([0,&quot;x&quot;,0,&quot;y&quot;], inc, axay)
-     528,936/s     7.34x   R.over(l_0x0y, inc, axay)
-     323,929/s    11.98x   R.over(l_0_x_0_y, inc, axay)
+   3,967,578/s     1.00x   L.modify([0,&quot;x&quot;,0,&quot;y&quot;], inc, axay)
+     539,285/s     7.36x   R.over(l_0x0y, inc, axay)
+     334,466/s    11.86x   R.over(l_0_x_0_y, inc, axay)
 
-  22,639,591/s     1.00x   L.remove(1, xs)
-   3,340,893/s     6.78x   R.remove(1, 1, xs)
+  25,011,509/s     1.00x   L.remove(1, xs)
+   3,791,685/s     6.60x   R.remove(1, 1, xs)
 
-  13,762,438/s     1.00x   L.remove(&quot;y&quot;, xyz)
-   2,664,145/s     5.17x   R.dissoc(&quot;y&quot;, xyz)
+  13,125,939/s     1.00x   L.remove(&quot;y&quot;, xyz)
+   2,631,059/s     4.99x   R.dissoc(&quot;y&quot;, xyz)
 
-  15,204,144/s     1.00x   L.get([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)
-  15,086,761/s     1.01x   R.path([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)
-   2,212,557/s     6.87x   R.view(l_xyz, xyzn)
-     774,715/s    19.63x   R.view(l_x_y_z, xyzn)
-     164,657/s    92.34x   O.Getter.view(o_x_y_z, xyzn)
+  15,425,703/s     1.00x   L.get([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)
+  14,775,929/s     1.04x   R.path([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], xyzn)
+   2,335,179/s     6.61x   R.view(l_xyz, xyzn)
+     806,986/s    19.12x   R.view(l_x_y_z, xyzn)
+     168,917/s    91.32x   O.Getter.view(o_x_y_z, xyzn)
 
-   3,842,530/s     1.00x   L.set([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)
-   1,460,412/s     2.63x   R.assocPath([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)
-     708,530/s     5.42x   R.set(l_xyz, 0, xyzn)
-     504,670/s     7.61x   R.set(l_x_y_z, 0, xyzn)
-     216,523/s    17.75x   O.Setter.set(o_x_y_z, 0, xyzn)
+   3,909,372/s     1.00x   L.set([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)
+   1,446,171/s     2.70x   R.assocPath([&quot;x&quot;,&quot;y&quot;,&quot;z&quot;], 0, xyzn)
+     712,504/s     5.49x   R.set(l_xyz, 0, xyzn)
+     521,211/s     7.50x   R.set(l_x_y_z, 0, xyzn)
+     221,245/s    17.67x   O.Setter.set(o_x_y_z, 0, xyzn)
 
-   3,991,426/s     1.00x   L.remove(50, xs100)
-   1,778,880/s     2.24x   R.remove(50, 1, xs100)
+   4,149,926/s     1.00x   L.remove(50, xs100)
+   1,800,033/s     2.31x   R.remove(50, 1, xs100)
 
-   4,295,597/s     1.00x   L.set(50, 2, xs100)
-   1,733,796/s     2.48x   R.update(50, 2, xs100)
-     683,917/s     6.28x   R.set(l_50, 2, xs100)
-
-     645,834/s     1.00x   R.remove(500, 1, xs1000)
-     514,916/s     1.25x   L.remove(500, xs1000)
-
-     611,644/s     1.00x   L.set(500, 2, xs1000)
-     246,186/s     2.48x   R.update(500, 2, xs1000)
+   4,270,594/s     1.00x   L.set(50, 2, xs100)
+   1,746,819/s     2.44x   R.update(50, 2, xs100)
+     704,826/s     6.06x   R.set(l_50, 2, xs100)
 </code></pre>
 <p>Various operations on <em>partial lenses have been optimized for common cases</em>, but
 there is definitely a lot of room for improvement.  The goal is to make partial
