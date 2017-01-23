@@ -247,28 +247,24 @@ function setU(o, x, s) {
   }
 }
 
-function getComposed(ls, s) {
-  for (let i=0, n=ls.length, l; i<n; ++i)
-    switch (typeof (l = ls[i])) {
-      case "string": s = getProp(l, s); break
-      case "number": s = getIndex(l, s); break
-      default: return composed(i, ls)(Const, id, s, ls[i-1])
-    }
-  return s
-}
-
 function getU(l, s) {
   switch (typeof l) {
     case "string":
       return getProp(l, s)
     case "number":
       return getIndex(l, s)
-    case "function":
+    case "object":
+      for (let i=0, n=l.length, o; i<n; ++i)
+        switch (typeof (o = l[i])) {
+          case "string": s = getProp(o, s); break
+          case "number": s = getIndex(o, s); break
+          default: s = getU(o, s); break
+        }
+      return s
+    default:
       if (process.env.NODE_ENV !== "production")
         reqOptic(l)
       return l(Const, id, s, void 0)
-    default:
-      return getComposed(l, s)
   }
 }
 
