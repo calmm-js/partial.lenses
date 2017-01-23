@@ -175,6 +175,10 @@ const funProp = k => (F, xi2yF, x, _) =>
 //
 
 function clearRange(xs, i, j) {
+  if (process.env.NODE_ENV !== "production" && !clearRange.warned) {
+    clearRange.warned=1
+    console.warn("partial.lenses: In the next major version, `index` will not set undefined elements to `null`.")
+  }
   while (i < j)
     xs[i++] = null
   return xs
@@ -327,8 +331,14 @@ function getPick(template, x) {
 }
 
 const setPick = (template, x) => value => {
-  if (!isObject(value))
+  if (!isObject(value)) {
+    if (process.env.NODE_ENV !== "production" && !setPick.warned &&
+        !(void 0 === value || value instanceof Object)) {
+      setPick.warned=1
+      console.warn("partial.lenses: In the next major version, `pick` can only be set with `undefined` or an instanceof Object.")
+    }
     value = void 0
+  }
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
