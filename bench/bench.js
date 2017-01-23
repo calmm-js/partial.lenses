@@ -109,15 +109,6 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.get(L.slice(100, -100), xs10000)`,
-    `R.slice(100, -100, xs10000)`,
-  ], [
-    `L.get(L.slice(1, -1), xs)`,
-    `R.slice(1, -1, xs)`,
-  ], [
-    `L.get(L.slice(10, -10), xs100)`,
-    `R.slice(10, -10, xs100)`,
-  ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
@@ -253,6 +244,15 @@ R.forEach(bs => {
     `L.collect(values, bst)`,
   ], [
     `fromPairs(bstPairs)`,
+  ], [
+    `L.get(L.slice(100, -100), xs10000)`,
+    `R.slice(100, -100, xs10000)`,
+  ], [
+    `L.get(L.slice(1, -1), xs)`,
+    `R.slice(1, -1, xs)`,
+  ], [
+    `L.get(L.slice(10, -10), xs100)`,
+    `R.slice(10, -10, xs100)`,
   ], [
     `L.get(L.defaults(1), 2)`,
     `L.get(L.defaults(1), undefined)`,
