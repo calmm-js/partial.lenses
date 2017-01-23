@@ -1398,7 +1398,7 @@ of an [array-like](#array-like) object.
   shifting all higher indices down by one.  If the result would be an empty
   array, the whole result will be `undefined`.
 * When setting a defined value to an index that is higher than the length of the
-  array-like object, the missing elements will be filled with `null`.
+  array-like object, the missing elements will be filled with `undefined`.
 
 For example:
 
@@ -2025,11 +2025,10 @@ L.set(idxList(5), "!", sampleList)
 ```
 
 Consider what happens when the index given to `idxList` points further beyond
-the last element.  The [`L.index`](#L-index) lens adds `null` values.  The above
-lens adds `undefined` values, which is not ideal with partial lenses, because of
-the special treatment of `undefined`.  In practise, however, it is not typical
-to `set` elements except to append just after the last element.  Treating the
-special case is left as an exercise for the reader.
+the last element.  Both the [`L.index`](#L-index) lens and the above lens add
+`undefined` values, which is not ideal with partial lenses, because of the
+special treatment of `undefined`.  In practise, however, it is not typical to
+`set` elements except to append just after the last element.
 
 #### Interfacing traversals
 

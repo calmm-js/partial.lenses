@@ -150,8 +150,8 @@ describe('L.index', () => {
   testEq('L.set([0], undefined, [null])', undefined)
   testEq('L.set([L.required([]), 0], undefined, [null])', [])
   testEq('L.set([1], 4, [1, 2, 3])', [1, 4, 3])
-  testEq('L.set(2, 4, undefined)', [null, null, 4])
-  testEq('L.set([2], 4, [1])', [1, null, 4])
+  testEq('L.set(2, 4, undefined)', [undefined, undefined, 4])
+  testEq('L.set([2], 4, [1])', [1, undefined, 4])
   testEq('L.remove([0], [1, 2, 3])', [2, 3])
   testEq('L.set([1], undefined, [1, 2, 3])', [1, 3])
   testEq('L.set(2, undefined, [1, 2, 3])', [1, 2])
@@ -358,6 +358,8 @@ describe("L.augment", () => {
          {x: 1, y: 2, z: 3})
   testEq('L.remove([L.augment({y: () => 1}), "x"], {x:0})', undefined)
   testEq('L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})', undefined)
+  testEq('L.set(L.augment({z: c => c.x + c.y}), new XYZ(3,2,1), {x: 1, y: 2})',
+         {x: 3, y: 2})
   empties.filter(x => !R.contains(x, {})).forEach(invalid => {
     testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined)
   })
@@ -516,7 +518,6 @@ describe("L.props", () => {
   testEq('L.set(L.props("x", "y"), {y: 4}, {x: 1, y: 2, z: 3})', {y: 4, z: 3})
   testEq('L.remove(L.props("x", "y"), {x: 1, y: 2})', undefined)
   testEq('L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})', {a: 2})
-  testEq('L.set(L.props("length"), "lol", undefined)', undefined)
 })
 
 export const numeric = f => x => x !== undefined ? f(x) : undefined
@@ -600,6 +601,13 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('X.get(L.elems, [])')
 
     testThrows('X.get(x => x, 0)')
+
+    testThrows('L.set(L.props("length"), "lol", undefined)')
+    testThrows('L.set(L.slice(undefined, undefined), 11, [])')
+    testThrows('L.pick(new XYZ(1,2,3))')
+    testThrows('L.set(L.filter(undefined, undefined), {x: 11}, [])')
+    testThrows('L.augment(new XYZ(1,2,3))')
+    testThrows('L.set(L.augment({y: () => 1}), 45, {x: 1})')
   })
 }
 

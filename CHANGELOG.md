@@ -1,5 +1,23 @@
 # Changelog
 
+## 9.0.0
+
+`L.augment`, `L.pick` and `L.props` can now be written with an `instanceof
+Object` or `undefined`.  Other values are considered errors.  Previously they
+could be written with anything, but only a plain `Object` was considered
+different from `undefined`.
+
+`L.slice` and `L.filter` can now be written with an array-like object or
+`undefined`.  Other values are considered errors.  This was the case earlier
+already, but now it is asserted in non-production builds.
+
+`L.index` no longer produces `null` for previously undefined elements.
+`L.index` was changed in 4.0.0 to produce `null` elements.  In 8.0.0 treatment
+of array-like objects was relaxed, but array producing optics did not
+consistently produce `null` elements.  With the relaxed semantics it seems that
+producing `null` values would complicate treatment of arrays, so it seems best
+to just produce arrays with `undefined` for previously undefined elements.
+
 ## 8.0.0
 
 Relaxed treatment of objects and array like objects.  Previously various optics
