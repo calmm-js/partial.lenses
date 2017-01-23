@@ -274,9 +274,9 @@ function getU(l, s) {
 
 function modifyComposed(os, xi2x, x) {
   let n = os.length
-  const xs = []
+  const xs = Array(n)
   for (let i=0, o; i<n; ++i) {
-    xs.push(x)
+    xs[i] = x
     switch (typeof (o = os[i])) {
       case "string":
         x = getProp(o, x)
