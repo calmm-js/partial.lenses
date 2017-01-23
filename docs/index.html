@@ -986,7 +986,7 @@ of an <a href="#array-like">array-like</a> object.</p>
 shifting all higher indices down by one.  If the result would be an empty
 array, the whole result will be <code>undefined</code>.</li>
 <li>When setting a defined value to an index that is higher than the length of the
-array-like object, the missing elements will be filled with <code>null</code>.</li>
+array-like object, the missing elements will be filled with <code>undefined</code>.</li>
 </ul>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(2, &quot;z&quot;, [&quot;x&quot;, &quot;y&quot;, &quot;c&quot;])
@@ -1366,11 +1366,10 @@ L.get(idxList(2), sampleList)
 <pre><code class="hljs lang-js">L.set(idxList(5), &quot;!&quot;, sampleList)
 </code></pre>
 <p>Consider what happens when the index given to <code>idxList</code> points further beyond
-the last element.  The <a href="#L-index"><code>L.index</code></a> lens adds <code>null</code> values.  The above
-lens adds <code>undefined</code> values, which is not ideal with partial lenses, because of
-the special treatment of <code>undefined</code>.  In practise, however, it is not typical
-to <code>set</code> elements except to append just after the last element.  Treating the
-special case is left as an exercise for the reader.</p>
+the last element.  Both the <a href="#L-index"><code>L.index</code></a> lens and the above lens add
+<code>undefined</code> values, which is not ideal with partial lenses, because of the
+special treatment of <code>undefined</code>.  In practise, however, it is not typical to
+<code>set</code> elements except to append just after the last element.</p>
 <h4 id="interfacing-traversals">Interfacing traversals</h4>
 <p>Fortunately we do not need Immutable.js data structures to provide a compatible
 <em>partial</em>
