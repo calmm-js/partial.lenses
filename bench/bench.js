@@ -152,10 +152,10 @@ R.forEach(bs => {
     `L.collect(flatten, xsss100)`,
     `R.flatten(xsss100)`,
   ], [
-    `L.modify(L.elems, inc, xs100)`,
-    `O.Setter.over(O.Traversal.traversed, inc, xs100)`,
-    `P.over(P.traversed, inc, xs100)`,
-    `R.map(inc, xs100)`,
+    `L.modify(L.elems, inc, xs)`,
+    `O.Setter.over(O.Traversal.traversed, inc, xs)`,
+    `P.over(P.traversed, inc, xs)`,
+    `R.map(inc, xs)`,
   ], [
     `L.modify(L.elems, inc, xs1000)`,
     [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, "QUADRATIC"],
