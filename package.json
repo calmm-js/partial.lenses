@@ -1,7 +1,7 @@
 {
   "name": "partial.lenses",
   "version": "9.0.0",
-  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
+  "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
@@ -25,6 +25,7 @@
     "lens",
     "isomorphism",
     "traversal",
+    "fold",
     "json",
     "immutable"
   ],

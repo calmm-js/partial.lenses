@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "description": "Partial lenses, isomorphisms and traversals for manipulating JSON and more",
+  "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "main": "dist/partial.lenses.js",
   "license": "MIT",
   "keywords": [
@@ -8,6 +8,7 @@
     "lens",
     "isomorphism",
     "traversal",
+    "fold",
     "json",
     "immutable"
   ],
