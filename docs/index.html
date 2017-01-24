@@ -1496,8 +1496,9 @@ translates to a significant performance advantage throughout the library,
 because fewer allocations are required.</p>
 <h4 id="performance">Performance</h4>
 <p>Concern for performance has been a part of the work on partial lenses for some
-time.  The basic principles can be summarized as follows:</p>
+time.  The basic principles can be summarized in order of importance:</p>
 <ul>
+<li>Minimize overheads</li>
 <li>Micro-optimize for common cases</li>
 <li>Avoid stack overflows</li>
 <li>Avoid <a href="http://accidentallyquadratic.tumblr.com/">quadratic algorithms</a></li>

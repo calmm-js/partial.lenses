@@ -2213,8 +2213,9 @@ because fewer allocations are required.
 #### Performance
 
 Concern for performance has been a part of the work on partial lenses for some
-time.  The basic principles can be summarized as follows:
+time.  The basic principles can be summarized in order of importance:
 
+* Minimize overheads
 * Micro-optimize for common cases
 * Avoid stack overflows
 * Avoid [quadratic algorithms](http://accidentallyquadratic.tumblr.com/)
