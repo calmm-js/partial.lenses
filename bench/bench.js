@@ -102,8 +102,9 @@ R.forEach(bs => {
   global.gc()
   const s = new Benchmark.Suite()
   bs.reverse().forEach(b => {
-    b = b.replace(/[ \n]+/g, " ")
-    s.add(b, eval("() => " + b))
+    let [code, note = ""] = b instanceof Array ? b : [b]
+    code = code.replace(/[ \n]+/g, " ")
+    s.add(code, eval("() => " + code), {note})
   })
   s.on('complete', complete)
   s.run()
@@ -114,7 +115,7 @@ R.forEach(bs => {
     `R.reduceRight(add, 0, xs100)`,
   ], [
     `L.foldr(add, 0, L.elems, xs100000)`,
-    `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`,
+    [`O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`, "STACK OVERFLOW"],
     `R.reduceRight(add, 0, xs100000)`,
   ], [
     `L.foldl(add, 0, L.elems, xs100)`,
@@ -157,8 +158,8 @@ R.forEach(bs => {
     `R.map(inc, xs100)`,
   ], [
     `L.modify(L.elems, inc, xs1000)`,
-    `O.Setter.over(O.Traversal.traversed, inc, xs1000)`,
-    `P.over(P.traversed, inc, xs1000)`,
+    [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, "QUADRATIC"],
+    [`P.over(P.traversed, inc, xs1000)`, "QUADRATIC"],
     `R.map(inc, xs1000)`,
   ], [
     `L.modify([L.elems, L.elems, L.elems], inc, xsss100)`,
@@ -293,9 +294,12 @@ function complete() {
                         R.map(R.prop("hz")),
                         R.reduce(R.max, 0))
   bs.forEach(b => {
-    console.log(sprintf("%12s/s %8.2fx   %s",
+    console.log(sprintf("%12s/s %8.2fx   %s%s%s",
                         Math.round(b.hz).toLocaleString(),
-                        fastest/b.hz, b.name))
+                        fastest/b.hz,
+                        b.name,
+                        b.options.note && " -- ",
+                        b.options.note))
   })
   console.log()
 }
