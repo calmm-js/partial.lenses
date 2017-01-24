@@ -21,7 +21,7 @@
 <h1 id="partial-lenses">Partial Lenses</h1>
 <p>Lenses are basically a <a href="#L-get">bidirectional</a> <a href="#L-compose">composable</a>
 abstraction for <a href="#L-modify">updating</a> <a href="#L-choose">selected</a> elements of
-immutable data structures that admits <a href="#performance">efficient</a> implementation.
+immutable data structures that admits <a href="#benchmarks">efficient</a> implementation.
 This library provides a collection of
 <em>partial</em> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
@@ -189,7 +189,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#background">Background</a><ul>
 <li><a href="#motivation">Motivation</a></li>
 <li><a href="#design-choices">Design choices</a></li>
-<li><a href="#performance">Performance</a></li>
+<li><a href="#benchmarks">Benchmarks</a></li>
 <li><a href="#lenses-all-the-way">Lenses all the way</a></li>
 <li><a href="#related-work">Related work</a></li>
 </ul>
@@ -1494,7 +1494,17 @@ than the <a href="https://github.com/fantasyland/fantasy-land">Fantasy Land</a>
 specification.  Static Land does not require wrapping values in objects, which
 translates to a significant performance advantage throughout the library,
 because fewer allocations are required.</p>
-<h3 id="performance">Performance</h3>
+<h4 id="performance">Performance</h4>
+<p>Concern for performance has been a part of the work on partial lenses for some
+time.  The basic principles can be summarized as follows:</p>
+<ul>
+<li>Micro-optimize for common cases</li>
+<li>Avoid stack overflows</li>
+<li>Avoid <a href="http://accidentallyquadratic.tumblr.com/">quadratic algorithms</a></li>
+<li>Avoid optimizations that require large amounts of code</li>
+<li>Run benchmarks continuously to avoid performance regressions</li>
+</ul>
+<h3 id="benchmarks">Benchmarks</h3>
 <p>Here are a few benchmark results on partial lenses (as <code>L</code> version 8.1.1) and
 some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
 version 0.23.0), <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code>

@@ -4,7 +4,7 @@
 
 Lenses are basically a [bidirectional](#L-get) [composable](#L-compose)
 abstraction for [updating](#L-modify) [selected](#L-choose) elements of
-immutable data structures that admits [efficient](#performance) implementation.
+immutable data structures that admits [efficient](#benchmarks) implementation.
 This library provides a collection of
 *partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
@@ -116,7 +116,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Design choices](#design-choices)
-  * [Performance](#performance)
+  * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
   * [Related work](#related-work)
 
@@ -2210,7 +2210,18 @@ specification.  Static Land does not require wrapping values in objects, which
 translates to a significant performance advantage throughout the library,
 because fewer allocations are required.
 
-### Performance
+#### Performance
+
+Concern for performance has been a part of the work on partial lenses for some
+time.  The basic principles can be summarized as follows:
+
+* Micro-optimize for common cases
+* Avoid stack overflows
+* Avoid [quadratic algorithms](http://accidentallyquadratic.tumblr.com/)
+* Avoid optimizations that require large amounts of code
+* Run benchmarks continuously to avoid performance regressions
+
+### Benchmarks
 
 Here are a few benchmark results on partial lenses (as `L` version 8.1.1) and
 some roughly equivalent operations using [Ramda](http://ramdajs.com/) (as `R`
