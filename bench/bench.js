@@ -156,6 +156,11 @@ R.forEach(bs => {
     `P.over(P.traversed, inc, xs100)`,
     `R.map(inc, xs100)`,
   ], [
+    `L.modify(L.elems, inc, xs1000)`,
+    `O.Setter.over(O.Traversal.traversed, inc, xs1000)`,
+    `P.over(P.traversed, inc, xs1000)`,
+    `R.map(inc, xs1000)`,
+  ], [
     `L.modify([L.elems, L.elems, L.elems], inc, xsss100)`,
     `O.Setter.over(R.compose(O.Traversal.traversed,
                              O.Traversal.traversed,
