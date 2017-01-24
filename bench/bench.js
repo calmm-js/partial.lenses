@@ -102,8 +102,9 @@ R.forEach(bs => {
   global.gc()
   const s = new Benchmark.Suite()
   bs.reverse().forEach(b => {
-    let [code, note = ""] = b instanceof Array ? b : [b]
-    code = code.replace(/[ \n]+/g, " ")
+    b = b instanceof Array ? b : [b]
+    const code = b[0].replace(/[ \n]+/g, " ")
+    const note = b[1] || ""
     s.add(code, eval("() => " + code), {note})
   })
   s.on('complete', complete)
