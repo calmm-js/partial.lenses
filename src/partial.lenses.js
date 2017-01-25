@@ -152,10 +152,17 @@ function object0ToUndefined(o) {
 
 //
 
+const lensFrom = (get, set) => i => (F, xi2yF, x, _) =>
+  (0,F.map)(v => set(i, v, x), xi2yF(get(i, x), i))
+
+//
+
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 const setProp = (k, v, o) =>
   void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+
+const funProp = lensFrom(getProp, setProp)
 
 //
 
@@ -188,6 +195,8 @@ function setIndex(i, x, xs) {
     }
   }
 }
+
+const funIndex = lensFrom(getIndex, setIndex)
 
 //
 
@@ -378,11 +387,9 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 export function toFunction(o) {
   switch (typeof o) {
     case "string":
-      return (F, xi2yF, x, _) =>
-        (0,F.map)(v => setProp(o, v, x), xi2yF(getProp(o, x), o))
+      return funProp(o)
     case "number":
-      return (F, xi2yF, xs, _) =>
-        (0,F.map)(y => setIndex(o, y, xs), xi2yF(getIndex(o, xs), o))
+      return funIndex(o)
     case "function":
       if (process.env.NODE_ENV !== "production")
         reqOptic(o)
