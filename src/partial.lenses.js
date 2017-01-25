@@ -52,11 +52,6 @@ function copyToFrom(ys, k, xs, i, j) {
   return ys
 }
 
-function setAt(xs, i, x) {
-  xs[i] = x
-  return xs
-}
-
 //
 
 const Applicative = (map, of, ap) => ({map, of, ap})
@@ -173,10 +168,8 @@ function setIndex(i, x, xs) {
     xs = ""
   const n = xs.length
   if (void 0 !== x) {
-    if (n <= i)
-      return setAt(copyToFrom(Array(i+1), 0, xs, 0, i), i, x)
-    const ys = Array(n)
-    for (let j=0; j<n; ++j)
+    const m = Math.max(i+1, n), ys = Array(m)
+    for (let j=0; j<m; ++j)
       ys[j] = xs[j]
     ys[i] = x
     return ys
