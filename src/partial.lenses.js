@@ -277,13 +277,10 @@ function modifyComposed(os, xi2x, x) {
   }
   if (n === os.length)
     x = xi2x(x, os[n-1])
-  while (0 <= --n) {
-    const o = os[n]
-    switch (typeof o) {
-      case "string": x = setProp(o, x, xs[n]); break
-      case "number": x = setIndex(o, x, xs[n]); break
-    }
-  }
+  for (let o; 0 <= --n;)
+    x = typeof (o = os[n]) === "string"
+        ? setProp(o, x, xs[n])
+        : setIndex(o, x, xs[n])
   return x
 }
 
