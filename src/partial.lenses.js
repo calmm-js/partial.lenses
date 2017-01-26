@@ -21,6 +21,7 @@ const sliceIndex = (m, l, d, i) =>
   void 0 === i ? d : Math.min(Math.max(m, i < 0 ? l + i : i), l)
 
 function pair(x0, x1) {return [x0, x1]}
+const rpair = xs => x => [x, xs]
 
 const flip = bop => (x, y) => bop(y, x)
 
@@ -314,7 +315,7 @@ const setPick = (template, x) => value => {
 const show = (labels, dir) => x =>
   console.log.apply(console, labels.concat([dir, x])) || x
 
-function branchOnMerge(x, keys, xs) {
+const branchOnMerge = (x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
     const v = xs[0]
@@ -347,20 +348,19 @@ function branchOnMerge(x, keys, xs) {
 const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  const n = keys.length, of = A.of
-  if (!n)
+  const of = A.of
+  let i = keys.length
+  if (!i)
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
     x = object0
-  const ap = A.ap,
-        wait = (i, xs) => 0 <= i ? x => wait(i-1, [x, xs])
-                                 : branchOnMerge(x, keys, xs)
-  let xsA = of(wait(n-1))
-  for (let i=n-1; 0<=i; --i) {
+  const ap = A.ap, map = A.map
+  let xsA = of(void 0)
+  while (i--) {
     const k = keys[i], v = x[k]
-    xsA = ap(xsA, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
+    xsA = ap(map(rpair, xsA), vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
   }
-  return xsA
+  return map(branchOnMerge(x, keys), xsA)
 }
 
 const normalizer = xi2x => (F, xi2yF, x, i) =>
