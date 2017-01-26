@@ -71,6 +71,10 @@ const testThrows = expr => it(`${expr} => throws`, () => {
 
 const empties = [undefined, null, false, true, "", 0, 0.0/0.0, {}, []]
 
+describe("L.log", () => {
+  testEq('L.set(L.log("label"), "out", "in")', "out")
+})
+
 describe("compose", () => {
   testEq('L.get(L.compose(), "any")', "any")
   testEq('L.compose("x")', "x")
