@@ -100,8 +100,9 @@ function pushTo(n, ys) {
     if (l && isConcat(l)) {
       pushTo(l.l, ys)
       pushTo(l.r, ys)
-    } else
+    } else {
       ys.push(l)
+    }
   }
   ys.push(n)
 }
