@@ -86,19 +86,19 @@ function reqApplicative(f) {
 
 //
 
-function Concat(l, r) {this.l = l; this.r = r}
+function Join(l, r) {this.l = l; this.r = r}
 
-const isConcat = n => n.constructor === Concat
+const isJoin = n => n.constructor === Join
 
-const ap = (r, l) => void 0 !== l ? void 0 !== r ? new Concat(l, r) : l : r
+const join = (r, l) => void 0 !== l ? void 0 !== r ? new Join(l, r) : l : r
 
-const rconcat = t => h => ap(t, h)
+const rjoin = t => h => join(t, h)
 
 function pushTo(n, ys) {
-  while (n && isConcat(n)) {
+  while (n && isJoin(n)) {
     const l = n.l
     n = n.r
-    if (l && isConcat(l)) {
+    if (l && isJoin(l)) {
       pushTo(l.l, ys)
       pushTo(l.r, ys)
     } else {
@@ -117,10 +117,10 @@ function toArray(n) {
 }
 
 function foldRec(f, r, n) {
-  while (isConcat(n)) {
+  while (isJoin(n)) {
     const l = n.l
     n = n.r
-    r = isConcat(l)
+    r = isJoin(l)
       ? foldRec(f, foldRec(f, r, l.l), l.r)
       : f(r, l[0], l[1])
   }
@@ -129,7 +129,7 @@ function foldRec(f, r, n) {
 
 const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
-const Collect = TacnocOf(void 0, ap)
+const Collect = TacnocOf(void 0, join)
 
 //
 
@@ -139,7 +139,7 @@ function traversePartialIndex(A, xi2yA, xs) {
     reqApplicative(A)
   let xsA = (0,A.of)(void 0), i = xs.length
   while (i--)
-    xsA = ap(map(rconcat, xsA), xi2yA(xs[i], i))
+    xsA = ap(map(rjoin, xsA), xi2yA(xs[i], i))
   return map(toArray, xsA)
 }
 
