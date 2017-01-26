@@ -355,7 +355,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (!(x instanceof Object))
     x = object0
   const ap = A.ap, map = A.map
-  let xsA = of(void 0)
+  let xsA = of(0)
   while (i--) {
     const k = keys[i], v = x[k]
     xsA = ap(map(rpair, xsA), vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
