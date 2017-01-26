@@ -136,10 +136,10 @@ function traversePartialIndex(A, xi2yA, xs) {
   const ap = A.ap, map = A.map
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  let s = (0,A.of)(void 0), i = xs.length
+  let xsA = (0,A.of)(void 0), i = xs.length
   while (i--)
-    s = ap(map(rconcat, s), xi2yA(xs[i], i))
-  return map(toArray, s)
+    xsA = ap(map(rconcat, xsA), xi2yA(xs[i], i))
+  return map(toArray, xsA)
 }
 
 //
