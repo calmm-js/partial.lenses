@@ -312,9 +312,6 @@ const setPick = (template, x) => value => {
 
 //
 
-const show = (labels, dir) => x =>
-  console.log.apply(console, labels.concat([dir, x])) || x
-
 const branchOnMerge = (x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
@@ -466,7 +463,13 @@ export function lazy(o2o) {
 
 // Debugging
 
-export const log = (...labels) => iso(show(labels, "get"), show(labels, "set"))
+export function log() {
+  const show = dir => x =>
+    console.log.apply(console,
+                      copyToFrom([], 0, arguments, 0, arguments.length)
+                      .concat([dir, x])) || x
+  return iso(show("get"), show("set"))
+}
 
 // Operations on traversals
 
