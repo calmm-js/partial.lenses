@@ -27,10 +27,9 @@ const flip = bop => (x, y) => bop(y, x)
 
 const unto = c => x => void 0 !== x ? x : c
 
-const isNat = x => x === (x >> 0) && 0 <= x
-
 const seemsArrayLike = x =>
-  x instanceof Object && isNat(x.length) || typeof x === "string"
+  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
+  typeof x === "string"
 
 //
 
