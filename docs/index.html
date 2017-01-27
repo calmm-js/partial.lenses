@@ -64,7 +64,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#recursing">Recursing</a><ul>
-<li><a href="#L-lazy" title="L.lazy: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></li>
+<li><a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></li>
 </ul>
 </li>
 <li><a href="#debugging">Debugging</a><ul>
@@ -533,7 +533,7 @@ read-only lens whose view is always <code>undefined</code>.</p>
           [1, {x: 2}, [3,4]])
 </code></pre>
 <h4 id="recursing">Recursing</h4>
-<h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: POptic s a -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
+<h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
 is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.</p>

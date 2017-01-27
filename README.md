@@ -43,7 +43,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.when((maybeValue, index) => testable)`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a")
       * [`L.zero`](#L-zero "L.zero: POptic s a")
     * [Recursing](#recursing)
-      * [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
+      * [`L.lazy(optic => optic)`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a")
     * [Debugging](#debugging)
       * [`L.log(...labels)`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
@@ -659,7 +659,7 @@ L.collect([L.elems,
 
 #### Recursing
 
-##### <a name="L-lazy"></a> [≡](#contents) [`L.lazy(optic => optic)`](#L-lazy "L.lazy: POptic s a -> POptic s a")
+##### <a name="L-lazy"></a> [≡](#contents) [`L.lazy(optic => optic)`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a")
 
 `L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
 is passed a forwarding proxy to its return value and can also make forward
