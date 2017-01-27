@@ -51,7 +51,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#nesting">Nesting</a><ul>
-<li><a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a></li>
+<li><a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></li>
 </ul>
 </li>
 <li><a href="#querying">Querying</a><ul>
@@ -133,12 +133,12 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable)</code></a></li>
 <li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></li>
 <li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses)</code></a></li>
-<li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(integer)</code></a></li>
+<li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex)</code></a> or <code>elemIndex</code></li>
 <li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd)</code></a></li>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
-<li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a></li>
+<li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a> or <code>propName</code></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames)</code></a></li>
 </ul>
 </li>
@@ -442,7 +442,7 @@ to <code>undefined</code> typically has the effect of removing the focused eleme
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
 <h4 id="nesting">Nesting</h4>
-<h5 id="-a-name-l-compose-a-contents-l-compose-optics-l-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-"><a name="L-compose"></a> <a href="#contents">≡</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a></h5>
+<h5 id="-a-name-l-compose-a-contents-l-compose-optics-l-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-or-optics-"><a name="L-compose"></a> <a href="#contents">≡</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></h5>
 <p><code>L.compose</code> performs composition of optics.  The following equations
 characterize composition:</p>
 <pre><code class="hljs lang-jsx">                  L.compose() = L.identity
@@ -977,9 +977,9 @@ defined item and then returns a lens that focuses on that item.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.findWith(&quot;x&quot;), 3, [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
-<h5 id="-a-name-l-index-a-contents-l-index-integer-l-index-l-index-integer-plens-a-a-"><a name="L-index"></a> <a href="#contents">≡</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(integer)</code></a></h5>
-<p><code>L.index(integer)</code> or just <code>integer</code> focuses on the element at specified index
-of an <a href="#array-like">array-like</a> object.</p>
+<h5 id="-a-name-l-index-a-contents-l-index-elemindex-l-index-l-index-integer-plens-a-a-or-elemindex-"><a name="L-index"></a> <a href="#contents">≡</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex)</code></a> or <code>elemIndex</code></h5>
+<p><code>L.index(elemIndex)</code> or just <code>elemIndex</code> focuses on the element at specified
+index of an <a href="#array-like">array-like</a> object.</p>
 <ul>
 <li>When not viewing an index with a defined element, the result is <code>undefined</code>.</li>
 <li>When setting to <code>undefined</code>, the element is removed from the resulting array,
@@ -1037,7 +1037,7 @@ of arrays, basically</p>
 <pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 </code></pre>
 <h4 id="lensing-objects">Lensing objects</h4>
-<h5 id="-a-name-l-prop-a-contents-l-prop-propname-l-prop-l-prop-p-a-plens-p-a-ps-a-"><a name="L-prop"></a> <a href="#contents">≡</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a></h5>
+<h5 id="-a-name-l-prop-a-contents-l-prop-propname-l-prop-l-prop-p-a-plens-p-a-ps-a-or-propname-"><a name="L-prop"></a> <a href="#contents">≡</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a> or <code>propName</code></h5>
 <p><code>L.prop(string)</code> or <code>string</code> focuses on the specified object property.</p>
 <ul>
 <li>When not viewing a defined object property, the result is <code>undefined</code>.</li>

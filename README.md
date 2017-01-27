@@ -34,7 +34,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.remove(optic, maybeData)`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
       * [`L.set(optic, maybeValue, maybeData)`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s")
     * [Nesting](#nesting)
-      * [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a")
+      * [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
     * [Querying](#querying)
       * [`L.chain((value, index) => optic, lens)`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> PLens s a -> POptic s b")
       * [`L.choice(...lenses)`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
@@ -86,10 +86,10 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.filter((value, index) => testable)`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
       * [`L.find((value, index) => testable)`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
       * [`L.findWith(...lenses)`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
-      * [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
+      * [`L.index(elemIndex)`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex`
       * [`L.slice(maybeBegin, maybeEnd)`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
     * [Lensing objects](#lensing-objects)
-      * [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a")
+      * [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
       * [`L.props(...propNames)`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
     * [Providing defaults](#providing-defaults)
       * [`L.valueOr(valueOut)`](#L-valueOr "L.valueOr: s -> PLens s s")
@@ -504,7 +504,7 @@ to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
 #### Nesting
 
-##### <a name="L-compose"></a> [≡](#contents) [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a")
+##### <a name="L-compose"></a> [≡](#contents) [`L.compose(...optics)`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
 
 `L.compose` performs composition of optics.  The following equations
 characterize composition:
@@ -1388,10 +1388,10 @@ L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
 
-##### <a name="L-index"></a> [≡](#contents) [`L.index(integer)`](#L-index "L.index: Integer -> PLens [a] a")
+##### <a name="L-index"></a> [≡](#contents) [`L.index(elemIndex)`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex`
 
-`L.index(integer)` or just `integer` focuses on the element at specified index
-of an [array-like](#array-like) object.
+`L.index(elemIndex)` or just `elemIndex` focuses on the element at specified
+index of an [array-like](#array-like) object.
 
 * When not viewing an index with a defined element, the result is `undefined`.
 * When setting to `undefined`, the element is removed from the resulting array,
@@ -1483,7 +1483,7 @@ L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 
 #### Lensing objects
 
-##### <a name="L-prop"></a> [≡](#contents) [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a")
+##### <a name="L-prop"></a> [≡](#contents) [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
 
 `L.prop(string)` or `string` focuses on the specified object property.
 
