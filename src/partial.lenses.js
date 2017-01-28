@@ -235,7 +235,7 @@ function setU(o, x, s) {
         reqOptic(o)
       return o(Ident, always(x), s, void 0)
     default:
-      return modifyComposed(o, always(x), s)
+      return modifyComposed(o, 0, s, x)
   }
 }
 
@@ -260,7 +260,7 @@ function getU(l, s) {
   }
 }
 
-function modifyComposed(os, xi2x, x) {
+function modifyComposed(os, xi2y, x, y) {
   let n = os.length
   const xs = Array(n)
   for (let i=0, o; i<n; ++i) {
@@ -273,13 +273,13 @@ function modifyComposed(os, xi2x, x) {
         x = getIndex(o, x)
         break
       default:
-        x = composed(i, os)(Ident, xi2x, x, os[i-1])
+        x = composed(i, os)(Ident, xi2y || always(y), x, os[i-1])
         n = i
         break
     }
   }
   if (n === os.length)
-    x = xi2x(x, os[n-1])
+    x = xi2y ? xi2y(x, os[n-1]) : y
   for (let o; 0 <= --n;)
     x = isString(o = os[n])
         ? setProp(o, x, xs[n])
