@@ -786,8 +786,8 @@ XYZ.prototype.norm = function () {
           this.z * this.z)
 }
 </code></pre>
-<p>the <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired
-type, if necessary:</p>
+<p><a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
+if necessary:</p>
 <pre><code class="hljs lang-js">var objectTo = R.curry((C, o) =&gt; Object.assign(Object.create(C.prototype), o))
 
 L.modify([L.rewrite(objectTo(XYZ)), L.values],
