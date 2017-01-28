@@ -1080,8 +1080,8 @@ XYZ.prototype.norm = function () {
 }
 ```
 
-the [`L.rewrite`](#L-rewrite) can be used to convert the result to the desired
-type, if necessary:
+[`L.rewrite`](#L-rewrite) can be used to convert the result to the desired type,
+if necessary:
 
 ```js
 const objectTo = R.curry((C, o) => Object.assign(Object.create(C.prototype), o))
