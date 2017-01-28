@@ -9,7 +9,9 @@ import {
   dissocPartialU,
   id,
   isDefined,
+  isFunction,
   isObject,
+  isString,
   keys,
   object0,
   sndU
@@ -29,7 +31,7 @@ const unto = c => x => void 0 !== x ? x : c
 
 const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  typeof x === "string"
+  isString(x)
 
 //
 
@@ -202,7 +204,7 @@ const funIndex = lensFrom(getIndex, setIndex)
 //
 
 function reqOptic(o) {
-  if (!(typeof o === "function" && o.length === 4))
+  if (!(isFunction(o) && o.length === 4))
     throw new Error("partial.lenses: Expecting an optic.")
 }
 
@@ -279,7 +281,7 @@ function modifyComposed(os, xi2x, x) {
   if (n === os.length)
     x = xi2x(x, os[n-1])
   for (let o; 0 <= --n;)
-    x = typeof (o = os[n]) === "string"
+    x = isString(o = os[n])
         ? setProp(o, x, xs[n])
         : setIndex(o, x, xs[n])
   return x
@@ -677,7 +679,7 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
 // Lensing objects
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
-  if (typeof x !== "string")
+  if (!isString(x))
     throw new Error("partial.lenses: `prop` expects a string.")
   return x
 }
