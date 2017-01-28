@@ -1485,7 +1485,7 @@ L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 
 ##### <a name="L-prop"></a> [≡](#contents) [`L.prop(propName)`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
 
-`L.prop(string)` or `string` focuses on the specified object property.
+`L.prop(propName)` or just `propName` focuses on the specified object property.
 
 * When not viewing a defined object property, the result is `undefined`.
 * When writing to a property, the result is always an `Object`.
