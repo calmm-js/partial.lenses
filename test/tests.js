@@ -612,6 +612,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('L.set(L.filter(undefined, undefined), {x: 11}, [])')
     testThrows('L.augment(new XYZ(1,2,3))')
     testThrows('L.set(L.augment({y: () => 1}), 45, {x: 1})')
+
+    testThrows('L.set(null, 1, 2)')
   })
 }
 

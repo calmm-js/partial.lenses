@@ -8,6 +8,7 @@ import {
   curryN,
   dissocPartialU,
   id,
+  isArray,
   isDefined,
   isFunction,
   isObject,
@@ -203,8 +204,13 @@ const funIndex = lensFrom(getIndex, setIndex)
 
 //
 
-function reqOptic(o) {
+function reqFunction(o) {
   if (!(isFunction(o) && o.length === 4))
+    throw new Error("partial.lenses: Expecting an optic.")
+}
+
+function reqArray(o) {
+  if (!isArray(o))
     throw new Error("partial.lenses: Expecting an optic.")
 }
 
@@ -230,12 +236,14 @@ function setU(o, x, s) {
       return setProp(o, x, s)
     case "number":
       return setIndex(o, x, s)
-    case "function":
+    case "object":
       if (process.env.NODE_ENV !== "production")
-        reqOptic(o)
-      return o(Ident, always(x), s, void 0)
-    default:
+        reqArray(o)
       return modifyComposed(o, 0, s, x)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
+      return o(Ident, always(x), s, void 0)
   }
 }
 
@@ -246,6 +254,8 @@ function getU(l, s) {
     case "number":
       return getIndex(l, s)
     case "object":
+      if (process.env.NODE_ENV !== "production")
+        reqArray(l)
       for (let i=0, n=l.length, o; i<n; ++i)
         switch (typeof (o = l[i])) {
           case "string": s = getProp(o, s); break
@@ -255,12 +265,14 @@ function getU(l, s) {
       return s
     default:
       if (process.env.NODE_ENV !== "production")
-        reqOptic(l)
+        reqFunction(l)
       return l(Const, id, s, void 0)
   }
 }
 
 function modifyComposed(os, xi2y, x, y) {
+  if (process.env.NODE_ENV !== "production")
+    reqArray(os)
   let n = os.length
   const xs = Array(n)
   for (let i=0, o; i<n; ++i) {
@@ -388,7 +400,7 @@ export function toFunction(o) {
       return funIndex(o)
     case "function":
       if (process.env.NODE_ENV !== "production")
-        reqOptic(o)
+        reqFunction(o)
       return o
     default:
       return composed(0, o)
@@ -405,7 +417,7 @@ export const modify = curry((o, xi2x, s) => {
       return setIndex(o, xi2x(getIndex(o, s), o), s)
     case "function":
       if (process.env.NODE_ENV !== "production")
-        reqOptic(o)
+        reqFunction(o)
       return o(Ident, xi2x, s, void 0)
     default:
       return modifyComposed(o, xi2x, s)
