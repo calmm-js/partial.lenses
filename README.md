@@ -953,8 +953,8 @@ L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 
 ##### <a name="L-maximum"></a> [≡](#contents) [`L.maximum(traversal, maybeData)`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
 
-`L.maximum` computes a maximum of the optional ordered elements targeted by the
-traversal.
+`L.maximum` computes a maximum, according to the `>` operator, of the optional
+elements targeted by the traversal.
 
 For example:
 
@@ -965,8 +965,8 @@ L.maximum(L.elems, [1,2,3])
 
 ##### <a name="L-minimum"></a> [≡](#contents) [`L.minimum(traversal, maybeData)`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
 
-`L.minimum` computes a minimum of the optional ordered elements targeted by the
-traversal.
+`L.minimum` computes a minimum, according to the `<` operator, of the optional
+elements targeted by the traversal.
 
 For example:
 

@@ -714,14 +714,14 @@ traversal.</p>
 <pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-maximum-a-contents-l-maximum-traversal-maybedata-l-maximum-l-maximum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-maximum"></a> <a href="#contents">≡</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></h5>
-<p><code>L.maximum</code> computes a maximum of the optional ordered elements targeted by the
-traversal.</p>
+<p><code>L.maximum</code> computes a maximum, according to the <code>&gt;</code> operator, of the optional
+elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.maximum(L.elems, [1,2,3])
 </code></pre>
 <h5 id="-a-name-l-minimum-a-contents-l-minimum-traversal-maybedata-l-minimum-l-minimum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-minimum"></a> <a href="#contents">≡</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></h5>
-<p><code>L.minimum</code> computes a minimum of the optional ordered elements targeted by the
-traversal.</p>
+<p><code>L.minimum</code> computes a minimum, according to the <code>&lt;</code> operator, of the optional
+elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.minimum(L.elems, [1,2,3])
 </code></pre>
