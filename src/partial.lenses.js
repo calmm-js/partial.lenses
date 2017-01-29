@@ -81,9 +81,28 @@ const constAs = toConst => curryN(4, (xMi2y, m) => {
 
 //
 
+const expectedOptic = "Expecting an optic"
+
+function errorGiven(m, o) {
+  console.error("partial.lenses:", m, "- given:", o)
+  throw new Error(m)
+}
+
+function reqFunction(o) {
+  if (!(isFunction(o) && o.length === 4))
+    errorGiven(expectedOptic, o)
+}
+
+function reqArray(o) {
+  if (!isArray(o))
+    errorGiven(expectedOptic, o)
+}
+
+//
+
 function reqApplicative(f) {
   if (!f.of)
-    throw new Error("partial.lenses: Traversals require an applicative.")
+    errorGiven("Traversals require an applicative", f)
 }
 
 //
@@ -174,7 +193,7 @@ const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
   if (process.env.NODE_ENV !== "production" && i < 0)
-    throw new Error("partial.lenses: Negative indices are not supported by `index`.")
+    errorGiven("Negative indices are not supported by `index`", i)
   if (!seemsArrayLike(xs))
     xs = ""
   const n = xs.length
@@ -201,24 +220,6 @@ function setIndex(i, x, xs) {
 }
 
 const funIndex = lensFrom(getIndex, setIndex)
-
-//
-
-function errorOptic(o) {
-  const m = "partial.lenses: Expecting an optic."
-  console.error(m, "Given:", o)
-  throw new Error(m)
-}
-
-function reqFunction(o) {
-  if (!(isFunction(o) && o.length === 4))
-    errorOptic(o)
-}
-
-function reqArray(o) {
-  if (!isArray(o))
-    errorOptic(o)
-}
 
 //
 
@@ -325,7 +326,7 @@ function getPick(template, x) {
 const setPick = (template, x) => value => {
   if (process.env.NODE_ENV !== "production" &&
       !(void 0 === value || value instanceof Object))
-    throw new Error("partial.lenses: `pick` must be set with undefined or an object")
+    errorGiven("`pick` must be set with undefined or an object", value)
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
@@ -579,7 +580,7 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 
 export const augment = template => {
   if (process.env.NODE_ENV !== "production" && !isObject(template))
-    throw new Error("partial.lenses: `augment` expects a plain Object template")
+    errorGiven("`augment` expects a plain Object template", template)
   return lens(
     x => {
       x = dissocPartialU(0, x)
@@ -591,7 +592,7 @@ export const augment = template => {
     (y, x) => {
       if (process.env.NODE_ENV !== "production" &&
           !(void 0 === y || y instanceof Object))
-        throw new Error("partial.lenses: `augment` must be set with undefined or an object")
+        errorGiven("`augment` must be set with undefined or an object", y)
       if (y && y.constructor !== Object)
         y = Object.assign({}, y)
       if (!(x instanceof Object))
@@ -644,7 +645,7 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     ts => {
       if (process.env.NODE_ENV !== "production" &&
           !(void 0 === ts || seemsArrayLike(ts)))
-        throw new Error("partial.lenses: `filter` must be set with undefined or an array-like object")
+        errorGiven("`filter` must be set with undefined or an array-like object", ts)
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
             n = tsN + fsN
@@ -670,7 +671,7 @@ export function findWith(...ls) {
 
 export const index = process.env.NODE_ENV === "production" ? id : x => {
   if (!Number.isInteger(x) || x < 0)
-    throw new Error("partial.lenses: `index` expects a non-negative integer.")
+    errorGiven("`index` expects a non-negative integer", x)
   return x
 }
 
@@ -683,7 +684,7 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
     zs => {
       if (process.env.NODE_ENV !== "production" &&
           !(void 0 === zs || seemsArrayLike(zs)))
-        throw new Error("partial.lenses: `slice` must be set with undefined or an array-like object")
+        errorGiven("`slice` must be set with undefined or an array-like object", zs)
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
       return n
         ? copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
@@ -702,7 +703,7 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
 
 export const prop = process.env.NODE_ENV === "production" ? id : x => {
   if (!isString(x))
-    throw new Error("partial.lenses: `prop` expects a string.")
+    errorGiven("`prop` expects a string", x)
   return x
 }
 
@@ -734,7 +735,7 @@ export const just = x => to(always(x))
 
 export const pick = template => {
   if (process.env.NODE_ENV !== "production" && !isObject(template))
-    throw new Error("partial.lenses: `pick` expects a plain Object template")
+    errorGiven("`pick` expects a plain Object template", template)
   return (F, xi2yF, x, i) =>
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 }
