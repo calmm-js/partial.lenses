@@ -204,15 +204,23 @@ const funIndex = lensFrom(getIndex, setIndex)
 
 //
 
+function errorOptic(o) {
+  const m = "partial.lenses: Expecting an optic."
+  console.error(m, "Given:", o)
+  throw new Error(m)
+}
+
 function reqFunction(o) {
   if (!(isFunction(o) && o.length === 4))
-    throw new Error("partial.lenses: Expecting an optic.")
+    errorOptic(o)
 }
 
 function reqArray(o) {
   if (!isArray(o))
-    throw new Error("partial.lenses: Expecting an optic.")
+    errorOptic(o)
 }
+
+//
 
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
@@ -403,6 +411,8 @@ export function toFunction(o) {
         reqFunction(o)
       return o
     default:
+      if (process.env.NODE_ENV !== "production")
+        reqArray(o)
       return composed(0, o)
   }
 }
