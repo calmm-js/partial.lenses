@@ -26,6 +26,7 @@ const T_opticOf = Category => T.lazy(T_optic => T.or(
   T.integer,
   T.string,
   T.array(T_optic),
+  T.fn([T_maybeData, T_index], T_maybeData),
   T_opticFnOf(Category)))
 
 const T_optic = T_opticOf(T.or(T_applicative, T_functor))

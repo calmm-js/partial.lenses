@@ -259,8 +259,10 @@ describe("L.zero", () => {
 })
 
 describe("L.to", () => {
-  testEq('L.get([0, "x", L.to(R.negate)], [{x:-1}])', 1)
-  testEq('L.set([0, "x", L.to(R.negate)], 2, [{x:-1}])', [{x:-1}])
+  testEq('L.get(x => x+1, 2)', 3)
+  testEq('L.modify(R.inc, R.negate, 1)', 1)
+  testEq('L.get([0, "x", R.negate], [{x:-1}])', 1)
+  testEq('L.set([0, "x", R.negate], 2, [{x:-1}])', [{x:-1}])
 })
 
 describe("L.just", () => {
@@ -612,8 +614,6 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('X.prop()')
 
     testThrows('X.get(L.elems, [])')
-
-    testThrows('X.get(x => x, 0)')
 
     testThrows('L.set(L.props("length"), "lol", undefined)')
     testThrows('L.set(L.slice(undefined, undefined), 11, [])')

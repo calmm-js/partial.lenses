@@ -61,7 +61,7 @@ export const object = template => object => {
 }
 
 export const fn = (argTys, resultTy) => fn => {
-  if (typeof fn !== "function")
+  if (typeof fn !== "function" || argTys.length < fn.length)
     throw new Error(`fn(${argTys}, ${resultTy}): ${fn}`)
   return R.curryN(argTys.length, function (...argIns) {
     if (argTys.length !== argIns.length)
