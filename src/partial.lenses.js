@@ -283,10 +283,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x)
         break
       default:
-        o = composed(i, os)
-        x = o.length === 4
-          ? o(Ident, xi2y || always(y), x, os[i-1])
-          : (xi2y && xi2y(x, os[i-1]), x)
+        x = composed(i, os)(Ident, xi2y || always(y), x, os[i-1])
         n = i
         break
     }
