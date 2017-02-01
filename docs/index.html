@@ -45,135 +45,135 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#optics">Optics</a><ul>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
-<li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></li>
-<li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData)</code></a></li>
-<li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData)</code></a></li>
+<li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></li>
+<li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a></li>
+<li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a></li>
 </ul>
 </li>
 <li><a href="#nesting">Nesting</a><ul>
-<li><a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></li>
+<li><a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics) ~&gt; optic</code></a> or <code>[...optics]</code></li>
 </ul>
 </li>
 <li><a href="#querying">Querying</a><ul>
-<li><a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic)</code></a></li>
-<li><a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses)</code></a></li>
-<li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic)</code></a></li>
-<li><a href="#L-optional" title="L.optional: POptic a a"><code>L.optional</code></a></li>
-<li><a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable)</code></a></li>
-<li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero</code></a></li>
+<li><a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a></li>
+<li><a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses) ~&gt; optic</code></a></li>
+<li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a></li>
+<li><a href="#L-optional" title="L.optional: POptic a a"><code>L.optional ~&gt; optic</code></a></li>
+<li><a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a></li>
+<li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a></li>
 </ul>
 </li>
 <li><a href="#recursing">Recursing</a><ul>
-<li><a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></li>
+<li><a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a></li>
 </ul>
 </li>
 <li><a href="#debugging">Debugging</a><ul>
-<li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></li>
+<li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a></li>
 </ul>
 </li>
 <li><a href="#internals">Internals</a><ul>
-<li><a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic)</code></a></li>
+<li><a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#traversals">Traversals</a><ul>
 <li><a href="#operations-on-traversals">Operations on traversals</a><ul>
-<li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData)</code></a></li>
-<li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></li>
-<li><a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData)</code></a></li>
-<li><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></li>
+<li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
+<li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
+<li><a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
+<li><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
 </ul>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
-<li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></li>
-<li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData)</code></a></li>
-<li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
-<li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></li>
-<li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></li>
-<li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></li>
-<li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></li>
-<li><a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData)</code></a></li>
+<li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
+<li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
+<li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a></li>
+<li><a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></li>
 </ul>
 </li>
 <li><a href="#creating-new-traversals">Creating new traversals</a><ul>
-<li><a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></li>
+<li><a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></li>
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems</code></a></li>
-<li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values</code></a></li>
+<li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></li>
+<li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#lenses">Lenses</a><ul>
 <li><a href="#operations-on-lenses">Operations on lenses</a><ul>
-<li><a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></li>
+<li><a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a></li>
 </ul>
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
-<li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData)</code></a></li>
+<li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#computing-derived-props">Computing derived props</a><ul>
-<li><a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props})</code></a></li>
+<li><a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props}) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#enforcing-invariants">Enforcing invariants</a><ul>
-<li><a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn)</code></a></li>
-<li><a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value)</code></a></li>
-<li><a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value)</code></a></li>
-<li><a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut)</code></a></li>
-<li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut)</code></a></li>
+<li><a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn) ~&gt; lens</code></a></li>
+<li><a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value) ~&gt; lens</code></a></li>
+<li><a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value) ~&gt; lens</code></a></li>
+<li><a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a></li>
+<li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#array-like">Lensing array-like objects</a><ul>
-<li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append</code></a></li>
-<li><a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable)</code></a></li>
-<li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></li>
-<li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses)</code></a></li>
-<li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex)</code></a> or <code>elemIndex</code></li>
-<li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd)</code></a></li>
+<li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a></li>
+<li><a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable) ~&gt; lens</code></a></li>
+<li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable) ~&gt; lens</code></a></li>
+<li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></li>
+<li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></li>
+<li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
-<li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a> or <code>propName</code></li>
-<li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames)</code></a></li>
+<li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></li>
+<li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#providing-defaults">Providing defaults</a><ul>
-<li><a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut)</code></a></li>
+<li><a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#adapting-to-data">Adapting to data</a><ul>
-<li><a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></li>
+<li><a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#read-only-mapping">Read-only mapping</a><ul>
-<li><a href="#L-just" title="L.just: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></li>
-<li><a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue)</code></a></li>
+<li><a href="#L-just" title="L.just: Maybe a -&gt; PLens s a"><code>L.just(maybeValue) ~&gt; lens</code></a></li>
+<li><a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#transforming-data">Transforming data</a><ul>
-<li><a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props})</code></a></li>
-<li><a href="#L-replace" title="L.replace: Maybe s -&gt; Maybe s -&gt; PLens s s"><code>L.replace(maybeValueIn, maybeValueOut)</code></a></li>
+<li><a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a></li>
+<li><a href="#L-replace" title="L.replace: Maybe s -&gt; Maybe s -&gt; PLens s s"><code>L.replace(maybeValueIn, maybeValueOut) ~&gt; lens</code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li><a href="#isomorphisms">Isomorphisms</a><ul>
 <li><a href="#operations-on-isomorphisms">Operations on isomorphisms</a><ul>
-<li><a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData)</code></a></li>
+<li><a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData) ~&gt; maybeData</code></a></li>
 </ul>
 </li>
 <li><a href="#creating-new-isomorphisms">Creating new isomorphisms</a><ul>
-<li><a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData)</code></a></li>
+<li><a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a></li>
 </ul>
 </li>
 <li><a href="#isomorphisms-and-combinators">Isomorphisms and combinators</a><ul>
-<li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity</code></a></li>
-<li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism)</code></a></li>
+<li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></li>
+<li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></li>
 </ul>
 </li>
 </ul>
@@ -410,7 +410,7 @@ partial lens, the input is treated as being <code>undefined</code>.  This allows
 partial optics, such as the simple <a href="#L-prop"><code>L.prop</code></a> lens, to be used in a
 wider range of situations than corresponding total optics.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
-<h5 id="-a-name-l-modify-a-contents-l-modify-optic-maybevalue-index-maybevalue-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a name="L-modify"></a> <a href="#contents">≡</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData)</code></a></h5>
+<h5 id="-a-name-l-modify-a-contents-l-modify-optic-maybevalue-index-maybevalue-maybedata-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a name="L-modify"></a> <a href="#contents">≡</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
@@ -420,7 +420,7 @@ wider range of situations than corresponding total optics.</p>
          {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
 <p>of a data structure.</p>
-<h5 id="-a-name-l-remove-a-contents-l-remove-optic-maybedata-l-remove-l-remove-poptic-s-a-maybe-s-maybe-s-"><a name="L-remove"></a> <a href="#contents">≡</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData)</code></a></h5>
+<h5 id="-a-name-l-remove-a-contents-l-remove-optic-maybedata-maybedata-l-remove-l-remove-poptic-s-a-maybe-s-maybe-s-"><a name="L-remove"></a> <a href="#contents">≡</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.remove</code> allows one to remove the focused element</p>
 <pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
@@ -431,7 +431,7 @@ wider range of situations than corresponding total optics.</p>
 <p>Note that <code>L.remove(optic, maybeData)</code> is equivalent
 to <a href="#L-set"><code>L.set(lens, undefined, maybeData)</code></a>.  With partial lenses, setting
 to <code>undefined</code> typically has the effect of removing the focused element.</p>
-<h5 id="-a-name-l-set-a-contents-l-set-optic-maybevalue-maybedata-l-set-l-set-poptic-s-a-maybe-a-maybe-s-maybe-s-"><a name="L-set"></a> <a href="#contents">≡</a> <a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData)</code></a></h5>
+<h5 id="-a-name-l-set-a-contents-l-set-optic-maybevalue-maybedata-maybedata-l-set-l-set-poptic-s-a-maybe-a-maybe-s-maybe-s-"><a name="L-set"></a> <a href="#contents">≡</a> <a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.set</code> allows one to replace the focused element</p>
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
@@ -442,7 +442,7 @@ to <code>undefined</code> typically has the effect of removing the focused eleme
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
 <h4 id="nesting">Nesting</h4>
-<h5 id="-a-name-l-compose-a-contents-l-compose-optics-l-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-or-optics-"><a name="L-compose"></a> <a href="#contents">≡</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></h5>
+<h5 id="-a-name-l-compose-a-contents-l-compose-optics-optic-l-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-or-optics-"><a name="L-compose"></a> <a href="#contents">≡</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics) ~&gt; optic</code></a> or <code>[...optics]</code></h5>
 <p><code>L.compose</code> performs composition of optics.  The following equations
 characterize composition:</p>
 <pre><code class="hljs lang-jsx">                  L.compose() = L.identity
@@ -466,7 +466,7 @@ L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
 <p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
 <code>L.compose</code>.</p>
 <h4 id="querying">Querying</h4>
-<h5 id="-a-name-l-chain-a-contents-l-chain-value-index-optic-optic-l-chain-l-chain-a-index-poptic-s-b-poptic-s-a-poptic-s-b-"><a name="L-chain"></a> <a href="#contents">≡</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic)</code></a></h5>
+<h5 id="-a-name-l-chain-a-contents-l-chain-value-index-optic-optic-optic-l-chain-l-chain-a-index-poptic-s-b-poptic-s-a-poptic-s-b-"><a name="L-chain"></a> <a href="#contents">≡</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a></h5>
 <p><code>L.chain(toOptic, optic)</code> is equivalent to</p>
 <pre><code class="hljs lang-jsx">L.compose(optic, L.choose((maybeValue, index) =&gt;
   maybeValue === undefined
@@ -476,7 +476,7 @@ L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
 <p>Note that with the <a href="#L-just"><code>L.just</code></a>, <code>L.chain</code>, <a href="#L-choice"><code>L.choice</code></a>
 and <a href="#L-zero"><code>L.zero</code></a> combinators, one can consider optics as subsuming the
 maybe monad.</p>
-<h5 id="-a-name-l-choice-a-contents-l-choice-lenses-l-choice-l-choice-plens-s-a-poptic-s-a-"><a name="L-choice"></a> <a href="#contents">≡</a> <a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses)</code></a></h5>
+<h5 id="-a-name-l-choice-a-contents-l-choice-lenses-optic-l-choice-l-choice-plens-s-a-poptic-s-a-"><a name="L-choice"></a> <a href="#contents">≡</a> <a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses) ~&gt; optic</code></a></h5>
 <p><code>L.choice</code> returns a partial optic that acts like the first of the given lenses
 whose view is not <code>undefined</code> on the given data structure.  When the views of
 all of the given lenses are <code>undefined</code>, the returned lens acts
@@ -484,7 +484,7 @@ like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
-<h5 id="-a-name-l-choose-a-contents-l-choose-maybevalue-index-optic-l-choose-l-choose-maybe-s-index-poptic-s-a-poptic-s-a-"><a name="L-choose"></a> <a href="#contents">≡</a> <a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic)</code></a></h5>
+<h5 id="-a-name-l-choose-a-contents-l-choose-maybevalue-index-optic-optic-l-choose-l-choose-maybe-s-index-poptic-s-a-poptic-s-a-"><a name="L-choose"></a> <a href="#contents">≡</a> <a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a></h5>
 <p><code>L.choose</code> creates an optic whose operation is determined by the given function
 that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
 words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
@@ -500,7 +500,7 @@ examining the data structure being manipulated.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
 </code></pre>
-<h5 id="-a-name-l-optional-a-contents-l-optional-l-optional-l-optional-poptic-a-a-"><a name="L-optional"></a> <a href="#contents">≡</a> <a href="#L-optional" title="L.optional: POptic a a"><code>L.optional</code></a></h5>
+<h5 id="-a-name-l-optional-a-contents-l-optional-optic-l-optional-l-optional-poptic-a-a-"><a name="L-optional"></a> <a href="#contents">≡</a> <a href="#L-optional" title="L.optional: POptic a a"><code>L.optional ~&gt; optic</code></a></h5>
 <p><code>L.optional</code> is an optic over an optional element.  When used as a traversal,
 and the focus is <code>undefined</code>, the traversal is empty.  When used as a lens, and
 the focus is <code>undefined</code>, the lens will be read-only.</p>
@@ -512,7 +512,7 @@ the focus is <code>undefined</code>, the lens will be read-only.</p>
 </code></pre>
 <p>Note that <code>L.optional</code> is equivalent
 to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
-<h5 id="-a-name-l-when-a-contents-l-when-maybevalue-index-testable-l-when-l-when-maybe-a-index-boolean-poptic-a-a-"><a name="L-when"></a> <a href="#contents">≡</a> <a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable)</code></a></h5>
+<h5 id="-a-name-l-when-a-contents-l-when-maybevalue-index-testable-optic-l-when-l-when-maybe-a-index-boolean-poptic-a-a-"><a name="L-when"></a> <a href="#contents">≡</a> <a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
 selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
 <p>For example:</p>
@@ -520,7 +520,7 @@ selectively turn a lens into a read-only lens whose view is <code>undefined</cod
 </code></pre>
 <p>Note that <code>L.when(p)</code> is equivalent
 to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
-<h4 id="-a-name-l-zero-a-contents-l-zero-l-zero-l-zero-poptic-s-a-"><a name="L-zero"></a> <a href="#contents">≡</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero</code></a></h4>
+<h5 id="-a-name-l-zero-a-contents-l-zero-optic-l-zero-l-zero-poptic-s-a-"><a name="L-zero"></a> <a href="#contents">≡</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a></h5>
 <p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a>
 and <a href="L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
 elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
@@ -533,7 +533,7 @@ read-only lens whose view is always <code>undefined</code>.</p>
           [1, {x: 2}, [3,4]])
 </code></pre>
 <h4 id="recursing">Recursing</h4>
-<h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic)</code></a></h5>
+<h5 id="-a-name-l-lazy-a-contents-l-lazy-optic-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-poptic-s-a-"><a name="L-lazy"></a> <a href="#contents">≡</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
 is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.</p>
@@ -557,7 +557,7 @@ data structure of nested arrays and objects:</p>
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <h4 id="debugging">Debugging</h4>
-<h5 id="-a-name-l-log-a-contents-l-log-labels-l-log-l-log-any-poptic-s-s-"><a name="L-log"></a> <a href="#contents">≡</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels)</code></a></h5>
+<h5 id="-a-name-l-log-a-contents-l-log-labels-optic-l-log-l-log-any-poptic-s-s-"><a name="L-log"></a> <a href="#contents">≡</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a></h5>
 <p><code>L.log(...labels)</code> is an identity optic that
 outputs
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
@@ -573,7 +573,7 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <h4 id="internals">Internals</h4>
-<h5 id="-a-name-l-tofunction-a-contents-l-tofunction-optic-l-tofunction-l-tofunction-poptic-s-a-functor-applicative-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a name="L-toFunction"></a> <a href="#contents">≡</a> <a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic)</code></a></h5>
+<h5 id="-a-name-l-tofunction-a-contents-l-tofunction-optic-optic-l-tofunction-l-tofunction-poptic-s-a-functor-applicative-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a name="L-toFunction"></a> <a href="#contents">≡</a> <a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>,
 an <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.
 This can be useful for implementing new combinators and operations that cannot
@@ -605,7 +605,7 @@ be
 <a href="#L-concatAs">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
 and <a href="#L-remove">removed</a>.</p>
 <h4 id="operations-on-traversals">Operations on traversals</h4>
-<h5 id="-a-name-l-concat-a-contents-l-concat-monoid-traversal-maybedata-l-concat-l-concat-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-concat"></a> <a href="#contents">≡</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-concat-a-contents-l-concat-monoid-traversal-maybedata-traversal-l-concat-l-concat-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-concat"></a> <a href="#contents">≡</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
 <p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
 <code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
@@ -620,7 +620,7 @@ L.concat(Sum, L.elems, [1, 2, 3])
 <p>Note that <code>L.concat</code> is staged so that after given the first argument,
 <code>L.concat(m)</code>, a computation step is performed.</p>
 <p>See also: <a href="#L-merge"><code>L.merge</code></a>.</p>
-<h5 id="-a-name-l-concatas-a-contents-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-concatAs"></a> <a href="#contents">≡</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-concatas-a-contents-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-traversal-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-concatAs"></a> <a href="#contents">≡</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
 <p><code>L.concatAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
 <code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
 elements focused on by the given traversal or lens <code>t</code> from the given data
@@ -635,7 +635,7 @@ the values returned by <code>xMi2r</code>.</p>
 <p>Note that <code>L.concatAs</code> is staged so that after given the first two arguments,
 <code>L.concatAs(f, m)</code>, a computation step is performed.</p>
 <p>See also: <a href="#L-mergeAs"><code>L.mergeAs</code></a>.</p>
-<h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-traversal-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
 <p><code>L.merge({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
 <code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
@@ -649,7 +649,7 @@ the values focused on by <code>t</code>.</p>
 <p>Note that <code>L.merge</code> is staged so that after given the first argument,
 <code>L.merge(m)</code>, a computation step is performed.</p>
 <p>See also: <a href="#L-concat"><code>L.concat</code></a>.</p>
-<h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-traversal-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
 <p><code>L.mergeAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
 <code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
 elements focused on by the given traversal or lens <code>t</code> from the given data
@@ -667,7 +667,7 @@ the values returned by <code>xMi2r</code>.</p>
 because it maps to the <a href="#L-toFunction">internal implementation</a> most directly.</p>
 <p>See also: <a href="#L-concatAs"><code>L.concatAs</code></a>.</p>
 <h4 id="folds-over-traversals">Folds over traversals</h4>
-<h5 id="-a-name-l-collect-a-contents-l-collect-traversal-maybedata-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="L-collect"></a> <a href="#contents">≡</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-collect-a-contents-l-collect-traversal-maybedata-values-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a name="L-collect"></a> <a href="#contents">≡</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></h5>
 <p><code>L.collect</code> returns an array of the defined elements focused on by the given
 traversal or lens from a data structure.</p>
 <p>For example:</p>
@@ -675,7 +675,7 @@ traversal or lens from a data structure.</p>
 </code></pre>
 <p>Note that <code>L.collect</code> is equivalent
 to <a href="#L-collectAs"><code>L.collectAs(R.identity)</code></a>.</p>
-<h5 id="-a-name-l-collectas-a-contents-l-collectas-maybevalue-index-maybevalue-traversal-maybedata-l-collectas-l-collectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-b-"><a name="L-collectAs"></a> <a href="#contents">≡</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-collectas-a-contents-l-collectas-maybevalue-index-maybevalue-traversal-maybedata-values-l-collectas-l-collectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-b-"><a name="L-collectAs"></a> <a href="#contents">≡</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></h5>
 <p><code>L.collectAs</code> returns an array of the elements focused on by the given traversal
 or lens from a data structure and mapped by the given function to a defined
 value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
@@ -701,43 +701,43 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above naïve implementation.</p>
-<h5 id="-a-name-l-foldl-a-contents-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldl"></a> <a href="#contents">≡</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-foldl-a-contents-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-value-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldl"></a> <a href="#contents">≡</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-foldr-a-contents-l-foldr-value-maybevalue-index-value-value-traversal-maybedata-l-foldr-l-foldr-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldr"></a> <a href="#contents">≡</a> <a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-foldr-a-contents-l-foldr-value-maybevalue-index-value-value-traversal-maybedata-value-l-foldr-l-foldr-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldr"></a> <a href="#contents">≡</a> <a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></h5>
 <p><code>L.foldr</code> performs a fold from right over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-maximum-a-contents-l-maximum-traversal-maybedata-l-maximum-l-maximum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-maximum"></a> <a href="#contents">≡</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-maximum-a-contents-l-maximum-traversal-maybedata-maybevalue-l-maximum-l-maximum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-maximum"></a> <a href="#contents">≡</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.maximum</code> computes a maximum, according to the <code>&gt;</code> operator, of the optional
 elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.maximum(L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-minimum-a-contents-l-minimum-traversal-maybedata-l-minimum-l-minimum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-minimum"></a> <a href="#contents">≡</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-minimum-a-contents-l-minimum-traversal-maybedata-maybevalue-l-minimum-l-minimum-ord-a-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-minimum"></a> <a href="#contents">≡</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.minimum</code> computes a minimum, according to the <code>&lt;</code> operator, of the optional
 elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.minimum(L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-product-a-contents-l-product-traversal-maybedata-l-product-l-product-ptraversal-s-number-maybe-s-number-"><a name="L-product"></a> <a href="#contents">≡</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-product-a-contents-l-product-traversal-maybedata-number-l-product-l-product-ptraversal-s-number-maybe-s-number-"><a name="L-product"></a> <a href="#contents">≡</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
 traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.product(L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-name-l-sum-a-contents-l-sum-traversal-maybedata-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a name="L-sum"></a> <a href="#contents">≡</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData)</code></a></h5>
+<h5 id="-a-name-l-sum-a-contents-l-sum-traversal-maybedata-number-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a name="L-sum"></a> <a href="#contents">≡</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.sum(L.elems, [1,2,3])
 </code></pre>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
-<h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props})</code></a></h5>
+<h5 id="-a-name-l-branch-a-contents-l-branch-prop-traversal-props-traversal-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a name="L-branch"></a> <a href="#contents">≡</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></h5>
 <p><code>L.branch</code> creates a new traversal from a given template object that specifies
 how the new traversal should visit the properties of an object.</p>
 <p>For example:</p>
@@ -754,7 +754,7 @@ elements of an array:</p>
 </code></pre>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<h5 id="-a-name-l-elems-a-contents-l-elems-l-elems-l-elems-ptraversal-a-a-"><a name="L-elems"></a> <a href="#contents">≡</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems</code></a></h5>
+<h5 id="-a-name-l-elems-a-contents-l-elems-traversal-l-elems-l-elems-ptraversal-a-a-"><a name="L-elems"></a> <a href="#contents">≡</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></h5>
 <p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
 object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
 <p>For example:</p>
@@ -767,7 +767,7 @@ convert the result to the desired type, if necessary:</p>
          R.inc,
          Int8Array.from([-1,4,0,2,4]))
 </code></pre>
-<h5 id="-a-name-l-values-a-contents-l-values-l-values-l-values-ptraversal-p-a-ps-a-"><a name="L-values"></a> <a href="#contents">≡</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values</code></a></h5>
+<h5 id="-a-name-l-values-a-contents-l-values-traversal-l-values-l-values-ptraversal-p-a-ps-a-"><a name="L-values"></a> <a href="#contents">≡</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></h5>
 <p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
 written through, <code>L.values</code> always produces an <code>Object</code>.</p>
 <p>For example:</p>
@@ -797,14 +797,14 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.</p>
 <h4 id="operations-on-lenses">Operations on lenses</h4>
-<h5 id="-a-name-l-get-a-contents-l-get-lens-maybedata-l-get-l-get-plens-s-a-maybe-s-maybe-a-"><a name="L-get"></a> <a href="#contents">≡</a> <a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData)</code></a></h5>
+<h5 id="-a-name-l-get-a-contents-l-get-lens-maybedata-maybevalue-l-get-l-get-plens-s-a-maybe-s-maybe-a-"><a name="L-get"></a> <a href="#contents">≡</a> <a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.get</code> returns the focused element from a data structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
 </code></pre>
 <p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
 <h4 id="creating-new-lenses">Creating new lenses</h4>
-<h5 id="-a-name-l-lens-a-contents-l-lens-maybedata-index-maybevalue-maybevalue-maybedata-index-maybedata-l-lens-l-lens-maybe-s-index-maybe-a-maybe-a-maybe-s-index-maybe-s-plens-s-a-"><a name="L-lens"></a> <a href="#contents">≡</a> <a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData)</code></a></h5>
+<h5 id="-a-name-l-lens-a-contents-l-lens-maybedata-index-maybevalue-maybevalue-maybedata-index-maybedata-lens-l-lens-l-lens-maybe-s-index-maybe-a-maybe-a-maybe-s-index-maybe-s-plens-s-a-"><a name="L-lens"></a> <a href="#contents">≡</a> <a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></h5>
 <p><code>L.lens</code> creates a new primitive lens.  The first parameter is the <em>getter</em> and
 the second parameter is the <em>setter</em>.  The setter takes two parameters: the
 first is the value written and the second is the data structure to write into.</p>
@@ -851,7 +851,7 @@ adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 <p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
 example of using <code>L.lens</code>.</p>
 <h4 id="computing-derived-props">Computing derived props</h4>
-<h5 id="-a-name-l-augment-a-contents-l-augment-prop-object-value-props-l-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a name="L-augment"></a> <a href="#contents">≡</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props})</code></a></h5>
+<h5 id="-a-name-l-augment-a-contents-l-augment-prop-object-value-props-lens-l-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a name="L-augment"></a> <a href="#contents">≡</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props}) ~&gt; lens</code></a></h5>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
 not viewing or setting a defined object, the result is <code>undefined</code>.  When
 viewing a defined object, the object is extended with the computed properties.
@@ -862,7 +862,7 @@ When set with a defined object, the extended properties are removed.</p>
          {x: 1})
 </code></pre>
 <h4 id="enforcing-invariants">Enforcing invariants</h4>
-<h5 id="-a-name-l-defaults-a-contents-l-defaults-valuein-l-defaults-l-defaults-s-plens-s-s-"><a name="L-defaults"></a> <a href="#contents">≡</a> <a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn)</code></a></h5>
+<h5 id="-a-name-l-defaults-a-contents-l-defaults-valuein-lens-l-defaults-l-defaults-s-plens-s-s-"><a name="L-defaults"></a> <a href="#contents">≡</a> <a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn) ~&gt; lens</code></a></h5>
 <p><code>L.defaults</code> is used to specify a default context or value for an element in
 case it is missing.  When set with the default value, the effect is to remove
 the element.  This can be useful for both making partial lenses with propagating
@@ -877,7 +877,7 @@ elsewhere.</p>
 </code></pre>
 <p>Note that <code>L.defaults(valueIn)</code> is equivalent
 to <a href="#L-replace"><code>L.replace(undefined, valueIn)</code></a>.</p>
-<h5 id="-a-name-l-define-a-contents-l-define-value-l-define-l-define-s-plens-s-s-"><a name="L-define"></a> <a href="#contents">≡</a> <a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value)</code></a></h5>
+<h5 id="-a-name-l-define-a-contents-l-define-value-lens-l-define-l-define-s-plens-s-s-"><a name="L-define"></a> <a href="#contents">≡</a> <a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value) ~&gt; lens</code></a></h5>
 <p><code>L.define</code> is used to specify a value to act as both the default value and the
 required value for an element.</p>
 <pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.define(null)], {y: 10})
@@ -886,7 +886,7 @@ required value for an element.</p>
 </code></pre>
 <p>Note that <code>L.define(value)</code> is equivalent to <code>[L.required(value),
 L.defaults(value)]</code>.</p>
-<h5 id="-a-name-l-normalize-a-contents-l-normalize-value-index-value-l-normalize-l-normalize-s-index-s-plens-s-s-"><a name="L-normalize"></a> <a href="#contents">≡</a> <a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value)</code></a></h5>
+<h5 id="-a-name-l-normalize-a-contents-l-normalize-value-index-value-lens-l-normalize-l-normalize-s-index-s-plens-s-s-"><a name="L-normalize"></a> <a href="#contents">≡</a> <a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value) ~&gt; lens</code></a></h5>
 <p><code>L.normalize</code> maps the value with same given transform when viewed and set and
 implicitly maps <code>undefined</code> to <code>undefined</code>.</p>
 <p>One use case for <code>normalize</code> is to make it easy to determine whether, after a
@@ -895,7 +895,7 @@ simple <a href="http://ramdajs.com/docs/#equals"><code>R.equals</code></a> compa
 <p>Note that the difference between <code>L.normalize</code> and <a href="#L-rewrite"><code>L.rewrite</code></a> is
 that <code>L.normalize</code> applies the transform in both directions
 while <a href="#L-rewrite"><code>L.rewrite</code></a> only applies the transform when writing.</p>
-<h5 id="-a-name-l-required-a-contents-l-required-valueout-l-required-l-required-s-plens-s-s-"><a name="L-required"></a> <a href="#contents">≡</a> <a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut)</code></a></h5>
+<h5 id="-a-name-l-required-a-contents-l-required-valueout-lens-l-required-l-required-s-plens-s-s-"><a name="L-required"></a> <a href="#contents">≡</a> <a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a></h5>
 <p><code>L.required</code> is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.</p>
 <p>For example:</p>
@@ -907,7 +907,7 @@ is removed, the given value will be substituted instead.</p>
 </code></pre>
 <p>Note that <code>L.required(valueOut)</code> is equivalent
 to <a href="#L-replace"><code>L.replace(valueOut, undefined)</code></a>.</p>
-<h5 id="-a-name-l-rewrite-a-contents-l-rewrite-valueout-index-valueout-l-rewrite-l-rewrite-s-index-s-plens-s-s-"><a name="L-rewrite"></a> <a href="#contents">≡</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut)</code></a></h5>
+<h5 id="-a-name-l-rewrite-a-contents-l-rewrite-valueout-index-valueout-lens-l-rewrite-l-rewrite-s-index-s-plens-s-s-"><a name="L-rewrite"></a> <a href="#contents">≡</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut) ~&gt; lens</code></a></h5>
 <p><code>L.rewrite</code> maps the value with the given transform when set and implicitly maps
 <code>undefined</code> to <code>undefined</code>.  One use case for <code>rewrite</code> is to re-establish data
 structure invariants after changes.</p>
@@ -930,7 +930,7 @@ objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert 
 desired type, if necessary.  For example:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(R.join(&quot;&quot;)), 1], &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
-<h5 id="-a-name-l-append-a-contents-l-append-l-append-l-append-plens-a-a-"><a name="L-append"></a> <a href="#contents">≡</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append</code></a></h5>
+<h5 id="-a-name-l-append-a-contents-l-append-lens-l-append-l-append-plens-a-a-"><a name="L-append"></a> <a href="#contents">≡</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a></h5>
 <p><code>L.append</code> is a write-only lens that can be used to append values to
 an <a href="#array-like">array-like</a> object.  The view of <code>L.append</code> is always
 <code>undefined</code>.</p>
@@ -944,7 +944,7 @@ an <a href="#array-like">array-like</a> object.  The view of <code>L.append</cod
 <p>Note that <code>L.append</code> is equivalent to <a href="#L-index"><code>L.index(i)</code></a> with the index
 <code>i</code> set to the length of the focused array or 0 in case the focus is not a
 defined array.</p>
-<h5 id="-a-name-l-filter-a-contents-l-filter-value-index-testable-l-filter-l-filter-a-index-boolean-plens-a-a-"><a name="L-filter"></a> <a href="#contents">≡</a> <a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable)</code></a></h5>
+<h5 id="-a-name-l-filter-a-contents-l-filter-value-index-testable-lens-l-filter-l-filter-a-index-boolean-plens-a-a-"><a name="L-filter"></a> <a href="#contents">≡</a> <a href="#L-filter" title="L.filter: ((a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((value, index) =&gt; testable) ~&gt; lens</code></a></h5>
 <p><code>L.filter</code> operates on <a href="#array-like">array-like</a> objects.  When not viewing an
 array-like object, the result is <code>undefined</code>.  When viewing an array-like
 object, only elements matching the given predicate will be returned.  When set,
@@ -961,14 +961,14 @@ maintain relative order of elements.  While this would not be difficult to
 implement, it doesn&#39;t seem to make sense, because in most cases use
 of <a href="#L-normalize"><code>L.normalize</code></a> or <a href="#L-rewrite"><code>L.rewrite</code></a> would be
 preferable.</p>
-<h5 id="-a-name-l-find-a-contents-l-find-value-index-testable-l-find-l-find-a-index-boolean-plens-a-a-"><a name="L-find"></a> <a href="#contents">≡</a> <a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable)</code></a></h5>
+<h5 id="-a-name-l-find-a-contents-l-find-value-index-testable-lens-l-find-l-find-a-index-boolean-plens-a-a-"><a name="L-find"></a> <a href="#contents">≡</a> <a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable) ~&gt; lens</code></a></h5>
 <p><code>L.find</code> operates on <a href="#array-like">array-like</a> objects
 like <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding
 the first element from the focus that matches the given predicate.  When no
 matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
-<h5 id="-a-name-l-findwith-a-contents-l-findwith-lenses-l-findwith-l-findwith-plens-s-s1-plens-sn-a-plens-s-a-"><a name="L-findWith"></a> <a href="#contents">≡</a> <a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses)</code></a></h5>
+<h5 id="-a-name-l-findwith-a-contents-l-findwith-lenses-lens-l-findwith-l-findwith-plens-s-s1-plens-sn-a-plens-s-a-"><a name="L-findWith"></a> <a href="#contents">≡</a> <a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></h5>
 <p><code>L.findWith(...lenses)</code> chooses an index from an <a href="#array-like">array-like</a>
 object through which the given lens, <a href="#L-compose"><code>[...lenses]</code></a>, focuses on a
 defined item and then returns a lens that focuses on that item.</p>
@@ -977,7 +977,7 @@ defined item and then returns a lens that focuses on that item.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.findWith(&quot;x&quot;), 3, [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
-<h5 id="-a-name-l-index-a-contents-l-index-elemindex-l-index-l-index-integer-plens-a-a-or-elemindex-"><a name="L-index"></a> <a href="#contents">≡</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex)</code></a> or <code>elemIndex</code></h5>
+<h5 id="-a-name-l-index-a-contents-l-index-elemindex-lens-l-index-l-index-integer-plens-a-a-or-elemindex-"><a name="L-index"></a> <a href="#contents">≡</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></h5>
 <p><code>L.index(elemIndex)</code> or just <code>elemIndex</code> focuses on the element at specified
 index of an <a href="#array-like">array-like</a> object.</p>
 <ul>
@@ -1020,7 +1020,7 @@ following example:</p>
 the handling of <code>undefined</code> within partial lenses, this is often not a problem,
 but sometimes you need the &quot;default&quot; value both ways.  In that case you can
 use <a href="#L-define"><code>L.define</code></a>.</p>
-<h5 id="-a-name-l-slice-a-contents-l-slice-maybebegin-maybeend-l-slice-l-slice-maybe-integer-maybe-integer-plens-a-a-"><a name="L-slice"></a> <a href="#contents">≡</a> <a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd)</code></a></h5>
+<h5 id="-a-name-l-slice-a-contents-l-slice-maybebegin-maybeend-lens-l-slice-l-slice-maybe-integer-maybe-integer-plens-a-a-"><a name="L-slice"></a> <a href="#contents">≡</a> <a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a></h5>
 <p><code>L.slice</code> focuses on a specified range of elements of
 an <a href="#array-like">array-like</a> object.  The range is determined like with the
 standard
@@ -1037,7 +1037,7 @@ of arrays, basically</p>
 <pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 </code></pre>
 <h4 id="lensing-objects">Lensing objects</h4>
-<h5 id="-a-name-l-prop-a-contents-l-prop-propname-l-prop-l-prop-p-a-plens-p-a-ps-a-or-propname-"><a name="L-prop"></a> <a href="#contents">≡</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName)</code></a> or <code>propName</code></h5>
+<h5 id="-a-name-l-prop-a-contents-l-prop-propname-lens-l-prop-l-prop-p-a-plens-p-a-ps-a-or-propname-"><a name="L-prop"></a> <a href="#contents">≡</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></h5>
 <p><code>L.prop(propName)</code> or just <code>propName</code> focuses on the specified object property.</p>
 <ul>
 <li>When not viewing a defined object property, the result is <code>undefined</code>.</li>
@@ -1056,7 +1056,7 @@ If the result would be an empty object, the whole result will be <code>undefined
 desired type, if necessary:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(XYZ)), &quot;z&quot;], 3, new XYZ(3,1,4))
 </code></pre>
-<h5 id="-a-name-l-props-a-contents-l-props-propnames-l-props-l-props-p1-a1-ps-plens-p1-a1-ps-o-p1-a1-ps-"><a name="L-props"></a> <a href="#contents">≡</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames)</code></a></h5>
+<h5 id="-a-name-l-props-a-contents-l-props-propnames-lens-l-props-l-props-p1-a1-ps-plens-p1-a1-ps-o-p1-a1-ps-"><a name="L-props"></a> <a href="#contents">≡</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a></h5>
 <p><code>L.props</code> focuses on a subset of properties of an object, allowing one to treat
 the subset of properties as a unit.  The view of <code>L.props</code> is <code>undefined</code> when
 none of the properties is defined.  Otherwise the view is an object containing a
@@ -1068,7 +1068,7 @@ exists previously.  When set, any extra properties are ignored.</p>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#L-pick"><code>L.pick({[k1]: k1, ..., [kN]:
 kN})</code></a>.</p>
 <h4 id="providing-defaults">Providing defaults</h4>
-<h5 id="-a-name-l-valueor-a-contents-l-valueor-valueout-l-valueor-l-valueor-s-plens-s-s-"><a name="L-valueOr"></a> <a href="#contents">≡</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut)</code></a></h5>
+<h5 id="-a-name-l-valueor-a-contents-l-valueor-valueout-lens-l-valueor-l-valueor-s-plens-s-s-"><a name="L-valueOr"></a> <a href="#contents">≡</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
 focus is <code>undefined</code> or <code>null</code>.  When set, <code>L.valueOr</code> behaves like the identity
 lens.</p>
@@ -1080,7 +1080,7 @@ lens.</p>
 <pre><code class="hljs lang-js">L.remove(L.valueOr(0), 1)
 </code></pre>
 <h4 id="adapting-to-data">Adapting to data</h4>
-<h5 id="-a-name-l-orelse-a-contents-l-orelse-backuplens-primarylens-l-orelse-l-orelse-plens-s-a-plens-s-a-plens-s-a-"><a name="L-orElse"></a> <a href="#contents">≡</a> <a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens)</code></a></h5>
+<h5 id="-a-name-l-orelse-a-contents-l-orelse-backuplens-primarylens-lens-l-orelse-l-orelse-plens-s-a-plens-s-a-plens-s-a-"><a name="L-orElse"></a> <a href="#contents">≡</a> <a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens) ~&gt; lens</code></a></h5>
 <p><code>L.orElse(backupLens, primaryLens)</code> acts like <code>primaryLens</code> when its view is not
 <code>undefined</code> and otherwise like <code>backupLens</code>.  You can use <code>L.orElse</code> on its own
 with <a href="http://ramdajs.com/docs/#reduceRight"><code>R.reduceRight</code></a>
@@ -1088,7 +1088,7 @@ with <a href="http://ramdajs.com/docs/#reduceRight"><code>R.reduceRight</code></
 choice over lenses or use <code>L.orElse</code> to specify a default or backup lens
 for <a href="#L-choice"><code>L.choice</code></a>, for example.</p>
 <h4 id="read-only-mapping">Read-only mapping</h4>
-<h5 id="-a-name-l-just-a-contents-l-just-maybevalue-l-just-l-just-maybe-a-plens-s-a-"><a name="L-just"></a> <a href="#contents">≡</a> <a href="#L-just" title="L.just: Maybe a -&gt; PLens s a"><code>L.just(maybeValue)</code></a></h5>
+<h5 id="-a-name-l-just-a-contents-l-just-maybevalue-lens-l-just-l-just-maybe-a-plens-s-a-"><a name="L-just"></a> <a href="#contents">≡</a> <a href="#L-just" title="L.just: Maybe a -&gt; PLens s a"><code>L.just(maybeValue) ~&gt; lens</code></a></h5>
 <p><code>L.just</code> returns a read-only lens whose view is always the given value.  In
 other words, for all <code>x</code>, <code>y</code> and <code>z</code>:</p>
 <pre><code class="hljs lang-jsx">   L.get(L.just(z), x) = z
@@ -1097,7 +1097,7 @@ L.set(L.just(z), y, x) = x
 <p>Note that <code>L.just(x)</code> is equivalent to <a href="#L-to"><code>L.to(R.always(x))</code></a>.</p>
 <p><code>L.just</code> can be seen as the unit function of the monad formed
 with <a href="#L-chain"><code>L.chain</code></a>.</p>
-<h5 id="-a-name-l-to-a-contents-l-to-maybevalue-index-maybevalue-l-to-l-to-a-index-b-plens-a-b-"><a name="L-to"></a> <a href="#contents">≡</a> <a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue)</code></a></h5>
+<h5 id="-a-name-l-to-a-contents-l-to-maybevalue-index-maybevalue-lens-l-to-l-to-a-index-b-plens-a-b-"><a name="L-to"></a> <a href="#contents">≡</a> <a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue) ~&gt; lens</code></a></h5>
 <p><code>L.to</code> creates a read-only lens whose view is determined by the given function.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.to(x =&gt; x + 1)], {x: 1})
@@ -1105,7 +1105,7 @@ with <a href="#L-chain"><code>L.chain</code></a>.</p>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.to(x =&gt; x + 1)], 3, {x: 1})
 </code></pre>
 <h4 id="transforming-data">Transforming data</h4>
-<h5 id="-a-name-l-pick-a-contents-l-pick-prop-lens-props-l-pick-l-pick-p1-plens-s-a1-pls-plens-s-p1-a1-pls-"><a name="L-pick"></a> <a href="#contents">≡</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props})</code></a></h5>
+<h5 id="-a-name-l-pick-a-contents-l-pick-prop-lens-props-lens-l-pick-l-pick-p1-plens-s-a1-pls-plens-s-p1-a1-pls-"><a name="L-pick"></a> <a href="#contents">≡</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a></h5>
 <p><code>L.pick</code> creates a lens out of the given object template of lenses and allows
 one to pick apart a data structure and then put it back together.  When viewed,
 an object is created, whose properties are obtained by viewing through the
@@ -1135,7 +1135,7 @@ underlying object, so writing through the lens will give unpredictable results.<
 <p>Note that, when set, <code>L.pick</code> simply ignores any properties that the given
 template doesn&#39;t mention.  Also note that the underlying data structure need not
 be an object.</p>
-<h5 id="-a-name-l-replace-a-contents-l-replace-maybevaluein-maybevalueout-l-replace-l-replace-maybe-s-maybe-s-plens-s-s-"><a name="L-replace"></a> <a href="#contents">≡</a> <a href="#L-replace" title="L.replace: Maybe s -&gt; Maybe s -&gt; PLens s s"><code>L.replace(maybeValueIn, maybeValueOut)</code></a></h5>
+<h5 id="-a-name-l-replace-a-contents-l-replace-maybevaluein-maybevalueout-lens-l-replace-l-replace-maybe-s-maybe-s-plens-s-s-"><a name="L-replace"></a> <a href="#contents">≡</a> <a href="#L-replace" title="L.replace: Maybe s -&gt; Maybe s -&gt; PLens s s"><code>L.replace(maybeValueIn, maybeValueOut) ~&gt; lens</code></a></h5>
 <p><code>L.replace(maybeValueIn, maybeValueOut)</code>, when viewed, replaces the value
 <code>maybeValueIn</code> with <code>maybeValueOut</code> and vice versa when set.</p>
 <p>For example:</p>
@@ -1158,7 +1158,7 @@ L.get(iso, L.set(iso, y, undefined)) = y
 <p>The above equations mean that <code>x =&gt; L.get(iso, x)</code> and <code>y =&gt; L.set(iso, y,
 undefined)</code> are inverses of each other.</p>
 <h4 id="operations-on-isomorphisms">Operations on isomorphisms</h4>
-<h5 id="-a-name-l-getinverse-a-contents-l-getinverse-isomorphism-maybedata-l-getinverse-l-getinverse-piso-a-b-maybe-b-maybe-a-"><a name="L-getInverse"></a> <a href="#contents">≡</a> <a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData)</code></a></h5>
+<h5 id="-a-name-l-getinverse-a-contents-l-getinverse-isomorphism-maybedata-maybedata-l-getinverse-l-getinverse-piso-a-b-maybe-b-maybe-a-"><a name="L-getInverse"></a> <a href="#contents">≡</a> <a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.getInverse</code> views through an isomorphism in the inverse direction.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var numeric = f =&gt; x =&gt; typeof x === &quot;number&quot; ? f(x) : undefined
@@ -1174,14 +1174,14 @@ value.  For example:</p>
 <pre><code class="hljs lang-js">L.getInverse(&quot;meaning&quot;, 42)
 </code></pre>
 <h4 id="creating-new-isomorphisms">Creating new isomorphisms</h4>
-<h5 id="-a-name-l-iso-a-contents-l-iso-maybedata-maybevalue-maybevalue-maybedata-l-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a name="L-iso"></a> <a href="#contents">≡</a> <a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData)</code></a></h5>
+<h5 id="-a-name-l-iso-a-contents-l-iso-maybedata-maybevalue-maybevalue-maybedata-isomorphism-l-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a name="L-iso"></a> <a href="#contents">≡</a> <a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a></h5>
 <p><code>L.iso</code> creates a new primitive isomorphism.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var negate = L.iso(numeric(R.negate), numeric(R.negate))
 L.get([negate, L.inverse(negate)], 112)
 </code></pre>
 <h4 id="isomorphisms-and-combinators">Isomorphisms and combinators</h4>
-<h5 id="-a-name-l-identity-a-contents-l-identity-l-identity-l-identity-piso-s-s-"><a name="L-identity"></a> <a href="#contents">≡</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity</code></a></h5>
+<h5 id="-a-name-l-identity-a-contents-l-identity-isomorphism-l-identity-l-identity-piso-s-s-"><a name="L-identity"></a> <a href="#contents">≡</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></h5>
 <p><code>L.identity</code> is the identity element of lens composition and also the identity
 isomorphism.  The following equations characterize <code>L.identity</code>:</p>
 <pre><code class="hljs lang-jsx">      L.get(L.identity, x) = x
@@ -1189,7 +1189,7 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(L.identity, l) = l
   L.compose(l, L.identity) = l
 </code></pre>
-<h5 id="-a-name-l-inverse-a-contents-l-inverse-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a name="L-inverse"></a> <a href="#contents">≡</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism)</code></a></h5>
+<h5 id="-a-name-l-inverse-a-contents-l-inverse-isomorphism-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a name="L-inverse"></a> <a href="#contents">≡</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
 operation only makes sense on isomorphisms.</p>
 <p>For example:</p>
