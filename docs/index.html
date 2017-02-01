@@ -954,13 +954,17 @@ the resulting array would be empty, the whole result will be <code>undefined</co
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(L.filter(x =&gt; x &lt;= &quot;2&quot;), &quot;abcd&quot;, &quot;3141592&quot;)
 </code></pre>
+<p><strong>NOTE</strong>: If you are merely modifying a data structure, and don&#39;t need to limit
+yourself to lenses, consider using the <a href="#L-elems"><code>L.elems</code></a> traversal composed
+with <a href="#L-when"><code>L.when</code></a>.</p>
 <p>An alternative design for filter could implement a smarter algorithm to combine
 arrays when set.  For example, an algorithm based
 on <a href="https://en.wikipedia.org/wiki/Edit_distance">edit distance</a> could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn&#39;t seem to make sense, because in most cases use
 of <a href="#L-normalize"><code>L.normalize</code></a> or <a href="#L-rewrite"><code>L.rewrite</code></a> would be
-preferable.</p>
+preferable.  Also, the <a href="#L-elems"><code>L.elems</code></a> traversal composed
+with <a href="#L-when"><code>L.when</code></a> will retain order of elements.</p>
 <h5 id="-a-name-l-find-a-contents-l-find-value-index-testable-lens-l-find-l-find-a-index-boolean-plens-a-a-"><a name="L-find"></a> <a href="#contents">≡</a> <a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable) ~&gt; lens</code></a></h5>
 <p><code>L.find</code> operates on <a href="#array-like">array-like</a> objects
 like <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding

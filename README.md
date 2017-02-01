@@ -1351,13 +1351,18 @@ L.set(L.filter(x => x <= "2"), "abcd", "3141592")
 // [ 'a', 'b', 'c', 'd', '3', '4', '5', '9' ]
 ```
 
+**NOTE**: If you are merely modifying a data structure, and don't need to limit
+yourself to lenses, consider using the [`L.elems`](#L-elems) traversal composed
+with [`L.when`](#L-when).
+
 An alternative design for filter could implement a smarter algorithm to combine
 arrays when set.  For example, an algorithm based
 on [edit distance](https://en.wikipedia.org/wiki/Edit_distance) could be used to
 maintain relative order of elements.  While this would not be difficult to
 implement, it doesn't seem to make sense, because in most cases use
 of [`L.normalize`](#L-normalize) or [`L.rewrite`](#L-rewrite) would be
-preferable.
+preferable.  Also, the [`L.elems`](#L-elems) traversal composed
+with [`L.when`](#L-when) will retain order of elements.
 
 ##### <a name="L-find"></a> [≡](#contents) [`L.find((value, index) => testable) ~> lens`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
 
