@@ -2229,7 +2229,7 @@ time.  The basic principles can be summarized in order of importance:
 * Avoid stack overflows
 * Avoid [quadratic algorithms](http://accidentallyquadratic.tumblr.com/)
 * Avoid optimizations that require large amounts of code
-* Run benchmarks continuously to detect performance regressions
+* Run [benchmarks](#benchmarks) continuously to detect performance regressions
 
 ### Benchmarks
 
