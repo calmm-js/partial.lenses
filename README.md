@@ -772,7 +772,8 @@ with [`L.optional`](#L-optional) to eliminate `undefined` elements.
 
 ### Traversals
 
-A traversal operates over a collection of focuses that can, for example,
+A traversal operates over a collection of non-overlapping focuses that are
+visited only once and can, for example,
 be
 [collected](#L-collect),
 [folded](#L-concatAs), [modified](#L-modify), [set](#L-set)
