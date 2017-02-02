@@ -56,7 +56,7 @@ function copyToFrom(ys, k, xs, i, j) {
 
 //
 
-const Ident = {map: applyU, ap: applyU, of: id}
+const Ident = {map: applyU, of: id, ap: applyU, chain: applyU}
 
 const Const = {map: sndU}
 
@@ -447,6 +447,23 @@ export const modify = curry((o, xi2x, s) => {
 export const remove = curry((o, s) => setU(o, void 0, s))
 
 export const set = curry(setU)
+
+//
+
+export function seq() {
+  const n = arguments.length, xIs = Array(n)
+  for (let i=0; i<n; ++i)
+    xIs[i] = toFunction(arguments[i])
+  return (I, xi2xI, x, i) => {
+    const chain = I.chain
+    if (process.env.NODE_ENV !== "production" && !chain)
+      errorGiven("`seq` requires a monad", I)
+    const loop = j => x => j === n
+      ? (0, I.of)(x)
+      : chain(loop(j+1), xIs[j](I, xi2xI, x, i))
+    return loop(0)(x)
+  }
+}
 
 // Nesting
 

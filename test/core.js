@@ -30,6 +30,8 @@ export const modify = L.modify
 export const remove = R.curry((o, s) => set(o, undefined, s))
 export const set = R.curry((o, x, s) => modify(o, R.always(x), s))
 
+export const seq = L.seq
+
 export const compose = L.compose
 
 export const chain = R.curry((x2yO, xO) =>

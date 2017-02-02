@@ -15,6 +15,13 @@ const T_applicative = T.object({
   ap: T.fn([T.any, T.any], T.any)
 })
 
+const T_monad = T.object({
+  chain: T.fn([T.fn([T.any], T.any), T.any], T.any),
+  map: T.fn([T.fn([T.any], T.any), T.any], T.any),
+  of: T.fn([T.any], T.any),
+  ap: T.fn([T.any, T.any], T.any)
+})
+
 const T_opticFnOf = Category =>
   T.fn([Category,
         T.fn([T_maybeData, T_index], T_maybeData),
@@ -29,9 +36,10 @@ const T_opticOf = Category => T.lazy(T_optic => T.or(
   T.fn([T_maybeData, T_index], T_maybeData),
   T_opticFnOf(Category)))
 
-const T_optic = T_opticOf(T.or(T_applicative, T_functor))
+const T_optic = T_opticOf(T.or(T_monad, T_applicative, T_functor))
 
-const T_traversal = T_opticOf(T_applicative)
+const T_transform = T_opticOf(T_monad)
+const T_traversal = T_opticOf(T.or(T_monad, T_applicative))
 const T_lens = T_optic
 const T_isomorphism = T_lens
 
@@ -46,6 +54,8 @@ export const modify = T.fn([T_optic,
                            T_maybeData)
 export const remove = T.fn([T_optic, T_maybeData], T_maybeData)
 export const set = T.fn([T_optic, T_maybeData, T_maybeData], T_maybeData)
+
+export const seq = T.fnVar(T_optic, T_transform)
 
 export const compose = T.fnVar(T_optic, T_optic)
 

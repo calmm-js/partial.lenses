@@ -48,6 +48,9 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+  * [Transforms](#transforms)
+    * [Creating new transforms](#creating-new-transforms)
+      * [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.concat(monoid, traversal, maybeData) ~> traversal`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
@@ -758,6 +761,27 @@ Note that, in conjunction with partial optics, it may be advantageous to have
 the `Functor` and `Applicative` algebras to allow for partiality.  With
 traversals it is also possible, for example, to simply post compose optics
 with [`L.optional`](#L-optional) to eliminate `undefined` elements.
+
+### Transforms
+
+A transform operates over focuses that may overlap and may be visited multiple
+times.  Transforms can only be [modified](#L-modify), [set](#L-set)
+and [removed](#L-remove).
+
+#### Creating new transforms
+
+##### <a name="L-seq"></a> [≡](#contents) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
+
+```js
+const everywhere = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.seq(L.choose(x => (x instanceof Array ? elems :
+                              x instanceof Object ? values :
+                              L.zero)),
+               L.identity)
+})]
+```
 
 ### Traversals
 
