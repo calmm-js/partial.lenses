@@ -24,9 +24,7 @@ const sliceIndex = (m, l, d, i) =>
   void 0 === i ? d : Math.min(Math.max(m, i < 0 ? l + i : i), l)
 
 function pair(x0, x1) {return [x0, x1]}
-const rpair = xs => x => [x, xs]
-
-const flip = bop => (x, y) => bop(y, x)
+const cpair = x => xs => [x, xs]
 
 const unto = c => x => void 0 !== x ? x : c
 
@@ -63,7 +61,7 @@ const Ident = Applicative(applyU, id, applyU)
 
 const Const = {map: sndU}
 
-const TacnocOf = (empty, tacnoc) => Applicative(sndU, always(empty), tacnoc)
+const ConcatOf = (empty, concat) => Applicative(sndU, always(empty), concat)
 
 const Monoid = (empty, concat) => ({empty: () => empty, concat})
 
@@ -111,9 +109,9 @@ function Join(l, r) {this.l = l; this.r = r}
 
 const isJoin = n => n.constructor === Join
 
-const join = (r, l) => void 0 !== l ? void 0 !== r ? new Join(l, r) : l : r
+const join = (l, r) => void 0 !== l ? void 0 !== r ? new Join(l, r) : l : r
 
-const rjoin = t => h => join(t, h)
+const cjoin = h => t => join(h, t)
 
 function pushTo(n, ys) {
   while (n && isJoin(n)) {
@@ -150,7 +148,7 @@ function foldRec(f, r, n) {
 
 const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
-const Collect = TacnocOf(void 0, join)
+const Collect = ConcatOf(void 0, join)
 
 //
 
@@ -160,7 +158,7 @@ function traversePartialIndex(A, xi2yA, xs) {
     reqApplicative(A)
   let xsA = (0,A.of)(void 0), i = xs.length
   while (i--)
-    xsA = ap(map(rjoin, xsA), xi2yA(xs[i], i))
+    xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
   return map(toArray, xsA)
 }
 
@@ -377,7 +375,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   let xsA = of(0)
   while (i--) {
     const k = keys[i], v = x[k]
-    xsA = ap(map(rpair, xsA), vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k))
+    xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
   }
   return map(branchOnMerge(x, keys), xsA)
 }
@@ -497,13 +495,13 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = constAs(m => TacnocOf((0,m.empty)(), flip(m.concat)))
+export const concatAs = constAs(m => ConcatOf((0,m.empty)(), m.concat))
 
 export const concat = concatAs(id)
 
-export const mergeAs = constAs(m => TacnocOf((0,m.empty)(), m.concat))
+export const mergeAs = concatAs
 
-export const merge = mergeAs(id)
+export const merge = concat
 
 // Folds over traversals
 
@@ -524,13 +522,13 @@ export const foldr = curry((f, r, t, s) => {
   return r
 })
 
-export const maximum = merge(Mum((x, y) => x > y))
+export const maximum = concat(Mum((x, y) => x > y))
 
-export const minimum = merge(Mum((x, y) => x < y))
+export const minimum = concat(Mum((x, y) => x < y))
 
-export const product = mergeAs(unto(1), Monoid(1, (y, x) => x * y))
+export const product = concatAs(unto(1), Monoid(1, (y, x) => x * y))
 
-export const sum = mergeAs(unto(0), Monoid(0, (y, x) => x + y))
+export const sum = concatAs(unto(0), Monoid(0, (y, x) => x + y))
 
 // Creating new traversals
 

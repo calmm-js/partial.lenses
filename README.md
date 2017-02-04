@@ -870,9 +870,6 @@ L.mergeAs(x => x, Sum, L.elems, [1, 2, 3])
 Note that `L.mergeAs` is staged so that after given the first two arguments,
 `L.mergeAs(f, m)`, a computation step is performed.
 
-Note that `L.mergeAs` is generally the fastest way to fold over a traversal,
-because it maps to the [internal implementation](#L-toFunction) most directly.
-
 See also: [`L.concatAs`](#L-concatAs).
 
 #### Folds over traversals
