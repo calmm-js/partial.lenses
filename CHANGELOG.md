@@ -1,5 +1,10 @@
 # Changelog
 
+## 9.1.0
+
+Obsoleted `L.mergeAs` and `L.merge`.  `L.concatAs` and `L.concat` are now just
+as fast, so there is no need to have both.
+
 ## 9.0.0
 
 `L.augment`, `L.pick` and `L.props` can now be written with an `instanceof

@@ -123,7 +123,7 @@ R.forEach(bs => {
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduce(add, 0, xs100)`,
   ], [
-    'L.merge(Sum, L.elems, xs100)',
+    'L.concat(Sum, L.elems, xs100)',
     'L.sum(L.elems, xs100)',
     'O.Fold.sumOf(O.Traversal.traversed, xs100)',
     'P.sumOf(P.traversed, xs100)',
@@ -132,7 +132,7 @@ R.forEach(bs => {
     `L.maximum(L.elems, xs100)`,
     `O.Fold.maximumOf(O.Traversal.traversed, xs100)`,
   ], [
-    `L.merge(Sum, [L.elems, L.elems, L.elems], xsss100)`,
+    `L.concat(Sum, [L.elems, L.elems, L.elems], xsss100)`,
     `L.sum([L.elems, L.elems, L.elems], xsss100)`,
     `O.Fold.sumOf(R.compose(O.Traversal.traversed,
                             O.Traversal.traversed,

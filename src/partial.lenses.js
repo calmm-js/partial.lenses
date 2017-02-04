@@ -499,9 +499,21 @@ export const concatAs = constAs(m => ConcatOf((0,m.empty)(), m.concat))
 
 export const concat = concatAs(id)
 
-export const mergeAs = concatAs
+export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : (f, m, t, d) => {
+  if (!mergeAs.warned) {
+    mergeAs.warned = 1
+    console.warn("partial.lenses: `mergeAs` is obsolete, just use `concatAs`")
+  }
+  return concatAs(f, m, t, d)
+}
 
-export const merge = concat
+export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) => {
+  if (!merge.warned) {
+    merge.warned = 1
+    console.warn("partial.lenses: `merge` is obsolete, just use `concat`")
+  }
+  return concat(m, t, d)
+}
 
 // Folds over traversals
 

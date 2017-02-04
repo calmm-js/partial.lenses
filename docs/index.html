@@ -81,8 +81,8 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#operations-on-traversals">Operations on traversals</a><ul>
 <li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
 <li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
-<li><a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
-<li><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></li>
+<li><del><a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></del></li>
+<li><del><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></del></li>
 </ul>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
@@ -623,7 +623,6 @@ L.concat(Sum, L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that <code>L.concat</code> is staged so that after given the first argument,
 <code>L.concat(m)</code>, a computation step is performed.</p>
-<p>See also: <a href="#L-merge"><code>L.merge</code></a>.</p>
 <h5 id="-a-name-l-concatas-a-contents-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-traversal-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-concatAs"></a> <a href="#contents">≡</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
 <p><code>L.concatAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
 <code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
@@ -638,8 +637,8 @@ the values returned by <code>xMi2r</code>.</p>
 </code></pre>
 <p>Note that <code>L.concatAs</code> is staged so that after given the first two arguments,
 <code>L.concatAs(f, m)</code>, a computation step is performed.</p>
-<p>See also: <a href="#L-mergeAs"><code>L.mergeAs</code></a>.</p>
-<h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-traversal-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
+<h5 id="-a-name-l-merge-a-contents-l-merge-monoid-traversal-maybedata-traversal-l-merge-l-merge-monoid-a-ptraversal-s-a-maybe-s-a-"><a name="L-merge"></a> <a href="#contents">≡</a> <del><a href="#L-merge" title="L.merge: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.merge(monoid, traversal, maybeData) ~&gt; traversal</code></a></del></h5>
+<p><strong>WARNING: <code>L.merge</code> is obsolete, just use <a href="#L-concat"><code>L.concat</code></a>.</strong></p>
 <p><code>L.merge({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
 <code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
@@ -653,7 +652,8 @@ the values focused on by <code>t</code>.</p>
 <p>Note that <code>L.merge</code> is staged so that after given the first argument,
 <code>L.merge(m)</code>, a computation step is performed.</p>
 <p>See also: <a href="#L-concat"><code>L.concat</code></a>.</p>
-<h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-traversal-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></h5>
+<h5 id="-a-name-l-mergeas-a-contents-l-mergeas-maybevalue-index-value-monoid-traversal-maybedata-traversal-l-mergeas-l-mergeas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a name="L-mergeAs"></a> <a href="#contents">≡</a> <del><a href="#L-mergeAs" title="L.mergeAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.mergeAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; traversal</code></a></del></h5>
+<p><strong>WARNING: <code>L.mergeAs</code> is obsolete, just use <a href="#L-concatAs"><code>L.concatAs</code></a>.</strong></p>
 <p><code>L.mergeAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
 <code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
 elements focused on by the given traversal or lens <code>t</code> from the given data
