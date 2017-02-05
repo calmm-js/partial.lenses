@@ -55,15 +55,13 @@ function copyToFrom(ys, k, xs, i, j) {
 
 //
 
-const Applicative = (map, of, ap) => ({map, of, ap})
-
-const Ident = Applicative(applyU, id, applyU)
+const Ident = {map: applyU, ap: applyU, of: id}
 
 const Const = {map: sndU}
 
-const ConcatOf = (concat, empty) => Applicative(sndU, always(empty), concat)
+const ConcatOf = (ap, empty) => ({map: sndU, ap, of: always(empty)})
 
-const Monoid = (concat, empty) => ({empty: () => empty, concat})
+const Monoid = (concat, empty) => ({concat, empty: () => empty})
 
 const Mum = ord =>
   Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
