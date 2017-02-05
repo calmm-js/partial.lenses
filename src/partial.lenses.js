@@ -224,15 +224,19 @@ const funIndex = lensFrom(getIndex, setIndex)
 const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
 
 function composed(oi0, os) {
-  switch (os.length - oi0) {
-    case 0:  return identity
-    case 1:  return toFunction(os[oi0])
-    default: return (F, xi2yF, x, i) => {
-      let n = os.length
-      xi2yF = close(toFunction(os[--n]), F, xi2yF)
-      while (oi0 < --n)
-        xi2yF = close(toFunction(os[n]), F, xi2yF)
-      return run(os[oi0], F, xi2yF, x, i)
+  const n = os.length - oi0
+  let fs
+  if (n < 2) {
+    return n ? toFunction(os[oi0]) : identity
+  } else {
+    fs = Array(n)
+    for (let i=0;i<n;++i)
+      fs[i] = toFunction(os[i+oi0])
+    return (F, xi2yF, x, i) => {
+      let k=n
+      while (--k)
+        xi2yF = close(fs[k], F, xi2yF)
+      return fs[0](F, xi2yF, x, i)
     }
   }
 }
