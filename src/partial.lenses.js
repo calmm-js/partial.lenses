@@ -444,15 +444,14 @@ export const set = curry(setU)
 // Nesting
 
 export function compose() {
-  switch (arguments.length) {
-    case 0: return identity
-    case 1: return arguments[0]
-    default: {
-      const n = arguments.length, lenses = Array(n)
-      for (let i=0; i<n; ++i)
-        lenses[i] = arguments[i]
-      return lenses
-    }
+  let n = arguments.length
+  if (n < 2) {
+    return n ? arguments[0] : identity
+  } else {
+    const lenses = Array(n)
+    while (n--)
+      lenses[n] = arguments[n]
+    return lenses
   }
 }
 
