@@ -61,12 +61,12 @@ const Ident = Applicative(applyU, id, applyU)
 
 const Const = {map: sndU}
 
-const ConcatOf = (empty, concat) => Applicative(sndU, always(empty), concat)
+const ConcatOf = (concat, empty) => Applicative(sndU, always(empty), concat)
 
-const Monoid = (empty, concat) => ({empty: () => empty, concat})
+const Monoid = (concat, empty) => ({empty: () => empty, concat})
 
 const Mum = ord =>
-  Monoid(void 0, (y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
+  Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
 
 //
 
@@ -148,7 +148,7 @@ function foldRec(f, r, n) {
 
 const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
-const Collect = ConcatOf(void 0, join)
+const Collect = ConcatOf(join)
 
 //
 
@@ -498,7 +498,7 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = constAs(m => ConcatOf((0,m.empty)(), m.concat))
+export const concatAs = constAs(m => ConcatOf(m.concat, (0,m.empty)()))
 
 export const concat = concatAs(id)
 
@@ -541,9 +541,9 @@ export const maximum = concat(Mum((x, y) => x > y))
 
 export const minimum = concat(Mum((x, y) => x < y))
 
-export const product = concatAs(unto(1), Monoid(1, (y, x) => x * y))
+export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
 
-export const sum = concatAs(unto(0), Monoid(0, (y, x) => x + y))
+export const sum = concatAs(unto(0), Monoid((y, x) => x + y, 0))
 
 // Creating new traversals
 
