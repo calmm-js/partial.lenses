@@ -78,9 +78,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Enforcing invariants](#enforcing-invariants)
       * [`L.defaults(valueIn) ~> lens`](#L-defaults "L.defaults: s -> PLens s s")
       * [`L.define(value) ~> lens`](#L-define "L.define: s -> PLens s s")
-      * [`L.normalize((value, index) => value) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> s) -> PLens s s")
+      * [`L.normalize((value, index) => maybeValue) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> Maybe s) -> PLens s s")
       * [`L.required(valueOut) ~> lens`](#L-required "L.required: s -> PLens s s")
-      * [`L.rewrite((valueOut, index) => valueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> s) -> PLens s s")
+      * [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s")
     * [Lensing array-like objects](#array-like)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a")
       * [`L.filter((value, index) => testable) ~> lens`](#L-filter "L.filter: ((a, Index) -> Boolean) -> PLens [a] [a]")
@@ -1239,7 +1239,7 @@ L.set(["x", L.define(null)], undefined, {y: 10})
 Note that `L.define(value)` is equivalent to `[L.required(value),
 L.defaults(value)]`.
 
-##### <a name="L-normalize"></a> [≡](#contents) [`L.normalize((value, index) => value) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> s) -> PLens s s")
+##### <a name="L-normalize"></a> [≡](#contents) [`L.normalize((value, index) => maybeValue) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> Maybe s) -> PLens s s")
 
 `L.normalize` maps the value with same given transform when viewed and set and
 implicitly maps `undefined` to `undefined`.
@@ -1275,7 +1275,7 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 Note that `L.required(valueOut)` is equivalent
 to [`L.replace(valueOut, undefined)`](#L-replace).
 
-##### <a name="L-rewrite"></a> [≡](#contents) [`L.rewrite((valueOut, index) => valueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> s) -> PLens s s")
+##### <a name="L-rewrite"></a> [≡](#contents) [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s")
 
 `L.rewrite` maps the value with the given transform when set and implicitly maps
 `undefined` to `undefined`.  One use case for `rewrite` is to re-establish data

@@ -123,9 +123,9 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">Try Lenses!</a></p>
 <li><a href="#enforcing-invariants">Enforcing invariants</a><ul>
 <li><a href="#L-defaults" title="L.defaults: s -&gt; PLens s s"><code>L.defaults(valueIn) ~&gt; lens</code></a></li>
 <li><a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value) ~&gt; lens</code></a></li>
-<li><a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value) ~&gt; lens</code></a></li>
+<li><a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; maybeValue) ~&gt; lens</code></a></li>
 <li><a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a></li>
-<li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut) ~&gt; lens</code></a></li>
+<li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; maybeValueOut) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#array-like">Lensing array-like objects</a><ul>
@@ -888,7 +888,7 @@ required value for an element.</p>
 </code></pre>
 <p>Note that <code>L.define(value)</code> is equivalent to <code>[L.required(value),
 L.defaults(value)]</code>.</p>
-<h5 id="-a-name-l-normalize-a-contents-l-normalize-value-index-value-lens-l-normalize-l-normalize-s-index-s-plens-s-s-"><a name="L-normalize"></a> <a href="#contents">≡</a> <a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; value) ~&gt; lens</code></a></h5>
+<h5 id="-a-name-l-normalize-a-contents-l-normalize-value-index-maybevalue-lens-l-normalize-l-normalize-s-index-maybe-s-plens-s-s-"><a name="L-normalize"></a> <a href="#contents">≡</a> <a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; maybeValue) ~&gt; lens</code></a></h5>
 <p><code>L.normalize</code> maps the value with same given transform when viewed and set and
 implicitly maps <code>undefined</code> to <code>undefined</code>.</p>
 <p>One use case for <code>normalize</code> is to make it easy to determine whether, after a
@@ -909,7 +909,7 @@ is removed, the given value will be substituted instead.</p>
 </code></pre>
 <p>Note that <code>L.required(valueOut)</code> is equivalent
 to <a href="#L-replace"><code>L.replace(valueOut, undefined)</code></a>.</p>
-<h5 id="-a-name-l-rewrite-a-contents-l-rewrite-valueout-index-valueout-lens-l-rewrite-l-rewrite-s-index-s-plens-s-s-"><a name="L-rewrite"></a> <a href="#contents">≡</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; valueOut) ~&gt; lens</code></a></h5>
+<h5 id="-a-name-l-rewrite-a-contents-l-rewrite-valueout-index-maybevalueout-lens-l-rewrite-l-rewrite-s-index-maybe-s-plens-s-s-"><a name="L-rewrite"></a> <a href="#contents">≡</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; maybeValueOut) ~&gt; lens</code></a></h5>
 <p><code>L.rewrite</code> maps the value with the given transform when set and implicitly maps
 <code>undefined</code> to <code>undefined</code>.  One use case for <code>rewrite</code> is to re-establish data
 structure invariants after changes.</p>
