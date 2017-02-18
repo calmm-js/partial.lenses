@@ -14,7 +14,7 @@ for manipulating non-JSON objects, such as [Immutable.js](#interfacing)
 collections.  A partial lens can *view* optional data, *insert* new data,
 *update* existing data and *remove* existing data and can, for example, provide
 *defaults* and maintain *required* data structure
-parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/)
+parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 [![Bower version](https://badge.fury.io/bo/partial.lenses.svg)](https://badge.fury.io/bo/partial.lenses)
