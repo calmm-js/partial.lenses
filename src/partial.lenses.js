@@ -732,9 +732,8 @@ export const removable = (...ps) => (F, xi2yF, x, i) => (0,F.map)(
   y => {
     if (!(y instanceof Object))
       return y
-    const z = toObject(y)
     for (let i=0, n=ps.length; i<n; ++i)
-      if (ps[i] in z)
+      if (Object.prototype.hasOwnProperty.call(y, ps[i]))
         return y
   },
   xi2yF(x, i))
