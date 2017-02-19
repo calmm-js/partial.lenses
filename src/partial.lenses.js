@@ -15,7 +15,6 @@ import {
   isString,
   keys,
   object0,
-  pipe2U,
   sndU
 } from "infestines"
 
@@ -335,6 +334,10 @@ const setPick = (template, x) => value => {
 
 //
 
+const toObject = x => x.constructor !== Object ? Object.assign({}, x) : x
+
+//
+
 const branchOnMerge = (x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
@@ -342,8 +345,7 @@ const branchOnMerge = (x, keys) => xs => {
     o[keys[i]] = void 0 !== v ? v : o
   }
   let r
-  if (x.constructor !== Object)
-    x = Object.assign({}, x)
+  x = toObject(x)
   for (const k in x) {
     const v = o[k]
     if (o !== v) {
@@ -605,8 +607,8 @@ export const augment = template => {
       if (process.env.NODE_ENV !== "production" &&
           !(void 0 === y || y instanceof Object))
         errorGiven("`augment` must be set with undefined or an object", y)
-      if (y && y.constructor !== Object)
-        y = Object.assign({}, y)
+      if (y)
+        y = toObject(y)
       if (!(x instanceof Object))
         x = void 0
       let z
@@ -726,8 +728,16 @@ export function props() {
   return pick(template)
 }
 
-export const removable = (...ps) =>
-  choose(pipe2U(remove(props(...ps)), defaults))
+export const removable = (...ps) => (F, xi2yF, x, i) => (0,F.map)(
+  y => {
+    if (!(y instanceof Object))
+      return y
+    const z = toObject(y)
+    for (let i=0, n=ps.length; i<n; ++i)
+      if (ps[i] in z)
+        return y
+  },
+  xi2yF(x, i))
 
 // Providing defaults
 
