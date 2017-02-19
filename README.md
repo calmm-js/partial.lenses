@@ -338,8 +338,8 @@ const texts = [Texts.contents,
 What makes the above a traversal is the [`L.elems`](#L-elems) part.  Once a
 traversal is composed with a lens, the whole results is a traversal.  The other
 parts of the above composition should already be familiar from previous
-examples.  Note the use of [`L.choose`](#L-choose)
-with [`L.defaults`](#L-choose).  We'll get back to that shortly.
+examples.  Note how we were able to use the previously defined `Texts.contents`
+and `Content.text` lenses.
 
 Now, we can use the above traversal to [`collect`](#L-collect) all the texts:
 
@@ -1532,8 +1532,18 @@ L.remove([L.removable("x"), "x"], {x: 1, y: 2})
 // undefined
 ```
 
-Note that `L.removable(...ps)` is roughly equivalent to `rewrite(y => y
-instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)`.
+Note that `L.removable(...ps)` is roughly equivalent
+to
+[`rewrite(y => y instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)`](#L-rewrite).
+
+Also note that, in a composition, `L.removable` is likely preceded
+by [`L.valueOr`](#L-valueOr) (or [`L.defaults`](#L-defaults)) like in
+the [tutorial](#tutorial) example.  In such a pair, the preceding lens gives a
+default value when reading through the lens, allowing one to use such a lens to
+insert new objects.  The following lens then specifies that removing the then
+focused property (or properties) should remove the whole object.  In cases where
+the shape of the incoming object is know, [`L.defaults`](L-defaults) can replace
+such a pair.
 
 #### Providing defaults
 
