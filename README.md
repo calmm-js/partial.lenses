@@ -91,6 +91,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Lensing objects](#lensing-objects)
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
       * [`L.props(...propNames) ~> lens`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
+      * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
     * [Providing defaults](#providing-defaults)
       * [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s")
     * [Adapting to data](#adapting-to-data)
@@ -1511,6 +1512,28 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
 kN})`](#L-pick).
+
+##### <a name="L-removable"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removable) [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
+
+`L.removable` creates a lens that, when written through, replaces the whole
+result with `undefined` if none of the given properties is defined in the
+written object.  `L.removable` is designed for making removal propagate through
+objects.
+
+Contrast the following examples:
+
+```js
+L.remove("x", {x: 1, y: 2})
+// { y: 2 }
+```
+
+```js
+L.remove([L.removable("x"), "x"], {x: 1, y: 2})
+// undefined
+```
+
+Note that `L.removable(...ps)` is roughly equivalent to `rewrite(y => y
+instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)`.
 
 #### Providing defaults
 
