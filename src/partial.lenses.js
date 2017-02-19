@@ -726,13 +726,13 @@ export function props() {
   return pick(template)
 }
 
+export const removable = (...ps) =>
+  choose(pipe2U(remove(props(...ps)), defaults))
+
 // Providing defaults
 
 export const valueOr = v => (_F, xi2yF, x, i) =>
   xi2yF(void 0 !== x && x !== null ? x : v, i)
-
-export const removable = (...ps) =>
-  choose(pipe2U(remove(props(...ps)), defaults))
 
 // Adapting to data
 
