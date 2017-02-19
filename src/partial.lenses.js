@@ -15,6 +15,7 @@ import {
   isString,
   keys,
   object0,
+  pipe2U,
   sndU
 } from "infestines"
 
@@ -729,6 +730,9 @@ export function props() {
 
 export const valueOr = v => (_F, xi2yF, x, i) =>
   xi2yF(void 0 !== x && x !== null ? x : v, i)
+
+export const removable = (...ps) =>
+  choose(pipe2U(remove(props(...ps)), defaults))
 
 // Adapting to data
 
