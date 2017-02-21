@@ -91,6 +91,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Lensing objects](#lensing-objects)
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
       * [`L.props(...propNames) ~> lens`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
+      * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
     * [Providing defaults](#providing-defaults)
       * [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s")
     * [Adapting to data](#adapting-to-data)
@@ -142,12 +143,12 @@ and compose a parameterized lens for accessing texts:
 
 ```js
 const textIn = language => L.compose(L.prop("contents"),
-                                     L.required([]),
-                                     L.normalize(R.sortBy(R.prop("language"))),
+                                     L.define([]),
+                                     L.normalize(R.sortBy(L.get("language"))),
                                      L.find(R.whereEq({language})),
-                                     L.defaults({language}),
-                                     L.prop("text"),
-                                     L.valueOr(""))
+                                     L.valueOr({language, text: ""}),
+                                     L.removable("text"),
+                                     L.prop("text"))
 ```
 
 Take a moment to read through the above definition line by line.  Each part
@@ -179,10 +180,10 @@ L.get(textIn("fi"), sampleTexts)
 // ''
 ```
 
-We get this value, rather than `undefined`, thanks to the last
-part, [`L.valueOr("")`](#L-valueOr), of our lens composition, which ensures that
-we get the specified value rather than `null` or `undefined`.  We get the
-default even if we query from `undefined`:
+We get this value, rather than `undefined`, thanks to
+the [`L.valueOr({language, text: ""})`](#L-valueOr) part of our lens
+composition, which ensures that we get the specified value rather than `null` or
+`undefined`.  We get the default even if we query from `undefined`:
 
 ```js
 L.get(textIn("fi"), undefined)
@@ -214,8 +215,7 @@ L.set(textIn("fi"), "Otsikko", sampleTexts)
 
 Note the position into which the new text was inserted.  The array of texts is
 kept sorted thanks to
-the [`L.normalize(R.sortBy(R.prop("language")))`](#L-normalize) part of our
-lens.
+the [`L.normalize(R.sortBy(L.get("language")))`](#L-normalize) part of our lens.
 
 ### Removing data
 
@@ -228,10 +228,9 @@ L.set(textIn("sv"), undefined, sampleTexts)
 
 Note that a single text is actually a part of an object.  The key to having the
 whole object vanish, rather than just the `text` property, is
-the [`L.defaults({language})`](#L-defaults) part of our lens composition.
-A [`L.defaults(valueIn)`](#L-defaults) lens works *symmetrically*.  When set
-with `valueIn`, the result is `undefined`, which means that the focus of the
-lens is to be removed.
+the [`L.removable("text")`](#L-removable) part of our lens composition.  It
+makes it so that when the `text` property is set to `undefined`, the result will
+be `undefined` rather than merely an object without the `text` property.
 
 If we remove all of the texts, we get the required value:
 
@@ -241,30 +240,19 @@ R.pipe(L.set(textIn("sv"), undefined),
 // { contents: [] }
 ```
 
-The `contents` property is not removed thanks to the
-[`L.required([])`](#L-required) part of our lens
-composition.  [`L.required`](#L-required) is the dual
-of [`L.defaults`](#L-defaults).  [`L.defaults`](#L-defaults) replaces
-`undefined` values when viewed and [`L.required`](#L-required) replaces
-`undefined` values when set.
-
-Note that unless default and required values are explicitly specified as part of
-the lens, they will both be `undefined`.
+The `contents` property is not removed thanks to the [`L.define([])`](#L-define)
+part of our lens composition.  It makes it so that when reading or writing
+through the lens, `undefined` becomes the given value.
 
 ### Exercises
 
 Take out one (or
 more)
-[`L.required(...)`](#L-required),
-[`L.normalize(...)`](#L-normalize), [`L.defaults(...)`](#L-defaults)
-or [`L.valueOr(...)`](#L-valueOr) part(s) from the lens composition and try to
-predict what happens when you rerun the examples with the modified lens
+[`L.define(...)`](#L-define),
+[`L.normalize(...)`](#L-normalize), [`L.valueOr(...)`](#L-valueOr)
+or [`L.removable(...)`](#L-removable) part(s) from the lens composition and try
+to predict what happens when you rerun the examples with the modified lens
 composition.  Verify your reasoning by actually rerunning the examples.
-
-Replace [`L.defaults(...)`](#L-defaults) with [`L.valueOr(...)`](#L-valueOr) or
-vice verse and try to predict what happens when you rerun the examples with the
-modified lens composition.  Verify your reasoning by actually rerunning the
-examples.
 
 ### Shorthands
 
@@ -272,7 +260,7 @@ For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
 * [`L.compose(...)`](#L-compose) can be abbreviated as an array
   [`[...]`](#L-compose),
-* [`L.prop(string)`](#L-prop) can be abbreviated as [`string`](#L-prop), and
+* [`L.prop(propName)`](#L-prop) can be abbreviated as [`propName`](#L-prop), and
 * [`L.set(l, undefined, s)`](#L-set) can be abbreviated
   as [`L.remove(l, s)`](#L-remove).
 
@@ -284,12 +272,12 @@ example:
 
 ```jsx
 L.compose(L.prop("contents"),
-          L.required([]),
-          L.normalize(R.sortBy(R.prop("language"))),
+          L.define([]),
+          L.normalize(R.sortBy(L.get("language"))),
           L.find(R.whereEq({language})),
-          L.defaults({language}),
-          L.prop("text"),
-          L.valueOr(""))
+          L.valueOr({language, text: ""}),
+          L.removable("text"),
+          L.prop("text"))
 ```
 
 Following the structure or schema of the JSON, we could break this into three
@@ -298,26 +286,26 @@ separate lenses:
 * a parameterized lens for querying a content object from contents, and
 * a lens for accessing the text of a content object.
 
-Furthermore, we could organize the lenses into an object following the structure
-of the JSON:
+Furthermore, we could organize the lenses to reflect the structure of the JSON
+model:
 
 ```js
+const Content = {
+  text: [L.removable("text"), "text"]
+}
+
+const Contents = {
+  contentIn: language => [L.find(R.whereEq({language})),
+                          L.valueOr({language, text: ""})]
+}
+
 const Texts = {
-  data: {
-    contents: ["contents",
-               L.required([]),
-               L.normalize(R.sortBy(R.prop("language")))]
-  },
-  contents: {
-    contentIn: language => [L.find(R.whereEq({language})),
-                            L.defaults({language})]
-  },
-  content: {
-    text: ["text", L.valueOr("")]
-  },
-  textIn: language => [Texts.data.contents,
-                       Texts.contents.contentIn(language),
-                       Texts.content.text]
+  contents: ["contents",
+             L.define([]),
+             L.normalize(R.sortBy(L.get("language")))],
+  textIn: language => [Texts.contents,
+                       Contents.contentIn(language),
+                       Content.text]
 }
 ```
 
@@ -342,18 +330,16 @@ multiple items.  Continuing on the tutorial example, let's define a traversal
 that targets all the texts:
 
 ```js
-const texts = ["contents",
-               L.required([]),
+const texts = [Texts.contents,
                L.elems,
-               L.choose(R.pipe(L.remove("text"), L.defaults)),
-               "text"]
+               Content.text]
 ```
 
 What makes the above a traversal is the [`L.elems`](#L-elems) part.  Once a
 traversal is composed with a lens, the whole results is a traversal.  The other
 parts of the above composition should already be familiar from previous
-examples.  Note the use of [`L.choose`](#L-choose)
-with [`L.defaults`](#L-choose).  We'll get back to that shortly.
+examples.  Note how we were able to use the previously defined `Texts.contents`
+and `Content.text` lenses.
 
 Now, we can use the above traversal to [`collect`](#L-collect) all the texts:
 
@@ -380,24 +366,13 @@ L.modify(texts, R.toUpper, sampleTexts)
 //               { language: 'sv', text: 'RUBRIK' } ] }
 ```
 
-We can also set and remove texts.  Recall the `L.choose` and `L.defaults`
-combination from the definition of `texts`.  Like with the `textIn` lens, that
-part allows us to remove the whole object instead of just the `text` property:
-
-```js
-L.remove(texts, sampleTexts)
-// { contents: [] }
-```
-
-We can also manipulate texts selectively.  For example, we could truncate all
+We can also manipulate texts selectively.  For example, we could remove all
 the texts that are longer than 5 characters:
 
 ```js
-L.modify([texts, L.when(t => t.length > 5)],
-         t => t.slice(0, 5) + "...",
+L.remove([texts, L.when(t => t.length > 5)],
          sampleTexts)
-// { contents: [ { language: 'en', text: 'Title' },
-//               { language: 'sv', text: 'Rubri...' } ] }
+// { contents: [ { language: 'en', text: 'Title' } ] }
 ```
 
 ## Reference
@@ -1537,6 +1512,38 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
 kN})`](#L-pick).
+
+##### <a name="L-removable"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removable) [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
+
+`L.removable` creates a lens that, when written through, replaces the whole
+result with `undefined` if none of the given properties is defined in the
+written object.  `L.removable` is designed for making removal propagate through
+objects.
+
+Contrast the following examples:
+
+```js
+L.remove("x", {x: 1, y: 2})
+// { y: 2 }
+```
+
+```js
+L.remove([L.removable("x"), "x"], {x: 1, y: 2})
+// undefined
+```
+
+Note that `L.removable(...ps)` is roughly equivalent
+to
+[`rewrite(y => y instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)`](#L-rewrite).
+
+Also note that, in a composition, `L.removable` is likely preceded
+by [`L.valueOr`](#L-valueOr) (or [`L.defaults`](#L-defaults)) like in
+the [tutorial](#tutorial) example.  In such a pair, the preceding lens gives a
+default value when reading through the lens, allowing one to use such a lens to
+insert new objects.  The following lens then specifies that removing the then
+focused property (or properties) should remove the whole object.  In cases where
+the shape of the incoming object is know, [`L.defaults`](L-defaults) can replace
+such a pair.
 
 #### Providing defaults
 

@@ -568,6 +568,14 @@ describe("L.branch", () => {
   testEq('L.modify(L.branch({y: L.identity}), R.inc, new XYZ(3,1,4))', {x: 3, y: 2, z: 4})
 })
 
+describe("removable", () => {
+  testEq(`L.set(L.removable("x"), 42, "non object")`, 42)
+  testEq(`L.get(L.removable("x"), {x: 1, y: 2})`, {x: 1, y: 2})
+  testEq(`L.get([L.removable("y"), "y"], {x: 1, y: 2})`, 2)
+  testEq(`L.set([L.removable("y"), "y"], 3, {x: 1, y: 2})`, {x: 1, y: 3})
+  testEq(`L.set([L.removable("x"), "x"], undefined, {x: 1, y: 2})`, undefined)
+})
+
 describe("indexing", () => {
   testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)',
          ["number", "undefined"])

@@ -134,6 +134,8 @@ export const slice = R.curry((b, e) => lens(
 
 export const prop = L.prop
 export const props = (...ps) => pick(R.zipObj(ps, ps))
+export const removable = (...ps) =>
+  rewrite(y => y instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)
 
 export const valueOr = v =>
   lens(s => s === null || s === undefined ? v : s, R.identity)

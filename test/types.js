@@ -121,6 +121,7 @@ export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)
+export const removable = T.fnVar(T.string, T_lens)
 
 export const valueOr = T.fn([T.any], T_lens)
 
