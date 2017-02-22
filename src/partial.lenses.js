@@ -4,9 +4,11 @@ import {
   applyU,
   arityN,
   assocPartialU,
+  constructorOf,
   curry,
   curryN,
   dissocPartialU,
+  hasU,
   id,
   isDefined,
   isFunction,
@@ -333,7 +335,7 @@ const setPick = (template, x) => value => {
 
 //
 
-const toObject = x => x.constructor !== Object ? Object.assign({}, x) : x
+const toObject = x => constructorOf(x) !== Object ? Object.assign({}, x) : x
 
 //
 
@@ -606,8 +608,7 @@ export const augment = template => {
       if (process.env.NODE_ENV !== "production" &&
           !(void 0 === y || y instanceof Object))
         errorGiven("`augment` must be set with undefined or an object", y)
-      if (y)
-        y = toObject(y)
+      y = toObject(y)
       if (!(x instanceof Object))
         x = void 0
       let z
@@ -617,10 +618,10 @@ export const augment = template => {
         z[k] = v
       }
       for (const k in y) {
-        if (!(k in template))
+        if (!hasU(k, template))
           set(k, y[k])
         else
-          if (x && k in x)
+          if (x && hasU(k, x))
             set(k, x[k])
       }
       return z
