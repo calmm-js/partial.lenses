@@ -8,7 +8,6 @@ import {
   curryN,
   dissocPartialU,
   id,
-  isArray,
   isDefined,
   isFunction,
   isObject,
@@ -90,7 +89,7 @@ function reqFunction(o) {
 }
 
 function reqArray(o) {
-  if (!isArray(o))
+  if (!Array.isArray(o))
     errorGiven(expectedOptic, o)
 }
 
