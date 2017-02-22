@@ -10,7 +10,7 @@
     "dist:bowerify.min": "NODE_ENV=production browserify src/partial.lenses.js -t babelify --no-bundle-external    -s L -g envify -g uglifyify | uglifyjs -m -c > dist/partial.lenses.min.js",
     "dist:commonjs": "babel src --source-maps inline --out-dir lib",
     "docs": "./scripts/generate-docs",
-    "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify > docs/bundle.js",
+    "docs-bundle": "NODE_ENV=dev browserify -r ./lib/partial.lenses:partial.lenses -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify | uglifyjs -m -c > docs/bundle.js",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run test && npm run dist",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
