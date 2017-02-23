@@ -391,6 +391,9 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
 }
 
+const fromReader = wi2x => (F, xi2yF, w, i) =>
+  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
+
 //
 
 export function toFunction(o) {
@@ -400,7 +403,7 @@ export function toFunction(o) {
     case "number":
       return funIndex(o)
     case "function":
-      return o.length === 4 ? o : to(o)
+      return o.length === 4 ? o : fromReader(o)
     default:
       if (process.env.NODE_ENV !== "production")
         reqArray(o)
@@ -736,10 +739,21 @@ export const orElse =
 
 // Read-only mapping
 
-export const to = wi2x => (F, xi2yF, w, i) =>
-  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
+export const to = process.env.NODE_ENV === "production" ? id : wi2x => {
+  if (!to.warned) {
+    to.warned = 1
+    console.warn("partial.lenses: `to` is obsolete, you can directly compose plain functions with optics")
+  }
+  return wi2x
+}
 
-export const just = always
+export const just = process.env.NODE_ENV === "production" ? always : x => {
+  if (!just.warned) {
+    just.warned = 1
+    console.warn("partial.lenses: `just` is obsolete, just use e.g. `R.always`")
+  }
+  return always(x)
+}
 
 // Transforming data
 
