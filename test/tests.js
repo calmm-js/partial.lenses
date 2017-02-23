@@ -259,6 +259,7 @@ describe("L.zero", () => {
 })
 
 describe("L.to", () => {
+  testEq('L.get(L.to(x => x+1), 2)', 3)
   testEq('L.get(x => x+1, 2)', 3)
   testEq('L.modify(R.inc, R.negate, 1)', 1)
   testEq('L.get([0, "x", R.negate], [{x:-1}])', 1)
@@ -267,7 +268,8 @@ describe("L.to", () => {
 
 describe("L.just", () => {
   testEq('L.get(L.just("always"), "anything")', "always")
-  testEq('L.set(L.just("always"), "anything", "original")', "original")
+  testEq('L.get(R.always("always"), "anything")', "always")
+  testEq('L.set(R.always("always"), "anything", "original")', "original")
 })
 
 describe("L.chain", () => {
