@@ -1,5 +1,12 @@
 # Changelog
 
+## 9.3.0
+
+Obsoleted `L.to` and `L.just`.  You can now directly compose optics with
+ordinary functions (whose arity is not 4) and the result is a read-only optic.
+This makes `L.to` the same as `R.identity` and `L.just` is the same as
+`R.always`.
+
 ## 9.1.0
 
 Obsoleted `L.mergeAs` and `L.merge`.  `L.concatAs` and `L.concat` are now just
