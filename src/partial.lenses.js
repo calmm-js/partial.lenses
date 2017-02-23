@@ -11,6 +11,7 @@ import {
   hasU,
   id,
   isDefined,
+  isFunction,
   isObject,
   isString,
   keys,
@@ -77,14 +78,21 @@ const constAs = toConst => curryN(4, (xMi2y, m) => {
 
 //
 
+const expectedOptic = "Expecting an optic"
+
 function errorGiven(m, o) {
   console.error("partial.lenses:", m, "- given:", o)
   throw new Error(m)
 }
 
+function reqFunction(o) {
+  if (!(isFunction(o) && (o.length === 4 || o.length <= 2)))
+    errorGiven(expectedOptic, o)
+}
+
 function reqArray(o) {
   if (!Array.isArray(o))
-    errorGiven("Expecting an optic", o)
+    errorGiven(expectedOptic, o)
 }
 
 //
@@ -238,12 +246,14 @@ function setU(o, x, s) {
       return setProp(o, x, s)
     case "number":
       return setIndex(o, x, s)
-    case "function":
-      return o.length === 4 ? o(Ident, always(x), s, void 0) : s
-    default:
+    case "object":
       if (process.env.NODE_ENV !== "production")
         reqArray(o)
       return modifyComposed(o, 0, s, x)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
+      return o.length === 4 ? o(Ident, always(x), s, void 0) : s
   }
 }
 
@@ -253,9 +263,7 @@ function getU(l, s) {
       return getProp(l, s)
     case "number":
       return getIndex(l, s)
-    case "function":
-      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0)
-    default:
+    case "object":
       if (process.env.NODE_ENV !== "production")
         reqArray(l)
       for (let i=0, n=l.length, o; i<n; ++i)
@@ -265,6 +273,10 @@ function getU(l, s) {
           default: s = getU(o, s); break
         }
       return s
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(l)
+      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0)
   }
 }
 
@@ -402,12 +414,14 @@ export function toFunction(o) {
       return funProp(o)
     case "number":
       return funIndex(o)
-    case "function":
-      return o.length === 4 ? o : fromReader(o)
-    default:
+    case "object":
       if (process.env.NODE_ENV !== "production")
         reqArray(o)
       return composed(0, o)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
+      return o.length === 4 ? o : fromReader(o)
   }
 }
 
@@ -419,12 +433,14 @@ export const modify = curry((o, xi2x, s) => {
       return setProp(o, xi2x(getProp(o, s), o), s)
     case "number":
       return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "function":
+    case "object":
+      return modifyComposed(o, xi2x, s)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
       return o.length === 4
         ? o(Ident, xi2x, s, void 0)
         : (xi2x(o(s, void 0), void 0), s)
-    default:
-      return modifyComposed(o, xi2x, s)
   }
 })
 

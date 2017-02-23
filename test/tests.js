@@ -625,6 +625,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('L.set(L.augment({y: () => 1}), 45, {x: 1})')
 
     testThrows('L.set(null, 1, 2)')
+
+    testThrows('L.toFunction((one, too, many) => 1)')
   })
 }
 
