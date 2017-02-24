@@ -112,6 +112,7 @@ describe("arities", () => {
   testEq('L.pick.length', 1)
   testEq('L.prop.length', 1)
   testEq('L.props.length', 0)
+  testEq('L.removable.length', 0)
   testEq('L.remove.length', 2)
   testEq('L.replace.length', 2)
   testEq('L.required.length', 1)
