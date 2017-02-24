@@ -740,10 +740,16 @@ will have the signature
 (Functor c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
 ```
 
-and for [traversals](#traversals) the signature will be
+for [traversals](#traversals) the signature will be
 
 ```jsx
 (Applicative c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+```
+
+and for [transforms](#transforms) the signature will be
+
+```jsx
+(Monad c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
 ```
 
 Note that the above signatures are written using the "tupled" parameter notation
