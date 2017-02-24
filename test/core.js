@@ -143,8 +143,8 @@ export const valueOr = v =>
 export const orElse = R.curry((d, l) =>
   choose(x => isDefined(get(l, x)) ? l : d))
 
-export const just = v => to(R.always(v))
-export const to = a2b => lens(a2b, (_, s) => s)
+export const just = R.always
+export const to = R.identity
 
 export const pick = L.pick
 export const replace = R.curry((i, o) =>
