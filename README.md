@@ -631,7 +631,7 @@ to [`L.choose((x, i) => p(x, i) ? L.identity : L.zero)`](#L-choose).
 ##### <a name="L-zero"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-zero) [`L.zero ~> optic`](#L-zero "L.zero: POptic s a")
 
 `L.zero` is the identity element of [`L.choice`](#L-choice)
-and [`L.chain`](L-chain).  As a traversal, `L.zero` is a traversal of no
+and [`L.chain`](#L-chain).  As a traversal, `L.zero` is a traversal of no
 elements and as a lens, i.e. when used with [`L.get`](#L-get), `L.zero` is a
 read-only lens whose view is always `undefined`.
 
@@ -1556,8 +1556,8 @@ the [tutorial](#tutorial) example.  In such a pair, the preceding lens gives a
 default value when reading through the lens, allowing one to use such a lens to
 insert new objects.  The following lens then specifies that removing the then
 focused property (or properties) should remove the whole object.  In cases where
-the shape of the incoming object is know, [`L.defaults`](L-defaults) can replace
-such a pair.
+the shape of the incoming object is know, [`L.defaults`](#L-defaults) can
+replace such a pair.
 
 #### Providing defaults
 

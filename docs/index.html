@@ -511,7 +511,7 @@ selectively turn a lens into a read-only lens whose view is <code>undefined</cod
 to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
 <h5 id="-a-name-l-zero-a-contents-https-calmm-js-github-io-partial-lenses-l-zero-l-zero-optic-l-zero-l-zero-poptic-s-a-"><a name="L-zero"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-zero">▶</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a></h5>
 <p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a>
-and <a href="L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
+and <a href="#L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
 elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
 read-only lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
@@ -1081,8 +1081,8 @@ the <a href="#tutorial">tutorial</a> example.  In such a pair, the preceding len
 default value when reading through the lens, allowing one to use such a lens to
 insert new objects.  The following lens then specifies that removing the then
 focused property (or properties) should remove the whole object.  In cases where
-the shape of the incoming object is know, <a href="L-defaults"><code>L.defaults</code></a> can replace
-such a pair.</p>
+the shape of the incoming object is know, <a href="#L-defaults"><code>L.defaults</code></a> can
+replace such a pair.</p>
 <h4 id="providing-defaults">Providing defaults</h4>
 <h5 id="-a-name-l-valueor-a-contents-https-calmm-js-github-io-partial-lenses-l-valueor-l-valueor-valueout-lens-l-valueor-l-valueor-s-plens-s-s-"><a name="L-valueOr"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-valueOr">▶</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
