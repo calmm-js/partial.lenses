@@ -49,7 +49,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Internals](#internals)
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
   * [Transforms](#transforms)
-    * [Creating new transforms](#creating-new-transforms)
+    * [Sequencing](#sequencing)
       * [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
@@ -771,10 +771,12 @@ with [`L.optional`](#L-optional) to eliminate `undefined` elements.
 ### Transforms
 
 A transform operates over focuses that may overlap and may be visited multiple
-times.  Transforms can only be [modified](#L-modify), [set](#L-set)
+times.  This allows operations that are impossible to implement using other
+optics, but also potentially makes it much more difficult to reason about the
+results.  Transforms can only be [modified](#L-modify), [set](#L-set)
 and [removed](#L-remove).
 
-#### Creating new transforms
+#### Sequencing
 
 ##### <a name="L-seq"></a> [≡](#contents) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
 
