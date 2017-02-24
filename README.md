@@ -658,8 +658,9 @@ is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.
 
 Note that when using `L.lazy` to construct a recursive optic, it will only work
-in a meaningful way when the recursive uses are at nested positions meaning that
-the recursive use is precomposed with some other optic.
+in a meaningful way when the recursive uses are either [precomposed](L-compose)
+or [presequenced](L-seq) with some other optic in a way that neither causes
+immediate nor unconditional recursion.
 
 For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
