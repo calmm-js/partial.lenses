@@ -779,7 +779,7 @@ and [removed](#L-remove).
 
 #### Sequencing
 
-##### <a name="L-seq"></a> [≡](#contents) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
+##### <a name="L-seq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seq) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
 
 `L.seq` creates a transform that modifies the focus with each of the given
 optics in sequence.
