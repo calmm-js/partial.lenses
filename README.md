@@ -780,6 +780,19 @@ and [removed](#L-remove).
 
 ##### <a name="L-seq"></a> [≡](#contents) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
 
+`L.seq` creates a transform that modifies the focus with each of the given
+optics in sequence.
+
+For example:
+
+```js
+L.modify(L.seq(L.identity, L.identity, L.identity), x => [x], 1)
+// [ [ [ 1 ] ] ]
+```
+
+Here is an example of a bottom-up transform over a data structure of nested
+objects and arrays:
+
 ```js
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = [L.elems, rec]
@@ -789,6 +802,18 @@ const everywhere = [L.optional, L.lazy(rec => {
                               L.zero)),
                L.identity)
 })]
+```
+
+The above `everywhere` transform is similar to
+the [`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere)
+transform of the [`fastener`](https://github.com/polytypic/fastener)
+zipper-library.  Note that the above `everywhere` and the [`flatten`](L-lazy)
+example differ in the `flatten` only targets the non-object and non-array
+elements of the data structure while `everywhere` also targets those.
+
+```js
+L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
+// [ {xs: [ [ [ { x: [ 1 ] } ], [ { x: [ 2 ] } ] ] ] } ]
 ```
 
 ### Traversals
