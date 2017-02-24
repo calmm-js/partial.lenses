@@ -86,7 +86,7 @@ function errorGiven(m, o) {
 }
 
 function reqFunction(o) {
-  if (!(isFunction(o) && o.length === 4))
+  if (!(isFunction(o) && (o.length === 4 || o.length <= 2)))
     errorGiven(expectedOptic, o)
 }
 
@@ -253,7 +253,7 @@ function setU(o, x, s) {
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(o)
-      return o(Ident, always(x), s, void 0)
+      return o.length === 4 ? o(Ident, always(x), s, void 0) : s
   }
 }
 
@@ -276,7 +276,7 @@ function getU(l, s) {
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(l)
-      return l(Const, id, s, void 0)
+      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0)
   }
 }
 
@@ -403,6 +403,9 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
 }
 
+const fromReader = wi2x => (F, xi2yF, w, i) =>
+  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
+
 //
 
 export function toFunction(o) {
@@ -411,14 +414,14 @@ export function toFunction(o) {
       return funProp(o)
     case "number":
       return funIndex(o)
-    case "function":
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(o)
-      return o
-    default:
+    case "object":
       if (process.env.NODE_ENV !== "production")
         reqArray(o)
       return composed(0, o)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
+      return o.length === 4 ? o : fromReader(o)
   }
 }
 
@@ -430,12 +433,14 @@ export const modify = curry((o, xi2x, s) => {
       return setProp(o, xi2x(getProp(o, s), o), s)
     case "number":
       return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "function":
+    case "object":
+      return modifyComposed(o, xi2x, s)
+    default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(o)
-      return o(Ident, xi2x, s, void 0)
-    default:
-      return modifyComposed(o, xi2x, s)
+      return o.length === 4
+        ? o(Ident, xi2x, s, void 0)
+        : (xi2x(o(s, void 0), void 0), s)
   }
 })
 
@@ -750,10 +755,21 @@ export const orElse =
 
 // Read-only mapping
 
-export const to = wi2x => (F, xi2yF, w, i) =>
-  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
+export const to = process.env.NODE_ENV === "production" ? id : wi2x => {
+  if (!to.warned) {
+    to.warned = 1
+    console.warn("partial.lenses: `to` is obsolete, you can directly compose plain functions with optics")
+  }
+  return wi2x
+}
 
-export const just = x => to(always(x))
+export const just = process.env.NODE_ENV === "production" ? always : x => {
+  if (!just.warned) {
+    just.warned = 1
+    console.warn("partial.lenses: `just` is obsolete, just use e.g. `R.always`")
+  }
+  return always(x)
+}
 
 // Transforming data
 

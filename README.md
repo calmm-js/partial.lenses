@@ -97,8 +97,8 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Adapting to data](#adapting-to-data)
       * [`L.orElse(backupLens, primaryLens) ~> lens`](#L-orElse "L.orElse: (PLens s a, PLens s a) -> PLens s a")
     * [Read-only mapping](#read-only-mapping)
-      * [`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")
-      * [`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")
+      * ~~[`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")~~
+      * ~~[`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")~~
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
@@ -481,8 +481,8 @@ to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
 ##### <a name="L-compose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-compose) [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
 
-`L.compose` performs composition of optics.  The following equations
-characterize composition:
+`L.compose` performs composition of optics and ordinary functions.  The
+following equations characterize composition:
 
 ```jsx
                   L.compose() = L.identity
@@ -513,6 +513,20 @@ L.get(["a", 1], {a: ["b", "c"]})
 // 'c'
 ```
 
+You can also directly compose optics with ordinary functions (with max arity of
+2).  The result of such a composition is a read-only optic.
+
+For example:
+
+```js
+L.get(["x", x => x + 1], {x: 1})
+// 2
+```
+```js
+L.set(["x", x => x + 1], 3, {x: 1})
+// { x: 1 }
+```
+
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
 
@@ -529,9 +543,9 @@ L.compose(optic, L.choose((maybeValue, index) =>
   : toOptic(maybeValue, index)))
 ```
 
-Note that with the [`L.just`](#L-just), `L.chain`, [`L.choice`](#L-choice)
-and [`L.zero`](#L-zero) combinators, one can consider optics as subsuming the
-maybe monad.
+Note that with the [`R.always`](http://ramdajs.com/docs/#always),
+`L.chain`, [`L.choice`](#L-choice) and [`L.zero`](#L-zero) combinators, one can
+consider optics as subsuming the maybe monad.
 
 ##### <a name="L-choice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choice) [`L.choice(...lenses) ~> optic`](#L-choice "L.choice: (...PLens s a) -> POptic s a")
 
@@ -1581,7 +1595,9 @@ for [`L.choice`](#L-choice), for example.
 
 #### Read-only mapping
 
-##### <a name="L-just"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-just) [`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")
+##### <a name="L-just"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-just) ~~[`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")~~
+
+**WARNING: `L.just` is obsolete, just use e.g. [`R.always`](http://ramdajs.com/docs/#always).**
 
 `L.just` returns a read-only lens whose view is always the given value.  In
 other words, for all `x`, `y` and `z`:
@@ -1596,7 +1612,9 @@ Note that `L.just(x)` is equivalent to [`L.to(R.always(x))`](#L-to).
 `L.just` can be seen as the unit function of the monad formed
 with [`L.chain`](#L-chain).
 
-##### <a name="L-to"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-to) [`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")
+##### <a name="L-to"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-to) ~~[`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")~~
+
+**WARNING: `L.to` is obsolete, you can directly compose plain functions with optics.**
 
 `L.to` creates a read-only lens whose view is determined by the given function.
 

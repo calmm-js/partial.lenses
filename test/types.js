@@ -26,6 +26,7 @@ const T_opticOf = Category => T.lazy(T_optic => T.or(
   T.integer,
   T.string,
   T.array(T_optic),
+  T.fn([T_maybeData, T_index], T_maybeData),
   T_opticFnOf(Category)))
 
 const T_optic = T_opticOf(T.or(T_applicative, T_functor))
@@ -127,8 +128,8 @@ export const valueOr = T.fn([T.any], T_lens)
 
 export const orElse = T.fn([T_lens, T_lens], T_lens)
 
-export const just = T.fn([T_maybeData], T_lens)
-export const to = T.fn([T.fn([T_maybeData, T_index], T_maybeData)], T_lens)
+export const just = T.fn([T.any], T.fnVar(T.any, T.any))
+export const to = T.fn([T.any], T.any)
 
 export const pick = T.fn([T.props(T_lens)], T_lens)
 export const replace = T.fn([T_maybeData, T_maybeData], T_lens)

@@ -259,13 +259,17 @@ describe("L.zero", () => {
 })
 
 describe("L.to", () => {
-  testEq('L.get([0, "x", L.to(R.negate)], [{x:-1}])', 1)
-  testEq('L.set([0, "x", L.to(R.negate)], 2, [{x:-1}])', [{x:-1}])
+  testEq('L.get(L.to(x => x+1), 2)', 3)
+  testEq('L.get(x => x+1, 2)', 3)
+  testEq('L.modify(R.inc, R.negate, 1)', 1)
+  testEq('L.get([0, "x", R.negate], [{x:-1}])', 1)
+  testEq('L.set([0, "x", R.negate], 2, [{x:-1}])', [{x:-1}])
 })
 
 describe("L.just", () => {
   testEq('L.get(L.just("always"), "anything")', "always")
-  testEq('L.set(L.just("always"), "anything", "original")', "original")
+  testEq('L.get(R.always("always"), "anything")', "always")
+  testEq('L.set(R.always("always"), "anything", "original")', "original")
 })
 
 describe("L.chain", () => {
@@ -613,8 +617,6 @@ if (process.env.NODE_ENV !== "production") {
 
     testThrows('X.get(L.elems, [])')
 
-    testThrows('X.get(x => x, 0)')
-
     testThrows('L.set(L.props("length"), "lol", undefined)')
     testThrows('L.set(L.slice(undefined, undefined), 11, [])')
     testThrows('L.pick(new XYZ(1,2,3))')
@@ -623,6 +625,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('L.set(L.augment({y: () => 1}), 45, {x: 1})')
 
     testThrows('L.set(null, 1, 2)')
+
+    testThrows('L.toFunction((one, too, many) => 1)')
   })
 }
 
