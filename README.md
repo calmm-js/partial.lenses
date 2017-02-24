@@ -658,8 +658,8 @@ is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.
 
 Note that when using `L.lazy` to construct a recursive optic, it will only work
-in a meaningful way when the recursive uses are either [precomposed](L-compose)
-or [presequenced](L-seq) with some other optic in a way that neither causes
+in a meaningful way when the recursive uses are either [precomposed](#L-compose)
+or [presequenced](#L-seq) with some other optic in a way that neither causes
 immediate nor unconditional recursion.
 
 For example, here is a traversal that targets all the primitive elements in a
@@ -808,7 +808,7 @@ const everywhere = [L.optional, L.lazy(rec => {
 The above `everywhere` transform is similar to
 the [`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere)
 transform of the [`fastener`](https://github.com/polytypic/fastener)
-zipper-library.  Note that the above `everywhere` and the [`flatten`](L-lazy)
+zipper-library.  Note that the above `everywhere` and the [`flatten`](#L-lazy)
 example differ in the `flatten` only targets the non-object and non-array
 elements of the data structure while `everywhere` also targets those.
 
