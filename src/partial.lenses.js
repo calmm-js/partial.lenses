@@ -270,7 +270,7 @@ function getU(l, s) {
         switch (typeof (o = l[i])) {
           case "string": s = getProp(o, s); break
           case "number": s = getIndex(o, s); break
-          default: s = getU(o, s); break
+          default: return composed(i, l)(Const, id, s, l[i-1])
         }
       return s
     default:
