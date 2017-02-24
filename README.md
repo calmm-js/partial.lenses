@@ -757,17 +757,19 @@ Note that the above signatures are written using the "tupled" parameter notation
 `(...) -> ...` to denote that the functions are not curried.
 
 The
-[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor) and
-[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative) arguments
+[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor),
+[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
+and
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad) arguments
 are expected to conform to
 their
 [Static Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
 specifications.
 
 Note that, in conjunction with partial optics, it may be advantageous to have
-the `Functor` and `Applicative` algebras to allow for partiality.  With
-traversals it is also possible, for example, to simply post compose optics
-with [`L.optional`](#L-optional) to eliminate `undefined` elements.
+the algebras to allow for partiality.  With traversals it is also possible, for
+example, to simply post compose optics with [`L.optional`](#L-optional) to
+skip `undefined` elements.
 
 ### Transforms
 
