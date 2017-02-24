@@ -1614,7 +1614,7 @@ with [`L.chain`](#L-chain).
 
 ##### <a name="L-to"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-to) ~~[`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")~~
 
-**WARNING: `L.to` is obsolete, you can directly compose plain functions with optics.**
+**WARNING: `L.to` is obsolete, you can directly [`L.compose`](#L-compose) plain functions with optics.**
 
 `L.to` creates a read-only lens whose view is determined by the given function.
 

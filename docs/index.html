@@ -1115,7 +1115,7 @@ L.set(L.just(z), y, x) = x
 <p><code>L.just</code> can be seen as the unit function of the monad formed
 with <a href="#L-chain"><code>L.chain</code></a>.</p>
 <h5 id="-a-name-l-to-a-contents-https-calmm-js-github-io-partial-lenses-l-to-l-to-maybevalue-index-maybevalue-lens-l-to-l-to-a-index-b-plens-a-b-"><a name="L-to"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-to">▶</a> <del><a href="#L-to" title="L.to: ((a, Index) -&gt; b) -&gt; PLens a b"><code>L.to((maybeValue, index) =&gt; maybeValue) ~&gt; lens</code></a></del></h5>
-<p><strong>WARNING: <code>L.to</code> is obsolete, you can directly compose plain functions with optics.</strong></p>
+<p><strong>WARNING: <code>L.to</code> is obsolete, you can directly <a href="#L-compose"><code>L.compose</code></a> plain functions with optics.</strong></p>
 <p><code>L.to</code> creates a read-only lens whose view is determined by the given function.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.to(x =&gt; x + 1)], {x: 1})

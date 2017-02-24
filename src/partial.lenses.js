@@ -758,7 +758,7 @@ export const orElse =
 export const to = process.env.NODE_ENV === "production" ? id : wi2x => {
   if (!to.warned) {
     to.warned = 1
-    console.warn("partial.lenses: `to` is obsolete, you can directly compose plain functions with optics")
+    console.warn("partial.lenses: `to` is obsolete, you can directly `compose` plain functions with optics")
   }
   return wi2x
 }
