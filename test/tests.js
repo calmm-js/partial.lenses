@@ -264,6 +264,8 @@ describe("L.to", () => {
   testEq('L.get(x => x+1, 2)', 3)
   testEq('L.modify(R.inc, R.negate, 1)', 1)
   testEq('L.get(["x", (x,i) => [x, i]], {x:-1})', [-1, "x"])
+  testEq('L.collect([L.elems, (x,i) => [x, i]], ["x","y"])', [["x", 0], ["y", 1]])
+  testEq('L.collect([L.values, (x,i) => [x, i]], {x:1, y:-1})', [[1, "x"], [-1, "y"]])
   testEq('L.get([0, (x,i) => [x, i]], [-1])', [-1, 0])
   testEq('L.get([0, "x", R.negate], [{x:-1}])', 1)
   testEq('L.set([0, "x", R.negate], 2, [{x:-1}])', [{x:-1}])
