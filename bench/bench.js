@@ -124,9 +124,6 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.set(L.seq("x","y","z"), 1, undefined)`,
-    `L.set(xyzs, 1, undefined)`,
-  ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
@@ -273,6 +270,9 @@ R.forEach(bs => {
   ], [
     `L.modify(everywhere, incNum, xs1000)`,
     `L.modify(flatten, inc, xs1000)`,
+  ], [
+    `L.set(L.seq("x","y","z"), 1, undefined)`,
+    `L.set(xyzs, 1, undefined)`,
   ], [
     `L.modify(values, x => x + x, bst)`,
   ], [
