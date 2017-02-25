@@ -454,9 +454,9 @@ export function seq() {
   const n = arguments.length, xMs = Array(n)
   for (let i=0; i<n; ++i)
     xMs[i] = toFunction(arguments[i])
-  const loop = (M, xi2xM, i, j) => x => j === n
-    ? (0, M.of)(x)
-    : (0, M.chain)(loop(M, xi2xM, i, j+1), xMs[j](M, xi2xM, x, i))
+  const loop = (M, xi2xM, i, j) => j === n
+    ? M.of
+    : x => (0, M.chain)(loop(M, xi2xM, i, j+1), xMs[j](M, xi2xM, x, i))
   return (M, xi2xM, x, i) => {
     if (process.env.NODE_ENV !== "production" && !M.chain)
       errorGiven("`seq` requires a monad", M)
