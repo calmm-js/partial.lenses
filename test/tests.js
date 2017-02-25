@@ -399,6 +399,7 @@ describe("L.augment", () => {
   testEq('L.set(L.augment({z: c => c.x + c.y}), new XYZ(3,2,1), {x: 1, y: 2})',
          {x: 3, y: 2})
   testEq('L.set(L.augment({x: () => 1}), {constructor: 1}, {})', {constructor: 1})
+  testEq('L.set([L.augment({constructor: () => 1}), "x"], 2, {x: 1})', {x: 2})
   empties.filter(x => !R.contains(x, {})).forEach(invalid => {
     testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined)
   })
