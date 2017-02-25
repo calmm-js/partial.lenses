@@ -448,7 +448,7 @@ export const remove = curry((o, s) => setU(o, void 0, s))
 
 export const set = curry(setU)
 
-//
+// Sequencing
 
 export function seq() {
   const n = arguments.length, xIs = Array(n)
