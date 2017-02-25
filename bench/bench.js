@@ -106,6 +106,8 @@ const everywhere = [L.optional, L.lazy(rec => {
                L.identity)
 })]
 
+const xyzs = L.seq("x","y","z")
+
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
@@ -122,7 +124,7 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.set(L.seq("x","y","z"), 1, undefined)`
+    `L.set(xyzs, 1, undefined)`
   ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
