@@ -1,10 +1,18 @@
 'use strict';
 
+function tryRequire(name) {
+  try {
+    return require(name)
+  } catch (_) {
+    console.warn(`Skipping '${name}'`)
+  }
+}
+
 const I = require("infestines")
 const L = require("../dist/partial.lenses.min")
-const P = require("ramda-lens")
+const P = tryRequire("ramda-lens")
 const R = require("ramda")
-const O = require("flunc-optics")
+const O = tryRequire("flunc-optics")
 const sprintf = require("sprintf-js").sprintf
 
 const xyz = {x: 1, y: 2, z: 3}
@@ -37,12 +45,12 @@ const l_0x0y = R.lensPath([0, "x", 0, "y"])
 const l_xyz = R.lensPath(["x", "y", "z"])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
 
-const o_x_y_z = R.compose(O.Lens.atObject('x'),
-                          O.Prism._Just,
-                          O.Lens.atObject('y'),
-                          O.Prism._Just,
-                          O.Lens.atObject('z'),
-                          O.Prism._Just)
+const o_x_y_z = O && R.compose(O.Lens.atObject('x'),
+                               O.Prism._Just,
+                               O.Lens.atObject('y'),
+                               O.Prism._Just,
+                               O.Lens.atObject('z'),
+                               O.Prism._Just)
 
 const id = I.id
 const always = I.always

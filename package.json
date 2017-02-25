@@ -5,6 +5,7 @@
   "main": "lib/partial.lenses.js",
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
+    "bench-install-extra": "npm i ramda-lens flunc-optics",
     "dist": "npm run dist:bowerify & npm run dist:bowerify.min & npm run dist:commonjs & wait",
     "dist:bowerify": "    NODE_ENV=dev        browserify src/partial.lenses.js -t babelify --no-bundle-external -d -s L -g envify                               > dist/partial.lenses.js",
     "dist:bowerify.min": "NODE_ENV=production browserify src/partial.lenses.js -t babelify --no-bundle-external    -s L -g envify -g uglifyify | uglifyjs -m -c > dist/partial.lenses.min.js",
@@ -67,14 +68,12 @@
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
     "eslint": "^3.16.0",
-    "flunc-optics": "0.0.2",
     "immutable": "^3.8.1",
     "marked": "^0.3.6",
     "mocha": "^3.2.0",
     "moment": "^2.17.1",
     "nyc": "^10.1.2",
     "ramda": "^0.23.0",
-    "ramda-lens": "^0.1.1",
     "sprintf-js": "^1.0.3",
     "uglify-js": "^2.7.5",
     "uglifyify": "^3.0.4"
