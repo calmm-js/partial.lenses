@@ -48,6 +48,9 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+  * [Transforms](#transforms)
+    * [Sequencing](#sequencing)
+      * [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
   * [Traversals](#traversals)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.concat(monoid, traversal, maybeData) ~> traversal`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
@@ -655,8 +658,9 @@ is passed a forwarding proxy to its return value and can also make forward
 references to other optics and possibly construct a recursive optic.
 
 Note that when using `L.lazy` to construct a recursive optic, it will only work
-in a meaningful way when the recursive uses are at nested positions meaning that
-the recursive use is precomposed with some other optic.
+in a meaningful way when the recursive uses are either [precomposed](#L-compose)
+or [presequenced](#L-seq) with some other optic in a way that neither causes
+immediate nor unconditional recursion.
 
 For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
@@ -737,27 +741,83 @@ will have the signature
 (Functor c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
 ```
 
-and for [traversals](#traversals) the signature will be
+for [traversals](#traversals) the signature will be
 
 ```jsx
 (Applicative c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+```
+
+and for [transforms](#transforms) the signature will be
+
+```jsx
+(Monad c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
 ```
 
 Note that the above signatures are written using the "tupled" parameter notation
 `(...) -> ...` to denote that the functions are not curried.
 
 The
-[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor) and
-[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative) arguments
+[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor),
+[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
+and
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad) arguments
 are expected to conform to
 their
 [Static Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
 specifications.
 
 Note that, in conjunction with partial optics, it may be advantageous to have
-the `Functor` and `Applicative` algebras to allow for partiality.  With
-traversals it is also possible, for example, to simply post compose optics
-with [`L.optional`](#L-optional) to eliminate `undefined` elements.
+the algebras to allow for partiality.  With traversals it is also possible, for
+example, to simply post compose optics with [`L.optional`](#L-optional) to
+skip `undefined` elements.
+
+### Transforms
+
+A transform operates over focuses that may overlap and may be visited multiple
+times.  This allows operations that are impossible to implement using other
+optics, but also potentially makes it much more difficult to reason about the
+results.  Transforms can only be [modified](#L-modify), [set](#L-set)
+and [removed](#L-remove).
+
+#### Sequencing
+
+##### <a name="L-seq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seq) [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
+
+`L.seq` creates a transform that modifies the focus with each of the given
+optics in sequence.
+
+For example:
+
+```js
+L.modify(L.seq(L.identity, L.identity, L.identity), x => [x], 1)
+// [ [ [ 1 ] ] ]
+```
+
+Here is an example of a bottom-up transform over a data structure of nested
+objects and arrays:
+
+```js
+const everywhere = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.seq(L.choose(x => (x instanceof Array ? elems :
+                              x instanceof Object ? values :
+                              L.zero)),
+               L.identity)
+})]
+```
+
+The above `everywhere` transform is similar to
+the [`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere)
+transform of the [`fastener`](https://github.com/polytypic/fastener)
+zipper-library.  Note that the above `everywhere` and the [`flatten`](#L-lazy)
+example differ in that `flatten` only targets the non-object and non-array
+elements of the data structure while `everywhere` also targets those.
+
+```js
+L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
+// [ {xs: [ [ [ { x: [ 1 ] } ], [ { x: [ 2 ] } ] ] ] } ]
+```
 
 ### Traversals
 

@@ -95,6 +95,19 @@ const values = L.lazy(rec => [
 const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
 const bst = fromPairs(bstPairs)
 
+const incNum = x => typeof x === "number" ? x + 1 : x
+const nested = [{x:1,y:[2,{d:3},4],z:{a:5}}]
+const everywhere = [L.optional, L.lazy(rec => {
+  const elems = L.toFunction([L.elems, rec])
+  const values = L.toFunction([L.values, rec])
+  return L.seq(L.choose(x => (x instanceof Array ? elems :
+                              x instanceof Object ? values :
+                              L.zero)),
+               L.identity)
+})]
+
+const xyzs = L.seq("x","y","z")
+
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
@@ -245,6 +258,21 @@ R.forEach(bs => {
     `L.modify(L.values, inc, xs100o)`,
     `L.modify(L.values, inc, xs1000o)`,
     `L.modify(L.values, inc, xs10000o)`,
+  ], [
+    `L.modify(everywhere, incNum, nested)`,
+    `L.modify(flatten, inc, nested)`,
+  ], [
+    `L.modify(everywhere, incNum, xs10)`,
+    `L.modify(flatten, inc, xs10)`,
+  ], [
+    `L.modify(everywhere, incNum, xs100)`,
+    `L.modify(flatten, inc, xs100)`,
+  ], [
+    `L.modify(everywhere, incNum, xs1000)`,
+    `L.modify(flatten, inc, xs1000)`,
+  ], [
+    `L.set(L.seq("x","y","z"), 1, undefined)`,
+    `L.set(xyzs, 1, undefined)`,
   ], [
     `L.modify(values, x => x + x, bst)`,
   ], [

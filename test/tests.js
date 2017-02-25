@@ -632,6 +632,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('L.set(null, 1, 2)')
 
     testThrows('L.toFunction((one, too, many) => 1)')
+
+    testThrows(`L.get(L.seq(0), ["x"])`)
   })
 }
 
@@ -682,4 +684,20 @@ describe("BST", () => {
                 L.modify(BST.values, x => -x))`,
          I.seq([["m",-1], ["a",-2], ["g",-3], ["i",-4], ["c",-5]],
                BST.fromPairs))
+})
+
+export const everywhere = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.seq(L.choose(x => (x instanceof Array ? elems :
+                              x instanceof Object ? values :
+                              L.zero)),
+               L.identity)
+})]
+
+describe("seq", () => {
+  testEq(`L.set(L.seq(), "ignored", "anything")`, "anything")
+  testEq(`L.set([L.seq(), "x"], "ignored", {x: "anything"})`, {x: "anything"})
+  testEq(`L.set(L.seq("x", "y", "z"), 1, undefined)`, {x:1,y:1,z:1})
+  testEq(`L.modify(everywhere, x => [x], {x: {y: 1}})`, [{x: [{y: [1]}]}])
 })
