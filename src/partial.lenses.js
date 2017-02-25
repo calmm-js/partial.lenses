@@ -451,17 +451,16 @@ export const set = curry(setU)
 // Sequencing
 
 export function seq() {
-  const n = arguments.length, xIs = Array(n)
+  const n = arguments.length, xMs = Array(n)
   for (let i=0; i<n; ++i)
-    xIs[i] = toFunction(arguments[i])
-  return (I, xi2xI, x, i) => {
-    const chain = I.chain
-    if (process.env.NODE_ENV !== "production" && !chain)
-      errorGiven("`seq` requires a monad", I)
-    const loop = j => x => j === n
-      ? (0, I.of)(x)
-      : chain(loop(j+1), xIs[j](I, xi2xI, x, i))
-    return loop(0)(x)
+    xMs[i] = toFunction(arguments[i])
+  const loop = (M, xi2xM, i, j) => x => j === n
+    ? (0, M.of)(x)
+    : (0, M.chain)(loop(M, xi2xM, i, j+1), xMs[j](M, xi2xM, x, i))
+  return (M, xi2xM, x, i) => {
+    if (process.env.NODE_ENV !== "production" && !M.chain)
+      errorGiven("`seq` requires a monad", M)
+    return loop(M, xi2xM, i, 0)(x)
   }
 }
 
