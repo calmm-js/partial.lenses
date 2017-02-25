@@ -811,7 +811,7 @@ The above `everywhere` transform is similar to
 the [`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere)
 transform of the [`fastener`](https://github.com/polytypic/fastener)
 zipper-library.  Note that the above `everywhere` and the [`flatten`](#L-lazy)
-example differ in the `flatten` only targets the non-object and non-array
+example differ in that `flatten` only targets the non-object and non-array
 elements of the data structure while `everywhere` also targets those.
 
 ```js
