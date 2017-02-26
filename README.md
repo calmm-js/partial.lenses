@@ -184,7 +184,8 @@ To focus on the first element of the `titles` array, we compose with
 the [`L.index(0)`](#L-index) lens:
 
 ```js
-L.get(L.compose(L.prop("titles"), L.index(0)),
+L.get(L.compose(L.prop("titles"),
+                L.index(0)),
       sampleTitles)
 // { language: "en", text: "Title" }
 ```
@@ -192,7 +193,9 @@ L.get(L.compose(L.prop("titles"), L.index(0)),
 Then, to focus on the `text`, we compose with [`L.prop("text")`](#L-prop):
 
 ```js
-L.get(L.compose(L.prop("titles"), L.index(0), L.prop("text")),
+L.get(L.compose(L.prop("titles"),
+                L.index(0),
+                L.prop("text")),
       sampleTitles)
 // "Title"
 ```
@@ -200,7 +203,9 @@ L.get(L.compose(L.prop("titles"), L.index(0), L.prop("text")),
 We can then use the same composed lens to also [set](#L-set) the `text`:
 
 ```js
-L.set(L.compose(L.prop("titles"), L.index(0), L.prop("text")),
+L.set(L.compose(L.prop("titles"),
+                L.index(0),
+                L.prop("text")),
       "New title",
       sampleTitles)
 // { titles: [{ language: "en", text: "New title" },
@@ -386,9 +391,9 @@ L.compose(L.prop("titles"),
 
 Following the structure or schema of the JSON, we could break this into three
 separate lenses:
-* a lens for accessing the contents of a data object,
-* a parameterized lens for querying a content object from contents, and
-* a lens for accessing the text of a content object.
+* a lens for accessing the titles of a model object,
+* a parameterized lens for querying a title object from titles, and
+* a lens for accessing the text of a title object.
 
 Furthermore, we could organize the lenses to reflect the structure of the JSON
 model:

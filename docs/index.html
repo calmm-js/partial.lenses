@@ -244,15 +244,20 @@ the lens <a href="#L-prop"><code>L.prop(&quot;titles&quot;)</code></a>:</p>
 </code></pre>
 <p>To focus on the first element of the <code>titles</code> array, we compose with
 the <a href="#L-index"><code>L.index(0)</code></a> lens:</p>
-<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&quot;titles&quot;), L.index(0)),
+<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&quot;titles&quot;),
+                L.index(0)),
       sampleTitles)
 </code></pre>
 <p>Then, to focus on the <code>text</code>, we compose with <a href="#L-prop"><code>L.prop(&quot;text&quot;)</code></a>:</p>
-<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&quot;titles&quot;), L.index(0), L.prop(&quot;text&quot;)),
+<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&quot;titles&quot;),
+                L.index(0),
+                L.prop(&quot;text&quot;)),
       sampleTitles)
 </code></pre>
 <p>We can then use the same composed lens to also <a href="#L-set">set</a> the <code>text</code>:</p>
-<pre><code class="hljs lang-js">L.set(L.compose(L.prop(&quot;titles&quot;), L.index(0), L.prop(&quot;text&quot;)),
+<pre><code class="hljs lang-js">L.set(L.compose(L.prop(&quot;titles&quot;),
+                L.index(0),
+                L.prop(&quot;text&quot;)),
       &quot;New title&quot;,
       sampleTitles)
 </code></pre>
@@ -377,9 +382,9 @@ example:</p>
 <p>Following the structure or schema of the JSON, we could break this into three
 separate lenses:</p>
 <ul>
-<li>a lens for accessing the contents of a data object,</li>
-<li>a parameterized lens for querying a content object from contents, and</li>
-<li>a lens for accessing the text of a content object.</li>
+<li>a lens for accessing the titles of a model object,</li>
+<li>a parameterized lens for querying a title object from titles, and</li>
+<li>a lens for accessing the text of a title object.</li>
 </ul>
 <p>Furthermore, we could organize the lenses to reflect the structure of the JSON
 model:</p>
