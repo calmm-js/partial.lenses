@@ -140,8 +140,8 @@ language.  Given a language, we want to be able to
 
 * get the corresponding text,
 * update the corresponding text,
-* insert a text and the immediately surrounding object in a new language, and
-* remove the text and the immediately surrounding object.
+* insert a new text and the immediately surrounding object in a new language, and
+* remove an existing text and the immediately surrounding object.
 
 Furthermore, when updating, inserting, and removing texts, we'd like the
 operations to treat the JSON as immutable and create new JSON objects with the
