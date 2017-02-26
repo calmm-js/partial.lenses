@@ -170,7 +170,7 @@ like [`L.prop(propName)`](#L-prop), to access a name property of an object,
 and [`L.index(elemIndex)`](#L-index), to access a element at a given index in an
 array, and compose the path using [`L.compose(...lenses)`](#L-compose).
 
-So, to just [get](#L-get) at the `titles` array of the `sampleTexts` we can use
+So, to just [get](#L-get) at the `titles` array of the `sampleTitles` we can use
 the lens [`L.prop("titles")`](#L-prop):
 
 ```js
@@ -422,7 +422,7 @@ L.get(Model.textIn("sv"), sampleTitles)
 
 This style of organizing lenses is overkill for our toy example.  In a more
 realistic case the `sampleTitles` object would contain many more properties.
-Also, rather than composing a lens, like `Texts.textIn` above, to access a leaf
+Also, rather than composing a lens, like `Model.textIn` above, to access a leaf
 property from the root of our object, we might actually compose lenses
 incrementally as we inspect the model structure.
 

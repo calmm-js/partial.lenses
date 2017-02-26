@@ -237,7 +237,7 @@ To specify such a path we use primitive lenses
 like <a href="#L-prop"><code>L.prop(propName)</code></a>, to access a name property of an object,
 and <a href="#L-index"><code>L.index(elemIndex)</code></a>, to access a element at a given index in an
 array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
-<p>So, to just <a href="#L-get">get</a> at the <code>titles</code> array of the <code>sampleTexts</code> we can use
+<p>So, to just <a href="#L-get">get</a> at the <code>titles</code> array of the <code>sampleTitles</code> we can use
 the lens <a href="#L-prop"><code>L.prop(&quot;titles&quot;)</code></a>:</p>
 <pre><code class="hljs lang-js">L.get(L.prop(&quot;titles&quot;),
       sampleTitles)
@@ -406,7 +406,7 @@ var Model = {
 </code></pre>
 <p>This style of organizing lenses is overkill for our toy example.  In a more
 realistic case the <code>sampleTitles</code> object would contain many more properties.
-Also, rather than composing a lens, like <code>Texts.textIn</code> above, to access a leaf
+Also, rather than composing a lens, like <code>Model.textIn</code> above, to access a leaf
 property from the root of our object, we might actually compose lenses
 incrementally as we inspect the model structure.</p>
 <h3 id="manipulating-multiple-items">Manipulating multiple items</h3>
