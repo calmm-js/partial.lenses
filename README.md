@@ -169,9 +169,9 @@ and play just a bit with lenses.
 
 As mentioned earlier, with lenses we can specify a path to focus on an element.
 To specify such a path we use primitive lenses
-like [`L.prop(propName)`](#L-prop), to access a name property of an object,
-and [`L.index(elemIndex)`](#L-index), to access a element at a given index in an
-array, and compose the path using [`L.compose(...lenses)`](#L-compose).
+like [`L.prop(propName)`](#L-prop), to access a named property of an object,
+and [`L.index(elemIndex)`](#L-index), to access an element at a given index in
+an array, and compose the path using [`L.compose(...lenses)`](#L-compose).
 
 So, to just [get](#L-get) at the `titles` array of the `sampleTitles` we can use
 the lens [`L.prop("titles")`](#L-prop):

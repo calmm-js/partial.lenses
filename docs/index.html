@@ -237,9 +237,9 @@ import * as R from &quot;ramda&quot;
 <p>and play just a bit with lenses.</p>
 <p>As mentioned earlier, with lenses we can specify a path to focus on an element.
 To specify such a path we use primitive lenses
-like <a href="#L-prop"><code>L.prop(propName)</code></a>, to access a name property of an object,
-and <a href="#L-index"><code>L.index(elemIndex)</code></a>, to access a element at a given index in an
-array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
+like <a href="#L-prop"><code>L.prop(propName)</code></a>, to access a named property of an object,
+and <a href="#L-index"><code>L.index(elemIndex)</code></a>, to access an element at a given index in
+an array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
 <p>So, to just <a href="#L-get">get</a> at the <code>titles</code> array of the <code>sampleTitles</code> we can use
 the lens <a href="#L-prop"><code>L.prop(&quot;titles&quot;)</code></a>:</p>
 <pre><code class="hljs lang-js">L.get(L.prop(&quot;titles&quot;),
