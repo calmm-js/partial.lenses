@@ -129,9 +129,9 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 Let's work with the following sample JSON object:
 
 ```js
-const sampleTexts = {
-  contents: [{ language: "en", text: "Title" },
-             { language: "sv", text: "Rubrik" }]
+const sampleTitles = {
+  titles: [{ language: "en", text: "Title" },
+           { language: "sv", text: "Rubrik" }]
 }
 ```
 
@@ -142,10 +142,11 @@ import * as L from "partial.lenses"
 import * as R from "ramda"
 ```
 
-and compose a parameterized lens for accessing texts:
+and [compose](#L-compose) a parameterized lens for accessing the `text` of
+titles:
 
 ```js
-const textIn = language => L.compose(L.prop("contents"),
+const textIn = language => L.compose(L.prop("titles"),
                                      L.define([]),
                                      L.normalize(R.sortBy(L.get("language"))),
                                      L.find(R.whereEq({language})),
@@ -164,22 +165,22 @@ mention below.
 
 Thanks to the parameterized search
 part, [`L.find(R.whereEq({language}))`](#L-find), of the lens composition, we
-can use it to query texts:
+can use it to query titles:
 
 ```js
-L.get(textIn("sv"), sampleTexts)
+L.get(textIn("sv"), sampleTitles)
 // 'Rubrik'
 ```
 ```js
-L.get(textIn("en"), sampleTexts)
+L.get(textIn("en"), sampleTitles)
 // 'Title'
 ```
 
 Partial lenses can deal with missing data.  If we use the partial lens to query
-a text that does not exist, we get the default:
+a title that does not exist, we get the default:
 
 ```js
-L.get(textIn("fi"), sampleTexts)
+L.get(textIn("fi"), sampleTitles)
 // ''
 ```
 
@@ -197,53 +198,53 @@ With partial lenses, `undefined` is the equivalent of empty or non-existent.
 
 ### Updating data
 
-As with ordinary lenses, we can use the same lens to update texts:
+As with ordinary lenses, we can use the same lens to update titles:
 
 ```js
-L.set(textIn("en"), "The title", sampleTexts)
-// { contents: [ { language: 'en', text: 'The title' },
-//               { language: 'sv', text: 'Rubrik' } ] }
+L.set(textIn("en"), "The title", sampleTitles)
+// { titles: [ { language: 'en', text: 'The title' },
+//             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
 ### Inserting data
 
-The same partial lens also allows us to insert new texts:
+The same partial lens also allows us to insert new titles:
 
 ```js
-L.set(textIn("fi"), "Otsikko", sampleTexts)
-// { contents: [ { language: 'en', text: 'Title' },
-//               { language: 'fi', text: 'Otsikko' },
-//               { language: 'sv', text: 'Rubrik' } ] }
+L.set(textIn("fi"), "Otsikko", sampleTitles)
+// { titles: [ { language: 'en', text: 'Title' },
+//             { language: 'fi', text: 'Otsikko' },
+//             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-Note the position into which the new text was inserted.  The array of texts is
+Note the position into which the new title was inserted.  The array of titles is
 kept sorted thanks to
 the [`L.normalize(R.sortBy(L.get("language")))`](#L-normalize) part of our lens.
 
 ### Removing data
 
-Finally, we can use the same partial lens to remove texts:
+Finally, we can use the same partial lens to remove titles:
 
 ```js
-L.set(textIn("sv"), undefined, sampleTexts)
-// { contents: [ { language: 'en', text: 'Title' } ] }
+L.set(textIn("sv"), undefined, sampleTitles)
+// { titles: [ { language: 'en', text: 'Title' } ] }
 ```
 
-Note that a single text is actually a part of an object.  The key to having the
-whole object vanish, rather than just the `text` property, is
+Note that a single title `text` is actually a part of an object.  The key to
+having the whole object vanish, rather than just the `text` property, is
 the [`L.removable("text")`](#L-removable) part of our lens composition.  It
 makes it so that when the `text` property is set to `undefined`, the result will
 be `undefined` rather than merely an object without the `text` property.
 
-If we remove all of the texts, we get the required value:
+If we remove all of the titles, we get the required value:
 
 ```js
 R.pipe(L.set(textIn("sv"), undefined),
-       L.set(textIn("en"), undefined))(sampleTexts)
-// { contents: [] }
+       L.set(textIn("en"), undefined))(sampleTitles)
+// { titles: [] }
 ```
 
-The `contents` property is not removed thanks to the [`L.define([])`](#L-define)
+The `titles` property is not removed thanks to the [`L.define([])`](#L-define)
 part of our lens composition.  It makes it so that when reading or writing
 through the lens, `undefined` becomes the given value.
 
@@ -274,7 +275,7 @@ the JSON data being manipulated.  Recall the lens from the start of the
 example:
 
 ```jsx
-L.compose(L.prop("contents"),
+L.compose(L.prop("titles"),
           L.define([]),
           L.normalize(R.sortBy(L.get("language"))),
           L.find(R.whereEq({language})),
@@ -293,34 +294,34 @@ Furthermore, we could organize the lenses to reflect the structure of the JSON
 model:
 
 ```js
-const Content = {
+const Title = {
   text: [L.removable("text"), "text"]
 }
 
-const Contents = {
-  contentIn: language => [L.find(R.whereEq({language})),
-                          L.valueOr({language, text: ""})]
+const Titles = {
+  titleIn: language => [L.find(R.whereEq({language})),
+                        L.valueOr({language, text: ""})]
 }
 
-const Texts = {
-  contents: ["contents",
-             L.define([]),
-             L.normalize(R.sortBy(L.get("language")))],
-  textIn: language => [Texts.contents,
-                       Contents.contentIn(language),
-                       Content.text]
+const Model = {
+  titles: ["titles",
+           L.define([]),
+           L.normalize(R.sortBy(L.get("language")))],
+  textIn: language => [Model.titles,
+                       Titles.titleIn(language),
+                       Title.text]
 }
 ```
 
 We can now say:
 
 ```js
-L.get(Texts.textIn("sv"), sampleTexts)
+L.get(Model.textIn("sv"), sampleTitles)
 // 'Rubrik'
 ```
 
 This style of organizing lenses is overkill for our toy example.  In a more
-realistic case the `sampleTexts` object would contain many more properties.
+realistic case the `sampleTitles` object would contain many more properties.
 Also, rather than composing a lens, like `Texts.textIn` above, to access a leaf
 property from the root of our object, we might actually compose lenses
 incrementally as we inspect the model structure.
@@ -333,21 +334,21 @@ multiple items.  Continuing on the tutorial example, let's define a traversal
 that targets all the texts:
 
 ```js
-const texts = [Texts.contents,
+const texts = [Model.titles,
                L.elems,
-               Content.text]
+               Title.text]
 ```
 
 What makes the above a traversal is the [`L.elems`](#L-elems) part.  Once a
 traversal is composed with a lens, the whole results is a traversal.  The other
 parts of the above composition should already be familiar from previous
-examples.  Note how we were able to use the previously defined `Texts.contents`
-and `Content.text` lenses.
+examples.  Note how we were able to use the previously defined `Model.titles`
+and `Title.text` lenses.
 
 Now, we can use the above traversal to [`collect`](#L-collect) all the texts:
 
 ```js
-L.collect(texts, sampleTexts)
+L.collect(texts, sampleTitles)
 // [ 'Title', 'Rubrik' ]
 ```
 
@@ -356,7 +357,7 @@ can compute the length of the longest text:
 
 ```js
 const Max = {empty: () => 0, concat: Math.max}
-L.concatAs(R.length, Max, texts, sampleTexts)
+L.concatAs(R.length, Max, texts, sampleTitles)
 // 6
 ```
 
@@ -364,7 +365,7 @@ Of course, we can also modify texts.  For example, we could uppercase all the
 titles:
 
 ```js
-L.modify(texts, R.toUpper, sampleTexts)
+L.modify(texts, R.toUpper, sampleTitles)
 // { contents: [ { language: 'en', text: 'TITLE' },
 //               { language: 'sv', text: 'RUBRIK' } ] }
 ```
@@ -374,7 +375,7 @@ the texts that are longer than 5 characters:
 
 ```js
 L.remove([texts, L.when(t => t.length > 5)],
-         sampleTexts)
+         sampleTitles)
 // { contents: [ { language: 'en', text: 'Title' } ] }
 ```
 

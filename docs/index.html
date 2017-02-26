@@ -205,17 +205,18 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 </ul>
 <h2 id="tutorial">Tutorial</h2>
 <p>Let&#39;s work with the following sample JSON object:</p>
-<pre><code class="hljs lang-js">var sampleTexts = {
-  contents: [{ language: &quot;en&quot;, text: &quot;Title&quot; },
-             { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
+<pre><code class="hljs lang-js">var sampleTitles = {
+  titles: [{ language: &quot;en&quot;, text: &quot;Title&quot; },
+           { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
 }
 </code></pre>
 <p>First we import libraries</p>
 <pre><code class="hljs lang-jsx">import * as L from &quot;partial.lenses&quot;
 import * as R from &quot;ramda&quot;
 </code></pre>
-<p>and compose a parameterized lens for accessing texts:</p>
-<pre><code class="hljs lang-js">var textIn = language =&gt; L.compose(L.prop(&quot;contents&quot;),
+<p>and <a href="#L-compose">compose</a> a parameterized lens for accessing the <code>text</code> of
+titles:</p>
+<pre><code class="hljs lang-js">var textIn = language =&gt; L.compose(L.prop(&quot;titles&quot;),
                                      L.define([]),
                                      L.normalize(R.sortBy(L.get(&quot;language&quot;))),
                                      L.find(R.whereEq({language})),
@@ -231,14 +232,14 @@ mention below.</p>
 <h3 id="querying-data">Querying data</h3>
 <p>Thanks to the parameterized search
 part, <a href="#L-find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we
-can use it to query texts:</p>
-<pre><code class="hljs lang-js">L.get(textIn(&quot;sv&quot;), sampleTexts)
+can use it to query titles:</p>
+<pre><code class="hljs lang-js">L.get(textIn(&quot;sv&quot;), sampleTitles)
 </code></pre>
-<pre><code class="hljs lang-js">L.get(textIn(&quot;en&quot;), sampleTexts)
+<pre><code class="hljs lang-js">L.get(textIn(&quot;en&quot;), sampleTitles)
 </code></pre>
 <p>Partial lenses can deal with missing data.  If we use the partial lens to query
-a text that does not exist, we get the default:</p>
-<pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), sampleTexts)
+a title that does not exist, we get the default:</p>
+<pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), sampleTitles)
 </code></pre>
 <p>We get this value, rather than <code>undefined</code>, thanks to
 the <a href="#L-valueOr"><code>L.valueOr({language, text: &quot;&quot;})</code></a> part of our lens
@@ -248,30 +249,30 @@ composition, which ensures that we get the specified value rather than <code>nul
 </code></pre>
 <p>With partial lenses, <code>undefined</code> is the equivalent of empty or non-existent.</p>
 <h3 id="updating-data">Updating data</h3>
-<p>As with ordinary lenses, we can use the same lens to update texts:</p>
-<pre><code class="hljs lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, sampleTexts)
+<p>As with ordinary lenses, we can use the same lens to update titles:</p>
+<pre><code class="hljs lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, sampleTitles)
 </code></pre>
 <h3 id="inserting-data">Inserting data</h3>
-<p>The same partial lens also allows us to insert new texts:</p>
-<pre><code class="hljs lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, sampleTexts)
+<p>The same partial lens also allows us to insert new titles:</p>
+<pre><code class="hljs lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, sampleTitles)
 </code></pre>
-<p>Note the position into which the new text was inserted.  The array of texts is
+<p>Note the position into which the new title was inserted.  The array of titles is
 kept sorted thanks to
 the <a href="#L-normalize"><code>L.normalize(R.sortBy(L.get(&quot;language&quot;)))</code></a> part of our lens.</p>
 <h3 id="removing-data">Removing data</h3>
-<p>Finally, we can use the same partial lens to remove texts:</p>
-<pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTexts)
+<p>Finally, we can use the same partial lens to remove titles:</p>
+<pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTitles)
 </code></pre>
-<p>Note that a single text is actually a part of an object.  The key to having the
-whole object vanish, rather than just the <code>text</code> property, is
+<p>Note that a single title <code>text</code> is actually a part of an object.  The key to
+having the whole object vanish, rather than just the <code>text</code> property, is
 the <a href="#L-removable"><code>L.removable(&quot;text&quot;)</code></a> part of our lens composition.  It
 makes it so that when the <code>text</code> property is set to <code>undefined</code>, the result will
 be <code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
-<p>If we remove all of the texts, we get the required value:</p>
+<p>If we remove all of the titles, we get the required value:</p>
 <pre><code class="hljs lang-js">R.pipe(L.set(textIn(&quot;sv&quot;), undefined),
-       L.set(textIn(&quot;en&quot;), undefined))(sampleTexts)
+       L.set(textIn(&quot;en&quot;), undefined))(sampleTitles)
 </code></pre>
-<p>The <code>contents</code> property is not removed thanks to the <a href="#L-define"><code>L.define([])</code></a>
+<p>The <code>titles</code> property is not removed thanks to the <a href="#L-define"><code>L.define([])</code></a>
 part of our lens composition.  It makes it so that when reading or writing
 through the lens, <code>undefined</code> becomes the given value.</p>
 <h3 id="exercises">Exercises</h3>
@@ -296,7 +297,7 @@ as <a href="#L-remove"><code>L.remove(l, s)</code></a>.</li>
 <p>It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Recall the lens from the start of the
 example:</p>
-<pre><code class="hljs lang-jsx">L.compose(L.prop(&quot;contents&quot;),
+<pre><code class="hljs lang-jsx">L.compose(L.prop(&quot;titles&quot;),
           L.define([]),
           L.normalize(R.sortBy(L.get(&quot;language&quot;))),
           L.find(R.whereEq({language})),
@@ -313,29 +314,29 @@ separate lenses:</p>
 </ul>
 <p>Furthermore, we could organize the lenses to reflect the structure of the JSON
 model:</p>
-<pre><code class="hljs lang-js">var Content = {
+<pre><code class="hljs lang-js">var Title = {
   text: [L.removable(&quot;text&quot;), &quot;text&quot;]
 }
 
-var Contents = {
-  contentIn: language =&gt; [L.find(R.whereEq({language})),
-                          L.valueOr({language, text: &quot;&quot;})]
+var Titles = {
+  titleIn: language =&gt; [L.find(R.whereEq({language})),
+                        L.valueOr({language, text: &quot;&quot;})]
 }
 
-var Texts = {
-  contents: [&quot;contents&quot;,
-             L.define([]),
-             L.normalize(R.sortBy(L.get(&quot;language&quot;)))],
-  textIn: language =&gt; [Texts.contents,
-                       Contents.contentIn(language),
-                       Content.text]
+var Model = {
+  titles: [&quot;titles&quot;,
+           L.define([]),
+           L.normalize(R.sortBy(L.get(&quot;language&quot;)))],
+  textIn: language =&gt; [Model.titles,
+                       Titles.titleIn(language),
+                       Title.text]
 }
 </code></pre>
 <p>We can now say:</p>
-<pre><code class="hljs lang-js">L.get(Texts.textIn(&quot;sv&quot;), sampleTexts)
+<pre><code class="hljs lang-js">L.get(Model.textIn(&quot;sv&quot;), sampleTitles)
 </code></pre>
 <p>This style of organizing lenses is overkill for our toy example.  In a more
-realistic case the <code>sampleTexts</code> object would contain many more properties.
+realistic case the <code>sampleTitles</code> object would contain many more properties.
 Also, rather than composing a lens, like <code>Texts.textIn</code> above, to access a leaf
 property from the root of our object, we might actually compose lenses
 incrementally as we inspect the model structure.</p>
@@ -344,31 +345,31 @@ incrementally as we inspect the model structure.</p>
 supports <a href="#traversals">traversals</a> that compose with lenses and can target
 multiple items.  Continuing on the tutorial example, let&#39;s define a traversal
 that targets all the texts:</p>
-<pre><code class="hljs lang-js">var texts = [Texts.contents,
+<pre><code class="hljs lang-js">var texts = [Model.titles,
                L.elems,
-               Content.text]
+               Title.text]
 </code></pre>
 <p>What makes the above a traversal is the <a href="#L-elems"><code>L.elems</code></a> part.  Once a
 traversal is composed with a lens, the whole results is a traversal.  The other
 parts of the above composition should already be familiar from previous
-examples.  Note how we were able to use the previously defined <code>Texts.contents</code>
-and <code>Content.text</code> lenses.</p>
+examples.  Note how we were able to use the previously defined <code>Model.titles</code>
+and <code>Title.text</code> lenses.</p>
 <p>Now, we can use the above traversal to <a href="#L-collect"><code>collect</code></a> all the texts:</p>
-<pre><code class="hljs lang-js">L.collect(texts, sampleTexts)
+<pre><code class="hljs lang-js">L.collect(texts, sampleTitles)
 </code></pre>
 <p>More generally, we can <a href="#L-concatAs">map and fold</a> over texts.  For example, we
 can compute the length of the longest text:</p>
 <pre><code class="hljs lang-js">var Max = {empty: () =&gt; 0, concat: Math.max}
-L.concatAs(R.length, Max, texts, sampleTexts)
+L.concatAs(R.length, Max, texts, sampleTitles)
 </code></pre>
 <p>Of course, we can also modify texts.  For example, we could uppercase all the
 titles:</p>
-<pre><code class="hljs lang-js">L.modify(texts, R.toUpper, sampleTexts)
+<pre><code class="hljs lang-js">L.modify(texts, R.toUpper, sampleTitles)
 </code></pre>
 <p>We can also manipulate texts selectively.  For example, we could remove all
 the texts that are longer than 5 characters:</p>
 <pre><code class="hljs lang-js">L.remove([texts, L.when(t =&gt; t.length &gt; 5)],
-         sampleTexts)
+         sampleTitles)
 </code></pre>
 <h2 id="reference">Reference</h2>
 <p>The combinators provided by this library are available as named imports.
