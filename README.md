@@ -2,10 +2,10 @@
 
 # Partial Lenses
 
-Lenses are basically a [bidirectional](#L-get) [composable](#L-compose)
-abstraction for [updating](#L-modify) [selected](#L-choose) elements of
-immutable data structures that admits [efficient](#benchmarks) implementation.
-This library provides a collection
+Lenses are basically an abstraction for simultaneously specifying operations
+to [update](#L-modify) and [query](#L-get) immutable data structures.  Lenses
+are highly [composable](#L-compose) and can be [efficient](#benchmarks).  This
+library provides a collection
 of [*partial*](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and

@@ -19,10 +19,10 @@
     <hr>
     <p>[ <a href="#contents">≡</a> | <a href="#tutorial">Tutorial</a> | <a href="#reference">Reference</a> | <a href="#examples">Examples</a> | <a href="#background">Background</a> | <a href="https://github.com/calmm-js/partial.lenses">GitHub</a> | <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a> ]</p>
 <h1 id="partial-lenses">Partial Lenses</h1>
-<p>Lenses are basically a <a href="#L-get">bidirectional</a> <a href="#L-compose">composable</a>
-abstraction for <a href="#L-modify">updating</a> <a href="#L-choose">selected</a> elements of
-immutable data structures that admits <a href="#benchmarks">efficient</a> implementation.
-This library provides a collection
+<p>Lenses are basically an abstraction for simultaneously specifying operations
+to <a href="#L-modify">update</a> and <a href="#L-get">query</a> immutable data structures.  Lenses
+are highly <a href="#L-compose">composable</a> and can be <a href="#benchmarks">efficient</a>.  This
+library provides a collection
 of <a href="#on-partiality"><em>partial</em></a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
 manipulating <a href="http://json.org/">JSON</a> and
