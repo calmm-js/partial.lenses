@@ -135,6 +135,18 @@ const sampleTitles = {
 }
 ```
 
+What we'd like to have is a way to access the `text` of titles in a given
+language.  Given a language, we want to be able to
+
+* get the corresponding text,
+* update the corresponding text,
+* insert a text and the immediately surrounding object in a new language, and
+* remove the text and the immediately surrounding object.
+
+Furthermore, when updating, inserting, and removing texts, we'd like the
+operations to treat the JSON as immutable and create new JSON objects with the
+changes rather than mutate existing JSON objects.
+
 First we import libraries
 
 ```jsx

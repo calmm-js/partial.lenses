@@ -210,6 +210,17 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
            { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
 }
 </code></pre>
+<p>What we&#39;d like to have is a way to access the <code>text</code> of titles in a given
+language.  Given a language, we want to be able to</p>
+<ul>
+<li>get the corresponding text,</li>
+<li>update the corresponding text,</li>
+<li>insert a text and the immediately surrounding object in a new language, and</li>
+<li>remove the text and the immediately surrounding object.</li>
+</ul>
+<p>Furthermore, when updating, inserting, and removing texts, we&#39;d like the
+operations to treat the JSON as immutable and create new JSON objects with the
+changes rather than mutate existing JSON objects.</p>
 <p>First we import libraries</p>
 <pre><code class="hljs lang-jsx">import * as L from &quot;partial.lenses&quot;
 import * as R from &quot;ramda&quot;
