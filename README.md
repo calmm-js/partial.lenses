@@ -5,8 +5,8 @@
 Lenses are basically a [bidirectional](#L-get) [composable](#L-compose)
 abstraction for [updating](#L-modify) [selected](#L-choose) elements of
 immutable data structures that admits [efficient](#benchmarks) implementation.
-This library provides a collection of
-*partial* [isomorphisms](#isomorphisms), [lenses](#lenses),
+This library provides a collection
+of [*partial*](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and
 users [can](#L-toFunction) [write](#L-iso) [new](#L-lens) [optics](#L-branch)
@@ -29,6 +29,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 * [Tutorial](#tutorial)
 * [Reference](#reference)
   * [Optics](#optics)
+    * [On partiality](#on-partiality)
     * [Operations on optics](#operations-on-optics)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
@@ -147,9 +148,11 @@ Furthermore, when updating, inserting, and removing texts, we'd like the
 operations to treat the JSON as immutable and create new JSON objects with the
 changes rather than mutate existing JSON objects.
 
-Operations like these are what lenses are good at.  Lenses allow you to focus on
-an element in a data structure by specifying a path from the root of the data
-structure to the desired element.  Given a lens, one can then perform
+Operations like these are what lenses are good at.  Lenses can be seen as a
+simple embedded [DSL](https://en.wikipedia.org/wiki/Domain-specific_language)
+for specifying data manipulation and querying functions.  Lenses allow you to
+focus on an element in a data structure by specifying a path from the root of
+the data structure to the desired element.  Given a lens, one can then perform
 operations, like [`get`](#L-get) and [`set`](#L-set), on the element that the
 lens focuses on.
 
@@ -486,8 +489,8 @@ L.remove([texts, L.when(t => t.length > 5)],
 
 ## Reference
 
-The combinators provided by this library are available as named imports.
-Typically one just imports the library as:
+The [combinators](https://wiki.haskell.org/Combinator) provided by this library
+are available as named imports.  Typically one just imports the library as:
 
 ```jsx
 import * as L from "partial.lenses"
@@ -501,12 +504,18 @@ known as *optics*.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an inverse.
 
+In addition to basic optics, this library also supports more
+general [transforms](#transforms).  Transforms allow operations, such as
+modifying a single focus multiple times or even in a loop, that are not possible
+with basic optics.  However, transforms are considerably harder to reason about.
+
 Some optics libraries provide many more abstractions, such as "optionals",
 "prisms" and "folds", to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
 required in a statically typed setting where data structures have precise
 constraints on their shapes, so to speak, and operations on data structures must
-respect those constraints at *all* times.
+respect those constraints at *all* times.  In partial lenses, however, the idea
+is to manage without explicitly providing such abstractions.
 
 In a dynamically typed language like JavaScript, the shapes of run-time objects
 are naturally *malleable*.  Nothing immediately breaks if a new object is
@@ -519,6 +528,33 @@ also accepts the possibility that it may be given any valid JSON object or
 partial lens, the input is treated as being `undefined`.  This allows specific
 partial optics, such as the simple [`L.prop`](#L-prop) lens, to be used in a
 wider range of situations than corresponding total optics.
+
+#### On partiality
+
+As mentioned many times, in this library all of the optics are
+essentially [partial functions](https://en.wikipedia.org/wiki/Partial_function).
+What does this mean?
+
+By definition, a *total function*, or just a *function*, is defined for all
+possible inputs.  A *partial function*, on the other hand, may not be defined
+for all inputs.
+
+As an example, consider an operation to return the first element of an array.
+Such an operation cannot be total unless the input is restricted to arrays that
+have at least one element.  One might think that the operation could be made
+total by returning a special value in case the input array is empty, but that is
+no longer the same operation&mdash;the special value is not the first element of
+the array.  Now, in partial lenses the idea is that in case the input does not
+match the expectation of the operation, then the input is treated as being
+`undefined`.  This makes the optics in the library partial.
+
+Making all optics partial has a number of consequences.  For one thing, it can
+potentially hide bugs: an incorrectly specified optic treats the input as
+`undefined` and may seem to work without raising an error.  However, partiality
+also has a number of benefits.  In particular, it allows optics to seamlessly
+support both insertion and removal.  It also allows to reduce the number of
+necessary abstractions.  And it tends to make compositions of optics more
+concise with fewer required parts.
 
 #### Operations on optics
 

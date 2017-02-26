@@ -22,8 +22,8 @@
 <p>Lenses are basically a <a href="#L-get">bidirectional</a> <a href="#L-compose">composable</a>
 abstraction for <a href="#L-modify">updating</a> <a href="#L-choose">selected</a> elements of
 immutable data structures that admits <a href="#benchmarks">efficient</a> implementation.
-This library provides a collection of
-<em>partial</em> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
+This library provides a collection
+of <a href="#on-partiality"><em>partial</em></a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
 manipulating <a href="http://json.org/">JSON</a> and
 users <a href="#L-toFunction">can</a> <a href="#L-iso">write</a> <a href="#L-lens">new</a> <a href="#L-branch">optics</a>
@@ -44,6 +44,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 <li><a href="#tutorial">Tutorial</a></li>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#optics">Optics</a><ul>
+<li><a href="#on-partiality">On partiality</a></li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a></li>
@@ -221,9 +222,11 @@ language.  Given a language, we want to be able to</p>
 <p>Furthermore, when updating, inserting, and removing texts, we&#39;d like the
 operations to treat the JSON as immutable and create new JSON objects with the
 changes rather than mutate existing JSON objects.</p>
-<p>Operations like these are what lenses are good at.  Lenses allow you to focus on
-an element in a data structure by specifying a path from the root of the data
-structure to the desired element.  Given a lens, one can then perform
+<p>Operations like these are what lenses are good at.  Lenses can be seen as a
+simple embedded <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>
+for specifying data manipulation and querying functions.  Lenses allow you to
+focus on an element in a data structure by specifying a path from the root of
+the data structure to the desired element.  Given a lens, one can then perform
 operations, like <a href="#L-get"><code>get</code></a> and <a href="#L-set"><code>set</code></a>, on the element that the
 lens focuses on.</p>
 <h3 id="getting-started">Getting started</h3>
@@ -446,8 +449,8 @@ the texts that are longer than 5 characters:</p>
          sampleTitles)
 </code></pre>
 <h2 id="reference">Reference</h2>
-<p>The combinators provided by this library are available as named imports.
-Typically one just imports the library as:</p>
+<p>The <a href="https://wiki.haskell.org/Combinator">combinators</a> provided by this library
+are available as named imports.  Typically one just imports the library as:</p>
 <pre><code class="hljs lang-jsx">import * as L from &quot;partial.lenses&quot;
 </code></pre>
 <h3 id="optics">Optics</h3>
@@ -456,12 +459,17 @@ and <a href="#isomorphisms">isomorphisms</a>, provided by this library are colle
 known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an inverse.</p>
+<p>In addition to basic optics, this library also supports more
+general <a href="#transforms">transforms</a>.  Transforms allow operations, such as
+modifying a single focus multiple times or even in a loop, that are not possible
+with basic optics.  However, transforms are considerably harder to reason about.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
 required in a statically typed setting where data structures have precise
 constraints on their shapes, so to speak, and operations on data structures must
-respect those constraints at <em>all</em> times.</p>
+respect those constraints at <em>all</em> times.  In partial lenses, however, the idea
+is to manage without explicitly providing such abstractions.</p>
 <p>In a dynamically typed language like JavaScript, the shapes of run-time objects
 are naturally <em>malleable</em>.  Nothing immediately breaks if a new object is
 created as a copy of another object by adding or removing a property, for
@@ -473,6 +481,28 @@ also accepts the possibility that it may be given any valid JSON object or
 partial lens, the input is treated as being <code>undefined</code>.  This allows specific
 partial optics, such as the simple <a href="#L-prop"><code>L.prop</code></a> lens, to be used in a
 wider range of situations than corresponding total optics.</p>
+<h4 id="on-partiality">On partiality</h4>
+<p>As mentioned many times, in this library all of the optics are
+essentially <a href="https://en.wikipedia.org/wiki/Partial_function">partial functions</a>.
+What does this mean?</p>
+<p>By definition, a <em>total function</em>, or just a <em>function</em>, is defined for all
+possible inputs.  A <em>partial function</em>, on the other hand, may not be defined
+for all inputs.</p>
+<p>As an example, consider an operation to return the first element of an array.
+Such an operation cannot be total unless the input is restricted to arrays that
+have at least one element.  One might think that the operation could be made
+total by returning a special value in case the input array is empty, but that is
+no longer the same operation&mdash;the special value is not the first element of
+the array.  Now, in partial lenses the idea is that in case the input does not
+match the expectation of the operation, then the input is treated as being
+<code>undefined</code>.  This makes the optics in the library partial.</p>
+<p>Making all optics partial has a number of consequences.  For one thing, it can
+potentially hide bugs: an incorrectly specified optic treats the input as
+<code>undefined</code> and may seem to work without raising an error.  However, partiality
+also has a number of benefits.  In particular, it allows optics to seamlessly
+support both insertion and removal.  It also allows to reduce the number of
+necessary abstractions.  And it tends to make compositions of optics more
+concise with fewer required parts.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5 id="-a-name-l-modify-a-contents-https-calmm-js-github-io-partial-lenses-l-modify-l-modify-optic-maybevalue-index-maybevalue-maybedata-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a name="L-modify"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-modify">▶</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
