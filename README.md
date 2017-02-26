@@ -147,15 +147,81 @@ Furthermore, when updating, inserting, and removing texts, we'd like the
 operations to treat the JSON as immutable and create new JSON objects with the
 changes rather than mutate existing JSON objects.
 
-First we import libraries
+Operations like these are what lenses are good at.  Lenses allow you to focus on
+an element in a data structure by specifying a path from the root of the data
+structure to the desired element.  Given a lens, one can then perform
+operations, like [`get`](#L-get) and [`set`](#L-set), on the element that the
+lens focuses on.
+
+### Getting started
+
+Let's first import the libraries
 
 ```jsx
 import * as L from "partial.lenses"
 import * as R from "ramda"
 ```
 
-and [compose](#L-compose) a parameterized lens for accessing the `text` of
-titles:
+and play just a bit with lenses.
+
+As mentioned earlier, with lenses we can specify a path to focus on an element.
+To specify such a path we use primitive lenses
+like [`L.prop(propName)`](#L-prop), to access a name property of an object,
+and [`L.index(elemIndex)`](#L-index), to access a element at a given index in an
+array, and compose the path using [`L.compose(...lenses)`](#L-compose).
+
+So, to just [get](#L-get) at the `titles` array of the `sampleTexts` we can use
+the lens [`L.prop("titles")`](#L-prop):
+
+```js
+L.get(L.prop("titles"),
+      sampleTitles)
+// [{ language: "en", text: "Title" },
+//  { language: "sv", text: "Rubrik" }]
+```
+
+To focus on the first element of the `titles` array, we compose with
+the [`L.index(0)`](#L-index) lens:
+
+```js
+L.get(L.compose(L.prop("titles"), L.index(0)),
+      sampleTitles)
+// { language: "en", text: "Title" }
+```
+
+Then, to focus on the `text`, we compose with [`L.prop("text")`](#L-prop):
+
+```js
+L.get(L.compose(L.prop("titles"), L.index(0), L.prop("text")),
+      sampleTitles)
+// "Title"
+```
+
+We can then use the same composed lens to also [set](#L-set) the `text`:
+
+```js
+L.set(L.compose(L.prop("titles"), L.index(0), L.prop("text")),
+      "New title",
+      sampleTitles)
+// { titles: [{ language: "en", text: "New title" },
+//            { language: "sv", text: "Rubrik" }] }
+```
+
+In practise, specifying ad hoc lenses like this is not very useful.  We'd like
+to access a text in a given language, so we want a lens parameterized by a given
+language.  To create a parameterized lens, we can write a function that returns
+a lens.  Such a lens should then [find](#L-find) the title in the desired
+language.
+
+Furthermore, while a simple path lens like above allows one to get and set an
+existing text, it doesn't know enough about the data structure to be able to
+properly insert new and remove existing texts.  So, we will also need to specify
+such details along with the path to focus on.
+
+### A partial lens to access title texts
+
+Let's then just [compose](#L-compose) a parameterized lens for accessing the
+`text` of titles:
 
 ```js
 const textIn = language => L.compose(L.prop("titles"),
@@ -169,9 +235,9 @@ const textIn = language => L.compose(L.prop("titles"),
 
 Take a moment to read through the above definition line by line.  Each part
 either specifies a step in the path to select the desired element or a way in
-which the data structure must be treated at that point.  The purpose of
-the [`L.prop(...)`](#L-prop) parts is probably obvious.  The other parts we will
-mention below.
+which the data structure must be treated at that point.
+The [`L.prop(...)`](#L-prop) parts are already familiar.  The other parts we
+will mention below.
 
 ### Querying data
 
