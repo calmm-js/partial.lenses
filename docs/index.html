@@ -289,8 +289,16 @@ can use it to query titles:</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;en&quot;), sampleTitles)
 </code></pre>
-<p>Partial lenses can deal with missing data.  If we use the partial lens to query
-a title that does not exist, we get the default:</p>
+<p>The <a href="#L-find"><code>L.find</code></a> lens is a given a predicate that it then uses to find an
+element from an array to focus on.  In this case the predicate is specified with
+the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
+that creates an equality predicate from a given template object.</p>
+<h4 id="missing-data-can-be-expected">Missing data can be expected</h4>
+<p>Partial lenses can generally deal with missing data.  In this case
+when <a href="#L-find"><code>L.find</code></a> doesn&#39;t find an element, it instead works like a lens
+to <a href="#L-append">append</a> a new element into an array.</p>
+<p>So, if we use the partial lens to query a title that does not exist, we get the
+default:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), sampleTitles)
 </code></pre>
 <p>We get this value, rather than <code>undefined</code>, thanks to
@@ -308,9 +316,18 @@ composition, which ensures that we get the specified value rather than <code>nul
 <p>The same partial lens also allows us to insert new titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, sampleTitles)
 </code></pre>
-<p>Note the position into which the new title was inserted.  The array of titles is
-kept sorted thanks to
-the <a href="#L-normalize"><code>L.normalize(R.sortBy(L.get(&quot;language&quot;)))</code></a> part of our lens.</p>
+<p>There are couple of things here that require attention.</p>
+<p>The reason that the newly inserted object not only has the <code>text</code> property, but
+also the <code>language</code> property is due to
+the <a href="#L-valueOr"><code>L.valueOr({language, text: &quot;&quot;})</code></a> part that we used to provide
+a default.</p>
+<p>Also note the position into which the new title was inserted.  The array of
+titles is kept sorted thanks to
+the <a href="#L-normalize"><code>L.normalize(R.sortBy(L.get(&quot;language&quot;)))</code></a> part of our lens.
+The <a href="#L-normalize"><code>L.normalize</code></a> lens transforms the data when either read or
+written with the given function.  In this case we used
+Ramda&#39;s <a href="http://ramdajs.com/docs/#sortBy"><code>R.sortBy</code></a> to specify that we want
+the titles to be kept sorted by language.</p>
 <h3 id="removing-data">Removing data</h3>
 <p>Finally, we can use the same partial lens to remove titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTitles)

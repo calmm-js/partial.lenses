@@ -254,8 +254,19 @@ L.get(textIn("en"), sampleTitles)
 // 'Title'
 ```
 
-Partial lenses can deal with missing data.  If we use the partial lens to query
-a title that does not exist, we get the default:
+The [`L.find`](#L-find) lens is a given a predicate that it then uses to find an
+element from an array to focus on.  In this case the predicate is specified with
+the help of Ramda's [`R.whereEq`](http://ramdajs.com/docs/#whereEq) function
+that creates an equality predicate from a given template object.
+
+#### Missing data can be expected
+
+Partial lenses can generally deal with missing data.  In this case
+when [`L.find`](#L-find) doesn't find an element, it instead works like a lens
+to [append](#L-append) a new element into an array.
+
+So, if we use the partial lens to query a title that does not exist, we get the
+default:
 
 ```js
 L.get(textIn("fi"), sampleTitles)
@@ -295,9 +306,20 @@ L.set(textIn("fi"), "Otsikko", sampleTitles)
 //             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-Note the position into which the new title was inserted.  The array of titles is
-kept sorted thanks to
+There are couple of things here that require attention.
+
+The reason that the newly inserted object not only has the `text` property, but
+also the `language` property is due to
+the [`L.valueOr({language, text: ""})`](#L-valueOr) part that we used to provide
+a default.
+
+Also note the position into which the new title was inserted.  The array of
+titles is kept sorted thanks to
 the [`L.normalize(R.sortBy(L.get("language")))`](#L-normalize) part of our lens.
+The [`L.normalize`](#L-normalize) lens transforms the data when either read or
+written with the given function.  In this case we used
+Ramda's [`R.sortBy`](http://ramdajs.com/docs/#sortBy) to specify that we want
+the titles to be kept sorted by language.
 
 ### Removing data
 
