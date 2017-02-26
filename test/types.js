@@ -130,6 +130,8 @@ export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.nonNegative], T_lens)
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 
+export const fromClassTo = T.fn([T.any, T.any], T_isomorphism)
+export const fromObject = T_lens
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)
 export const removable = T.fnVar(T.string, T_lens)
@@ -150,5 +152,6 @@ export const iso = T.fn([T.fn([T_maybeData], T_maybeData),
                          T.fn([T_maybeData], T_maybeData)],
                         T_isomorphism)
 
+export const fromClass = T.fn([T.any], T_isomorphism)
 export const identity = T_isomorphism
 export const inverse = T.fn([T_isomorphism], T_isomorphism)

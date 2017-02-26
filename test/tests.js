@@ -612,6 +612,32 @@ describe("removable", () => {
   testEq(`L.set([L.removable("x"), "x"], undefined, {x: 1, y: 2})`, undefined)
 })
 
+function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+describe("L.fromClass", () => {
+  testEq('L.get([L.fromClass(XYZ), "y"], new XYZ(1,2,3))', 2)
+  testEq('L.get([L.fromClass(Object), "y"], new XYZ(1,2,3))', 2)
+  testEq('L.get([L.fromClass(XYZ), "y"], {x: 1, y: 2, z: 3})', undefined)
+  testEq('L.set([L.fromClass(XYZ), "x"], -1, new XYZ(1,2,3))', new XYZ(-1,2,3))
+})
+
+describe("L.fromClassTo", () => {
+  testEq('L.set([L.fromClassTo(Object, XYZ), "y"], -2, {x:1,y:2,z:3})',
+         new XYZ(1,-2,3))
+  testEq('L.set([L.fromClassTo(XYZ, Object), "x"], -1, new XYZ(1,2,3))',
+         {x:-1,y:2,z:3})
+})
+
+describe("L.fromObject", () => {
+  testEq('L.remove([L.fromObject, "y"], new XYZ(1,2,3))', {x:1,z:3})
+  testEq('L.set([L.fromObject, "y"], -2, {x:1,y:2,z:3})', {x:1,y:-2,z:3})
+  testEq('L.set([L.fromObject, "x"], -1, new XYZ(1,2,3))', {x:-1,y:2,z:3})
+})
+
 describe("indexing", () => {
   testEq('L.modify(L.identity, (x, i) => [typeof x, typeof i], 0)',
          ["number", "undefined"])
