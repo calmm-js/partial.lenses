@@ -60,7 +60,12 @@ const Ident = {map: applyU, of: id, ap: applyU, chain: applyU}
 
 const Const = {map: sndU}
 
-const ConcatOf = (ap, empty) => ({map: sndU, ap, of: always(empty)})
+function ConcatOf(ap, empty, delay) {
+  const c = {map: sndU, ap, of: always(empty)}
+  if (delay)
+    c.delay = delay
+  return c
+}
 
 const Monoid = (concat, empty) => ({concat, empty: () => empty})
 
@@ -146,14 +151,24 @@ const Collect = ConcatOf(join)
 
 //
 
+const traversePartialIndexLazy = (map, ap, of, delay, xi2yA, xs, i) =>
+  i < xs.length
+  ? ap(map(cjoin, xi2yA(xs[i])),
+       delay(() => traversePartialIndexLazy(map, ap, of, delay, xi2yA, xs, i+1)))
+  : of(void 0)
+
 function traversePartialIndex(A, xi2yA, xs) {
-  const ap = A.ap, map = A.map
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  let xsA = (0,A.of)(void 0), i = xs.length
-  while (i--)
-    xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
-  return map(toArray, xsA)
+  const {map, ap, of, delay} = A
+  if (delay) {
+    return map(toArray, traversePartialIndexLazy(map, ap, of, delay, xi2yA, xs, 0))
+  } else {
+    let xsA = of(void 0), i = xs.length
+    while (i--)
+      xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
+    return map(toArray, xsA)
+  }
 }
 
 //
@@ -517,7 +532,7 @@ export function log() {
 // Operations on traversals
 
 export const concatAs = curryN(4, (xMi2y, m) => {
-  const C = ConcatOf(m.concat, (0,m.empty)())
+  const C = ConcatOf(m.concat, (0,m.empty)(), m.delay)
   return (t, s) => run(t, C, xMi2y, s)
 })
 
@@ -545,6 +560,11 @@ export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
+
+export const firstAs = curryN(4, xi2yM => {
+  const F = ConcatOf((l, r) => l !== void 0 ? l : r(), void 0, id)
+  return (t, s) => run(t, F, xi2yM, s)
+})
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
