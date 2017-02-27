@@ -561,7 +561,7 @@ export const collectAs = curry((xi2y, t, s) =>
 
 export const collect = collectAs(id)
 
-export const firstAs = curryN(4, xi2yM => {
+export const firstAs = curryN(3, xi2yM => {
   const F = ConcatOf((l, r) => l !== void 0 ? l : r(), void 0, id)
   return (t, s) => run(t, F, xi2yM, s)
 })
