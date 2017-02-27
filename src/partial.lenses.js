@@ -153,7 +153,7 @@ const Collect = ConcatOf(join)
 
 const traversePartialIndexLazy = (map, ap, of, delay, xi2yA, xs, i) =>
   i < xs.length
-  ? ap(map(cjoin, xi2yA(xs[i])),
+  ? ap(map(cjoin, xi2yA(xs[i], i)),
        delay(() => traversePartialIndexLazy(map, ap, of, delay, xi2yA, xs, i+1)))
   : of(void 0)
 
