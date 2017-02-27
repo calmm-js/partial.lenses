@@ -68,7 +68,7 @@
     "browserify": "^14.1.0",
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
-    "eslint": "^3.16.0",
+    "eslint": "^3.16.1",
     "immutable": "^3.8.1",
     "marked": "^0.3.6",
     "mocha": "^3.2.0",
