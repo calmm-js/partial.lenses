@@ -71,11 +71,6 @@ const Mum = ord =>
 
 const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 
-const constAs = toConst => curryN(4, (xMi2y, m) => {
-  const C = toConst(m)
-  return (t, s) => run(t, C, xMi2y, s)
-})
-
 //
 
 const expectedOptic = "Expecting an optic"
@@ -521,7 +516,10 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = constAs(m => ConcatOf(m.concat, (0,m.empty)()))
+export const concatAs = curryN(4, (xMi2y, m) => {
+  const C = ConcatOf(m.concat, (0,m.empty)())
+  return (t, s) => run(t, C, xMi2y, s)
+})
 
 export const concat = concatAs(id)
 
