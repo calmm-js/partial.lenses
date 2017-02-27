@@ -447,11 +447,11 @@ const texts = [Model.titles,
                Title.text]
 ```
 
-What makes the above a traversal is the [`L.elems`](#L-elems) part.  Once a
-traversal is composed with a lens, the whole results is a traversal.  The other
-parts of the above composition should already be familiar from previous
-examples.  Note how we were able to use the previously defined `Model.titles`
-and `Title.text` lenses.
+What makes the above a traversal is the [`L.elems`](#L-elems) part.  The result
+of composing a traversal with a lens is a traversal.  The other parts of the
+above composition should already be familiar from previous examples.  Note how
+we were able to use the previously defined `Model.titles` and `Title.text`
+lenses.
 
 Now, we can use the above traversal to [`collect`](#L-collect) all the texts:
 

@@ -426,11 +426,11 @@ that targets all the texts:</p>
                L.elems,
                Title.text]
 </code></pre>
-<p>What makes the above a traversal is the <a href="#L-elems"><code>L.elems</code></a> part.  Once a
-traversal is composed with a lens, the whole results is a traversal.  The other
-parts of the above composition should already be familiar from previous
-examples.  Note how we were able to use the previously defined <code>Model.titles</code>
-and <code>Title.text</code> lenses.</p>
+<p>What makes the above a traversal is the <a href="#L-elems"><code>L.elems</code></a> part.  The result
+of composing a traversal with a lens is a traversal.  The other parts of the
+above composition should already be familiar from previous examples.  Note how
+we were able to use the previously defined <code>Model.titles</code> and <code>Title.text</code>
+lenses.</p>
 <p>Now, we can use the above traversal to <a href="#L-collect"><code>collect</code></a> all the texts:</p>
 <pre><code class="hljs lang-js">L.collect(texts, sampleTitles)
 </code></pre>
