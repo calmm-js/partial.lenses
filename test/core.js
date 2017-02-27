@@ -59,6 +59,8 @@ export const concat = concatAs(R.identity)
 export const merge = concat
 export const mergeAs = concatAs
 
+export const firstAs = L.firstAs
+
 export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 

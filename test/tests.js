@@ -743,3 +743,7 @@ describe("seq", () => {
   testEq(`collectM(L.seq(1, 0, 2), ["b", "a", "c"])`,
          ["a", "b", "c"])
 })
+
+describe("firstAs", () => {
+  testEq(`L.firstAs(x => x > 3 ? x + 2 : undefined, L.elems, [3,1,4,1,5])`, 6)
+})
