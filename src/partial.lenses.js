@@ -580,14 +580,19 @@ export const collectAs = curry((xi2y, t, s) =>
 
 export const collect = collectAs(id)
 
-export const firstAs = curry((xi2yM, t, s) =>
-  run(t,
-      First,
-      (x, i) => {
-        const y = xi2yM(x, i)
-        return void 0 !== y ? always(y) : y
-      },
-      s))
+export const firstAs = curry((xi2yM, t, s) => {
+  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
+    firstAs.warned = 1
+    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
+  }
+  return run(t,
+             First,
+             (x, i) => {
+               const y = xi2yM(x, i)
+               return void 0 !== y ? always(y) : y
+             },
+             s)
+})
 
 export const first = firstAs(id)
 
