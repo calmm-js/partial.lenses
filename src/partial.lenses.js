@@ -581,6 +581,8 @@ export const collect = collectAs(id)
 
 export const firstAs = curry((xi2yM, t, s) => run(t, First, xi2yM, s))
 
+export const first = firstAs(id)
+
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
 

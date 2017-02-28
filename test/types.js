@@ -94,6 +94,7 @@ export const firstAs =
         T_traversal,
         T_maybeData],
        T.any)
+export const first = T.fn([T_traversal, T_maybeData], T.any)
 
 export const foldl =
   T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
