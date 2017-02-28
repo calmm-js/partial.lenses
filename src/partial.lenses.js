@@ -151,8 +151,13 @@ const Collect = ConcatOf(join)
 
 //
 
-const First =
-  ConcatOf((l, r) => void 0 !== l ? l() : void 0 !== r ? r() : r, void 0, id)
+function the(v) {
+  function result() {return result}
+  result.v = v
+  return result
+}
+
+const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
 
 //
 
@@ -585,13 +590,11 @@ export const firstAs = curry((xi2yM, t, s) => {
     firstAs.warned = 1
     console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
   }
-  return run(t,
-             First,
-             (x, i) => {
-               const y = xi2yM(x, i)
-               return void 0 !== y ? always(y) : y
-             },
-             s)
+  return (s = run(t,
+                  First,
+                  (x, i) => (x = xi2yM(x, i), void 0 !== x ? the(x) : x),
+                  s),
+          s && (s = s()) && s.v)
 })
 
 export const first = firstAs(id)
