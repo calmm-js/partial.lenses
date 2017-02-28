@@ -755,4 +755,5 @@ describe("firstAs", () => {
                     L.values,
                     {a:3, b:1, c:4, d:1, e:5})`,
          [6, "c"])
+  testEq(`L.firstAs(x => {}, L.values, {x:1})`, undefined)
 })
