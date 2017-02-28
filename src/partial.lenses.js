@@ -382,20 +382,34 @@ const branchOnMerge = (x, keys) => xs => {
   return r
 }
 
+function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
+  if (i < keys.length) {
+    const k = keys[i], v = x[k]
+    return ap(map(cpair,
+                  vals ? vals[i](A, xi2yA, x[k], k) : xi2yA(v, k)), delay(() =>
+              branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i+1)))
+  } else {
+    return z
+  }
+}
+
 const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  const of = A.of
+  const {map, ap, of, delay} = A
   let i = keys.length
   if (!i)
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
     x = object0
-  const ap = A.ap, map = A.map
   let xsA = of(0)
-  while (i--) {
-    const k = keys[i], v = x[k]
-    xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
+  if (delay) {
+    xsA = branchOnLazy(keys, vals, map, ap, xsA, delay, A, xi2yA, x, 0)
+  } else {
+    while (i--) {
+      const k = keys[i], v = x[k]
+      xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
+    }
   }
   return map(branchOnMerge(x, keys), xsA)
 }
