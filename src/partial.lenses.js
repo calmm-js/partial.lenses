@@ -151,7 +151,8 @@ const Collect = ConcatOf(join)
 
 //
 
-const First = ConcatOf((l, r) => l !== void 0 ? l : r(), void 0, id)
+const First =
+  ConcatOf((l, r) => void 0 !== l ? l() : void 0 !== r ? r() : r, void 0, id)
 
 //
 
@@ -579,7 +580,14 @@ export const collectAs = curry((xi2y, t, s) =>
 
 export const collect = collectAs(id)
 
-export const firstAs = curry((xi2yM, t, s) => run(t, First, xi2yM, s))
+export const firstAs = curry((xi2yM, t, s) =>
+  run(t,
+      First,
+      (x, i) => {
+        const y = xi2yM(x, i)
+        return void 0 !== y ? always(y) : y
+      },
+      s))
 
 export const first = firstAs(id)
 
