@@ -745,5 +745,14 @@ describe("seq", () => {
 })
 
 describe("firstAs", () => {
-  testEq(`L.firstAs(x => x > 3 ? x + 2 : undefined, L.elems, [3,1,4,1,5])`, 6)
+  testEq(`L.first(L.elems, [])`, undefined)
+  testEq(`L.first(L.values, {})`, undefined)
+  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                    L.elems,
+                    [3, 1, 4, 1, 5])`,
+         [6, 2])
+  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                    L.values,
+                    {a:3, b:1, c:4, d:1, e:5})`,
+         [6, "c"])
 })
