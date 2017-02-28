@@ -151,24 +151,24 @@ const Collect = ConcatOf(join)
 
 //
 
-const traversePartialIndexLazy = (map, ap, of, delay, xi2yA, xs, i) =>
-  i < xs.length
-  ? ap(map(cjoin, xi2yA(xs[i], i)),
-       delay(() => traversePartialIndexLazy(map, ap, of, delay, xi2yA, xs, i+1)))
-  : of(void 0)
+const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
+  i < n
+  ? ap(map(cjoin, xi2yA(xs[i], i)), delay(() =>
+       traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
+  : z
 
 function traversePartialIndex(A, xi2yA, xs) {
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
   const {map, ap, of, delay} = A
-  if (delay) {
-    return map(toArray, traversePartialIndexLazy(map, ap, of, delay, xi2yA, xs, 0))
-  } else {
-    let xsA = of(void 0), i = xs.length
+  let xsA = of(void 0),
+      i = xs.length
+  if (delay)
+    xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i)
+  else
     while (i--)
       xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
-    return map(toArray, xsA)
-  }
+  return map(toArray, xsA)
 }
 
 //
