@@ -1125,7 +1125,52 @@ above naïve implementation.
 
 ##### <a name="L-first"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-first) [`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")
 
+**WARNING: `L.first` and [`L.firstAs`](#L-firstAs) are experimental features.**
+
+`L.first` goes lazily over the elements focused on by the given traversal and
+returns the first non-`undefined` element.
+
+```js
+L.first([L.elems, "y"], [{x:1},{y:2},{z:3}])
+// 2
+```
+
+Note that `L.first` is equivalent to [`L.firstAs(R.identity)`](#L-firstAs).
+
 ##### <a name="L-firstAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-firstAs) [`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
+
+**WARNING: [`L.first`](#L-first) and `L.firstAs` are experimental features.**
+
+`L.firstAs` goes lazily over the elements focused on by the given traversal,
+applying the given function to each element, and returns the first
+non-`undefined` value returned by the function.
+
+```js
+L.firstAs(x => x > 3 ? -x : undefined, L.elems, [3,1,4,1,5])
+// -4
+```
+
+`L.firstAs` operates lazily.  The user specified function is only applied to
+elements until the first non-`undefined` value is returned and after that
+`L.firstAs` returns without examining more elements.
+
+Note that `L.firstAs` can be used to implement many other operations over
+traversals such as finding an element matching a predicate and checking whether
+all/any elements match a predicate.  For example, here is how you could
+implement a for all predicate over traversals:
+
+```js
+const all = R.curry((p, t, s) => !L.firstAs(x => p(x) ? undefined : true, t, s))
+```
+
+Now:
+
+```js
+all(x => x < 9,
+    flatten,
+    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// true
+```
 
 ##### <a name="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
 
