@@ -151,6 +151,10 @@ const Collect = ConcatOf(join)
 
 //
 
+const First = ConcatOf((l, r) => l !== void 0 ? l : r(), void 0, id)
+
+//
+
 const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
   i < n
   ? ap(map(cjoin, xi2yA(xs[i], i)), delay(() =>
@@ -561,10 +565,7 @@ export const collectAs = curry((xi2y, t, s) =>
 
 export const collect = collectAs(id)
 
-export const firstAs = curryN(3, xi2yM => {
-  const F = ConcatOf((l, r) => l !== void 0 ? l : r(), void 0, id)
-  return (t, s) => run(t, F, xi2yM, s)
-})
+export const firstAs = curry((xi2yM, t, s) => run(t, First, xi2yM, s))
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
