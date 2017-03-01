@@ -134,13 +134,13 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.firstAs(x => x > 3 ? x : undefined, L.elems, pi)`,
-    `R.find(x => x > 3, pi)`,
-    `O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)`,
-  ], [
     `L.firstAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
     `R.find(x => x > 3, xs100)`,
     `O.Fold.findOf(O.Traversal.traversed, x => x > 3, xs100)`,
+  ], [
+    `L.firstAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
+    `R.find(x => x < 3, xs100)`,
+    [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, "NO SHORTCUT EVALUATION"],
   ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
@@ -320,6 +320,10 @@ R.forEach(bs => {
     `L.concatAs(toList, List, L.elems, xs100)`,
   ], [
     `L.modify(flatten, inc, xsss100)`,
+  ], [
+    `L.firstAs(x => x > 3 ? x : undefined, L.elems, pi)`,
+    `R.find(x => x > 3, pi)`,
+    `O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)`,
   ], [
     `L.get(d0x0y, axay)`,
   ], [
