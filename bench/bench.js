@@ -134,14 +134,6 @@ R.forEach(bs => {
   s.run()
 }, [
   [
-    `L.firstAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
-    `R.find(x => x > 3, xs100)`,
-    `O.Fold.findOf(O.Traversal.traversed, x => x > 3, xs100)`,
-  ], [
-    `L.firstAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
-    `R.find(x => x < 3, xs100)`,
-    [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, "NO SHORTCUT EVALUATION"],
-  ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
@@ -250,6 +242,14 @@ R.forEach(bs => {
     `R.assocPath(["x","y","z"], 0, xyzn)`,
     `R.set(l_x_y_z, 0, xyzn)`,
     `R.set(l_xyz, 0, xyzn)`,
+  ], [
+    `L.firstAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
+    `R.find(x => x > 3, xs100)`,
+    `O.Fold.findOf(O.Traversal.traversed, x => x > 3, xs100)`,
+  ], [
+    `L.firstAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
+    `R.find(x => x < 3, xs100)`,
+    [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, "NO SHORTCUT EVALUATION"],
   ], [
     `L.remove(50, xs100)`,
     `R.remove(50, 1, xs100)`,
