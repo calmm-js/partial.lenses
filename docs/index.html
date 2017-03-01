@@ -96,6 +96,8 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
+<li><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
@@ -843,6 +845,34 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above naïve implementation.</p>
+<h5 id="-a-name-l-first-a-contents-https-calmm-js-github-io-partial-lenses-l-first-l-first-traversal-maybedata-maybevalue-l-first-l-first-ptraversal-s-a-maybe-s-maybe-a-"><a name="L-first"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-first">▶</a> <a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<p><strong>WARNING: <code>L.first</code> and <a href="#L-firstAs"><code>L.firstAs</code></a> are experimental features.</strong></p>
+<p><code>L.first</code> goes lazily over the elements focused on by the given traversal and
+returns the first non-<code>undefined</code> element.</p>
+<pre><code class="hljs lang-js">L.first([L.elems, &quot;y&quot;], [{x:1},{y:2},{z:3}])
+</code></pre>
+<p>Note that <code>L.first</code> is equivalent to <a href="#L-firstAs"><code>L.firstAs(R.identity)</code></a>.</p>
+<h5 id="-a-name-l-firstas-a-contents-https-calmm-js-github-io-partial-lenses-l-firstas-l-firstas-maybevalue-index-maybevalue-traversal-maybedata-maybevalue-l-firstas-l-firstas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-maybe-b-"><a name="L-firstAs"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-firstAs">▶</a> <a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<p><strong>WARNING: <a href="#L-first"><code>L.first</code></a> and <code>L.firstAs</code> are experimental features.</strong></p>
+<p><code>L.firstAs</code> goes lazily over the elements focused on by the given traversal,
+applying the given function to each element, and returns the first
+non-<code>undefined</code> value returned by the function.</p>
+<pre><code class="hljs lang-js">L.firstAs(x =&gt; x &gt; 3 ? -x : undefined, L.elems, [3,1,4,1,5])
+</code></pre>
+<p><code>L.firstAs</code> operates lazily.  The user specified function is only applied to
+elements until the first non-<code>undefined</code> value is returned and after that
+<code>L.firstAs</code> returns without examining more elements.</p>
+<p>Note that <code>L.firstAs</code> can be used to implement many other operations over
+traversals such as finding an element matching a predicate and checking whether
+all/any elements match a predicate.  For example, here is how you could
+implement a for all predicate over traversals:</p>
+<pre><code class="hljs lang-js">var all = R.curry((p, t, s) =&gt; !L.firstAs(x =&gt; p(x) ? undefined : true, t, s))
+</code></pre>
+<p>Now:</p>
+<pre><code class="hljs lang-js">all(x =&gt; x &lt; 9,
+    flatten,
+    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+</code></pre>
 <h5 id="-a-name-l-foldl-a-contents-https-calmm-js-github-io-partial-lenses-l-foldl-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-value-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a name="L-foldl"></a> <a href="#contents">≡</a> <a href="https://calmm-js.github.io/partial.lenses/#L-foldl">▶</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
