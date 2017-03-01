@@ -22,7 +22,7 @@ import {
 //
 
 const sliceIndex = (m, l, d, i) =>
-  void 0 === i ? d : Math.min(Math.max(m, i < 0 ? l + i : i), l)
+  void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d
 
 function pair(x0, x1) {return [x0, x1]}
 const cpair = x => xs => [x, xs]
