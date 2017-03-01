@@ -9,17 +9,22 @@ const T_functor = T.object({
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
 })
 
-const T_applicative = T.object({
-  map: T.fn([T.fn([T.any], T.any), T.any], T.any),
+const T_applicative = T.or(T.object({
+  delay: T.fn([T.any], T.any),
   of: T.fn([T.any], T.any),
-  ap: T.fn([T.any, T.any], T.any)
-})
+  ap: T.fn([T.any, T.any], T.any),
+  map: T.fn([T.fn([T.any], T.any), T.any], T.any)
+}), T.object({
+  of: T.fn([T.any], T.any),
+  ap: T.fn([T.any, T.any], T.any),
+  map: T.fn([T.fn([T.any], T.any), T.any], T.any)
+}))
 
 const T_monad = T.object({
   chain: T.fn([T.fn([T.any], T.any), T.any], T.any),
-  map: T.fn([T.fn([T.any], T.any), T.any], T.any),
   of: T.fn([T.any], T.any),
-  ap: T.fn([T.any, T.any], T.any)
+  ap: T.fn([T.any, T.any], T.any),
+  map: T.fn([T.fn([T.any], T.any), T.any], T.any)
 })
 
 const T_opticFnOf = Category =>
@@ -34,7 +39,8 @@ const T_opticOf = Category => T.lazy(T_optic => T.or(
   T.string,
   T.array(T_optic),
   T.fn([T_maybeData, T_index], T_maybeData),
-  T_opticFnOf(Category)))
+  T_opticFnOf(Category)
+))
 
 const T_optic = T_opticOf(T.or(T_monad, T_applicative, T_functor))
 
@@ -82,6 +88,13 @@ export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
 export const mergeAs = concatAs
 export const merge = concat
+
+export const firstAs =
+  T.fn([T.fn([T_maybeData, T_index], T.any),
+        T_traversal,
+        T_maybeData],
+       T.any)
+export const first = T.fn([T_traversal, T_maybeData], T.any)
 
 export const foldl =
   T.fn([T.fn([T.any, T_maybeData, T_index], T.any),

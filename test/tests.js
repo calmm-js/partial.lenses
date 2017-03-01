@@ -568,10 +568,13 @@ describe("L.getInverse", () => {
   testEq('L.getInverse(offBy1, 1)', 0)
 })
 
-export const flatten = L.lazy(rec => {
-  const nest = [L.elems, rec]
-  return L.choose(x => R.is(Array, x) ? nest : L.identity)
-})
+export const flatten = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.choose(x => (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
+})]
 
 describe("L.lazy", () => {
   testEq('L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])',
@@ -742,4 +745,22 @@ describe("seq", () => {
 
   testEq(`collectM(L.seq(1, 0, 2), ["b", "a", "c"])`,
          ["a", "b", "c"])
+})
+
+describe("firstAs", () => {
+  testEq(`L.first(L.elems, [])`, undefined)
+  testEq(`L.first(L.values, {})`, undefined)
+  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                    L.elems,
+                    [3, 1, 4, 1, 5])`,
+         [6, 2])
+  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                    L.values,
+                    {a:3, b:1, c:4, d:1, e:5})`,
+         [6, "c"])
+  testEq(`L.firstAs(x => {}, L.values, {x:1})`, undefined)
+  testEq(`L.firstAs(x => x < 9 ? undefined : [x],
+                    flatten,
+                    [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,
+        [41])
 })

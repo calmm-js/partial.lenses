@@ -60,7 +60,12 @@ const Ident = {map: applyU, of: id, ap: applyU, chain: applyU}
 
 const Const = {map: sndU}
 
-const ConcatOf = (ap, empty) => ({map: sndU, ap, of: always(empty)})
+function ConcatOf(ap, empty, delay) {
+  const c = {map: sndU, ap, of: always(empty)}
+  if (delay)
+    c.delay = delay
+  return c
+}
 
 const Monoid = (concat, empty) => ({concat, empty: () => empty})
 
@@ -146,13 +151,33 @@ const Collect = ConcatOf(join)
 
 //
 
+function the(v) {
+  function result() {return result}
+  result.v = v
+  return result
+}
+
+const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
+
+//
+
+const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
+  i < n
+  ? ap(map(cjoin, xi2yA(xs[i], i)), delay(() =>
+       traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
+  : z
+
 function traversePartialIndex(A, xi2yA, xs) {
-  const ap = A.ap, map = A.map
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  let xsA = (0,A.of)(void 0), i = xs.length
-  while (i--)
-    xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
+  const {map, ap, of, delay} = A
+  let xsA = of(void 0),
+      i = xs.length
+  if (delay)
+    xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i)
+  else
+    while (i--)
+      xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
   return map(toArray, xsA)
 }
 
@@ -363,20 +388,34 @@ const branchOnMerge = (x, keys) => xs => {
   return r
 }
 
+function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
+  if (i < keys.length) {
+    const k = keys[i], v = x[k]
+    return ap(map(cpair,
+                  vals ? vals[i](A, xi2yA, x[k], k) : xi2yA(v, k)), delay(() =>
+              branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i+1)))
+  } else {
+    return z
+  }
+}
+
 const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A)
-  const of = A.of
+  const {map, ap, of, delay} = A
   let i = keys.length
   if (!i)
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
     x = object0
-  const ap = A.ap, map = A.map
   let xsA = of(0)
-  while (i--) {
-    const k = keys[i], v = x[k]
-    xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
+  if (delay) {
+    xsA = branchOnLazy(keys, vals, map, ap, xsA, delay, A, xi2yA, x, 0)
+  } else {
+    while (i--) {
+      const k = keys[i], v = x[k]
+      xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
+    }
   }
   return map(branchOnMerge(x, keys), xsA)
 }
@@ -517,7 +556,7 @@ export function log() {
 // Operations on traversals
 
 export const concatAs = curryN(4, (xMi2y, m) => {
-  const C = ConcatOf(m.concat, (0,m.empty)())
+  const C = ConcatOf(m.concat, (0,m.empty)(), m.delay)
   return (t, s) => run(t, C, xMi2y, s)
 })
 
@@ -545,6 +584,20 @@ export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
+
+export const firstAs = curry((xi2yM, t, s) => {
+  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
+    firstAs.warned = 1
+    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
+  }
+  return (s = run(t,
+                  First,
+                  (x, i) => (x = xi2yM(x, i), void 0 !== x ? the(x) : x),
+                  s),
+          s && (s = s()) && s.v)
+})
+
+export const first = firstAs(id)
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
