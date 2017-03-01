@@ -76,7 +76,7 @@
     "nyc": "^10.1.2",
     "ramda": "^0.23.0",
     "sprintf-js": "^1.0.3",
-    "uglify-js": "^2.7.5",
+    "uglify-js": "^2.8.4",
     "uglifyify": "^3.0.4",
     "watch-run": "^1.2.5"
   }
