@@ -663,6 +663,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows('L.toFunction((one, too, many) => 1)')
 
     testThrows(`L.get(L.seq(0), ["x"])`)
+
+    testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
   })
 }
 
