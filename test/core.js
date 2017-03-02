@@ -26,13 +26,23 @@ const concatDefined = m => R.curry((t, s) => concat(m, [t, optional], s))
 
 // Optics
 
+export const toFunction = L.toFunction
+
+// Operations on optics
+
 export const modify = L.modify
 export const remove = R.curry((o, s) => set(o, undefined, s))
 export const set = R.curry((o, x, s) => modify(o, R.always(x), s))
 
+// Sequencing
+
 export const seq = L.seq
 
+// Nesting
+
 export const compose = L.compose
+
+// Querying
 
 export const chain = R.curry((x2yO, xO) =>
   [xO, choose((xM, i) => isDefined(xM) ? x2yO(xM, i) : zero)])
@@ -45,19 +55,23 @@ export const when = p => choose((x, i) => p(x, i) ? identity : zero)
 export const optional = when(isDefined)
 export const zero = L.zero
 
+// Recursing
+
 export const lazy = L.lazy
+
+// Debugging
 
 export const log = L.log
 
-export const toFunction = L.toFunction
-
-// Traversals
+// Operations on traversals
 
 export const concatAs = L.concatAs
 export const concat = concatAs(R.identity)
 
 export const merge = concat
 export const mergeAs = concatAs
+
+// Folds over traversals
 
 export const firstAs = L.firstAs
 
@@ -76,18 +90,28 @@ export const minimum = concat({empty: () => {}, concat: minPartial})
 export const product = concatDefined({empty: () => 1, concat: R.multiply})
 export const sum = concatDefined({empty: () => 0, concat: R.add})
 
+// Creating new traversals
+
 export const branch = L.branch
+
+// Traversals and combinators
 
 export const elems = L.elems
 export const values = L.values
 
-// Lenses
+// Operations on lenses
 
 export const get = L.get
 
+// Creating new lenses
+
 export const lens = L.lens
 
+// Computing derived props
+
 export const augment = L.augment
+
+// Enforcing invariants
 
 export const defaults = v => replace(undefined, v)
 export const define = v => [required(v), defaults(v)]
@@ -97,6 +121,8 @@ export const normalize = xi2x =>
 export const required = v => replace(v, undefined)
 export const rewrite = xi2x =>
   lens(R.identity, (x, _, i) => isDefined(x) ? xi2x(x, i) : x)
+
+// Lensing arrays
 
 export const append = choose(s => seemsArrayLike(s) ? s.length : 0)
 export const filter = p => lens(
@@ -138,29 +164,43 @@ export const slice = R.curry((b, e) => lens(
   }
 ))
 
+// Lensing objects
+
 export const prop = L.prop
 export const props = (...ps) => pick(R.zipObj(ps, ps))
 export const removable = (...ps) =>
   rewrite(y => y instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)
 
+// Providing defaults
+
 export const valueOr = v =>
   lens(s => s === null || s === undefined ? v : s, R.identity)
+
+// Adapting to data
 
 export const orElse = R.curry((d, l) =>
   choose(x => isDefined(get(l, x)) ? l : d))
 
+// Read-only mapping
+
 export const just = R.always
 export const to = R.identity
+
+// Transforming data
 
 export const pick = L.pick
 export const replace = R.curry((i, o) =>
   iso(x => R.equals(i, x) ? o : x, x => R.equals(o, x) ? i : x))
 
-// Isomorphisms
+// Operations on isomorphisms
 
 export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
+// Creating new isomorphisms
+
 export const iso = lens
+
+// Isomorphisms and combinators
 
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))
