@@ -623,7 +623,7 @@ export const sum = concatAs(unto(0), Monoid((y, x) => x + y, 0))
 
 export function branch(template) {
   if (process.env.NODE_ENV !== "production" && !isObject(template))
-    errorGiven("Template given to `branch` must be a plain object", template)
+    errorGiven("`branch` expects a plain Object template", template)
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
