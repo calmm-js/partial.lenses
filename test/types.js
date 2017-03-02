@@ -54,6 +54,11 @@ const T_monoid = T.object({empty: T.fn([], T.any),
 
 //
 
+export const toFunction = T.fn([T_optic],
+                               T_opticFnOf(T.or(T_applicative, T_functor)))
+
+// Operations on optics
+
 export const modify = T.fn([T_optic,
                             T.fn([T_maybeData, T_index], T_maybeData),
                             T_maybeData],
@@ -61,9 +66,15 @@ export const modify = T.fn([T_optic,
 export const remove = T.fn([T_optic, T_maybeData], T_maybeData)
 export const set = T.fn([T_optic, T_maybeData, T_maybeData], T_maybeData)
 
+// Sequencing
+
 export const seq = T.fnVar(T_optic, T_transform)
 
+// Nesting
+
 export const compose = T.fnVar(T_optic, T_optic)
+
+// Querying
 
 export const chain = T.fn([T.fn([T_data, T_index], T_optic), T_lens], T_optic)
 export const choice = T.fnVar(T_lens, T_optic)
@@ -72,12 +83,15 @@ export const optional = T_optic
 export const when = T.fn([T.fn([T_maybeData, T_index], T.any)], T_optic)
 export const zero = T_optic
 
+// Recursing
+
 export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
+
+// Debugging
 
 export const log = T.fnVar(T.string, T_optic)
 
-export const toFunction = T.fn([T_optic],
-                               T_opticFnOf(T.or(T_applicative, T_functor)))
+// Operations on traversals
 
 export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
                               T_monoid,
@@ -88,6 +102,14 @@ export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
 export const mergeAs = concatAs
 export const merge = concat
+
+// Folds over traversals
+
+export const collect = T.fn([T_traversal, T_maybeData], T.array(T_data))
+export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
+                               T_traversal,
+                               T_maybeData],
+                              T.array(T_data))
 
 export const firstAs =
   T.fn([T.fn([T_maybeData, T_index], T.any),
@@ -104,37 +126,45 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
-export const collect = T.fn([T_traversal, T_maybeData], T.array(T_data))
-export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
-                               T_traversal,
-                               T_maybeData],
-                              T.array(T_data))
-
 export const maximum = T.fn([T_traversal, T_maybeData], T.any)
 export const minimum = T.fn([T_traversal, T_maybeData], T.any)
 
 export const product = T.fn([T_traversal, T_maybeData], T.number)
 export const sum = product
 
+// Creating new traversals
+
 export const branch = T.fn([T.props(T_traversal)], T_traversal)
+
+// Traversals and combinators
 
 export const elems = T_traversal
 export const values = T_traversal
 
+// Operations on lenses
+
 export const get = T.fn([T_lens, T_maybeData], T_maybeData)
+
+// Creating new lenses
 
 export const lens =
   T.fn([T.fn([T_maybeData, T_index], T_maybeData),
         T.fn([T_maybeData, T_maybeData, T_index], T_maybeData)],
        lens)
 
+// Computing derived props
+
 export const augment = T.fn([T.props(T.fn([T.any], T_data))], T_lens)
+
+// Enforcing invariants
 
 export const defaults = T.fn([T_data], T_lens)
 export const define = T.fn([T_data], T_lens)
 export const normalize = T.fn([T.fn([T_data, T_index], T_data)], T_lens)
 export const required = T.fn([T_data], T_lens)
 export const rewrite = T.fn([T.fn([T_data, T_index], T_data)], T_lens)
+
+// Lensing arrays
 
 export const append = T_lens
 export const filter = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
@@ -143,25 +173,41 @@ export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.nonNegative], T_lens)
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 
+// Lensing objects
+
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVar(T.string, T_lens)
 export const removable = T.fnVar(T.string, T_lens)
 
+// Providing defaults
+
 export const valueOr = T.fn([T.any], T_lens)
 
+// Adapting to data
+
 export const orElse = T.fn([T_lens, T_lens], T_lens)
+
+// Read-only mapping
 
 export const just = T.fn([T.any], T.fnVar(T.any, T.any))
 export const to = T.fn([T.any], T.any)
 
+// Transforming data
+
 export const pick = T.fn([T.props(T_lens)], T_lens)
 export const replace = T.fn([T_maybeData, T_maybeData], T_lens)
 
+// Operations on isomorphisms
+
 export const getInverse = T.fn([T_isomorphism, T_maybeData], T_maybeData)
+
+// Creating new isomorphisms
 
 export const iso = T.fn([T.fn([T_maybeData], T_maybeData),
                          T.fn([T_maybeData], T_maybeData)],
                         T_isomorphism)
+
+// Isomorphisms and combinators
 
 export const identity = T_isomorphism
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
