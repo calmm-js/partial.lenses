@@ -164,9 +164,9 @@ const not = x => !x
 const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
 
 const mkFirst = toM => (xi2yM, t, s) => {
-  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
-    firstAs.warned = 1
-    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
+  if (process.env.NODE_ENV !== "production" && !mkFirst.warned) {
+    mkFirst.warned = 1
+    console.warn("partial.lenses: Lazy folds over traversals are experimental.")
   }
   return (s = run(t, First, pipe2U(xi2yM, toM), s),
           s && (s = s()) && s.v)
