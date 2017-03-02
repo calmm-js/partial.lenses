@@ -16,6 +16,7 @@ import {
   isString,
   keys,
   object0,
+  pipe2U,
   sndU
 } from "infestines"
 
@@ -157,7 +158,19 @@ function the(v) {
   return result
 }
 
+const T = the(true)
+const not = x => !x
+
 const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
+
+const mkFirst = toM => (xi2yM, t, s) => {
+  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
+    firstAs.warned = 1
+    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
+  }
+  return (s = run(t, First, pipe2U(xi2yM, toM), s),
+          s && (s = s()) && s.v)
+}
 
 //
 
@@ -580,22 +593,18 @@ export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) 
 
 // Folds over traversals
 
+export const all = pipe2U(mkFirst(x => x ? void 0 : T), not)
+
+export const and = all(id)
+
+export const any = pipe2U(mkFirst(x => x ? T : void 0), Boolean)
+
 export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
 
-export const firstAs = curry((xi2yM, t, s) => {
-  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
-    firstAs.warned = 1
-    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
-  }
-  return (s = run(t,
-                  First,
-                  (x, i) => (x = xi2yM(x, i), void 0 !== x ? the(x) : x),
-                  s),
-          s && (s = s()) && s.v)
-})
+export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
 
 export const first = firstAs(id)
 
@@ -614,6 +623,8 @@ export const foldr = curry((f, r, t, s) => {
 export const maximum = concat(Mum((x, y) => x > y))
 
 export const minimum = concat(Mum((x, y) => x < y))
+
+export const or = any(id)
 
 export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
 

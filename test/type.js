@@ -38,6 +38,7 @@ const instance = c => fromPredicate(x => x instanceof c)
 export const integer = fromPredicate(Number.isInteger)
 export const nonNegative = and(integer, fromPredicate(x => 0 <= x))
 
+export const boolean = type("boolean")
 export const number = type("number")
 export const string = type("string")
 export const undef = fromPredicate(x => x === undefined)

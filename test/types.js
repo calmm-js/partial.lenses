@@ -105,6 +105,17 @@ export const merge = concat
 
 // Folds over traversals
 
+export const all = T.fn([T.fn([T_maybeData, T_index], T.any),
+                         T_traversal,
+                         T_maybeData],
+                        T.boolean)
+export const and = T.fn([T_traversal, T_maybeData], T.boolean)
+
+export const any = T.fn([T.fn([T_maybeData, T_index], T.any),
+                         T_traversal,
+                         T_maybeData],
+                        T.boolean)
+
 export const collect = T.fn([T_traversal, T_maybeData], T.array(T_data))
 export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
                                T_traversal,
@@ -128,6 +139,8 @@ export const foldr = foldl
 
 export const maximum = T.fn([T_traversal, T_maybeData], T.any)
 export const minimum = T.fn([T_traversal, T_maybeData], T.any)
+
+export const or = T.fn([T_traversal, T_maybeData], T.boolean)
 
 export const product = T.fn([T_traversal, T_maybeData], T.number)
 export const sum = product

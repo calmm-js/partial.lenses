@@ -73,6 +73,12 @@ export const mergeAs = concatAs
 
 // Folds over traversals
 
+export const all = L.all
+
+export const and = all(R.identity)
+
+export const any = L.any
+
 export const firstAs = L.firstAs
 
 export const first = L.firstAs(R.identity)
@@ -86,6 +92,8 @@ export const collectAs = R.curry((to, t, s) =>
 
 export const maximum = concat({empty: () => {}, concat: maxPartial})
 export const minimum = concat({empty: () => {}, concat: minPartial})
+
+export const or = any(R.identity)
 
 export const product = concatDefined({empty: () => 1, concat: R.multiply})
 export const sum = concatDefined({empty: () => 0, concat: R.add})
