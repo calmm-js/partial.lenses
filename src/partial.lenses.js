@@ -811,15 +811,16 @@ export function props() {
   return pick(template)
 }
 
-export const removable = (...ps) => (F, xi2yF, x, i) => (0,F.map)(
-  y => {
+export const removable = (...ps) => {
+  function drop(y) {
     if (!(y instanceof Object))
       return y
     for (let i=0, n=ps.length; i<n; ++i)
       if (hasU(ps[i], y))
         return y
-  },
-  xi2yF(x, i))
+  }
+  return (F, xi2yF, x, i) => (0,F.map)(drop, xi2yF(x, i))
+}
 
 // Providing defaults
 
