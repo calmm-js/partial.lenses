@@ -16,6 +16,7 @@ import {
   isString,
   keys,
   object0,
+  pipe2U,
   sndU
 } from "infestines"
 
@@ -79,9 +80,17 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 //
 
 const expectedOptic = "Expecting an optic"
+const header = "partial.lenses: "
+
+function warn(f, m) {
+  if (!f.warned) {
+    f.warned = 1
+    console.warn(header + m)
+  }
+}
 
 function errorGiven(m, o) {
-  console.error("partial.lenses:", m, "- given:", o)
+  console.error(header + m + " - given:", o)
   throw new Error(m)
 }
 
@@ -157,7 +166,17 @@ function the(v) {
   return result
 }
 
+const T = the(true)
+const not = x => !x
+
 const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
+
+const mkFirst = toM => (xi2yM, t, s) => {
+  if (process.env.NODE_ENV !== "production")
+    warn(mkFirst, "Lazy folds over traversals are experimental")
+  return (s = run(t, First, pipe2U(xi2yM, toM), s),
+          s && (s = s()) && s.v)
+}
 
 //
 
@@ -562,40 +581,28 @@ export const concatAs = curryN(4, (xMi2y, m) => {
 
 export const concat = concatAs(id)
 
-export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : (f, m, t, d) => {
-  if (!mergeAs.warned) {
-    mergeAs.warned = 1
-    console.warn("partial.lenses: `mergeAs` is obsolete, just use `concatAs`")
-  }
-  return concatAs(f, m, t, d)
-}
+export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : (f, m, t, d) =>
+  warn(mergeAs, "`mergeAs` is obsolete, just use `concatAs`") ||
+  concatAs(f, m, t, d)
 
-export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) => {
-  if (!merge.warned) {
-    merge.warned = 1
-    console.warn("partial.lenses: `merge` is obsolete, just use `concat`")
-  }
-  return concat(m, t, d)
-}
+export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) =>
+  warn(merge, "`merge` is obsolete, just use `concat`") ||
+  concat(m, t, d)
 
 // Folds over traversals
+
+export const all = pipe2U(mkFirst(x => x ? void 0 : T), not)
+
+export const and = all(id)
+
+export const any = pipe2U(mkFirst(x => x ? T : void 0), Boolean)
 
 export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
 
 export const collect = collectAs(id)
 
-export const firstAs = curry((xi2yM, t, s) => {
-  if (process.env.NODE_ENV !== "production" && !firstAs.warned) {
-    firstAs.warned = 1
-    console.warn("partial.lenses: `first` and `firstAs` are experimental features.")
-  }
-  return (s = run(t,
-                  First,
-                  (x, i) => (x = xi2yM(x, i), void 0 !== x ? the(x) : x),
-                  s),
-          s && (s = s()) && s.v)
-})
+export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
 
 export const first = firstAs(id)
 
@@ -614,6 +621,8 @@ export const foldr = curry((f, r, t, s) => {
 export const maximum = concat(Mum((x, y) => x > y))
 
 export const minimum = concat(Mum((x, y) => x < y))
+
+export const or = any(id)
 
 export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
 
@@ -824,21 +833,13 @@ export const orElse =
 
 // Read-only mapping
 
-export const to = process.env.NODE_ENV === "production" ? id : wi2x => {
-  if (!to.warned) {
-    to.warned = 1
-    console.warn("partial.lenses: `to` is obsolete, you can directly `compose` plain functions with optics")
-  }
-  return wi2x
-}
+export const to = process.env.NODE_ENV === "production" ? id : wi2x =>
+  warn(to, "`to` is obsolete, you can directly `compose` plain functions with optics") ||
+  wi2x
 
-export const just = process.env.NODE_ENV === "production" ? always : x => {
-  if (!just.warned) {
-    just.warned = 1
-    console.warn("partial.lenses: `just` is obsolete, just use e.g. `R.always`")
-  }
-  return always(x)
-}
+export const just = process.env.NODE_ENV === "production" ? always : x =>
+  warn(just, "`just` is obsolete, just use e.g. `R.always`") ||
+  always(x)
 
 // Transforming data
 

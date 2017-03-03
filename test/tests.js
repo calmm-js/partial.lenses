@@ -749,7 +749,7 @@ describe("seq", () => {
          ["a", "b", "c"])
 })
 
-describe("firstAs", () => {
+describe("lazy folds", () => {
   testEq(`L.first(L.elems, [])`, undefined)
   testEq(`L.first(L.values, {})`, undefined)
   testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
@@ -765,4 +765,11 @@ describe("firstAs", () => {
                     flatten,
                     [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,
         [41])
+
+  testEq(`L.any((x, i) => x > i, L.elems, [0,1,3])`, true)
+  testEq(`L.any((x, i) => x > i, L.elems, [0,1,2])`, false)
+  testEq(`L.all((x, i) => x > i, L.elems, [1,2,3])`, true)
+  testEq(`L.all((x, i) => x > i, L.elems, [1,2,2])`, false)
+  testEq(`L.and(L.elems, [])`, true)
+  testEq(`L.or(L.elems, [])`, false)
 })
