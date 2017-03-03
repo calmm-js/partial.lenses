@@ -565,10 +565,10 @@ export function lazy(o2o) {
 // Debugging
 
 export function log() {
-  const show = dir => x =>
+  const show = curry((dir, x) =>
     console.log.apply(console,
                       copyToFrom([], 0, arguments, 0, arguments.length)
-                      .concat([dir, x])) || x
+                      .concat([dir, x])) || x)
   return iso(show("get"), show("set"))
 }
 
