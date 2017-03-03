@@ -1076,13 +1076,54 @@ See also: [`L.concatAs`](#L-concatAs).
 
 **WARNING: Lazy folds over traversals are experimental.**
 
+`L.all` determines whether all of the elements focused on by the given traversal
+satisfy the given predicate.
+
+For example:
+
+```js
+L.all(x => 1 <= x && x <= 6,
+      flatten,
+      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// true
+```
+
+See also: [`L.any`](#L-any) and [`L.firstAs`](#L-firstAs).
+
 ##### <a name="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
 
 **WARNING: Lazy folds over traversals are experimental.**
 
+`L.and` determines whether all of the elements focused on by the given traversal
+are truthy.
+
+For example:
+
+```js
+L.and(L.elems, [])
+// true
+```
+
+Note that `L.and` is equivalent to [`L.all(R.identity)`](#L-all).  See
+also: [`L.or`](#L-or).
+
 ##### <a name="L-any"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-any) [`L.any((maybeValue, index) => value, traversal, maybeData) ~> boolean`](#L-any "L.any: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
 
 **WARNING: Lazy folds over traversals are experimental.**
+
+`L.any` determines whether any of the elements focused on by the given traversal
+satisfy the given predicate.
+
+For example:
+
+```js
+L.any(x => x > 5,
+      flatten,
+      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// true
+```
+
+See also: [`L.all`](#L-all) and [`L.firstAs`](#L-firstAs).
 
 ##### <a name="L-collect"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collect) [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
 
@@ -1239,6 +1280,19 @@ L.minimum(L.elems, [1,2,3])
 ##### <a name="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
 
 **WARNING: Lazy folds over traversals are experimental.**
+
+`L.or` determines whether any of the elements focused on by the given traversal
+is truthy.
+
+For example:
+
+```js
+L.or(L.elems, [])
+// false
+```
+
+Note that `L.or` is equivalent to [`L.any(R.identity)`](#L-any).  See
+also: [`L.and`](#L-and).
 
 ##### <a name="L-product"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-product) [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
 
