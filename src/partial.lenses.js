@@ -676,7 +676,7 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 
 // Computing derived props
 
-export const augment = template => {
+export function augment(template) {
   if (process.env.NODE_ENV !== "production" && !isObject(template))
     errorGiven("`augment` expects a plain Object template", template)
   return lens(
@@ -713,7 +713,7 @@ export const augment = template => {
 
 // Enforcing invariants
 
-export const defaults = out => {
+export function defaults(out) {
   const o2u = x => replaced(out, void 0, x)
   return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
@@ -843,7 +843,7 @@ export const just = process.env.NODE_ENV === "production" ? always : x =>
 
 // Transforming data
 
-export const pick = template => {
+export function pick(template) {
   if (process.env.NODE_ENV !== "production" && !isObject(template))
     errorGiven("`pick` expects a plain Object template", template)
   return (F, xi2yF, x, i) =>
