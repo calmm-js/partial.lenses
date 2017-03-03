@@ -1,12 +1,66 @@
 import * as I from "infestines"
 import * as R from "ramda"
-import {id} from "infestines"
 
 import * as L from "../src/partial.lenses"
 
 import * as BST from "./bst"
-import * as C from "./core"
-import * as T from "./types"
+import * as C   from "./core"
+import * as T   from "./types"
+
+//
+
+const id = I.id
+const X = L
+
+class XYZ {
+  constructor(x, y, z) {
+    this.x = x
+    this.y = y
+    this.z = z
+  }
+  norm() {
+    return this.x*this.x + this.y*this.y + this.z*this.z
+  }
+}
+
+const a100000 = Array(100000).fill(1)
+
+const Sum = {empty: () => 0, concat: (x, y) => x + y}
+
+const numeric = f => x => x !== undefined ? f(x) : undefined
+const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
+
+const flatten = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.choose(x => (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
+})]
+
+const everywhere = [L.optional, L.lazy(rec => {
+  const elems = [L.elems, rec]
+  const values = [L.values, rec]
+  return L.seq(L.choose(x => (x instanceof Array ? elems :
+                              x instanceof Object ? values :
+                              L.zero)),
+               L.identity)
+})]
+
+const CollectM = {
+  of: x => [x, []],
+  map: (x2y, [x, s]) => [x2y(x), s],
+  ap: ([x2y, sl], [x, sr]) => [x2y(x), [...sr, ...sl]],
+  chain: (x2yM, [x, sr]) => {
+    const [y, sl] = x2yM(x)
+    return [y, [...sr, ...sl]]
+  }
+}
+
+const collectM = (o, s) =>
+  L.toFunction(o)(CollectM, x => [x, [x]], s, undefined)[1]
+
+//
 
 function show(x) {
   switch (typeof x) {
@@ -18,20 +72,19 @@ function show(x) {
   }
 }
 
-function XYZ(x,y,z) {
-  this.x = x
-  this.y = y
-  this.z = z
-}
-XYZ.prototype.norm = function () {
-  return this.x*this.x + this.y*this.y + this.z*this.z
-}
-
-const a100000 = Array(100000).fill(1)
-
-const run = expr =>
-  eval(`(L, X, R, id, I, C, T, a100000) => ${expr}`)(
-         L, L, R, id, I, C, T, a100000)
+const run = expr => eval(`() => ${expr}`)(
+  C,
+  Sum,
+  T,
+  XYZ,
+  a100000,
+  collectM,
+  everywhere,
+  flatten,
+  id,
+  offBy1,
+  X
+)
 
 const equals = (x, y) =>
   (x && Object.getPrototypeOf(x)) === (y && Object.getPrototypeOf(y)) &&
@@ -514,8 +567,6 @@ describe("L.collectAs", () => {
          [1, 3])
 })
 
-export const Sum = {empty: () => 0, concat: (x, y) => x + y}
-
 describe("L.concatAs", () => {
   testEq(`L.concatAs(x => x+1, Sum, L.elems, null)`, 0)
   testEq(`L.concatAs(x => x+1, Sum, [L.elems], [])`, 0)
@@ -576,21 +627,10 @@ describe("L.props", () => {
   testEq(`L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})`, {a: 2})
 })
 
-export const numeric = f => x => x !== undefined ? f(x) : undefined
-export const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
-
 describe("L.getInverse", () => {
   testEq(`L.getInverse(offBy1, undefined)`, undefined)
   testEq(`L.getInverse(offBy1, 1)`, 0)
 })
-
-export const flatten = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.choose(x => (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
-})]
 
 describe("L.lazy", () => {
   testEq(`L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])`,
@@ -733,28 +773,6 @@ describe("BST", () => {
          I.seq([["m",-1], ["a",-2], ["g",-3], ["i",-4], ["c",-5]],
                BST.fromPairs))
 })
-
-export const everywhere = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.seq(L.choose(x => (x instanceof Array ? elems :
-                              x instanceof Object ? values :
-                              L.zero)),
-               L.identity)
-})]
-
-export const CollectM = {
-  of: x => [x, []],
-  map: (x2y, [x, s]) => [x2y(x), s],
-  ap: ([x2y, sl], [x, sr]) => [x2y(x), [...sr, ...sl]],
-  chain: (x2yM, [x, sr]) => {
-    const [y, sl] = x2yM(x)
-    return [y, [...sr, ...sl]]
-  }
-}
-
-export const collectM = (o, s) =>
-  L.toFunction(o)(CollectM, x => [x, [x]], s, undefined)[1]
 
 describe("seq", () => {
   testEq(`L.set(L.seq(), "ignored", "anything")`, "anything")
