@@ -52,10 +52,9 @@
   }
 
   function initHLJS(k) {
-    document.querySelectorAll(".hljs")
-      .forEach(function (elem) {
-        window.hljs.highlightBlock(elem)
-      })
+    document.querySelectorAll(".hljs").forEach(function (elem) {
+      window.hljs.highlightBlock(elem)
+    })
     k()
   }
 
@@ -68,8 +67,8 @@
     function onclick(e) {
       window.ga('send', 'event', 'link', 'click', e.target.href)
     }
-    document.querySelectorAll('a').forEach(function (e) {
-      e.onclick = onclick
+    document.querySelectorAll('a').forEach(function (elem) {
+      elem.onclick = onclick
     })
   }
 
