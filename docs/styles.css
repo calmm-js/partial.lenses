@@ -44,3 +44,7 @@
   filter: brightness(50%);
   opacity: 0.85;
 }
+
+.klipse-container {
+  display: none;
+}
