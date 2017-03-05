@@ -22,14 +22,17 @@ marked.setOptions({
   smartypants: false
 })
 
-const body = I.seq(fs.readFileSync("README.md"),
-                   R.toString,
-                   R.replace(/([^ ])\bconst\b/g, "$1var"),
-                   R.replace(/\/\/ .*/g, ""),
-                   R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
-                   marked,
-                   R.replace(/<code class="lang-([a-z]*)">/g,
-                             '<code class="hljs lang-$1\">'))
+const body = I.seq(
+  fs.readFileSync("README.md"),
+  R.toString,
+  R.replace(/([^ ])\bconst\b/g, "$1var"),
+  R.replace(/\/\/ .*/g, ""),
+  R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
+  R.replace(/\[▶\]\(https:\/\/calmm-js\.github\.io\/partial\.lenses\/\#([a-zA-Z-]*)\)/g,
+            "[■](https://github.com/calmm-js/partial.lenses#$1)"),
+  marked,
+  R.replace(/<code class="lang-([a-z]*)">/g,
+            '<code class="hljs lang-$1\">'))
 
 fs.writeFileSync("docs/index.html",
 `<!doctype html>
