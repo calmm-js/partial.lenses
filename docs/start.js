@@ -64,12 +64,14 @@
   window.ga.l = 1 * new Date()
   window.ga('create', gaid, 'auto')
   window.ga('send', 'pageview')
-  function onclick(e) {
-    window.ga('send', 'event', 'link', 'click', e.target.href)
+  window.onload = function () {
+    function onclick(e) {
+      window.ga('send', 'event', 'link', 'click', e.target.href)
+    }
+    document.querySelectorAll('a').forEach(function (e) {
+      e.onclick = onclick
+    })
   }
-  document.querySelectorAll('a').forEach(function (e) {
-    e.onclick = onclick
-  })
 
   queue(seq([].concat(
     [loadScript("https://www.google-analytics.com/analytics.js"),
