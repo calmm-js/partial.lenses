@@ -4,9 +4,9 @@
 
 Lenses are basically an abstraction for simultaneously specifying operations
 to [update](#L-modify) and [query](#L-get) immutable data structures.  Lenses
-are highly [composable](#L-compose) and can be [efficient](#benchmarks).  This
-library provides a collection
-of [*partial*](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
+are [highly composable](#on-composability) and can be [efficient](#benchmarks).
+This library provides a collection
+of [partial](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and
 users [can](#L-toFunction) [write](#L-iso) [new](#L-lens) [optics](#L-branch)
@@ -30,6 +30,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 * [Reference](#reference)
   * [Optics](#optics)
     * [On partiality](#on-partiality)
+    * [On composability](#on-composability)
     * [Operations on optics](#operations-on-optics)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
@@ -562,6 +563,42 @@ also has a number of benefits.  In particular, it allows optics to seamlessly
 support both insertion and removal.  It also allows to reduce the number of
 necessary abstractions.  And it tends to make compositions of optics more
 concise with fewer required parts.
+
+#### On composability
+
+As mentioned in the preface, optics are
+highly [composable](https://en.wikipedia.org/wiki/Composability).  What does
+this mean?
+
+A lot of libraries these days claim to be composable.  Is any collection of
+functions composable?  In the opinion of the author of this library, in order
+for something to be called "composable", a couple of conditions must be
+fulfilled:
+
+1. There must be an operation or operations that perform composition.
+2. There must be simple laws on how compositions behave.
+
+Conversely, if there is no operation to perform composition or there are no
+useful simplifying laws on how compositions behave, then one should not call
+such a thing composable.
+
+Now, optics are composable in several ways and in each of those ways there is a
+an operation to perform the composition and laws on how such composed optics
+behave.  Here is a table of the means of composition supported by this library:
+
+|           | Operation                         | Semantics
+| --------- | --------------------------------- | -----------------------------------------------------------------------------------------
+| Nesting   | [`L.compose(...os)`](#L-compose)  | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
+| Recursing | [`L.lazy(o => o)`](#L-lazy)       | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+| Adapting  | [`L.orElse(lb, la)`](#L-orElse)   | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
+| Choosing  | [`L.choice(...ls)`](#L-choice)    | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [lenses](#lenses)
+| Querying  | [`L.chain(x => o, o)`](#L-chain)  | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus)
+| Picking   | [`L.pick({...p:l})`](#L-pick)     | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
+| Branching | [`L.branch({...p:t})`](#L-branch) | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
+
+The above table and, in particular, the semantics column is by no means
+complete.  In particular, the documentation of this library does not generally
+spell out proofs of the semantics.
 
 #### Operations on optics
 

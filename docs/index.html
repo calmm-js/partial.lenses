@@ -21,9 +21,9 @@
 <h1 id="partial-lenses">Partial Lenses</h1>
 <p>Lenses are basically an abstraction for simultaneously specifying operations
 to <a href="#L-modify">update</a> and <a href="#L-get">query</a> immutable data structures.  Lenses
-are highly <a href="#L-compose">composable</a> and can be <a href="#benchmarks">efficient</a>.  This
-library provides a collection
-of <a href="#on-partiality"><em>partial</em></a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
+are <a href="#on-composability">highly composable</a> and can be <a href="#benchmarks">efficient</a>.
+This library provides a collection
+of <a href="#on-partiality">partial</a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
 manipulating <a href="http://json.org/">JSON</a> and
 users <a href="#L-toFunction">can</a> <a href="#L-iso">write</a> <a href="#L-lens">new</a> <a href="#L-branch">optics</a>
@@ -45,6 +45,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#optics">Optics</a><ul>
 <li><a href="#on-partiality">On partiality</a></li>
+<li><a href="#on-composability">On composability</a></li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a></li>
@@ -510,6 +511,73 @@ also has a number of benefits.  In particular, it allows optics to seamlessly
 support both insertion and removal.  It also allows to reduce the number of
 necessary abstractions.  And it tends to make compositions of optics more
 concise with fewer required parts.</p>
+<h4 id="on-composability">On composability</h4>
+<p>As mentioned in the preface, optics are
+highly <a href="https://en.wikipedia.org/wiki/Composability">composable</a>.  What does
+this mean?</p>
+<p>A lot of libraries these days claim to be composable.  Is any collection of
+functions composable?  In the opinion of the author of this library, in order
+for something to be called &quot;composable&quot;, a couple of conditions must be
+fulfilled:</p>
+<ol>
+<li>There must be an operation or operations that perform composition.</li>
+<li>There must be simple laws on how compositions behave.</li>
+</ol>
+<p>Conversely, if there is no operation to perform composition or there are no
+useful simplifying laws on how compositions behave, then one should not call
+such a thing composable.</p>
+<p>Now, optics are composable in several ways and in each of those ways there is a
+an operation to perform the composition and laws on how such composed optics
+behave.  Here is a table of the means of composition supported by this library:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Operation</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Nesting</td>
+<td><a href="#L-compose"><code>L.compose(...os)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w">unityped</a> optics</td>
+</tr>
+<tr>
+<td>Recursing</td>
+<td><a href="#L-lazy"><code>L.lazy(o =&gt; o)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">Fixed point</a></td>
+</tr>
+<tr>
+<td>Adapting</td>
+<td><a href="#L-orElse"><code>L.orElse(lb, la)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#lenses">lenses</a></td>
+</tr>
+<tr>
+<td>Choosing</td>
+<td><a href="#L-choice"><code>L.choice(...ls)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="#lenses">lenses</a></td>
+</tr>
+<tr>
+<td>Querying</td>
+<td><a href="#L-chain"><code>L.chain(x =&gt; o, o)</code></a></td>
+<td><a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a></td>
+</tr>
+<tr>
+<td>Picking</td>
+<td><a href="#L-pick"><code>L.pick({...p:l})</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of <a href="#lenses">lenses</a></td>
+</tr>
+<tr>
+<td>Branching</td>
+<td><a href="#L-branch"><code>L.branch({...p:t})</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a></td>
+</tr>
+</tbody>
+</table>
+<p>The above table and, in particular, the semantics column is by no means
+complete.  In particular, the documentation of this library does not generally
+spell out proofs of the semantics.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5 id="-a-id-l-modify-a-contents-https-github-com-calmm-js-partial-lenses-l-modify-l-modify-optic-maybevalue-index-maybevalue-maybedata-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
