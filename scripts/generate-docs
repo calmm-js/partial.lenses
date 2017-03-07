@@ -51,6 +51,9 @@ fs.writeFileSync("docs/index.html",
     <script type="text/javascript" src="start.js" async></script>
   </head>
   <body class="markdown-body">
+    <div class="loading-message">
+      Please wait. The interactive code snippets on this page take a moment to load...
+    </div>
     <p>
       All the code snippets on this page are <b>live</b> and <b>interactive</b>
       powered by the <a href="https://github.com/viebel/klipse">klipse
@@ -58,5 +61,9 @@ fs.writeFileSync("docs/index.html",
     <p>
     <hr>
     ${body}
+    <div class="loading-hidden">
+      <pre><code class="hljs lang-js">document.body.children[0].className = "loading-hidden"
+      </code></pre>
+    </div>
   </body>
 </html>`)

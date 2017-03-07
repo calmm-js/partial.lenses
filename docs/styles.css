@@ -81,3 +81,21 @@
 .markdown-body table {
   overflow: inherit;
 }
+
+.loading-message {
+  position: fixed;
+  display: block;
+  z-index: 1000;
+  bottom: 0px;
+  left: 0%;
+  right: 0%;
+  background: #e77;
+  padding: 0.5em 1em;
+  color: white;
+  opacity: 0.9;
+  text-align: center;
+}
+
+.loading-hidden {
+  display: none;
+}
