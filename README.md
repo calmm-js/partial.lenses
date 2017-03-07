@@ -175,6 +175,13 @@ import * as R from "ramda"
 and [▶ play](https://calmm-js.github.io/partial.lenses#getting-started) just a
 bit with lenses.
 
+> Note that links with the play
+> symbol, [▶](https://calmm-js.github.io/partial.lenses#getting-started), take
+> you to an interactive version of this page where almost all of the code
+> snippets are editable and are evaluated in the browser.  Note that due to the
+> large number of snippets the interactive version of this pages takes awhile to
+> render.
+
 As mentioned earlier, with lenses we can specify a path to focus on an element.
 To specify such a path we use primitive lenses
 like [`L.prop(propName)`](#L-prop), to access a named property of an object,
