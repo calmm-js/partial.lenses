@@ -95,9 +95,9 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 </ul>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
-<li><a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; value, traversal, maybeData) ~&gt; boolean</code></a></li>
+<li><a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-and" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></li>
-<li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; value, traversal, maybeData) ~&gt; boolean</code></a></li>
+<li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></li>
@@ -891,7 +891,7 @@ the values returned by <code>xMi2r</code>.</p>
 <code>L.mergeAs(f, m)</code>, a computation step is performed.</p>
 <p>See also: <a href="#L-concatAs"><code>L.concatAs</code></a>.</p>
 <h4 id="folds-over-traversals">Folds over traversals</h4>
-<h5 id="-a-id-l-all-a-contents-https-github-com-calmm-js-partial-lenses-l-all-l-all-maybevalue-index-value-traversal-maybedata-boolean-l-all-l-all-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; value, traversal, maybeData) ~&gt; boolean</code></a></h5>
+<h5 id="-a-id-l-all-a-contents-https-github-com-calmm-js-partial-lenses-l-all-l-all-maybevalue-index-testable-traversal-maybedata-boolean-l-all-l-all-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.all</code> determines whether all of the elements focused on by the given traversal
 satisfy the given predicate.</p>
 <p>For example:</p>
@@ -910,7 +910,7 @@ are truthy.</p>
 <p>Note that <code>L.and</code> is equivalent to <a href="#L-all"><code>L.all(R.identity)</code></a>.  See
 also: <a href="#L-or"><code>L.or</code></a>.</p>
 <p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
-<h5 id="-a-id-l-any-a-contents-https-github-com-calmm-js-partial-lenses-l-any-l-any-maybevalue-index-value-traversal-maybedata-boolean-l-any-l-any-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-any"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-any">■</a> <a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; value, traversal, maybeData) ~&gt; boolean</code></a></h5>
+<h5 id="-a-id-l-any-a-contents-https-github-com-calmm-js-partial-lenses-l-any-l-any-maybevalue-index-testable-traversal-maybedata-boolean-l-any-l-any-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-any"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-any">■</a> <a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.any</code> determines whether any of the elements focused on by the given traversal
 satisfy the given predicate.</p>
 <p>For example:</p>
