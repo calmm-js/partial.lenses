@@ -116,13 +116,11 @@
   max-width: 20px;
   transition: all 250ms;
   box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.4);
-  border-radius: 0px;
   background: #eee;
   color: #000;
 }
 
 .markdown-body .menu.open .menu-body {
-  border-radius: 3px;
   max-width: 100%;
   background: #fff;
   color: #333;
