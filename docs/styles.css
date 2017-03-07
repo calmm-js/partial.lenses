@@ -58,7 +58,7 @@
   position: absolute;
   background-color: white;
   border-radius: 6px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 2px 4px 16px 0 rgba(0, 0, 0, 0.4);
   padding: 0 1em;
   bottom: 140%;
   left: 50%;
@@ -115,7 +115,7 @@
   font-size: 90%;
   max-width: 20px;
   transition: all 250ms;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.4);
   border-radius: 0px;
   background: #eee;
   color: #000;
