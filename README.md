@@ -179,7 +179,7 @@ bit with lenses.
 > symbol, [▶](https://calmm-js.github.io/partial.lenses#getting-started), take
 > you to an interactive version of this page where almost all of the code
 > snippets are editable and evaluated in the browser.  Note that due to the
-> large number of snippets the interactive version of this pages takes awhile to
+> large number of snippets the interactive version of this page takes awhile to
 > render.
 
 As mentioned earlier, with lenses we can specify a path to focus on an element.
