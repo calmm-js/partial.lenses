@@ -62,6 +62,13 @@
     k()
   }
 
+  function removeIds(elem) {
+    elem.removeAttribute("id")
+    for (var i=0, n=elem.childElementCount; i < n; ++i)
+      removeIds(elem.children[i])
+    return elem
+  }
+
   function addTips() {
     var tips = []
 
@@ -73,16 +80,11 @@
       return headerOf(elem.parentElement)
     }
 
-    function removeIds(elem) {
-      elem.removeAttribute("id")
-      for (var i=0, n=elem.childElementCount; i < n; ++i)
-        removeIds(elem.children[i])
-      return elem
-    }
-
     toArray(document.querySelectorAll('a')).forEach(function (link) {
       var href = link.getAttribute("href")
       if (!href || href[0] !== '#')
+        return
+      if (link.onclick)
         return
 
       var targetHeader = headerOf(document.querySelector(href))
@@ -117,6 +119,30 @@
     })
   }
 
+  function createMenu() {
+    var menu = document.querySelector(".menu")
+    if (!menu)
+      return
+    var menuContents = menu.querySelector(".menu-contents")
+    if (!menuContents)
+      return
+    var contents = document.querySelector("#contents")
+    if (!contents)
+      return
+    var tree = contents.nextElementSibling
+    if (!tree)
+      return
+    function toggle(e) {
+      menu.className = menu.className === "menu" ? "menu open" : "menu"
+      e.stopPropagation()
+    }
+    menu.onclick = toggle
+    menuContents.appendChild(removeIds(tree.cloneNode(true)))
+    toArray(menuContents.querySelectorAll("a")).forEach(function (link) {
+      link.onclick = toggle
+    })
+  }
+
   window.GoogleAnalyticsObject = "ga"
   window.ga = function () {(window.ga.q = window.ga.q || []).push(arguments)}
   window.ga.l = 1 * new Date()
@@ -133,8 +159,9 @@
   }
 
   window.onload = function () {
-    clicksToGA()
+    createMenu()
     addTips()
+    clicksToGA()
   }
 
   queue(seq([].concat(

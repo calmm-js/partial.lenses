@@ -87,7 +87,7 @@
 .loading-message {
   position: fixed;
   display: block;
-  z-index: 1000;
+  z-index: 100000;
   bottom: 0px;
   left: 0%;
   right: 0%;
@@ -100,4 +100,59 @@
 
 .loading-hidden {
   display: none;
+}
+
+.markdown-body .menu .menu-body {
+  position: fixed;
+  display: flex;
+  left: 0;
+  top: 0;
+  background: white;
+  z-index: 10000;
+  white-space: nowrap;
+  font-size: 90%;
+  max-width: 20px;
+  max-height: 20px;
+  transition: all 250ms;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  border-radius: 3px;
+}
+
+.markdown-body .menu.open .menu-body {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.markdown-body .menu .hamburger {
+  width: 20px;
+  min-width: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.markdown-body .menu .menu-overlay {
+  z-index: 1000;
+  position: fixed;
+  opacity: 0;
+  background: black;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  transition: opacity 250ms;
+}
+
+.markdown-body .menu.open .menu-overlay {
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+}
+
+.markdown-body .menu .menu-contents {
+  overflow-y: scroll;
+}
+
+.markdown-body .menu .menu-contents ul {
+  list-style-type: none;
+  padding-left: 1em;
 }
