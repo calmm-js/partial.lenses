@@ -68,7 +68,7 @@
     "browserify": "^14.1.0",
     "codecov": "^1.0.1",
     "envify": "^4.0.0",
-    "eslint": "^3.16.1",
+    "eslint": "^3.17.1",
     "immutable": "^3.8.1",
     "marked": "^0.3.6",
     "mocha": "^3.2.0",
@@ -76,7 +76,7 @@
     "nyc": "^10.1.2",
     "ramda": "^0.23.0",
     "sprintf-js": "^1.0.3",
-    "uglify-js": "^2.8.5",
+    "uglify-js": "^2.8.7",
     "uglifyify": "^3.0.4",
     "watch-run": "^1.2.5"
   }
