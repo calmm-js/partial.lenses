@@ -2020,7 +2020,7 @@ dozens of lens libraries for various languages.  Here are just a few links:</p>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">document.body.children[0].className = "loading-hidden"
-ga && ga('send', 'event', 'completed', 'load', (Date.now() - startTime)/1000)
+ga && ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000))
       </code></pre>
     </div>
   </body>
