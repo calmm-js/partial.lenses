@@ -439,9 +439,6 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   return map(branchOnMerge(x, keys), xsA)
 }
 
-const normalizer = xi2x => (F, xi2yF, x, i) =>
-  (0,F.map)(x => xi2x(x, i), xi2yF(xi2x(x, i), i))
-
 const replaced = (inn, out, x) => acyclicEqualsU(x, inn) ? out : x
 
 function findIndex(xi2b, xs) {
@@ -718,15 +715,19 @@ export function defaults(out) {
   return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
+export function define(v) {
+  const untoV = unto(v)
+  return (F, xi2yF, x, i) => (0,F.map)(untoV, xi2yF(void 0 !== x ? x : v, i))
+}
+
+export const normalize = xi2x => (F, xi2yF, x, i) =>
+  (0,F.map)(x => void 0 !== x ? xi2x(x, i) : x,
+            xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
+
 export const required = inn => replace(inn, void 0)
 
-export const define = v => normalizer(unto(v))
-
-export const normalize = xi2x =>
-  normalizer((x, i) => void 0 !== x ? xi2x(x, i) : void 0)
-
 export const rewrite = yi2y => (F, xi2yF, x, i) =>
-  (0,F.map)(y => void 0 !== y ? yi2y(y, i) : void 0, xi2yF(x, i))
+  (0,F.map)(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
 
 // Lensing arrays
 
