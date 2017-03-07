@@ -51,8 +51,12 @@
     }
   }
 
+  function toArray(x) {
+    return Array.prototype.slice.call(x)
+  }
+
   function initHLJS(k) {
-    document.querySelectorAll(".hljs").forEach(function (elem) {
+    toArray(document.querySelectorAll(".hljs")).forEach(function (elem) {
       window.hljs.highlightBlock(elem)
     })
     k()
@@ -76,7 +80,7 @@
       return elem
     }
 
-    document.querySelectorAll('a').forEach(function (link) {
+    toArray(document.querySelectorAll('a')).forEach(function (link) {
       var href = link.getAttribute("href")
       if (!href || href[0] !== '#')
         return
@@ -123,7 +127,7 @@
     function onclick(e) {
       window.ga('send', 'event', 'link', 'click', e.target.href)
     }
-    document.querySelectorAll('a').forEach(function (elem) {
+    toArray(document.querySelectorAll('a')).forEach(function (elem) {
       elem.onclick = onclick
     })
   }
