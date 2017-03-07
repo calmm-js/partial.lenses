@@ -48,3 +48,32 @@
 .klipse-container {
   display: none;
 }
+
+.preview-anchor {
+  position: relative;
+}
+
+.preview {
+  display: none;
+  position: absolute;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  padding: 0 1em;
+  bottom: 140%;
+  left: 50%;
+  width: 40em;
+  overflow: auto;
+  transform: translate(-20%, 0);
+  font-size: 80%;
+  z-index: 100;
+  color: rgb(51, 51, 51);
+}
+
+.preview code {
+  font-size: 90%;
+}
+
+.preview-anchor:hover .preview {
+  display: block;
+}
