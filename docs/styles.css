@@ -53,7 +53,7 @@
   position: relative;
 }
 
-.preview {
+.markdown-body div.preview {
   display: none;
   position: absolute;
   background-color: white;
@@ -68,13 +68,15 @@
   font-size: 90%;
   z-index: 100;
   color: rgb(51, 51, 51);
+  font-weight: normal;
+  line-height: 1.5;
 }
 
-.preview code {
+.markdown-body div.preview * {
   font-size: 90%;
 }
 
-.preview-anchor:hover .preview {
+.markdown-body a.preview-anchor:hover div.preview {
   display: block;
 }
 
