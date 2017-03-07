@@ -103,6 +103,7 @@
 }
 
 .markdown-body .menu .menu-body {
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   position: fixed;
   display: flex;
   left: 0;
