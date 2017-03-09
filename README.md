@@ -631,9 +631,12 @@ R.identity({
   GetSet: test( L.set(lens, L.get(lens, data), data), data ),
   SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
 })
+// { GetSet: true, SetGet: true }
 ```
 
-Note, however, that *partial* lenses are not (total) lenses.
+Note, however, that *partial* lenses are not (total) lenses.  You might want
+to [▶ play](https://calmm-js.github.io/partial.lenses#on-lens-laws) with the
+laws in your browser.
 
 #### Operations on optics
 

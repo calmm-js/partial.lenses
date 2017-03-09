@@ -618,7 +618,9 @@ R.identity({
   SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
 })
 </code></pre>
-<p>Note, however, that <em>partial</em> lenses are not (total) lenses.</p>
+<p>Note, however, that <em>partial</em> lenses are not (total) lenses.  You might want
+to <a href="https://calmm-js.github.io/partial.lenses#on-lens-laws">▶ play</a> with the
+laws in your browser.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5 id="-a-id-l-modify-a-contents-https-github-com-calmm-js-partial-lenses-l-modify-l-modify-optic-maybevalue-index-maybevalue-maybedata-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
