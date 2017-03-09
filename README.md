@@ -1,4 +1,4 @@
-# Partial Lenses &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses)
+# <a id="partial.lenses"></a> Partial Lenses &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses)
 
 Lenses are basically an abstraction for simultaneously specifying operations
 to [update](#L-modify) and [query](#L-get) immutable data structures.  Lenses
