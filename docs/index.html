@@ -611,7 +611,7 @@ called, <em>well behaved lenses</em>:</p>
 var data = {x: 1}
 var lens = &quot;x&quot;
 
-var test = (a, e) =&gt; R.equals(a, e) || a
+var test = (actual, expected) =&gt; R.equals(actual, expected) || actual
 
 R.identity({
   GetSet: test( L.set(lens, L.get(lens, data), data), data ),

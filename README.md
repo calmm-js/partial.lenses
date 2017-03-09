@@ -625,7 +625,7 @@ const elem = 2
 const data = {x: 1}
 const lens = "x"
 
-const test = (a, e) => R.equals(a, e) || a
+const test = (actual, expected) => R.equals(actual, expected) || actual
 
 R.identity({
   GetSet: test( L.set(lens, L.get(lens, data), data), data ),
