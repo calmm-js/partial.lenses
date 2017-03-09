@@ -597,6 +597,28 @@ behave.  Here is a table of the means of composition supported by this library:<
 <p>The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.</p>
+<h5 id="on-lens-laws">On lens laws</h5>
+<p>Aside from understanding laws on how forms of composition behave, it is useful
+to understand laws that are specific to operations on lenses and optics, in
+general.  As described in the
+paper
+<a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">A clear picture of lens laws</a>,
+many laws have been formulated for lenses and it can be useful to have lenses
+that do not necessarily obey some laws.</p>
+<p>Here is a snippet that demonstrates that partial lenses can obey the laws of, so
+called, <em>well behaved lenses</em>:</p>
+<pre><code class="hljs lang-js">var elem = 2
+var data = {x: 1}
+var lens = &quot;x&quot;
+
+var test = (a, e) =&gt; R.equals(a, e) || a
+
+R.identity({
+  GetSet: test( L.set(lens, L.get(lens, data), data), data ),
+  SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
+})
+</code></pre>
+<p>Note, however, that <em>partial</em> lenses are not (total) lenses.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5 id="-a-id-l-modify-a-contents-https-github-com-calmm-js-partial-lenses-l-modify-l-modify-optic-maybevalue-index-maybevalue-maybedata-maybedata-l-modify-l-modify-poptic-s-a-maybe-a-index-maybe-a-maybe-s-maybe-s-"><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>

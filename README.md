@@ -607,6 +607,34 @@ The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.
 
+##### On lens laws
+
+Aside from understanding laws on how forms of composition behave, it is useful
+to understand laws that are specific to operations on lenses and optics, in
+general.  As described in the
+paper
+[A clear picture of lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf),
+many laws have been formulated for lenses and it can be useful to have lenses
+that do not necessarily obey some laws.
+
+Here is a snippet that demonstrates that partial lenses can obey the laws of, so
+called, *well behaved lenses*:
+
+```js
+const elem = 2
+const data = {x: 1}
+const lens = "x"
+
+const test = (a, e) => R.equals(a, e) || a
+
+R.identity({
+  GetSet: test( L.set(lens, L.get(lens, data), data), data ),
+  SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
+})
+```
+
+Note, however, that *partial* lenses are not (total) lenses.
+
 #### Operations on optics
 
 ##### <a id="L-modify"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-modify) [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
