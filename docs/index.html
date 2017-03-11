@@ -221,13 +221,21 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 </li>
 </ul>
 <h2 id="tutorial">Tutorial</h2>
-<p>Let&#39;s work with the following sample JSON object:</p>
+<p>Let&#39;s look at an example that is based on an actual early use case that lead to
+the development of this library.  What we have is an external HTTP API that both
+produces and consumes JSON objects that include, among many other properties, a
+<code>titles</code> property:</p>
 <pre><code class="hljs lang-js">var sampleTitles = {
   titles: [{ language: &quot;en&quot;, text: &quot;Title&quot; },
            { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
 }
 </code></pre>
-<p>What we&#39;d like to have is a way to access the <code>text</code> of titles in a given
+<p>We ultimately want to present the user with a rich enough editor, with features
+such as undo-redo and validation, for manipulating the content represented by
+those JSON objects.  The <code>titles</code> property is really just one tiny part of the
+data model, but, in this tutorial, we only look at it, because it is sufficient
+for introducing most of the basic ideas.</p>
+<p>So, what we&#39;d like to have is a way to access the <code>text</code> of titles in a given
 language.  Given a language, we want to be able to</p>
 <ul>
 <li>get the corresponding text,</li>
@@ -237,7 +245,9 @@ language.  Given a language, we want to be able to</p>
 </ul>
 <p>Furthermore, when updating, inserting, and removing texts, we&#39;d like the
 operations to treat the JSON as immutable and create new JSON objects with the
-changes rather than mutate existing JSON objects.</p>
+changes rather than mutate existing JSON objects, because this makes it trivial
+to support features such as undo-redo and can also help to avoid bugs associated
+with mutable state.</p>
 <p>Operations like these are what lenses are good at.  Lenses can be seen as a
 simple embedded <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>
 for specifying data manipulation and querying functions.  Lenses allow you to

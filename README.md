@@ -131,7 +131,10 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
 
 ## Tutorial
 
-Let's work with the following sample JSON object:
+Let's look at an example that is based on an actual early use case that lead to
+the development of this library.  What we have is an external HTTP API that both
+produces and consumes JSON objects that include, among many other properties, a
+`titles` property:
 
 ```js
 const sampleTitles = {
@@ -140,7 +143,13 @@ const sampleTitles = {
 }
 ```
 
-What we'd like to have is a way to access the `text` of titles in a given
+We ultimately want to present the user with a rich enough editor, with features
+such as undo-redo and validation, for manipulating the content represented by
+those JSON objects.  The `titles` property is really just one tiny part of the
+data model, but, in this tutorial, we only look at it, because it is sufficient
+for introducing most of the basic ideas.
+
+So, what we'd like to have is a way to access the `text` of titles in a given
 language.  Given a language, we want to be able to
 
 * get the corresponding text,
@@ -150,7 +159,9 @@ language.  Given a language, we want to be able to
 
 Furthermore, when updating, inserting, and removing texts, we'd like the
 operations to treat the JSON as immutable and create new JSON objects with the
-changes rather than mutate existing JSON objects.
+changes rather than mutate existing JSON objects, because this makes it trivial
+to support features such as undo-redo and can also help to avoid bugs associated
+with mutable state.
 
 Operations like these are what lenses are good at.  Lenses can be seen as a
 simple embedded [DSL](https://en.wikipedia.org/wiki/Domain-specific_language)
