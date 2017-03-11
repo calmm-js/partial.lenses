@@ -152,6 +152,7 @@
 }
 
 .markdown-body .menu .menu-contents {
+  padding-right: 1em;
   overflow-y: scroll;
 }
 
