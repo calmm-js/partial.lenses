@@ -210,5 +210,6 @@ export const iso = lens
 
 // Isomorphisms and combinators
 
+export const complement = iso(R.not, R.not)
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))

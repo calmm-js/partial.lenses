@@ -869,6 +869,8 @@ export const iso =
 
 // Isomorphisms and combinators
 
+export const complement = iso(not, not)
+
 export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 
 export const inverse = iso => (F, xi2yF, x, i) =>

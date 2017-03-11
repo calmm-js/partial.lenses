@@ -155,6 +155,7 @@ describe("arities", () => {
     choose: 1,
     collect: 2,
     collectAs: 3,
+    complement: 4,
     compose: 0,
     concat: 3,
     concatAs: 4,
@@ -648,6 +649,12 @@ describe("L.inverse", () => {
   testEq(`L.get(L.inverse(offBy1), 1)`, 0)
   testEq(`L.getInverse(L.inverse(offBy1), 0)`, 1)
   testEq(`L.remove(["x", L.inverse(offBy1)], {x:1})`, undefined)
+})
+
+describe("L.complement", () => {
+  testEq(`L.get(L.complement, undefined)`, true)
+  testEq(`L.get(L.complement, true)`, false)
+  testEq(`L.set(L.complement, true, undefined)`, false)
 })
 
 describe("L.branch", () => {
