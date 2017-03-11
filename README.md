@@ -62,6 +62,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
       * [`L.any((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-any "L.any: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
       * [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
+      * [`L.count(traversal, maybeData) ~> number`](#L-count "L.count: PTraversal s a -> Number")
       * [`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")
       * [`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
@@ -1263,6 +1264,18 @@ L.concatAs(R.pipe(R.negate, toCollect),
 
 The internal implementation of `L.collectAs` is optimized and faster than the
 above naïve implementation.
+
+##### <a id="L-count"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-count) [`L.count(traversal, maybeData) ~> number`](#L-count "L.count: PTraversal s a -> Number")
+
+`L.count` goes through all the elements focused on by the traversal and counts
+the number of non-`undefined` elements.
+
+For example:
+
+```js
+L.count([L.elems, "x"], [{x: 11}, {y: 12}])
+// 1
+```
 
 ##### <a id="L-first"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-first) [`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")
 
