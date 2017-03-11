@@ -659,8 +659,10 @@ to <code>undefined</code> typically has the effect of removing the focused eleme
 to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
 <h4 id="nesting">Nesting</h4>
 <h5 id="-a-id-l-compose-a-contents-https-github-com-calmm-js-partial-lenses-l-compose-l-compose-optics-optic-l-compose-l-compose-poptic-s-s1-poptic-sn-a-poptic-s-a-or-optics-"><a id="L-compose"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-compose">■</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics) ~&gt; optic</code></a> or <code>[...optics]</code></h5>
-<p><code>L.compose</code> performs composition of optics and ordinary functions.  The
-following equations characterize composition:</p>
+<p><code>L.compose</code> creates a nested composition of the given optics and ordinary
+functions such that in <code>L.compose(bigger, smaller)</code> the <code>smaller</code> optic can only
+see and manipulate the part of the whole as seen through the <code>bigger</code> optic.
+The following equations characterize composition:</p>
 <pre><code class="hljs lang-jsx">                  L.compose() = L.identity
                  L.compose(l) = l
 L.modify(L.compose(o, ...os)) = R.compose(L.modify(o), ...os.map(L.modify))

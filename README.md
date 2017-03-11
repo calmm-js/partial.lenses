@@ -711,8 +711,10 @@ to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
 ##### <a id="L-compose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-compose) [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
 
-`L.compose` performs composition of optics and ordinary functions.  The
-following equations characterize composition:
+`L.compose` creates a nested composition of the given optics and ordinary
+functions such that in `L.compose(bigger, smaller)` the `smaller` optic can only
+see and manipulate the part of the whole as seen through the `bigger` optic.
+The following equations characterize composition:
 
 ```jsx
                   L.compose() = L.identity
