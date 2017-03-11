@@ -2163,7 +2163,10 @@ L.getInverse("meaning", 42)
 
 ##### <a id="L-iso"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-iso) [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
 
-`L.iso` creates a new primitive isomorphism.
+`L.iso` creates a new primitive isomorphism from the given pair of functions.
+Usually the given functions should be inverses of each other, but that isn't
+strictly necessary.  The functions should also be partial so that when the input
+doesn't match their expectation, the output is mapped to `undefined`.
 
 For example:
 

@@ -1541,7 +1541,10 @@ value.  For example:</p>
 </code></pre>
 <h4 id="creating-new-isomorphisms">Creating new isomorphisms</h4>
 <h5 id="-a-id-l-iso-a-contents-https-github-com-calmm-js-partial-lenses-l-iso-l-iso-maybedata-maybevalue-maybevalue-maybedata-isomorphism-l-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a id="L-iso"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-iso">■</a> <a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a></h5>
-<p><code>L.iso</code> creates a new primitive isomorphism.</p>
+<p><code>L.iso</code> creates a new primitive isomorphism from the given pair of functions.
+Usually the given functions should be inverses of each other, but that isn&#39;t
+strictly necessary.  The functions should also be partial so that when the input
+doesn&#39;t match their expectation, the output is mapped to <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
                          expect(R.is(String), encodeURIComponent))
