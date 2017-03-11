@@ -1132,7 +1132,8 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.</p>
 <h4 id="operations-on-lenses">Operations on lenses</h4>
 <h5 id="-a-id-l-get-a-contents-https-github-com-calmm-js-partial-lenses-l-get-l-get-lens-maybedata-maybevalue-l-get-l-get-plens-s-a-maybe-s-maybe-a-"><a id="L-get"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-get">■</a> <a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a></h5>
-<p><code>L.get</code> returns the focused element from a data structure.</p>
+<p><code>L.get</code> returns the element focused on by a <a href="#lenses">lens</a> from a data
+structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(&quot;y&quot;, {x: 112, y: 101})
 </code></pre>

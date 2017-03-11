@@ -1502,7 +1502,8 @@ Lenses always have a single focus which can be [viewed](#L-get) directly.
 
 ##### <a id="L-get"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-get) [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
 
-`L.get` returns the focused element from a data structure.
+`L.get` returns the element focused on by a [lens](#lenses) from a data
+structure.
 
 For example:
 
