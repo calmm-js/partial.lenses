@@ -1524,8 +1524,11 @@ undefined)</code> are inverses of each other.</p>
 <h5 id="-a-id-l-getinverse-a-contents-https-github-com-calmm-js-partial-lenses-l-getinverse-l-getinverse-isomorphism-maybedata-maybedata-l-getinverse-l-getinverse-piso-a-b-maybe-b-maybe-a-"><a id="L-getInverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-getInverse">■</a> <a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.getInverse</code> views through an isomorphism in the inverse direction.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var numeric = f =&gt; x =&gt; typeof x === &quot;number&quot; ? f(x) : undefined
-var offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
+<pre><code class="hljs lang-js">var expect = (p, f) =&gt; x =&gt; p(x) ? f(x) : undefined
+
+var offBy1 = L.iso(expect(R.is(Number), R.inc),
+                     expect(R.is(Number), R.dec))
+
 L.getInverse(offBy1, 1)
 </code></pre>
 <p>Note that <code>L.getInverse(iso, data)</code> is equivalent
@@ -1540,8 +1543,24 @@ value.  For example:</p>
 <h5 id="-a-id-l-iso-a-contents-https-github-com-calmm-js-partial-lenses-l-iso-l-iso-maybedata-maybevalue-maybevalue-maybedata-isomorphism-l-iso-l-iso-maybe-s-maybe-a-maybe-a-maybe-s-piso-s-a-"><a id="L-iso"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-iso">■</a> <a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a></h5>
 <p><code>L.iso</code> creates a new primitive isomorphism.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var negate = L.iso(numeric(R.negate), numeric(R.negate))
-L.get([negate, L.inverse(negate)], 112)
+<pre><code class="hljs lang-js">var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
+                         expect(R.is(String), encodeURIComponent))
+
+var jsonString = L.iso(expect(R.is(String), JSON.parse),
+                       expect(R.is(Object), JSON.stringify))
+
+var reverseString = L.iso(expect(R.is(String), R.reverse),
+                          expect(R.is(String), R.reverse))
+
+L.modify([uriComponent,
+          jsonString,
+          &quot;bottle&quot;,
+          0,
+          reverseString,
+          L.rewrite(R.join(&quot;&quot;)),
+          0],
+         R.toUpper,
+         &quot;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&quot;)
 </code></pre>
 <h4 id="isomorphisms-and-combinators">Isomorphisms and combinators</h4>
 <h5 id="-a-id-l-identity-a-contents-https-github-com-calmm-js-partial-lenses-l-identity-l-identity-isomorphism-l-identity-l-identity-piso-s-s-"><a id="L-identity"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-identity">■</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></h5>

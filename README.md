@@ -2137,8 +2137,11 @@ undefined)` are inverses of each other.
 For example:
 
 ```js
-const numeric = f => x => typeof x === "number" ? f(x) : undefined
-const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
+var expect = (p, f) => x => p(x) ? f(x) : undefined
+
+const offBy1 = L.iso(expect(R.is(Number), R.inc),
+                     expect(R.is(Number), R.dec))
+
 L.getInverse(offBy1, 1)
 // 0
 ```
@@ -2165,9 +2168,25 @@ L.getInverse("meaning", 42)
 For example:
 
 ```js
-const negate = L.iso(numeric(R.negate), numeric(R.negate))
-L.get([negate, L.inverse(negate)], 112)
-// 112
+var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
+                         expect(R.is(String), encodeURIComponent))
+
+var jsonString = L.iso(expect(R.is(String), JSON.parse),
+                       expect(R.is(Object), JSON.stringify))
+
+var reverseString = L.iso(expect(R.is(String), R.reverse),
+                          expect(R.is(String), R.reverse))
+
+L.modify([uriComponent,
+          jsonString,
+          "bottle",
+          0,
+          reverseString,
+          L.rewrite(R.join("")),
+          0],
+         R.toUpper,
+         "%7B%22bottle%22%3A%5B%22egassem%22%5D%7D")
+// "%7B%22bottle%22%3A%22egasseM%22%7D"
 ```
 
 #### Isomorphisms and combinators
