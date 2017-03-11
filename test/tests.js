@@ -652,7 +652,8 @@ describe("L.inverse", () => {
 })
 
 describe("L.complement", () => {
-  testEq(`L.get(L.complement, undefined)`, true)
+  testEq(`L.get(L.complement, undefined)`, undefined)
+  testEq(`L.set(L.complement, undefined, true)`, undefined)
   testEq(`L.get(L.complement, true)`, false)
   testEq(`L.set(L.complement, true, undefined)`, false)
 })

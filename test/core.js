@@ -24,6 +24,8 @@ const foldx = concat => R.curry((f, r, t, s) =>
   concatAs((x, i) => r => f(r, x, i), {empty: () => R.identity, concat}, t, s)(r))
 const concatDefined = m => R.curry((t, s) => concat(m, [t, optional], s))
 
+const toPartial = f => x => isDefined(x) ? f(x) : x
+
 // Optics
 
 export const toFunction = L.toFunction
@@ -210,6 +212,6 @@ export const iso = lens
 
 // Isomorphisms and combinators
 
-export const complement = iso(R.not, R.not)
+export const complement = iso(toPartial(R.not), toPartial(R.not))
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))

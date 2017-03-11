@@ -30,6 +30,8 @@ const cpair = x => xs => [x, xs]
 
 const unto = c => x => void 0 !== x ? x : c
 
+const notPartial = x => void 0 !== x ? !x : x
+
 const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
   isString(x)
@@ -869,7 +871,7 @@ export const iso =
 
 // Isomorphisms and combinators
 
-export const complement = iso(not, not)
+export const complement = iso(notPartial, notPartial)
 
 export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 
