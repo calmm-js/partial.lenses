@@ -71,6 +71,7 @@ function ConcatOf(ap, empty, delay) {
 }
 
 const Monoid = (concat, empty) => ({concat, empty: () => empty})
+const Sum = Monoid((y, x) => x + y, 0)
 
 const Mum = ord =>
   Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
@@ -602,6 +603,8 @@ export const collectAs = curry((xi2y, t, s) =>
 
 export const collect = collectAs(id)
 
+export const count = concatAs(x => void 0 !== x ? 1 : 0, Sum)
+
 export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
 
 export const first = firstAs(id)
@@ -626,7 +629,7 @@ export const or = any(id)
 
 export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
 
-export const sum = concatAs(unto(0), Monoid((y, x) => x + y, 0))
+export const sum = concatAs(unto(0), Sum)
 
 // Creating new traversals
 
