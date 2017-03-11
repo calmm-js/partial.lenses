@@ -596,15 +596,15 @@ Now, optics are composable in several ways and in each of those ways there is a
 an operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:
 
-|           | Operation                         | Semantics
-| --------- | --------------------------------- | -----------------------------------------------------------------------------------------
-| Nesting   | [`L.compose(...os)`](#L-compose)  | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
-| Recursing | [`L.lazy(o => o)`](#L-lazy)       | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-| Adapting  | [`L.orElse(lb, la)`](#L-orElse)   | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
-| Choosing  | [`L.choice(...ls)`](#L-choice)    | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [lenses](#lenses)
-| Querying  | [`L.chain(x => o, o)`](#L-chain)  | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus)
-| Picking   | [`L.pick({...p:l})`](#L-pick)     | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
-| Branching | [`L.branch({...p:t})`](#L-branch) | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
+|                       | Operation(s)                                                        | Semantics
+| --------------------- | ------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
+| Nesting               | [`L.compose(...os)`](#L-compose)                                    | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
+| Recursing             | [`L.lazy(o => o)`](#L-lazy)                                         | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+| Adapting              | [`L.orElse(lb, la)`](#L-orElse)                                     | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
+| [Querying](#querying) | [`L.choice(...ls)`](#L-choice) and [`L.chain(x => o, o)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus)
+| Picking               | [`L.pick({...p:l})`](#L-pick)                                       | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
+| Branching             | [`L.branch({...p:t})`](#L-branch)                                   | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
+| Sequencing            | [`L.seq(...ts)`](#L-seq)                                            | Sequential application of [transforms](#transforms)
 
 The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
@@ -2114,10 +2114,11 @@ and [`define`](#L-define).
 
 ### Isomorphisms
 
-The focus of an isomorphism is the whole data structure rather than a part of
-it.  Furthermore, an isomorphism can be [inverted](#L-inverse).  More
-specifically, a lens, `iso`, is an isomorphism iff the following equations hold
-for all `x` and `y` in the domain and range, respectively, of the lens:
+The focus of an [isomorphism](https://en.wikipedia.org/wiki/Isomorphism) is the
+whole data structure rather than a part of it.  Furthermore, an isomorphism can
+be [inverted](#L-inverse).  More specifically, a lens, `iso`, is an isomorphism
+iff the following equations hold for all `x` and `y` in the domain and range,
+respectively, of the lens:
 
 ```jsx
 L.set(iso, L.get(iso, x), undefined) = x

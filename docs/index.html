@@ -556,7 +556,7 @@ behave.  Here is a table of the means of composition supported by this library:<
 <thead>
 <tr>
 <th></th>
-<th>Operation</th>
+<th>Operation(s)</th>
 <th>Semantics</th>
 </tr>
 </thead>
@@ -577,13 +577,8 @@ behave.  Here is a table of the means of composition supported by this library:<
 <td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#lenses">lenses</a></td>
 </tr>
 <tr>
-<td>Choosing</td>
-<td><a href="#L-choice"><code>L.choice(...ls)</code></a></td>
-<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="#lenses">lenses</a></td>
-</tr>
-<tr>
-<td>Querying</td>
-<td><a href="#L-chain"><code>L.chain(x =&gt; o, o)</code></a></td>
+<td><a href="#querying">Querying</a></td>
+<td><a href="#L-choice"><code>L.choice(...ls)</code></a> and <a href="#L-chain"><code>L.chain(x =&gt; o, o)</code></a></td>
 <td><a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a></td>
 </tr>
 <tr>
@@ -595,6 +590,11 @@ behave.  Here is a table of the means of composition supported by this library:<
 <td>Branching</td>
 <td><a href="#L-branch"><code>L.branch({...p:t})</code></a></td>
 <td><a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a></td>
+</tr>
+<tr>
+<td>Sequencing</td>
+<td><a href="#L-seq"><code>L.seq(...ts)</code></a></td>
+<td>Sequential application of <a href="#transforms">transforms</a></td>
 </tr>
 </tbody>
 </table>
@@ -1510,10 +1510,11 @@ and elements.  In most cases, rather than using <code>replace</code>, you will m
 selective use of <a href="#L-defaults"><code>defaults</code></a>, <a href="#L-required"><code>required</code></a>
 and <a href="#L-define"><code>define</code></a>.</p>
 <h3 id="isomorphisms">Isomorphisms</h3>
-<p>The focus of an isomorphism is the whole data structure rather than a part of
-it.  Furthermore, an isomorphism can be <a href="#L-inverse">inverted</a>.  More
-specifically, a lens, <code>iso</code>, is an isomorphism iff the following equations hold
-for all <code>x</code> and <code>y</code> in the domain and range, respectively, of the lens:</p>
+<p>The focus of an <a href="https://en.wikipedia.org/wiki/Isomorphism">isomorphism</a> is the
+whole data structure rather than a part of it.  Furthermore, an isomorphism can
+be <a href="#L-inverse">inverted</a>.  More specifically, a lens, <code>iso</code>, is an isomorphism
+iff the following equations hold for all <code>x</code> and <code>y</code> in the domain and range,
+respectively, of the lens:</p>
 <pre><code class="hljs lang-jsx">L.set(iso, L.get(iso, x), undefined) = x
 L.get(iso, L.set(iso, y, undefined)) = y
 </code></pre>
