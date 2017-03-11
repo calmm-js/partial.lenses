@@ -692,7 +692,10 @@ L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
 <code>L.compose</code>.</p>
 <h4 id="querying">Querying</h4>
 <h5 id="-a-id-l-chain-a-contents-https-github-com-calmm-js-partial-lenses-l-chain-l-chain-value-index-optic-optic-optic-l-chain-l-chain-a-index-poptic-s-b-poptic-s-a-poptic-s-b-"><a id="L-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-chain">■</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a></h5>
-<p><code>L.chain(toOptic, optic)</code> is equivalent to</p>
+<p><code>L.chain</code> provides a
+monadic
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain">chain</a>
+combinator for querying with optics.  <code>L.chain(toOptic, optic)</code> is equivalent to</p>
 <pre><code class="hljs lang-jsx">L.compose(optic, L.choose((maybeValue, index) =&gt;
   maybeValue === undefined
   ? L.zero

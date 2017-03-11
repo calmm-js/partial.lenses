@@ -766,7 +766,10 @@ Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 
 ##### <a id="L-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-chain) [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b")
 
-`L.chain(toOptic, optic)` is equivalent to
+`L.chain` provides a
+monadic
+[chain](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
+combinator for querying with optics.  `L.chain(toOptic, optic)` is equivalent to
 
 ```jsx
 L.compose(optic, L.choose((maybeValue, index) =>
