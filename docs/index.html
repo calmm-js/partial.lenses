@@ -109,6 +109,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 <li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
+<li><a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
@@ -197,6 +198,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/">▶ Try Lenses!</a>
 </ul>
 </li>
 <li><a href="#isomorphisms-and-combinators">Isomorphisms and combinators</a><ul>
+<li><a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a></li>
 <li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></li>
 <li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></li>
 </ul>
@@ -998,6 +1000,12 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above naïve implementation.</p>
+<h5 id="-a-id-l-count-a-contents-https-github-com-calmm-js-partial-lenses-l-count-l-count-traversal-maybedata-number-l-count-l-count-ptraversal-s-a-number-"><a id="L-count"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-count">■</a> <a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a></h5>
+<p><code>L.count</code> goes through all the elements focused on by the traversal and counts
+the number of non-<code>undefined</code> elements.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.count([L.elems, &quot;x&quot;], [{x: 11}, {y: 12}])
+</code></pre>
 <h5 id="-a-id-l-first-a-contents-https-github-com-calmm-js-partial-lenses-l-first-l-first-traversal-maybedata-maybevalue-l-first-l-first-ptraversal-s-a-maybe-s-maybe-a-"><a id="L-first"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-first">■</a> <a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.first</code> goes lazily over the elements focused on by the given traversal and
 returns the first non-<code>undefined</code> element.</p>
@@ -1573,6 +1581,14 @@ isomorphism.  The following equations characterize <code>L.identity</code>:</p>
 L.modify(L.identity, f, x) = f(x)
   L.compose(L.identity, l) = l
   L.compose(l, L.identity) = l
+</code></pre>
+<h5 id="-a-id-l-complement-a-contents-https-github-com-calmm-js-partial-lenses-l-complement-l-complement-isomorphism-l-complement-l-complement-piso-boolean-boolean-"><a id="L-complement"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-complement">■</a> <a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a></h5>
+<p><code>L.complement</code> is an isomorphism that performs logical negation of any
+non-<code>undefined</code> value when either read or written through.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set([L.complement, L.log()],
+      &quot;Could be anything truthy&quot;,
+      &quot;Also converted to bool&quot;)
 </code></pre>
 <h5 id="-a-id-l-inverse-a-contents-https-github-com-calmm-js-partial-lenses-l-inverse-l-inverse-isomorphism-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a id="L-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-inverse">■</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
