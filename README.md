@@ -543,22 +543,20 @@ wider range of situations than corresponding total optics.
 
 #### On partiality
 
-As mentioned many times, in this library all of the optics are
-essentially [partial functions](https://en.wikipedia.org/wiki/Partial_function).
-What does this mean?
-
-By definition, a *total function*, or just a *function*, is defined for all
-possible inputs.  A *partial function*, on the other hand, may not be defined
-for all inputs.
+By [definition](https://en.wikipedia.org/wiki/Partial_function), a *total
+function*, or just a *function*, is defined for all possible inputs.  A *partial
+function*, on the other hand, may not be defined for all inputs.
 
 As an example, consider an operation to return the first element of an array.
 Such an operation cannot be total unless the input is restricted to arrays that
 have at least one element.  One might think that the operation could be made
 total by returning a special value in case the input array is empty, but that is
 no longer the same operation&mdash;the special value is not the first element of
-the array.  Now, in partial lenses the idea is that in case the input does not
-match the expectation of the operation, then the input is treated as being
-`undefined`.  This makes the optics in this library partial.
+the array.
+
+Now, in partial lenses, the idea is that in case the input does not match the
+expectation of the operation, then the input is treated as being `undefined`.
+This makes the optics in this library partial.
 
 Making all optics partial has a number of consequences.  For one thing, it can
 potentially hide bugs: an incorrectly specified optic treats the input as
@@ -570,12 +568,9 @@ concise with fewer required parts.
 
 #### On composability
 
-As mentioned in the preface, optics are
-highly [composable](https://en.wikipedia.org/wiki/Composability).  What does
-this mean?
-
-A lot of libraries these days claim to be composable.  Is any collection of
-functions composable?  In the opinion of the author of this library, in order
+A lot of libraries these days claim to
+be [composable](https://en.wikipedia.org/wiki/Composability).  Is any collection
+of functions composable?  In the opinion of the author of this library, in order
 for something to be called "composable", a couple of conditions must be
 fulfilled:
 
