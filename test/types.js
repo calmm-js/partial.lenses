@@ -222,5 +222,6 @@ export const iso = T.fn([T.fn([T_maybeData], T_maybeData),
 
 // Isomorphisms and combinators
 
+export const complement = T_isomorphism
 export const identity = T_isomorphism
 export const inverse = T.fn([T_isomorphism], T_isomorphism)

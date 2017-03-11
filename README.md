@@ -116,6 +116,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
     * [Isomorphisms and combinators](#isomorphisms-and-combinators)
+      * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean")
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
 * [Examples](#examples)
@@ -2204,6 +2205,22 @@ isomorphism.  The following equations characterize `L.identity`:
 L.modify(L.identity, f, x) = f(x)
   L.compose(L.identity, l) = l
   L.compose(l, L.identity) = l
+```
+
+##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean")
+
+`L.complement` is an isomorphism that performs logical negation of any
+non-`undefined` value when either read or written through.
+
+For example:
+
+```js
+L.set([L.complement, L.log()],
+      "Could be anything truthy",
+      "Also converted to bool")
+// get false
+// set "Could be anything truthy"
+// false
 ```
 
 ##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
