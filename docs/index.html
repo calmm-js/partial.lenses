@@ -209,6 +209,7 @@ parts.  <a href="#">▶ Try Lenses!</a></p>
 </li>
 <li><a href="#examples">Examples</a><ul>
 <li><a href="#an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</a></li>
+<li><a href="#dependent-fields">Dependent fields</a></li>
 <li><a href="#collection-toggle">Collection toggle</a></li>
 <li><a href="#bst-as-a-lens">BST as a lens</a></li>
 <li><a href="#interfacing">Interfacing with Immutable.js</a></li>
@@ -1621,6 +1622,35 @@ a parameterized lens that does just that:</p>
 <pre><code class="hljs lang-js">L.set(flag(&quot;id-69&quot;), true, sampleFlags)
 </code></pre>
 <pre><code class="hljs lang-js">L.set(flag(&quot;id-76&quot;), false, sampleFlags)
+</code></pre>
+<h3 id="-a-id-dependent-fields-a-https-github-com-calmm-js-partial-lenses-dependent-fields-dependent-fields"><a id="dependent-fields"></a> <a href="https://github.com/calmm-js/partial.lenses#dependent-fields">■</a> Dependent fields</h3>
+<p>It is not atypical to have UIs where one selection has an effect on other
+selections.  For example, you could have an UI where you can specify <code>maximum</code>
+and <code>initial</code> values for some measure and the idea is that the <code>initial</code> value
+cannot be greater than the <code>maximum</code> value.  One way to deal with this
+requirement is to implement it in the lenses that are used to access the
+<code>maximum</code> and <code>initial</code> values.  This way the UI components that allows the user
+to edit those values can be dumb and does not need to know about the
+restrictions.</p>
+<p>One way to build such a lens is to use a combination of <a href="#L-props"><code>L.props</code></a>
+(or, in more complex cases, <a href="#L-pick"><code>L.pick</code></a>) to limit the set of properties
+to deal with, and <a href="#L-rewrite"><code>L.rewrite</code></a> to insert the desired restriction
+logic.  Here is how it could look like for the <code>maximum</code>:</p>
+<pre><code class="hljs lang-js">var maximum =
+  [L.props(&quot;maximum&quot;, &quot;initial&quot;),
+   L.rewrite(props =&gt; {
+     const {maximum, initial} = props
+     if (maximum &lt; initial)
+       return {maximum, initial: maximum}
+     else
+       return props
+   }),
+   &quot;maximum&quot;]
+</code></pre>
+<p>Now:</p>
+<pre><code class="hljs lang-js">L.set(maximum,
+      5,
+      {maximum: 10, initial: 8, something: &quot;else&quot;})
 </code></pre>
 <h3 id="-a-id-collection-toggle-a-https-github-com-calmm-js-partial-lenses-collection-toggle-collection-toggle"><a id="collection-toggle"></a> <a href="https://github.com/calmm-js/partial.lenses#collection-toggle">■</a> Collection toggle</h3>
 <p>A typical element of UIs that display a list of selectable items is a checkbox

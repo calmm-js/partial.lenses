@@ -122,6 +122,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/#)
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
+  * [Dependent fields](#dependent-fields)
   * [Collection toggle](#collection-toggle)
   * [BST as a lens](#bst-as-a-lens)
   * [Interfacing with Immutable.js](#interfacing)
@@ -2294,6 +2295,44 @@ L.set(flag("id-69"), true, sampleFlags)
 ```js
 L.set(flag("id-76"), false, sampleFlags)
 // ['id-19']
+```
+
+### <a id="dependent-fields"></a> [▶](https://calmm-js.github.io/partial.lenses/#dependent-fields) Dependent fields
+
+It is not atypical to have UIs where one selection has an effect on other
+selections.  For example, you could have an UI where you can specify `maximum`
+and `initial` values for some measure and the idea is that the `initial` value
+cannot be greater than the `maximum` value.  One way to deal with this
+requirement is to implement it in the lenses that are used to access the
+`maximum` and `initial` values.  This way the UI components that allows the user
+to edit those values can be dumb and does not need to know about the
+restrictions.
+
+One way to build such a lens is to use a combination of [`L.props`](#L-props)
+(or, in more complex cases, [`L.pick`](#L-pick)) to limit the set of properties
+to deal with, and [`L.rewrite`](#L-rewrite) to insert the desired restriction
+logic.  Here is how it could look like for the `maximum`:
+
+```js
+const maximum =
+  [L.props("maximum", "initial"),
+   L.rewrite(props => {
+     const {maximum, initial} = props
+     if (maximum < initial)
+       return {maximum, initial: maximum}
+     else
+       return props
+   }),
+   "maximum"]
+```
+
+Now:
+
+```js
+L.set(maximum,
+      5,
+      {maximum: 10, initial: 8, something: "else"})
+// {maximum: 5, initial: 5, something: "else"}
 ```
 
 ### <a id="collection-toggle"></a> [▶](https://calmm-js.github.io/partial.lenses/#collection-toggle) Collection toggle
