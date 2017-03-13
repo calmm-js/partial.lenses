@@ -3,6 +3,7 @@
 const title = "Try Partial Lenses with KLIPSE"
 const icon = "https://avatars1.githubusercontent.com/u/17234211"
 const github = "https://github.com/calmm-js/partial.lenses"
+const site = "https://calmm-js.github.io/partial.lenses/"
 const blob = `${github}/blob/master/`
 const hljsStyle = "googlecode"
 
@@ -23,14 +24,17 @@ marked.setOptions({
   smartypants: false
 })
 
+const esc = R.replace(/[-\[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+
 const body = I.seq(
   fs.readFileSync("README.md"),
   R.toString,
   R.replace(/([^ ])\bconst\b/g, "$1var"),
   R.replace(/\/\/ .*/g, ""),
   R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
-  R.replace(/\[▶\]\(https:\/\/calmm-js\.github\.io\/partial\.lenses\/\#([a-zA-Z-]*)\)/g,
+  R.replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z-]*)" + esc(")"), "g"),
             `[■](${github}#$1)`),
+  R.replace(new RegExp(esc(site), "g"), ""),
   marked,
   R.replace(/<code class="lang-([a-z]*)">/g,
             '<code class="hljs lang-$1\">'))
