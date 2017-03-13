@@ -82,7 +82,7 @@
 
     toArray(document.querySelectorAll('a')).forEach(function (link) {
       var href = link.getAttribute("href")
-      if (!href || href[0] !== '#')
+      if (!href || href[0] !== '#' || href === '#')
         return
       if (link.onclick)
         return
