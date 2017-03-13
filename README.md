@@ -2255,7 +2255,7 @@ L.get(L.inverse(offBy1), 1)
 Note that if you are new to lenses, then you probably want to start with
 the [tutorial](#tutorial).
 
-### An array of ids as boolean flags
+### <a id="an-array-of-ids-as-boolean-flags"></a> [▶](https://calmm-js.github.io/partial.lenses/#an-array-of-ids-as-boolean-flags) An array of ids as boolean flags
 
 A case that we have run into multiple times is where we have an array of
 constant strings such as
@@ -2296,7 +2296,7 @@ L.set(flag("id-76"), false, sampleFlags)
 // ['id-19']
 ```
 
-### Collection toggle
+### <a id="collection-toggle"></a> [▶](https://calmm-js.github.io/partial.lenses/#collection-toggle) Collection toggle
 
 A typical element of UIs that display a list of selectable items is a checkbox
 to select or unselect all items.  For example,
@@ -2340,7 +2340,7 @@ L.set(selectAll(completedFlags), true, sampleTodos)
 As an exercise define `unselectAll` using the [`L.or`](#L-or) fold.  How does it
 differ from `selectAll`?
 
-### BST as a lens
+### <a id="bst-as-a-lens"></a> [▶](https://calmm-js.github.io/partial.lenses/#bst-as-a-lens) BST as a lens
 
 Binary search trees might initially seem to be outside the scope of definable
 lenses.  However, given basic BST operations, one could easily wrap them as a
@@ -2483,7 +2483,7 @@ L.remove([values, L.when(x => x > "e")], sampleBST)
 // { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
 ```
 
-### <a id="interfacing"></a> Interfacing with Immutable.js
+### <a id="interfacing"></a> [▶](https://calmm-js.github.io/partial.lenses/#interfacing) Interfacing with Immutable.js
 
 [Immutable.js](http://facebook.github.io/immutable-js/) is a popular library
 providing immutable data structures.  As argued

@@ -1600,7 +1600,7 @@ operation only makes sense on isomorphisms.</p>
 <h2 id="examples">Examples</h2>
 <p>Note that if you are new to lenses, then you probably want to start with
 the <a href="#tutorial">tutorial</a>.</p>
-<h3 id="an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</h3>
+<h3 id="-a-id-an-array-of-ids-as-boolean-flags-a-https-github-com-calmm-js-partial-lenses-an-array-of-ids-as-boolean-flags-an-array-of-ids-as-boolean-flags"><a id="an-array-of-ids-as-boolean-flags"></a> <a href="https://github.com/calmm-js/partial.lenses#an-array-of-ids-as-boolean-flags">■</a> An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
 constant strings such as</p>
 <pre><code class="hljs lang-js">var sampleFlags = [&quot;id-19&quot;, &quot;id-76&quot;]
@@ -1622,8 +1622,7 @@ a parameterized lens that does just that:</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set(flag(&quot;id-76&quot;), false, sampleFlags)
 </code></pre>
-<h3 id="dependent-fields">Dependent fields</h3>
-<h3 id="collection-toggle">Collection toggle</h3>
+<h3 id="-a-id-collection-toggle-a-https-github-com-calmm-js-partial-lenses-collection-toggle-collection-toggle"><a id="collection-toggle"></a> <a href="https://github.com/calmm-js/partial.lenses#collection-toggle">■</a> Collection toggle</h3>
 <p>A typical element of UIs that display a list of selectable items is a checkbox
 to select or unselect all items.  For example,
 the <a href="http://todomvc.com/">TodoMVC</a> spec
@@ -1649,7 +1648,7 @@ traversals:</p>
 </code></pre>
 <p>As an exercise define <code>unselectAll</code> using the <a href="#L-or"><code>L.or</code></a> fold.  How does it
 differ from <code>selectAll</code>?</p>
-<h3 id="bst-as-a-lens">BST as a lens</h3>
+<h3 id="-a-id-bst-as-a-lens-a-https-github-com-calmm-js-partial-lenses-bst-as-a-lens-bst-as-a-lens"><a id="bst-as-a-lens"></a> <a href="https://github.com/calmm-js/partial.lenses#bst-as-a-lens">■</a> BST as a lens</h3>
 <p>Binary search trees might initially seem to be outside the scope of definable
 lenses.  However, given basic BST operations, one could easily wrap them as a
 primitive partial lens.  But could we leverage lens combinators to build a BST
@@ -1742,7 +1741,7 @@ L.concatAs(R.toUpper, Concat, values, sampleBST)
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([values, L.when(x =&gt; x &gt; &quot;e&quot;)], sampleBST)
 </code></pre>
-<h3 id="-a-id-interfacing-a-interfacing-with-immutable-js"><a id="interfacing"></a> Interfacing with Immutable.js</h3>
+<h3 id="-a-id-interfacing-a-https-github-com-calmm-js-partial-lenses-interfacing-interfacing-with-immutable-js"><a id="interfacing"></a> <a href="https://github.com/calmm-js/partial.lenses#interfacing">■</a> Interfacing with Immutable.js</h3>
 <p><a href="http://facebook.github.io/immutable-js/">Immutable.js</a> is a popular library
 providing immutable data structures.  As argued
 in
