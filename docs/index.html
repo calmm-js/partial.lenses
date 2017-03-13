@@ -1630,8 +1630,7 @@ and <code>initial</code> values for some measure and the idea is that the <code>
 cannot be greater than the <code>maximum</code> value.  One way to deal with this
 requirement is to implement it in the lenses that are used to access the
 <code>maximum</code> and <code>initial</code> values.  This way the UI components that allows the user
-to edit those values can be dumb and does not need to know about the
-restrictions.</p>
+to edit those values can be dumb and do not need to know about the restrictions.</p>
 <p>One way to build such a lens is to use a combination of <a href="#L-props"><code>L.props</code></a>
 (or, in more complex cases, <a href="#L-pick"><code>L.pick</code></a>) to limit the set of properties
 to deal with, and <a href="#L-rewrite"><code>L.rewrite</code></a> to insert the desired restriction

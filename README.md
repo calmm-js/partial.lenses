@@ -2305,8 +2305,7 @@ and `initial` values for some measure and the idea is that the `initial` value
 cannot be greater than the `maximum` value.  One way to deal with this
 requirement is to implement it in the lenses that are used to access the
 `maximum` and `initial` values.  This way the UI components that allows the user
-to edit those values can be dumb and does not need to know about the
-restrictions.
+to edit those values can be dumb and do not need to know about the restrictions.
 
 One way to build such a lens is to use a combination of [`L.props`](#L-props)
 (or, in more complex cases, [`L.pick`](#L-pick)) to limit the set of properties
