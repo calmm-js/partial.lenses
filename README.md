@@ -12,7 +12,7 @@ for manipulating non-JSON objects, such as [Immutable.js](#interfacing)
 collections.  A partial lens can *view* optional data, *insert* new data,
 *update* existing data and *remove* existing data and can, for example, provide
 *defaults* and maintain *required* data structure
-parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/)
+parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/#)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 [![Bower version](https://badge.fury.io/bo/partial.lenses.svg)](https://badge.fury.io/bo/partial.lenses)
@@ -182,15 +182,15 @@ import * as L from "partial.lenses"
 import * as R from "ramda"
 ```
 
-and [▶ play](https://calmm-js.github.io/partial.lenses#getting-started) just a
+and [▶ play](https://calmm-js.github.io/partial.lenses/#getting-started) just a
 bit with lenses.
 
-> Note that links with the play
-> symbol, [▶](https://calmm-js.github.io/partial.lenses#getting-started), take
-> you to an interactive version of this page where almost all of the code
-> snippets are editable and evaluated in the browser.  Note that due to the
-> large number of snippets the interactive version of this page takes awhile to
-> render.
+> Note that links with
+> the [▶ play](https://calmm-js.github.io/partial.lenses/#getting-started)
+> symbol, take you to an interactive version of this page where almost all of
+> the code snippets are editable and evaluated in the browser.  Note that due to
+> the large number of snippets the interactive version of this page takes awhile
+> to render.
 
 As mentioned earlier, with lenses we can specify a path to focus on an element.
 To specify such a path we use primitive lenses
@@ -640,7 +640,7 @@ R.identity({
 ```
 
 Note, however, that *partial* lenses are not (total) lenses.  You might want
-to [▶ play](https://calmm-js.github.io/partial.lenses#on-lens-laws) with the
+to [▶ play](https://calmm-js.github.io/partial.lenses/#on-lens-laws) with the
 laws in your browser.
 
 #### Operations on optics
