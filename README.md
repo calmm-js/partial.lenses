@@ -2259,14 +2259,14 @@ the [tutorial](#tutorial).
 ### <a id="an-array-of-ids-as-boolean-flags"></a> [▶](https://calmm-js.github.io/partial.lenses/#an-array-of-ids-as-boolean-flags) An array of ids as boolean flags
 
 A case that we have run into multiple times is where we have an array of
-constant strings such as
+constant strings that we wish to manipulate as if it was a collection of boolean
+flags:
 
 ```js
 const sampleFlags = ["id-19", "id-76"]
 ```
 
-that we wish to manipulate as if it was a collection of boolean flags.  Here is
-a parameterized lens that does just that:
+Here is a parameterized lens that does just that:
 
 ```js
 const flag = id => [L.normalize(R.sortBy(R.identity)),

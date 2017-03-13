@@ -1603,11 +1603,11 @@ operation only makes sense on isomorphisms.</p>
 the <a href="#tutorial">tutorial</a>.</p>
 <h3 id="-a-id-an-array-of-ids-as-boolean-flags-a-https-github-com-calmm-js-partial-lenses-an-array-of-ids-as-boolean-flags-an-array-of-ids-as-boolean-flags"><a id="an-array-of-ids-as-boolean-flags"></a> <a href="https://github.com/calmm-js/partial.lenses#an-array-of-ids-as-boolean-flags">■</a> An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
-constant strings such as</p>
+constant strings that we wish to manipulate as if it was a collection of boolean
+flags:</p>
 <pre><code class="hljs lang-js">var sampleFlags = [&quot;id-19&quot;, &quot;id-76&quot;]
 </code></pre>
-<p>that we wish to manipulate as if it was a collection of boolean flags.  Here is
-a parameterized lens that does just that:</p>
+<p>Here is a parameterized lens that does just that:</p>
 <pre><code class="hljs lang-js">var flag = id =&gt; [L.normalize(R.sortBy(R.identity)),
                     L.find(R.equals(id)),
                     L.replace(undefined, false),
