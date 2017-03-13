@@ -209,6 +209,7 @@ parts.  <a href="#">▶ Try Lenses!</a></p>
 </li>
 <li><a href="#examples">Examples</a><ul>
 <li><a href="#an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</a></li>
+<li><a href="#collection-toggle">Collection toggle</a></li>
 <li><a href="#bst-as-a-lens">BST as a lens</a></li>
 <li><a href="#interfacing">Interfacing with Immutable.js</a></li>
 </ul>
@@ -1621,6 +1622,33 @@ a parameterized lens that does just that:</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set(flag(&quot;id-76&quot;), false, sampleFlags)
 </code></pre>
+<h3 id="dependent-fields">Dependent fields</h3>
+<h3 id="collection-toggle">Collection toggle</h3>
+<p>A typical element of UIs that display a list of selectable items is a checkbox
+to select or unselect all items.  For example,
+the <a href="http://todomvc.com/">TodoMVC</a> spec
+includes
+<a href="https://github.com/tastejs/todomvc/blob/master/app-spec.md#mark-all-as-complete">such a checkbox</a>.
+The state of a checkbox is a single boolean.  How do we create a lens that
+transforms a collection of booleans into a single boolean?</p>
+<p>The state of a todo list contains a boolean <code>completed</code> flag per item:</p>
+<pre><code class="hljs lang-js">var sampleTodos = [{completed: true}, {completed: false}, {completed: true}]
+</code></pre>
+<p>We can address those flags with a traversal:</p>
+<pre><code class="hljs lang-js">var completedFlags = [L.elems, &quot;completed&quot;]
+</code></pre>
+<p>To compute a single boolean out of a traversal over booleans we can use
+the <a href="#L-and"><code>L.and</code></a> fold and use that to define a lens parameterized over flag
+traversals:</p>
+<pre><code class="hljs lang-js">var selectAll = flags =&gt; L.lens(L.and(flags), L.set(flags))
+</code></pre>
+<p>Now we can say, for example:</p>
+<pre><code class="hljs lang-js">L.get(selectAll(completedFlags), sampleTodos)
+</code></pre>
+<pre><code class="hljs lang-js">L.set(selectAll(completedFlags), true, sampleTodos)
+</code></pre>
+<p>As an exercise define <code>unselectAll</code> using the <a href="#L-or"><code>L.or</code></a> fold.  How does it
+differ from <code>selectAll</code>?</p>
 <h3 id="bst-as-a-lens">BST as a lens</h3>
 <p>Binary search trees might initially seem to be outside the scope of definable
 lenses.  However, given basic BST operations, one could easily wrap them as a

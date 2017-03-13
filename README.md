@@ -122,6 +122,7 @@ parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/#)
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
+  * [Collection toggle](#collection-toggle)
   * [BST as a lens](#bst-as-a-lens)
   * [Interfacing with Immutable.js](#interfacing)
 * [Background](#background)
@@ -2294,6 +2295,50 @@ L.set(flag("id-69"), true, sampleFlags)
 L.set(flag("id-76"), false, sampleFlags)
 // ['id-19']
 ```
+
+### Collection toggle
+
+A typical element of UIs that display a list of selectable items is a checkbox
+to select or unselect all items.  For example,
+the [TodoMVC](http://todomvc.com/) spec
+includes
+[such a checkbox](https://github.com/tastejs/todomvc/blob/master/app-spec.md#mark-all-as-complete).
+The state of a checkbox is a single boolean.  How do we create a lens that
+transforms a collection of booleans into a single boolean?
+
+The state of a todo list contains a boolean `completed` flag per item:
+
+```js
+const sampleTodos = [{completed: true}, {completed: false}, {completed: true}]
+```
+
+We can address those flags with a traversal:
+
+```js
+const completedFlags = [L.elems, "completed"]
+```
+
+To compute a single boolean out of a traversal over booleans we can use
+the [`L.and`](#L-and) fold and use that to define a lens parameterized over flag
+traversals:
+
+```js
+const selectAll = flags => L.lens(L.and(flags), L.set(flags))
+```
+
+Now we can say, for example:
+
+```js
+L.get(selectAll(completedFlags), sampleTodos)
+// false
+```
+```js
+L.set(selectAll(completedFlags), true, sampleTodos)
+// [{completed: true}, {completed: true}, {completed: true}]
+```
+
+As an exercise define `unselectAll` using the [`L.or`](#L-or) fold.  How does it
+differ from `selectAll`?
 
 ### BST as a lens
 
