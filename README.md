@@ -603,7 +603,7 @@ behave.  Here is a table of the means of composition supported by this library:
 | Nesting               | [`L.compose(...os)`](#L-compose)                                    | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
 | Recursing             | [`L.lazy(o => o)`](#L-lazy)                                         | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 | Adapting              | [`L.orElse(lb, la)`](#L-orElse)                                     | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
-| [Querying](#querying) | [`L.choice(...ls)`](#L-choice) and [`L.chain(x => o, o)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus)
+| [Querying](#querying) | [`L.choice(...ls)`](#L-choice) and [`L.chain(x => o, o)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [lenses](#lenses)
 | Picking               | [`L.pick({...p:l})`](#L-pick)                                       | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
 | Branching             | [`L.branch({...p:t})`](#L-branch)                                   | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
 | Sequencing            | [`L.seq(...ts)`](#L-seq)                                            | Sequential application of [transforms](#transforms)
@@ -2128,11 +2128,12 @@ and [`define`](#L-define).
 
 ### Isomorphisms
 
-The focus of an [isomorphism](https://en.wikipedia.org/wiki/Isomorphism) is the
-whole data structure rather than a part of it.  Furthermore, an isomorphism can
-be [inverted](#L-inverse).  More specifically, a lens, `iso`, is an isomorphism
-iff the following equations hold for all `x` and `y` in the domain and range,
-respectively, of the lens:
+[Isomorphisms](https://en.wikipedia.org/wiki/Isomorphism) are [lenses](#lenses)
+with an [inverse](#L-inverse).  The focus of an isomorphism is the whole data
+structure rather than a part of it.
+
+More specifically, a lens, `iso`, is an isomorphism iff the following equations
+hold for all `x` and `y` in the domain and range, respectively, of the lens:
 
 ```jsx
 L.set(iso, L.get(iso, x), undefined) = x
