@@ -2527,7 +2527,8 @@ L.remove([values, L.when(x => x > "e")], sampleBST)
 providing immutable data structures.  As argued
 in
 [Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3) it
-can be useful to wrap such libraries as [optics](#optics).
+can be useful to be able to manipulate Immutable.js data structures
+using [optics](#optics).
 
 When interfacing external libraries with partial lenses one does need to
 consider whether and how to support partiality.  Partial lenses allow one to
