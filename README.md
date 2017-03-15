@@ -1062,7 +1062,8 @@ visited only once and can, for example,
 be
 [collected](#L-collect),
 [folded](#L-concatAs), [modified](#L-modify), [set](#L-set)
-and [removed](#L-remove).
+and [removed](#L-remove).  Put in another way, a traversal specifies a set of
+paths to elements in a data structure.
 
 #### Operations on traversals
 
@@ -1421,7 +1422,9 @@ L.sum(L.elems, [1,2,3])
 ##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
 
 `L.branch` creates a new traversal from a given template object that specifies
-how the new traversal should visit the properties of an object.
+how the new traversal should visit the properties of an object.  If one thinks
+of traversals as specifying sets of paths, then the template can be seen as
+mapping each property to a set of paths to traverse.
 
 For example:
 
@@ -1430,6 +1433,12 @@ L.collect(L.branch({first: L.elems, second: L.identity}),
           {first: ["x"], second: "y"})
 // [ 'x', 'y' ]
 ```
+
+The use of [`L.identity`](#L-identity) above might be puzzling at
+first.  [`L.identity`](#L-identity) essentially specifies an empty path.  So,
+when a property is mapped to [`L.identity`](#L-identity) in the template given
+to `L.branch`, it means that the element is to be visited by the resulting
+traversal.
 
 Note that you can also compose `L.branch` with other optics.  For example, you
 can compose with [`L.pick`](#L-pick) to create a traversal over specific
@@ -1512,7 +1521,8 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
 
 ### Lenses
 
-Lenses always have a single focus which can be [viewed](#L-get) directly.
+Lenses always have a single focus which can be [viewed](#L-get) directly.  Put
+in another way, a lens specific a path to a single element in a data structure.
 
 #### Operations on lenses
 
@@ -2214,7 +2224,9 @@ L.modify([uriComponent,
 ##### <a id="L-identity"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-identity) [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
 
 `L.identity` is the identity element of lens composition and also the identity
-isomorphism.  The following equations characterize `L.identity`:
+isomorphism.  `L.identity` can also been seen as specifying an empty path.
+Indeed, in this library, when used as an optic, `L.identity` is equivalent to
+[`[]`](#L-compose).  The following equations characterize `L.identity`:
 
 ```jsx
       L.get(L.identity, x) = x
