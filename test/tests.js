@@ -820,3 +820,12 @@ describe("lazy folds", () => {
   testEq(`L.and(L.elems, [])`, true)
   testEq(`L.or(L.elems, [])`, false)
 })
+
+describe("L.last", () => {
+  testEq(`L.get(L.last, undefined)`, undefined)
+  testEq(`L.get(L.last, [])`, undefined)
+  testEq(`L.get(L.last, [5])`, 5)
+  testEq(`L.set(L.last, 5, undefined)`, [5])
+  testEq(`L.set(L.last, 5, [])`, [5])
+  testEq(`L.set(L.last, 5, [1,2])`, [1,5])
+})
