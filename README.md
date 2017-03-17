@@ -1181,7 +1181,7 @@ L.all(x => 1 <= x && x <= 6,
 // true
 ```
 
-See also: [`L.any`](#L-any) and [`L.firstAs`](#L-firstAs).
+See also: [`L.any`](#L-any) and [`L.selectAs`](#L-selectAs).
 
 **WARNING: Lazy folds over traversals are experimental.**
 
@@ -1216,7 +1216,7 @@ L.any(x => x > 5,
 // true
 ```
 
-See also: [`L.all`](#L-all) and [`L.firstAs`](#L-firstAs).
+See also: [`L.all`](#L-all) and [`L.selectAs`](#L-selectAs).
 
 **WARNING: Lazy folds over traversals are experimental.**
 
