@@ -3049,7 +3049,8 @@ Aside from the code changes, a PR should also include tests, and documentation.
 
 When implementing partial optics it is important to consider the behavior of the
 optics when the focus doesn't match the expectation of the optic and also
-whether the optic should propage removal.  Such behavior should also be tested.
+whether the optic should propagate removal.  Such behavior should also be
+tested.
 
 It is best not to commit changes to generated files in PRs.  Some of the files
 in `docs` and `dist` directories are generated.
