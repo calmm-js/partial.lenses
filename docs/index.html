@@ -110,14 +110,16 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a></li>
-<li><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></li>
-<li><a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><del><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></del></li>
+<li><del><a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></del></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-or" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.or(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a></li>
+<li><a href="#L-select" title="L.select: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.select(traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><a href="#L-selectAs" title="L.selectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.selectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></li>
 </ul>
 </li>
@@ -1014,14 +1016,15 @@ the number of non-<code>undefined</code> elements.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.count([L.elems, &quot;x&quot;], [{x: 11}, {y: 12}])
 </code></pre>
-<h5 id="-a-id-l-first-a-contents-https-github-com-calmm-js-partial-lenses-l-first-l-first-traversal-maybedata-maybevalue-l-first-l-first-ptraversal-s-a-maybe-s-maybe-a-"><a id="L-first"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-first">■</a> <a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<h5 id="-a-id-l-first-a-contents-https-github-com-calmm-js-partial-lenses-l-first-l-first-traversal-maybedata-maybevalue-l-first-l-first-ptraversal-s-a-maybe-s-maybe-a-"><a id="L-first"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-first">■</a> <del><a href="#L-first" title="L.first: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.first(traversal, maybeData) ~&gt; maybeValue</code></a></del></h5>
+<p><strong>WARNING: <code>L.first</code> has been renamed <a href="#L-select"><code>L.select</code></a>.</strong></p>
 <p><code>L.first</code> goes lazily over the elements focused on by the given traversal and
 returns the first non-<code>undefined</code> element.</p>
 <pre><code class="hljs lang-js">L.first([L.elems, &quot;y&quot;], [{x:1},{y:2},{z:3}])
 </code></pre>
 <p>Note that <code>L.first</code> is equivalent to <a href="#L-firstAs"><code>L.firstAs(R.identity)</code></a>.</p>
-<p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
-<h5 id="-a-id-l-firstas-a-contents-https-github-com-calmm-js-partial-lenses-l-firstas-l-firstas-maybevalue-index-maybevalue-traversal-maybedata-maybevalue-l-firstas-l-firstas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-maybe-b-"><a id="L-firstAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-firstAs">■</a> <a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<h5 id="-a-id-l-firstas-a-contents-https-github-com-calmm-js-partial-lenses-l-firstas-l-firstas-maybevalue-index-maybevalue-traversal-maybedata-maybevalue-l-firstas-l-firstas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-maybe-b-"><a id="L-firstAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-firstAs">■</a> <del><a href="#L-firstAs" title="L.firstAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.firstAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></del></h5>
+<p><strong>WARNING: <code>L.firstAs</code> has been renamed <a href="#L-selectAs"><code>L.selectAs</code></a>.</strong></p>
 <p><code>L.firstAs</code> goes lazily over the elements focused on by the given traversal,
 applying the given function to each element, and returns the first
 non-<code>undefined</code> value returned by the function.</p>
@@ -1041,7 +1044,6 @@ implement a for all predicate over traversals:</p>
     flatten,
     [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
 <h5 id="-a-id-l-foldl-a-contents-https-github-com-calmm-js-partial-lenses-l-foldl-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-value-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a id="L-foldl"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldl">■</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
@@ -1081,6 +1083,34 @@ traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.product(L.elems, [1,2,3])
 </code></pre>
+<h5 id="-a-id-l-select-a-contents-https-github-com-calmm-js-partial-lenses-l-select-l-select-traversal-maybedata-maybevalue-l-select-l-select-ptraversal-s-a-maybe-s-maybe-a-"><a id="L-select"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-select">■</a> <a href="#L-select" title="L.select: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.select(traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<p><code>L.select</code> goes lazily over the elements focused on by the given traversal and
+returns the select non-<code>undefined</code> element.</p>
+<pre><code class="hljs lang-js">L.select([L.elems, &quot;y&quot;], [{x:1},{y:2},{z:3}])
+</code></pre>
+<p>Note that <code>L.select</code> is equivalent to <a href="#L-selectAs"><code>L.selectAs(R.identity)</code></a>.</p>
+<p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
+<h5 id="-a-id-l-selectas-a-contents-https-github-com-calmm-js-partial-lenses-l-selectas-l-selectas-maybevalue-index-maybevalue-traversal-maybedata-maybevalue-l-selectas-l-selectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-maybe-b-"><a id="L-selectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-selectAs">■</a> <a href="#L-selectAs" title="L.selectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.selectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></h5>
+<p><code>L.selectAs</code> goes lazily over the elements focused on by the given traversal,
+applying the given function to each element, and returns the select
+non-<code>undefined</code> value returned by the function.</p>
+<pre><code class="hljs lang-js">L.selectAs(x =&gt; x &gt; 3 ? -x : undefined, L.elems, [3,1,4,1,5])
+</code></pre>
+<p><code>L.selectAs</code> operates lazily.  The user specified function is only applied to
+elements until the select non-<code>undefined</code> value is returned and after that
+<code>L.selectAs</code> returns without examining more elements.</p>
+<p>Note that <code>L.selectAs</code> can be used to implement many other operations over
+traversals such as finding an element matching a predicate and checking whether
+all/any elements match a predicate.  For example, here is how you could
+implement a for all predicate over traversals:</p>
+<pre><code class="hljs lang-js">var all = R.curry((p, t, s) =&gt; !L.selectAs(x =&gt; p(x) ? undefined : true, t, s))
+</code></pre>
+<p>Now:</p>
+<pre><code class="hljs lang-js">all(x =&gt; x &lt; 9,
+    flatten,
+    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+</code></pre>
+<p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
 <h5 id="-a-id-l-sum-a-contents-https-github-com-calmm-js-partial-lenses-l-sum-l-sum-traversal-maybedata-number-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a id="L-sum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-sum">■</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
 <p>For example:</p>
