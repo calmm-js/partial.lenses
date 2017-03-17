@@ -3042,6 +3042,10 @@ Before starting work on a major PR, it is a good idea to open an issue or maybe
 ask on [gitter](https://gitter.im/calmm-js/chat) whether the contribution sounds
 like something that should be added to this library.
 
+If you allow us to make changes to your PR, it can make the process
+smoother:
+[Allowing changes to a pull request branch created from a fork](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).
+
 Aside from the code changes, a PR should also include tests, and documentation.
 
 When implementing partial optics it is important to consider the behavior of the
