@@ -801,6 +801,7 @@ describe("seq", () => {
 })
 
 describe("lazy folds", () => {
+  testEq(`L.select(flatten, [[[[[[[[[[101]]]]]]]]]])`, 101)
   testEq(`L.select(L.elems, [])`, undefined)
   testEq(`L.select(L.values, {})`, undefined)
   testEq(`X.first(L.values, {})`, undefined)
