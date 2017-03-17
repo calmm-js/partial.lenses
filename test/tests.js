@@ -733,6 +733,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.get(L.seq(0), ["x"])`)
 
     testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
+
+    testThrows(`L.toFunction(-1)`)
   })
 }
 
