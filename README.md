@@ -3050,7 +3050,7 @@ whether the optic should propagate removal.  Such behavior should also be
 tested.
 
 It is best not to commit changes to generated files in PRs.  Some of the files
-in `docs` and `dist` directories are generated.
+in `docs`, `lib` and `dist` directories are generated.
 
 ### Building
 
