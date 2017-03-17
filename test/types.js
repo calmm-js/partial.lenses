@@ -124,13 +124,6 @@ export const collectAs = T.fn([T.fn([T_maybeData, T_index], T_maybeData),
 
 export const count = T.fn([T_traversal, T_maybeData], T.number)
 
-export const firstAs =
-  T.fn([T.fn([T_maybeData, T_index], T.any),
-        T_traversal,
-        T_maybeData],
-       T.any)
-export const first = T.fn([T_traversal, T_maybeData], T.any)
-
 export const foldl =
   T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
         T.any,
@@ -146,6 +139,16 @@ export const or = T.fn([T_traversal, T_maybeData], T.boolean)
 
 export const product = count
 export const sum = count
+
+export const select = T.fn([T_traversal, T_maybeData], T.any)
+export const selectAs =
+  T.fn([T.fn([T_maybeData, T_index], T.any),
+        T_traversal,
+        T_maybeData],
+       T.any)
+
+export const first = select
+export const firstAs = selectAs
 
 // Creating new traversals
 

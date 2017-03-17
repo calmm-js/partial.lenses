@@ -174,12 +174,12 @@ function the(v) {
 const T = the(true)
 const not = x => !x
 
-const First = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
+const Select = ConcatOf((l, r) => l && l() || r && r(), void 0, id)
 
-const mkFirst = toM => (xi2yM, t, s) => {
+const mkSelect = toM => (xi2yM, t, s) => {
   if (process.env.NODE_ENV !== "production")
-    warn(mkFirst, "Lazy folds over traversals are experimental")
-  return (s = run(t, First, pipe2U(xi2yM, toM), s),
+    warn(mkSelect, "Lazy folds over traversals are experimental")
+  return (s = run(t, Select, pipe2U(xi2yM, toM), s),
           s && (s = s()) && s.v)
 }
 
@@ -596,11 +596,11 @@ export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) 
 
 // Folds over traversals
 
-export const all = pipe2U(mkFirst(x => x ? void 0 : T), not)
+export const all = pipe2U(mkSelect(x => x ? void 0 : T), not)
 
 export const and = all(id)
 
-export const any = pipe2U(mkFirst(x => x ? T : void 0), Boolean)
+export const any = pipe2U(mkSelect(x => x ? T : void 0), Boolean)
 
 export const collectAs = curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || [])
@@ -608,10 +608,6 @@ export const collectAs = curry((xi2y, t, s) =>
 export const collect = collectAs(id)
 
 export const count = concatAs(x => void 0 !== x ? 1 : 0, Sum)
-
-export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
-
-export const first = firstAs(id)
 
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
@@ -632,6 +628,18 @@ export const minimum = concat(Mum((x, y) => x < y))
 export const or = any(id)
 
 export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
+
+export const selectAs = curry(mkSelect(x => void 0 !== x ? the(x) : x))
+
+export const select = selectAs(id)
+
+export const firstAs = process.env.NODE_ENV === "production" ? selectAs : curry((f, t, d) =>
+  warn(firstAs, "`firstAs` has been renamed `selectAs`") ||
+  selectAs(f, t, d))
+
+export const first = process.env.NODE_ENV === "production" ? select : curry((t, d) =>
+  warn(first, "`first` has been renamed `select`") ||
+  select(t, d))
 
 export const sum = concatAs(unto(0), Sum)
 

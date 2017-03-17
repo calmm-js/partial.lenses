@@ -199,6 +199,8 @@ describe("arities", () => {
     replace: 2,
     required: 1,
     rewrite: 1,
+    select: 2,
+    selectAs: 3,
     seq: 0,
     set: 3,
     slice: 2,
@@ -799,20 +801,22 @@ describe("seq", () => {
 })
 
 describe("lazy folds", () => {
-  testEq(`L.first(L.elems, [])`, undefined)
-  testEq(`L.first(L.values, {})`, undefined)
-  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
-                    L.elems,
-                    [3, 1, 4, 1, 5])`,
+  testEq(`L.select(L.elems, [])`, undefined)
+  testEq(`L.select(L.values, {})`, undefined)
+  testEq(`X.first(L.values, {})`, undefined)
+  testEq(`L.selectAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                     L.elems,
+                     [3, 1, 4, 1, 5])`,
          [6, 2])
-  testEq(`L.firstAs((x, i) => x > 3 ? [x + 2, i] : undefined,
-                    L.values,
-                    {a:3, b:1, c:4, d:1, e:5})`,
+  testEq(`L.selectAs((x, i) => x > 3 ? [x + 2, i] : undefined,
+                     L.values,
+                     {a:3, b:1, c:4, d:1, e:5})`,
          [6, "c"])
-  testEq(`L.firstAs(x => {}, L.values, {x:1})`, undefined)
-  testEq(`L.firstAs(x => x < 9 ? undefined : [x],
-                    flatten,
-                    [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,
+  testEq(`L.selectAs(x => {}, L.values, {x:1})`, undefined)
+  testEq(`X.firstAs(x => {}, L.values, {x:1})`, undefined)
+  testEq(`L.selectAs(x => x < 9 ? undefined : [x],
+                     flatten,
+                     [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,
         [41])
 
   testEq(`L.any((x, i) => x > i, L.elems, [0,1,3])`, true)
