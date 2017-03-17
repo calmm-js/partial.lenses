@@ -3053,3 +3053,71 @@ whether the optic should propage removal.  Such behavior should also be tested.
 
 It is best not to commit changes to generated files in PRs.  Some of the files
 in `docs` and `dist` directories are generated.
+
+### Building
+
+The `prepublish` script is the usual way to build after changes:
+
+```bash
+npm run prepublish
+```
+
+It runs the tests (and lint rules) and builds the `lib` and `dist` files if the
+tests pass.  You can also run the scripts for those subtasks separately.
+
+### Testing
+
+The tests in this library are written in an atypical manner.
+
+First of all, the tests are written as strings that are `eval`ed.  This way one
+doesn't need to invent names or write prose for tests.
+
+There is also a special test that checks the arity of the exports.  You'll
+notice it if you add an export.
+
+The test code string is then actually used to run more than one test:
+
+* The `test/core.js` file contains a kind of simplified shadow implementation of
+  this library.  The results from the actual library implementation and the
+  shadow implementation are tested to be equal.  The idea is to make the shadow
+  implementations as simple as possible while the library implementations are
+  free to be tweaked and optimized.
+
+* The `test/types.js` file contains contract or type predicates for the library
+  primitives.  Those are also used when running tests to check that the
+  implementation matches the contracts.
+
+When you implement a new combinator, you will need to also add a type contract
+and a shadow implementation for the primitive.
+
+### Documentation
+
+The `docs` folder contains the generated documentation.  You can can open the
+file locally:
+
+```bash
+open docs/index.html
+```
+
+After adding something to the library, you need to run
+
+```bash
+npm run docs-bundle
+```
+
+to update the bundle used by the docs.
+
+To actually build the docs (translate the markdown to html), you can run
+
+```bash
+npm run docs
+```
+
+or you can use the watch
+
+```bash
+npm run docs-watch
+```
+
+which builds the docs if you save `README.md` (you will need to manually refresh
+browser).
