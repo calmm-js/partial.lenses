@@ -1899,7 +1899,26 @@ use [`L.define`](#L-define).
 
 ##### <a id="L-last"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-last) [`L.last ~> lens`](#L-last "L.last: PLens [a] a")
 
-`L.last`
+`L.last` focuses on the last element of an [array-like](#array-like) object. Focusing empty array or `undefined` 
+results in returning `undefined`. For example:
+
+```js
+L.get(L.last, [1,2,3])
+// 3
+L.get(L.last, [])
+// undefined
+```
+
+Setting value with `L.last` sets the last element of the object or appends the value if the focused object is empty or
+`undefined`. For example:
+
+```js
+L.set(L.last, 5, [1,2,3])
+// [1,2,5]
+L.set(L.last, 1, [])
+// [1]
+```
+
 
 ##### <a id="L-slice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-slice) [`L.slice(maybeBegin, maybeEnd) ~> lens`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
 
