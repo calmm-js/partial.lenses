@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Try Partial Lenses with KLIPSE</title>
+    <link rel="icon" href="https://avatars1.githubusercontent.com/u/17234211">
+    <link rel="stylesheet" type="text/css" href="github.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/googlecode.min.css">
+    <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script type="text/javascript">startTime = Date.now()</script>
+    <script type="text/javascript" src="start.js" async></script>
+  </head>
+  <body class="markdown-body">
+    <h1>Partial Lenses playground &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a></h1>
+    <p>Try partial lenses below:</p>
+    <pre><code class="hljs lang-js">L.modify([L.rewrite(R.join("")), L.elems, L.when((_, i) => i)],
+         c => "-" + c,
+         "playtime")
+    </code></pre>
+    <p>The following libraries are available:</p>
+    <ul>
+      <li><code>L</code> is <a href="https://github.com/calmm-js/partial.lenses/">partial.lenses</a></li>
+      <li><code>R</code> is <a href="http://ramdajs.com/">Ramda</a></li>
+      <li><code>moment</code> is <a href="https://momentjs.com/">Moment.js</a></li>
+      <li><code>Immutable</code> is <a href="http://facebook.github.io/immutable-js/">Immutable</a></li>
+    </ul>
+    <hr>
+    <p>Powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>.</p>
+  </body>
+</html>
