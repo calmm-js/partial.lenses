@@ -1334,7 +1334,7 @@ L.product(L.elems, [1,2,3])
 ##### <a id="L-select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-select) [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a")
 
 `L.select` goes lazily over the elements focused on by the given traversal and
-returns the select non-`undefined` element.
+returns the first non-`undefined` element.
 
 ```js
 L.select([L.elems, "y"], [{x:1},{y:2},{z:3}])
@@ -1348,7 +1348,7 @@ Note that `L.select` is equivalent to [`L.selectAs(R.identity)`](#L-selectAs).
 ##### <a id="L-selectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-selectAs) [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
 
 `L.selectAs` goes lazily over the elements focused on by the given traversal,
-applying the given function to each element, and returns the select
+applying the given function to each element, and returns the first
 non-`undefined` value returned by the function.
 
 ```js
@@ -1357,7 +1357,7 @@ L.selectAs(x => x > 3 ? -x : undefined, L.elems, [3,1,4,1,5])
 ```
 
 `L.selectAs` operates lazily.  The user specified function is only applied to
-elements until the select non-`undefined` value is returned and after that
+elements until the first non-`undefined` value is returned and after that
 `L.selectAs` returns without examining more elements.
 
 Note that `L.selectAs` can be used to implement many other operations over
