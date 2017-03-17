@@ -3039,11 +3039,8 @@ Feel free to suggest more links!
 Contributions in the form of pull requests are welcome!
 
 Before starting work on a major PR, it is a good idea to open an issue or maybe
-ask
-on
-[![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
-whether the contribution sounds like something that should be added to this
-library.
+ask on [gitter](https://gitter.im/calmm-js/chat) whether the contribution sounds
+like something that should be added to this library.
 
 Aside from the code changes, a PR should also include tests, and documentation.
 
