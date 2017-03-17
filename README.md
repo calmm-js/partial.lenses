@@ -1120,50 +1120,9 @@ Note that `L.concatAs` is staged so that after given the first two arguments,
 
 **WARNING: `L.merge` is obsolete, just use [`L.concat`](#L-concat).**
 
-`L.merge({empty, concat}, t, s)` performs a fold, using the given `concat` and
-`empty` operations, over the elements focused on by the given traversal or lens
-`t` from the given data structure `s`.  The `concat` operation and the constant
-returned by `empty()` should form
-a
-[commutative](https://en.wikipedia.org/wiki/Monoid#Commutative_monoid) [monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values focused on by `t`.
-
-For example:
-
-```js
-L.merge(Sum, L.elems, [1, 2, 3])
-// 6
-```
-
-Note that `L.merge` is staged so that after given the first argument,
-`L.merge(m)`, a computation step is performed.
-
-See also: [`L.concat`](#L-concat).
-
 ##### <a id="L-mergeAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-mergeAs) ~~[`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData) ~> value`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")~~
 
 **WARNING: `L.mergeAs` is obsolete, just use [`L.concatAs`](#L-concatAs).**
-
-`L.mergeAs(xMi2r, {empty, concat}, t, s)` performs a map, using given function
-`xMi2r`, and fold, using the given `concat` and `empty` operations, over the
-elements focused on by the given traversal or lens `t` from the given data
-structure `s`.  The `concat` operation and the constant returned by `empty()`
-should form
-a
-[commutative](https://en.wikipedia.org/wiki/Monoid#Commutative_monoid) [monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid) over
-the values returned by `xMi2r`.
-
-For example:
-
-```js
-L.mergeAs(x => x, Sum, L.elems, [1, 2, 3])
-// 6
-```
-
-Note that `L.mergeAs` is staged so that after given the first two arguments,
-`L.mergeAs(f, m)`, a computation step is performed.
-
-See also: [`L.concatAs`](#L-concatAs).
 
 #### Folds over traversals
 
@@ -1291,50 +1250,9 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 
 **WARNING: `L.first` has been renamed [`L.select`](#L-select).**
 
-`L.first` goes lazily over the elements focused on by the given traversal and
-returns the first non-`undefined` element.
-
-```js
-L.first([L.elems, "y"], [{x:1},{y:2},{z:3}])
-// 2
-```
-
-Note that `L.first` is equivalent to [`L.firstAs(R.identity)`](#L-firstAs).
-
 ##### <a id="L-firstAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-firstAs) ~~[`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")~~
 
 **WARNING: `L.firstAs` has been renamed [`L.selectAs`](#L-selectAs).**
-
-`L.firstAs` goes lazily over the elements focused on by the given traversal,
-applying the given function to each element, and returns the first
-non-`undefined` value returned by the function.
-
-```js
-L.firstAs(x => x > 3 ? -x : undefined, L.elems, [3,1,4,1,5])
-// -4
-```
-
-`L.firstAs` operates lazily.  The user specified function is only applied to
-elements until the first non-`undefined` value is returned and after that
-`L.firstAs` returns without examining more elements.
-
-Note that `L.firstAs` can be used to implement many other operations over
-traversals such as finding an element matching a predicate and checking whether
-all/any elements match a predicate.  For example, here is how you could
-implement a for all predicate over traversals:
-
-```js
-const all = R.curry((p, t, s) => !L.firstAs(x => p(x) ? undefined : true, t, s))
-```
-
-Now:
-
-```js
-all(x => x < 9,
-    flatten,
-    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
-// true
-```
 
 ##### <a id="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
 
