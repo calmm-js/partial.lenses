@@ -1289,7 +1289,7 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 
 ##### <a id="L-first"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-first) ~~[`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")~~
 
-**WARNING: `first` has been renamed [`select`](#L-select).**
+**WARNING: `L.first` has been renamed [`L.select`](#L-select).**
 
 `L.first` goes lazily over the elements focused on by the given traversal and
 returns the first non-`undefined` element.
@@ -1303,7 +1303,7 @@ Note that `L.first` is equivalent to [`L.firstAs(R.identity)`](#L-firstAs).
 
 ##### <a id="L-firstAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-firstAs) ~~[`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")~~
 
-**WARNING: `firstAs` has been renamed [`selectAs`](#L-selectAs).**
+**WARNING: `L.firstAs` has been renamed [`L.selectAs`](#L-selectAs).**
 
 `L.firstAs` goes lazily over the elements focused on by the given traversal,
 applying the given function to each element, and returns the first
