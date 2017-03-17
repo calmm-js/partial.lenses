@@ -3065,7 +3065,7 @@ tests pass.  You can also run the scripts for those subtasks separately.
 
 ### Testing
 
-The tests in this library are written in an atypical manner.
+The [tests](./test/tests.js) in this library are written in an atypical manner.
 
 First of all, the tests are written as strings that are `eval`ed.  This way one
 doesn't need to invent names or write prose for tests.
@@ -3075,15 +3075,15 @@ notice it if you add an export.
 
 The test code string is then actually used to run more than one test:
 
-* The `test/core.js` file contains a kind of simplified shadow implementation of
-  this library.  The results from the actual library implementation and the
-  shadow implementation are tested to be equal.  The idea is to make the shadow
-  implementations as simple as possible while the library implementations are
-  free to be tweaked and optimized.
+* The [`test/core.js`](./test/core.js) file contains a kind of simplified shadow
+  implementation of this library.  The results from the actual library
+  implementation and the shadow implementation are tested to be equal.  The idea
+  is to make the shadow implementations as simple as possible while the library
+  implementations are free to be tweaked and optimized.
 
-* The `test/types.js` file contains contract or type predicates for the library
-  primitives.  Those are also used when running tests to check that the
-  implementation matches the contracts.
+* The [`test/types.js`](./test/types.js) file contains contract or type
+  predicates for the library primitives.  Those are also used when running tests
+  to check that the implementation matches the contracts.
 
 When you implement a new combinator, you will need to also add a type contract
 and a shadow implementation for the primitive.
