@@ -609,6 +609,8 @@ export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
 
 export const first = firstAs(id)
 
+export const last = choose(maybeArray => seemsArrayLike(maybeArray) ? maybeArray.length-1 : append)
+
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
 

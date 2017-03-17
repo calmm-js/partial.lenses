@@ -177,6 +177,7 @@ describe("arities", () => {
     inverse: 1,
     iso: 2,
     just: 1,
+    last: 4,
     lazy: 1,
     lens: 2,
     log: 0,
