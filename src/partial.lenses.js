@@ -586,13 +586,13 @@ export const concatAs = curryN(4, (xMi2y, m) => {
 
 export const concat = concatAs(id)
 
-export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : (f, m, t, d) =>
+export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : curry((f, m, t, d) =>
   warn(mergeAs, "`mergeAs` is obsolete, just use `concatAs`") ||
-  concatAs(f, m, t, d)
+  concatAs(f, m, t, d))
 
-export const merge = process.env.NODE_ENV === "production" ? concat : (m, t, d) =>
+export const merge = process.env.NODE_ENV === "production" ? concat : curry((m, t, d) =>
   warn(merge, "`merge` is obsolete, just use `concat`") ||
-  concat(m, t, d)
+  concat(m, t, d))
 
 // Folds over traversals
 
