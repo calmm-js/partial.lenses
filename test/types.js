@@ -131,8 +131,6 @@ export const firstAs =
        T.any)
 export const first = T.fn([T_traversal, T_maybeData], T.any)
 
-export const last = T_lens
-
 export const foldl =
   T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
         T.any,
@@ -188,6 +186,7 @@ export const filter = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_data, T_index], T.any)], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.nonNegative], T_lens)
+export const last = T_lens
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 
 // Lensing objects

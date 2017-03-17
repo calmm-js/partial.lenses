@@ -613,8 +613,6 @@ export const firstAs = curry(mkFirst(x => void 0 !== x ? the(x) : x))
 
 export const first = firstAs(id)
 
-export const last = choose(maybeArray => seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
-
 export const foldl = curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
 
@@ -784,6 +782,8 @@ export const index = process.env.NODE_ENV === "production" ? id : x => {
     errorGiven("`index` expects a non-negative integer", x)
   return x
 }
+
+export const last = choose(maybeArray => seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
 
 export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
   const seems = seemsArrayLike(xs),

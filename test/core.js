@@ -87,8 +87,6 @@ export const firstAs = L.firstAs
 
 export const first = L.firstAs(R.identity)
 
-export const last = L.last
-
 export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 
@@ -162,6 +160,7 @@ export const findWith = (...ls) => {
   return [find(x => isDefined(get(lls, x))), lls]
 }
 export const index = L.index
+export const last = L.last
 export const slice = R.curry((b, e) => lens(
   xs => seemsArrayLike(xs) ? fromArrayLike(xs).slice(b, e) : undefined,
   (ys, xs) => {
