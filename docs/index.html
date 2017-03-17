@@ -159,6 +159,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-find" title="L.find: ((a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((value, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></li>
+<li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a></li>
 <li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a></li>
 </ul>
 </li>
@@ -223,6 +224,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#related-work">Related work</a></li>
 </ul>
 </li>
+<li><a href="#contributing">Contributing</a></li>
 </ul>
 <h2 id="tutorial">Tutorial</h2>
 <p>Let&#39;s look at an example that is based on an actual early use case that lead to
@@ -1381,6 +1383,21 @@ following example:</p>
 the handling of <code>undefined</code> within partial lenses, this is often not a problem,
 but sometimes you need the &quot;default&quot; value both ways.  In that case you can
 use <a href="#L-define"><code>L.define</code></a>.</p>
+<h5 id="-a-id-l-last-a-contents-https-github-com-calmm-js-partial-lenses-l-last-l-last-lens-l-last-l-last-plens-a-a-"><a id="L-last"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-last">■</a> <a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a></h5>
+<p><code>L.last</code> focuses on the last element of an <a href="#array-like">array-like</a> object or
+works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.</p>
+<p>Focusing on an empty array or <code>undefined</code> results in returning <code>undefined</code>.  For
+example:</p>
+<pre><code class="hljs lang-js">L.get(L.last, [1,2,3])
+</code></pre>
+<pre><code class="hljs lang-js">L.get(L.last, [])
+</code></pre>
+<p>Setting value with <code>L.last</code> sets the last element of the object or appends the
+value if the focused object is empty or <code>undefined</code>.  For example:</p>
+<pre><code class="hljs lang-js">L.set(L.last, 5, [1,2,3])
+</code></pre>
+<pre><code class="hljs lang-js">L.set(L.last, 1, [])
+</code></pre>
 <h5 id="-a-id-l-slice-a-contents-https-github-com-calmm-js-partial-lenses-l-slice-l-slice-maybebegin-maybeend-lens-l-slice-l-slice-maybe-integer-maybe-integer-plens-a-a-"><a id="L-slice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-slice">■</a> <a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a></h5>
 <p><code>L.slice</code> focuses on a specified range of elements of
 an <a href="#array-like">array-like</a> object.  The range is determined like with the
@@ -2155,7 +2172,7 @@ are given the following data:</p>
                    R.identity),
           sampleBloated)
 </code></pre>
-<h2 id="related-work">Related work</h2>
+<h3 id="related-work">Related work</h3>
 <p>Lenses are an old concept and there are dozens of academic papers on lenses and
 dozens of lens libraries for various languages.  Here are just a few links:</p>
 <ul>
@@ -2168,6 +2185,67 @@ dozens of lens libraries for various languages.  Here are just a few links:</p>
 <li><a href="https://github.com/flunc/optics">Flunc Optics</a></li>
 </ul>
 <p>Feel free to suggest more links!</p>
+<h2 id="contributing">Contributing</h2>
+<p>Contributions in the form of pull requests are welcome!</p>
+<p>Before starting work on a major PR, it is a good idea to open an issue or maybe
+ask on <a href="https://gitter.im/calmm-js/chat">gitter</a> whether the contribution sounds
+like something that should be added to this library.</p>
+<p>If you allow us to make changes to your PR, it can make the process
+smoother:
+<a href="https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/">Allowing changes to a pull request branch created from a fork</a>.
+We also welcome starting the PR sooner, before it is ready to be merged, rather
+than later so we know what is going on and can help.</p>
+<p>Aside from the code changes, a PR should also include tests, and documentation.</p>
+<p>When implementing partial optics it is important to consider the behavior of the
+optics when the focus doesn&#39;t match the expectation of the optic and also
+whether the optic should propagate removal.  Such behavior should also be
+tested.</p>
+<p>It is best not to commit changes to generated files in PRs.  Some of the files
+in <code>docs</code>, <code>lib</code> and <code>dist</code> directories are generated.</p>
+<h3 id="building">Building</h3>
+<p>The <code>prepublish</code> script is the usual way to build after changes:</p>
+<pre><code class="hljs lang-bash">npm run prepublish
+</code></pre>
+<p>It runs the tests (and lint rules) and builds the <code>lib</code> and <code>dist</code> files if the
+tests pass.  You can also run the scripts for those subtasks separately.</p>
+<h3 id="testing">Testing</h3>
+<p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/tests.js">tests</a> in this library are written in an atypical manner.</p>
+<p>First of all, the tests are written as strings that are <code>eval</code>ed.  This way one
+doesn&#39;t need to invent names or write prose for tests.</p>
+<p>There is also a special test that checks the arity of the exports.  You&#39;ll
+notice it if you add an export.</p>
+<p>The test code string is then actually used to run more than one test:</p>
+<ul>
+<li><p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/core.js"><code>test/core.js</code></a> file contains a kind of simplified shadow
+implementation of this library.  The results from the actual library
+implementation and the shadow implementation are tested to be equal.  The idea
+is to make the shadow implementations as simple as possible while the library
+implementations are free to be tweaked and optimized.</p>
+</li>
+<li><p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/types.js"><code>test/types.js</code></a> file contains contract or type
+predicates for the library primitives.  Those are also used when running tests
+to check that the implementation matches the contracts.</p>
+</li>
+</ul>
+<p>When you implement a new combinator, you will need to also add a type contract
+and a shadow implementation for the primitive.</p>
+<h3 id="documentation">Documentation</h3>
+<p>The <code>docs</code> folder contains the generated documentation.  You can can open the
+file locally:</p>
+<pre><code class="hljs lang-bash">open docs/index.html
+</code></pre>
+<p>After adding something to the library, you need to run</p>
+<pre><code class="hljs lang-bash">npm run docs-bundle
+</code></pre>
+<p>to update the bundle used by the docs.</p>
+<p>To actually build the docs (translate the markdown to html), you can run</p>
+<pre><code class="hljs lang-bash">npm run docs
+</code></pre>
+<p>or you can use the watch</p>
+<pre><code class="hljs lang-bash">npm run docs-watch
+</code></pre>
+<p>which builds the docs if you save <code>README.md</code> (you will need to manually refresh
+browser).</p>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">document.querySelector('.loading-message').className = "loading-hidden"
