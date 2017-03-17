@@ -132,6 +132,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
   * [Related work](#related-work)
+* [Contributing](#contributing)
 
 ## Tutorial
 
@@ -3018,7 +3019,7 @@ transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
 //                   including: {the: 'following'} } ] }
 ```
 
-## Related work
+### Related work
 
 Lenses are an old concept and there are dozens of academic papers on lenses and
 dozens of lens libraries for various languages.  Here are just a few links:
@@ -3032,3 +3033,23 @@ dozens of lens libraries for various languages.  Here are just a few links:
 * [Flunc Optics](https://github.com/flunc/optics)
 
 Feel free to suggest more links!
+
+## Contributing
+
+Contributions in the form of pull requests are welcome!
+
+Before starting work on a major PR, it is a good idea to open an issue or maybe
+ask
+on
+[![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat)
+whether the contribution sounds like something that should be added to this
+library.
+
+Aside from the code changes, a PR should also include tests, and documentation.
+
+When implementing partial optics it is important to consider the behavior of the
+optics when the focus doesn't match the expectation of the optic and also
+whether the optic should propage removal.  Such behavior should also be tested.
+
+It is best not to commit changes to generated files in PRs.  Some of the files
+in `docs` and `dist` directories are generated.
