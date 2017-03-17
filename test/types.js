@@ -93,15 +93,15 @@ export const log = T.fnVar(T.string, T_optic)
 
 // Operations on traversals
 
+export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
                               T_monoid,
                               T_traversal,
                               T_maybeData],
                              T.any)
-export const concat = T.fn([T_monoid, T_traversal, T_maybeData], T.any)
 
-export const mergeAs = concatAs
 export const merge = concat
+export const mergeAs = concatAs
 
 // Folds over traversals
 
