@@ -35,7 +35,7 @@ const T_opticFnOf = Category =>
        T_maybeData)
 
 const T_opticOf = Category => T.lazy(T_optic => T.or(
-  T.integer,
+  T.nonNegative,
   T.string,
   T.array(T_optic),
   T.fn([T_maybeData, T_index], T_maybeData),
