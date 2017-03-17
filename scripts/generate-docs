@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const title = "Try Partial Lenses with KLIPSE"
+const title = "Partial Lenses"
 const icon = "https://avatars1.githubusercontent.com/u/17234211"
 const github = "https://github.com/calmm-js/partial.lenses"
 const site = "https://calmm-js.github.io/partial.lenses/"

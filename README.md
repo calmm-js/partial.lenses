@@ -12,7 +12,7 @@ for manipulating non-JSON objects, such as [Immutable.js](#interfacing)
 collections.  A partial lens can *view* optional data, *insert* new data,
 *update* existing data and *remove* existing data and can, for example, provide
 *defaults* and maintain *required* data structure
-parts.  [▶ Try Lenses!](https://calmm-js.github.io/partial.lenses/#)
+parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 
 [![npm version](https://badge.fury.io/js/partial.lenses.svg)](http://badge.fury.io/js/partial.lenses)
 [![Bower version](https://badge.fury.io/bo/partial.lenses.svg)](https://badge.fury.io/bo/partial.lenses)
@@ -192,7 +192,10 @@ bit with lenses.
 > symbol, take you to an interactive version of this page where almost all of
 > the code snippets are editable and evaluated in the browser.  Note that due to
 > the large number of snippets the interactive version of this page takes awhile
-> to render.
+> to render.  There is also a
+> separate
+> [playground page](https://calmm-js.github.io/partial.lenses/playground.html)
+> that allows you to quickly try out lenses.
 
 As mentioned earlier, with lenses we can specify a path to focus on an element.
 To specify such a path we use primitive lenses
