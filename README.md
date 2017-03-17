@@ -96,6 +96,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.find((value, index) => testable) ~> lens`](#L-find "L.find: ((a, Index) -> Boolean) -> PLens [a] a")
       * [`L.findWith(...lenses) ~> lens`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
       * [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex`
+      * [`L.last ~> lens`](#L-last "L.last: PLens [a] a")
       * [`L.slice(maybeBegin, maybeEnd) ~> lens`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
     * [Lensing objects](#lensing-objects)
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
@@ -1896,6 +1897,35 @@ In other words, [`L.required`](#L-required) works in both directions.  Thanks to
 the handling of `undefined` within partial lenses, this is often not a problem,
 but sometimes you need the "default" value both ways.  In that case you can
 use [`L.define`](#L-define).
+
+##### <a id="L-last"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-last) [`L.last ~> lens`](#L-last "L.last: PLens [a] a")
+
+`L.last` focuses on the last element of an [array-like](#array-like) object or
+works like [`L.append`](#L-append) in case no such element exists.
+
+Focusing on an empty array or `undefined` results in returning `undefined`.  For
+example:
+
+```js
+L.get(L.last, [1,2,3])
+// 3
+```
+```js
+L.get(L.last, [])
+// undefined
+```
+
+Setting value with `L.last` sets the last element of the object or appends the
+value if the focused object is empty or `undefined`.  For example:
+
+```js
+L.set(L.last, 5, [1,2,3])
+// [1,2,5]
+```
+```js
+L.set(L.last, 1, [])
+// [1]
+```
 
 ##### <a id="L-slice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-slice) [`L.slice(maybeBegin, maybeEnd) ~> lens`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
 
