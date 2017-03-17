@@ -131,7 +131,7 @@ export const firstAs =
        T.any)
 export const first = T.fn([T_traversal, T_maybeData], T.any)
 
-export const last = T_optic
+export const last = T_lens
 
 export const foldl =
   T.fn([T.fn([T.any, T_maybeData, T_index], T.any),
