@@ -3045,6 +3045,8 @@ like something that should be added to this library.
 If you allow us to make changes to your PR, it can make the process
 smoother:
 [Allowing changes to a pull request branch created from a fork](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).
+We also welcome starting the PR sooner, before it is ready to be merged, rather
+than later so we know what is going on and can help.
 
 Aside from the code changes, a PR should also include tests, and documentation.
 
