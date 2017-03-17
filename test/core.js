@@ -83,10 +83,6 @@ export const and = all(R.identity)
 
 export const any = L.any
 
-export const firstAs = L.firstAs
-
-export const first = L.firstAs(R.identity)
-
 export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 
@@ -103,6 +99,12 @@ export const or = any(R.identity)
 
 export const product = concatDefined({empty: () => 1, concat: R.multiply})
 export const sum = concatDefined(Sum)
+
+export const selectAs = L.selectAs
+export const select = selectAs(R.identity)
+
+export const first = select
+export const firstAs = selectAs
 
 // Creating new traversals
 

@@ -1,5 +1,20 @@
 # Changelog
 
+## 9.8.0
+
+Renamed experimental `L.first` and `L.firstAs` as follows:
+
+```diff
+-L.first
++L.select
+
+-L.firstAs
++L.selectAs
+```
+
+This was done to avoid confusing the operations on traversals with the newly
+added `L.last` lens on array-like objects.
+
 ## 9.3.0
 
 Obsoleted `L.to` and `L.just`.  You can now directly compose optics with
