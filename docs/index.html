@@ -1687,12 +1687,12 @@ differ from <code>selectAll</code>?</p>
 <p>Binary search trees might initially seem to be outside the scope of definable
 lenses.  However, given basic BST operations, one could easily wrap them as a
 primitive partial lens.  But could we leverage lens combinators to build a BST
-lens more compositionally?  We can.  The <a href="#L-choose"><code>L.choose</code></a> combinator
-allows for dynamic construction of lenses based on examining the data structure
-being manipulated.  Inside <a href="#L-choose"><code>L.choose</code></a> we can write the ordinary BST
-logic to pick the correct branch based on the key in the currently examined node
-and the key that we are looking for.  So, here is our first attempt at a BST
-lens:</p>
+lens more compositionally?</p>
+<p>We can.  The <a href="#L-choose"><code>L.choose</code></a> combinator allows for dynamic construction
+of lenses based on examining the data structure being manipulated.
+Inside <a href="#L-choose"><code>L.choose</code></a> we can write the ordinary BST logic to pick the
+correct branch based on the key in the currently examined node and the key that
+we are looking for.  So, here is our first attempt at a BST lens:</p>
 <pre><code class="hljs lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; {
   const smaller = [&quot;smaller&quot;, rec]
   const greater = [&quot;greater&quot;, rec]
