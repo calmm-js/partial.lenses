@@ -34,8 +34,6 @@ const unto = c => x => void 0 !== x ? x : c
 
 const notPartial = x => void 0 !== x ? !x : x
 
-const isValidIndex = x => Number.isInteger(x) && 0 <= x
-
 const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
   isString(x)
@@ -99,6 +97,12 @@ function warn(f, m) {
 function errorGiven(m, o) {
   console.error(header + m + " - given:", o)
   throw new Error(m)
+}
+
+function checkIndex(x) {
+  if (!Number.isInteger(x) || x < 0)
+    errorGiven("`index` expects a non-negative integer", x)
+  return x
 }
 
 function reqFunction(o) {
@@ -238,8 +242,8 @@ const funProp = lensFrom(getProp, setProp)
 const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
 function setIndex(i, x, xs) {
-  if (process.env.NODE_ENV !== "production" && i < 0)
-    errorGiven("Negative indices are not supported by `index`", i)
+  if (process.env.NODE_ENV !== "production")
+    checkIndex(i)
   if (!seemsArrayLike(xs))
     xs = ""
   const n = xs.length
@@ -473,8 +477,8 @@ export function toFunction(o) {
     case "string":
       return funProp(o)
     case "number":
-      if (process.env.NODE_ENV !== "production" && !isValidIndex(o))
-        errorGiven("Only non-negative integers can be used as lenses", o)
+      if (process.env.NODE_ENV !== "production")
+        checkIndex(o)
       return funIndex(o)
     case "object":
       if (process.env.NODE_ENV !== "production")
@@ -790,11 +794,7 @@ export function findWith(...ls) {
   return [find(x => void 0 !== getU(lls, x)), lls]
 }
 
-export const index = process.env.NODE_ENV === "production" ? id : x => {
-  if (!isValidIndex(x))
-    errorGiven("`index` expects a non-negative integer", x)
-  return x
-}
+export const index = process.env.NODE_ENV === "production" ? id : checkIndex
 
 export const last = choose(maybeArray => seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
 
