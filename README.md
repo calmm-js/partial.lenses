@@ -1181,8 +1181,8 @@ See also: [`L.all`](#L-all) and [`L.selectAs`](#L-selectAs).
 
 ##### <a id="L-collect"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collect) [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
 
-`L.collect` returns an array of the defined elements focused on by the given
-traversal or lens from a data structure.
+`L.collect` returns an array of the non-`undefined` elements focused on by the
+given traversal or lens from a data structure.
 
 For example:
 
@@ -1197,12 +1197,8 @@ to [`L.collectAs(R.identity)`](#L-collectAs).
 ##### <a id="L-collectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collectAs) [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
 
 `L.collectAs` returns an array of the elements focused on by the given traversal
-or lens from a data structure and mapped by the given function to a defined
-value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
-that a partial *lens* always targets an element, but `L.collectAs` implicitly
-skips elements that are mapped to `undefined` by the given function.  Given a
-traversal, there can be any number of elements in the array returned by
-`L.collectAs`.
+or lens from a data structure and mapped by the given function to a
+non-`undefined` value.
 
 For example:
 

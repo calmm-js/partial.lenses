@@ -950,8 +950,8 @@ satisfy the given predicate.</p>
 <p>See also: <a href="#L-all"><code>L.all</code></a> and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <p><strong>WARNING: Lazy folds over traversals are experimental.</strong></p>
 <h5 id="-a-id-l-collect-a-contents-https-github-com-calmm-js-partial-lenses-l-collect-l-collect-traversal-maybedata-values-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a id="L-collect"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-collect">■</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></h5>
-<p><code>L.collect</code> returns an array of the defined elements focused on by the given
-traversal or lens from a data structure.</p>
+<p><code>L.collect</code> returns an array of the non-<code>undefined</code> elements focused on by the
+given traversal or lens from a data structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
@@ -959,12 +959,8 @@ traversal or lens from a data structure.</p>
 to <a href="#L-collectAs"><code>L.collectAs(R.identity)</code></a>.</p>
 <h5 id="-a-id-l-collectas-a-contents-https-github-com-calmm-js-partial-lenses-l-collectas-l-collectas-maybevalue-index-maybevalue-traversal-maybedata-values-l-collectas-l-collectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-b-"><a id="L-collectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-collectAs">■</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></h5>
 <p><code>L.collectAs</code> returns an array of the elements focused on by the given traversal
-or lens from a data structure and mapped by the given function to a defined
-value.  Given a lens, there will be 0 or 1 elements in the returned array.  Note
-that a partial <em>lens</em> always targets an element, but <code>L.collectAs</code> implicitly
-skips elements that are mapped to <code>undefined</code> by the given function.  Given a
-traversal, there can be any number of elements in the array returned by
-<code>L.collectAs</code>.</p>
+or lens from a data structure and mapped by the given function to a
+non-<code>undefined</code> value.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
