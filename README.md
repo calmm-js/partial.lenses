@@ -2163,7 +2163,7 @@ undefined)` are inverses of each other.
 For example:
 
 ```js
-var expect = (p, f) => x => p(x) ? f(x) : undefined
+const expect = (p, f) => x => p(x) ? f(x) : undefined
 
 const offBy1 = L.iso(expect(R.is(Number), R.inc),
                      expect(R.is(Number), R.dec))
@@ -2197,14 +2197,14 @@ doesn't match their expectation, the output is mapped to `undefined`.
 For example:
 
 ```js
-var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
-                         expect(R.is(String), encodeURIComponent))
+const uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
+                           expect(R.is(String), encodeURIComponent))
 
-var jsonString = L.iso(expect(R.is(String), JSON.parse),
-                       expect(R.is(Object), JSON.stringify))
+const jsonString = L.iso(expect(R.is(String), JSON.parse),
+                         expect(R.is(Object), JSON.stringify))
 
-var reverseString = L.iso(expect(R.is(String), R.reverse),
-                          expect(R.is(String), R.reverse))
+const reverseString = L.iso(expect(R.is(String), R.reverse),
+                            expect(R.is(String), R.reverse))
 
 L.modify([uriComponent,
           jsonString,

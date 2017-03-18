@@ -1561,13 +1561,13 @@ strictly necessary.  The functions should also be partial so that when the input
 doesn&#39;t match their expectation, the output is mapped to <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
-                         expect(R.is(String), encodeURIComponent))
+                           expect(R.is(String), encodeURIComponent))
 
 var jsonString = L.iso(expect(R.is(String), JSON.parse),
-                       expect(R.is(Object), JSON.stringify))
+                         expect(R.is(Object), JSON.stringify))
 
 var reverseString = L.iso(expect(R.is(String), R.reverse),
-                          expect(R.is(String), R.reverse))
+                            expect(R.is(String), R.reverse))
 
 L.modify([uriComponent,
           jsonString,
