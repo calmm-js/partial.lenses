@@ -588,11 +588,12 @@ This makes the optics in this library partial.
 
 Making all optics partial has a number of consequences.  For one thing, it can
 potentially hide bugs: an incorrectly specified optic treats the input as
-`undefined` and may seem to work without raising an error.  However, partiality
-also has a number of benefits.  In particular, it allows optics to seamlessly
-support both insertion and removal.  It also allows to reduce the number of
-necessary abstractions.  And it tends to make compositions of optics more
-concise with fewer required parts.
+`undefined` and may seem to work without raising an error.  We have not found
+this to be an issue in practice.  However, partiality also has a number of
+benefits.  In particular, it allows optics to seamlessly support both insertion
+and removal.  It also allows to reduce the number of necessary abstractions and
+it tends to make compositions of optics more concise with fewer required parts,
+which both help to avoid bugs.
 
 #### On composability
 
