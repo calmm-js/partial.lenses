@@ -65,8 +65,11 @@ const toList = x => x !== undefined ? [x] : []
 const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
 const flatten = [L.optional, L.lazy(rec => {
-  const nest = L.toFunction([L.elems, rec])
-  return L.choose(x => I.isArray(x) ? nest : L.identity)
+  const elems = L.toFunction([L.elems, rec])
+  const values = L.toFunction([L.values, rec])
+  return L.choose(x => (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 
 const naiveBST = L.rewrite(n => {
@@ -106,12 +109,11 @@ const bst = fromPairs(bstPairs)
 const incNum = x => typeof x === "number" ? x + 1 : x
 const nested = [{x:1,y:[2,{d:3},4],z:{a:5}}]
 const everywhere = [L.optional, L.lazy(rec => {
-  const elems = L.toFunction([L.elems, rec])
-  const values = L.toFunction([L.values, rec])
-  return L.seq(L.choose(x => (x instanceof Array ? elems :
-                              x instanceof Object ? values :
-                              L.zero)),
-               L.identity)
+  const elems = L.seq([L.elems, rec], L.identity)
+  const values = L.seq([L.values, rec], L.identity)
+  return L.choose(x => (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 
 const xyzs = L.seq("x","y","z")
