@@ -348,7 +348,7 @@ element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
 that creates an equality predicate from a given template object.</p>
 <h4 id="missing-data-can-be-expected">Missing data can be expected</h4>
-<p>Partial lenses can generally deal with missing data.  In this case
+<p>Partial lenses can generally deal with missing data.  In this case,
 when <a href="#L-find"><code>L.find</code></a> doesn&#39;t find an element, it instead works like a lens
 to <a href="#L-append">append</a> a new element into an array.</p>
 <p>So, if we use the partial lens to query a title that does not exist, we get the
@@ -494,6 +494,11 @@ the texts that are longer than 5 characters:</p>
 <pre><code class="hljs lang-js">L.remove([texts, L.when(t =&gt; t.length &gt; 5)],
          sampleTitles)
 </code></pre>
+<p>This concludes the tutorial.  The reference documentation contains lots of tiny
+examples and a few more involved examples such as <a href="#L-lazy"><code>flatten</code></a>.
+The <a href="#examples">examples</a> section describes a couple of lens compositions we&#39;ve
+found practical as well as examples that may help to
+see <a href="#bst-as-a-lens">possibilities</a> beyond the immediately obvious.</p>
 <h2 id="reference">Reference</h2>
 <p>The <a href="https://wiki.haskell.org/Combinator">combinators</a> provided by this library
 are available as named imports.  Typically one just imports the library as:</p>

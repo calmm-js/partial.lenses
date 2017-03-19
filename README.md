@@ -303,7 +303,7 @@ that creates an equality predicate from a given template object.
 
 #### Missing data can be expected
 
-Partial lenses can generally deal with missing data.  In this case
+Partial lenses can generally deal with missing data.  In this case,
 when [`L.find`](#L-find) doesn't find an element, it instead works like a lens
 to [append](#L-append) a new element into an array.
 
@@ -520,6 +520,12 @@ L.remove([texts, L.when(t => t.length > 5)],
          sampleTitles)
 // { contents: [ { language: 'en', text: 'Title' } ] }
 ```
+
+This concludes the tutorial.  The reference documentation contains lots of tiny
+examples and a few more involved examples such as [`flatten`](#L-lazy).
+The [examples](#examples) section describes a couple of lens compositions we've
+found practical as well as examples that may help to
+see [possibilities](#bst-as-a-lens) beyond the immediately obvious.
 
 ## Reference
 
