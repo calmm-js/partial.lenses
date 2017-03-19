@@ -3,6 +3,7 @@
 
   function initBundle(k) {
     require("babel-polyfill")
+    window.I = require("infestines")
     window.Immutable = require("immutable")
     window.L = require("partial.lenses")
     window.R = require("ramda")
