@@ -862,12 +862,11 @@ optics in sequence.</p>
 <p>Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:</p>
 <pre><code class="hljs lang-js">var everywhere = [L.optional, L.lazy(rec =&gt; {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.seq(L.choose(x =&gt; (x instanceof Array ? elems :
-                              x instanceof Object ? values :
-                              L.zero)),
-               L.identity)
+  const elems = L.seq([L.elems, rec], L.identity)
+  const values = L.seq([L.values, rec], L.identity)
+  return L.choose(x =&gt; (x instanceof Array ? elems :
+                        x instanceof Object ? values :
+                        L.identity))
 })]
 </code></pre>
 <p>The above <code>everywhere</code> transform is similar to
