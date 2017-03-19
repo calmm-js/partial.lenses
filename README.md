@@ -522,10 +522,10 @@ L.remove([texts, L.when(t => t.length > 5)],
 ```
 
 This concludes the tutorial.  The reference documentation contains lots of tiny
-examples and a few more involved examples such as [`flatten`](#L-lazy).
-The [examples](#examples) section describes a couple of lens compositions we've
-found practical as well as examples that may help to
-see [possibilities](#bst-as-a-lens) beyond the immediately obvious.
+examples and a few [more involved examples](#L-lazy).  The [examples](#examples)
+section describes a couple of lens compositions we've found practical as well as
+examples that may help to
+see [possibilities beyond the immediately obvious](#bst-as-a-lens).
 
 ## Reference
 
