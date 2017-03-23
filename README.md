@@ -3024,17 +3024,35 @@ transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
 ### Related work
 
 Lenses are an old concept and there are dozens of academic papers on lenses and
-dozens of lens libraries for various languages.  Here are just a few links:
+dozens of lens libraries for various languages.  Below are just a few
+links&mdash;feel free to suggest more!
 
-* [Polymorphic Update with van Laarhoven Lenses](http://r6.ca/blog/20120623T104901Z.html)
+#### Papers and other introductory material
+
 * [A clear picture of lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf)
+* [An Introduction Into Lenses In JavaScript](https://medium.com/javascript-inside/an-introduction-into-lenses-in-javascript-e494948d1ea5#.777juzfcw)
+* [Functional Lenses, How Do They Work](https://medium.com/@dtipson/functional-lenses-d1aba9e52254#.qja55h7uh)
+* [Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.4irzg5u1q)
+* [Polymorphic Update with van Laarhoven Lenses](http://r6.ca/blog/20120623T104901Z.html)
+
+#### JavaScript / TypeScript / Flow libraries
+
+* [5outh/nanoscope](https://github.com/5outh/nanoscope)
+* [DrBoolean/lenses](https://github.com/DrBoolean/lenses)
+* [fantasyland/fantasy-lenses](https://github.com/fantasyland/fantasy-lenses)
+* [flunc/optics](https://github.com/flunc/optics)
+* [gcanti/monocle-ts](https://github.com/gcanti/monocle-ts)
+* [hallettj/safety-lens](https://github.com/hallettj/safety-lens)
+* [phadej/optika](https://github.com/phadej/optika)
 * [ramda/ramda-lens](https://github.com/ramda/ramda-lens)
+* [thisismN/lentil](https://github.com/thisismN/lentil)
+
+#### Libraries for other languages
+
 * [ekmett/lens](https://github.com/ekmett/lens)
 * [julien-truffaut/Monocle](https://github.com/julien-truffaut/Monocle)
+* [purescript-contrib/purescript-profunctor-lenses](https://github.com/purescript-contrib/purescript-profunctor-lenses)
 * [xyncro/aether](https://github.com/xyncro/aether)
-* [Flunc Optics](https://github.com/flunc/optics)
-
-Feel free to suggest more links!
 
 ## Contributing
 
