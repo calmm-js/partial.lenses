@@ -54,8 +54,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Operations on traversals](#operations-on-traversals)
       * [`L.concat(monoid, traversal, maybeData) ~> value`](#L-concat "L.concat: Monoid a -> (PTraversal s a -> Maybe s -> a)")
       * [`L.concatAs((maybeValue, index) => value, monoid, traversal, maybeData) ~> value`](#L-concatAs "L.concatAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")
-      * ~~[`L.merge(monoid, traversal, maybeData) ~> value`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")~~
-      * ~~[`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData) ~> value`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")~~
     * [Folds over traversals](#folds-over-traversals)
       * [`L.all((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-all "L.all: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
       * [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
@@ -63,8 +61,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
       * [`L.count(traversal, maybeData) ~> number`](#L-count "L.count: PTraversal s a -> Number")
-      * ~~[`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")~~
-      * ~~[`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")~~
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
@@ -108,9 +104,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s")
     * [Adapting to data](#adapting-to-data)
       * [`L.orElse(backupLens, primaryLens) ~> lens`](#L-orElse "L.orElse: (PLens s a, PLens s a) -> PLens s a")
-    * [Read-only mapping](#read-only-mapping)
-      * ~~[`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")~~
-      * ~~[`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")~~
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
@@ -1122,14 +1115,6 @@ L.concatAs(x => x, Sum, L.elems, [1, 2, 3])
 Note that `L.concatAs` is staged so that after given the first two arguments,
 `L.concatAs(f, m)`, a computation step is performed.
 
-##### <a id="L-merge"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-merge) ~~[`L.merge(monoid, traversal, maybeData) ~> value`](#L-merge "L.merge: Monoid a -> (PTraversal s a -> Maybe s -> a)")~~
-
-**WARNING: `L.merge` is obsolete, just use [`L.concat`](#L-concat).**
-
-##### <a id="L-mergeAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-mergeAs) ~~[`L.mergeAs((maybeValue, index) => value, monoid, traversal, maybeData) ~> value`](#L-mergeAs "L.mergeAs: ((Maybe a, Index) -> r) -> Monoid r -> (PTraversal s a -> Maybe s -> r)")~~
-
-**WARNING: `L.mergeAs` is obsolete, just use [`L.concatAs`](#L-concatAs).**
-
 #### Folds over traversals
 
 ##### <a id="L-all"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-all) [`L.all((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-all "L.all: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
@@ -1148,8 +1133,6 @@ L.all(x => 1 <= x && x <= 6,
 
 See also: [`L.any`](#L-any) and [`L.selectAs`](#L-selectAs).
 
-**WARNING: Lazy folds over traversals are experimental.**
-
 ##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
 
 `L.and` determines whether all of the elements focused on by the given traversal
@@ -1164,8 +1147,6 @@ L.and(L.elems, [])
 
 Note that `L.and` is equivalent to [`L.all(R.identity)`](#L-all).  See
 also: [`L.or`](#L-or).
-
-**WARNING: Lazy folds over traversals are experimental.**
 
 ##### <a id="L-any"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-any) [`L.any((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-any "L.any: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
 
@@ -1182,8 +1163,6 @@ L.any(x => x > 5,
 ```
 
 See also: [`L.all`](#L-all) and [`L.selectAs`](#L-selectAs).
-
-**WARNING: Lazy folds over traversals are experimental.**
 
 ##### <a id="L-collect"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collect) [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
 
@@ -1248,14 +1227,6 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 // 1
 ```
 
-##### <a id="L-first"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-first) ~~[`L.first(traversal, maybeData) ~> maybeValue`](#L-first "L.first: PTraversal s a -> Maybe s -> Maybe a")~~
-
-**WARNING: `L.first` has been renamed [`L.select`](#L-select).**
-
-##### <a id="L-firstAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-firstAs) ~~[`L.firstAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-firstAs "L.firstAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")~~
-
-**WARNING: `L.firstAs` has been renamed [`L.selectAs`](#L-selectAs).**
-
 ##### <a id="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
 
 `L.foldl` performs a fold from left over the elements focused on by the given
@@ -1319,8 +1290,6 @@ L.or(L.elems, [])
 Note that `L.or` is equivalent to [`L.any(R.identity)`](#L-any).  See
 also: [`L.and`](#L-and).
 
-**WARNING: Lazy folds over traversals are experimental.**
-
 ##### <a id="L-product"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-product) [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
 
 `L.product` computes the product of the optional numbers targeted by the
@@ -1344,8 +1313,6 @@ L.select([L.elems, "y"], [{x:1},{y:2},{z:3}])
 ```
 
 Note that `L.select` is equivalent to [`L.selectAs(R.identity)`](#L-selectAs).
-
-**WARNING: Lazy folds over traversals are experimental.**
 
 ##### <a id="L-selectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-selectAs) [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
 
@@ -1379,8 +1346,6 @@ all(x => x < 9,
     [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
-
-**WARNING: Lazy folds over traversals are experimental.**
 
 ##### <a id="L-sum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-sum) [`L.sum(traversal, maybeData) ~> number`](#L-sum "L.sum: PTraversal s Number -> Maybe s -> Number")
 
@@ -2035,42 +2000,6 @@ with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
 (and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
 choice over lenses or use `L.orElse` to specify a default or backup lens
 for [`L.choice`](#L-choice), for example.
-
-#### Read-only mapping
-
-##### <a id="L-just"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-just) ~~[`L.just(maybeValue) ~> lens`](#L-just "L.just: Maybe a -> PLens s a")~~
-
-**WARNING: `L.just` is obsolete, just use e.g. [`R.always`](http://ramdajs.com/docs/#always).**
-
-`L.just` returns a read-only lens whose view is always the given value.  In
-other words, for all `x`, `y` and `z`:
-
-```jsx
-   L.get(L.just(z), x) = z
-L.set(L.just(z), y, x) = x
-```
-
-Note that `L.just(x)` is equivalent to [`L.to(R.always(x))`](#L-to).
-
-`L.just` can be seen as the unit function of the monad formed
-with [`L.chain`](#L-chain).
-
-##### <a id="L-to"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-to) ~~[`L.to((maybeValue, index) => maybeValue) ~> lens`](#L-to "L.to: ((a, Index) -> b) -> PLens a b")~~
-
-**WARNING: `L.to` is obsolete, you can directly [`L.compose`](#L-compose) plain functions with optics.**
-
-`L.to` creates a read-only lens whose view is determined by the given function.
-
-For example:
-
-```js
-L.get(["x", L.to(x => x + 1)], {x: 1})
-// 2
-```
-```js
-L.set(["x", L.to(x => x + 1)], 3, {x: 1})
-// { x: 1 }
-```
 
 #### Transforming data
 

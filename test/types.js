@@ -100,9 +100,6 @@ export const concatAs = T.fn([T.fn([T_maybeData, T_index], T.any),
                               T_maybeData],
                              T.any)
 
-export const merge = concat
-export const mergeAs = concatAs
-
 // Folds over traversals
 
 export const all = T.fn([T.fn([T_maybeData, T_index], T.any),
@@ -146,9 +143,6 @@ export const selectAs =
         T_traversal,
         T_maybeData],
        T.any)
-
-export const first = select
-export const firstAs = selectAs
 
 // Creating new traversals
 
@@ -205,11 +199,6 @@ export const valueOr = T.fn([T.any], T_lens)
 // Adapting to data
 
 export const orElse = T.fn([T_lens, T_lens], T_lens)
-
-// Read-only mapping
-
-export const just = T.fn([T.any], T.fnVar(T.any, T.any))
-export const to = T.fn([T.any], T.any)
 
 // Transforming data
 
