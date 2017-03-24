@@ -3,6 +3,7 @@ import {
   always,
   applyU,
   arityN,
+  array0,
   assocPartialU,
   constructorOf,
   curry,
@@ -49,6 +50,7 @@ function mapPartialIndexU(xi2y, xs) {
   if (j) {
     if (j < n)
       ys.length = j
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   }
 }
@@ -56,6 +58,7 @@ function mapPartialIndexU(xi2y, xs) {
 function copyToFrom(ys, k, xs, i, j) {
   while (i < j)
     ys[k++] = xs[i++]
+  if (process.env.PARTIAL_LENSES__FREEZE && ys.length === k) Object.freeze(ys)
   return ys
 }
 
@@ -150,6 +153,7 @@ function toArray(n) {
   if (void 0 !== n) {
     const ys = []
     pushTo(n, ys)
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   }
 }
@@ -230,8 +234,10 @@ const lensFrom = (get, set) => i => (F, xi2yF, x, _) =>
 
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
-const setProp = (k, v, o) =>
-  void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+function setProp(k, v, o) {
+  const r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+  return process.env.NODE_ENV !== "production" && r ? Object.freeze(r) : r
+}
 
 const funProp = lensFrom(getProp, setProp)
 
@@ -250,6 +256,7 @@ function setIndex(i, x, xs) {
     for (let j=0; j<m; ++j)
       ys[j] = xs[j]
     ys[i] = x
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   } else {
     if (0 < n) {
@@ -261,6 +268,7 @@ function setIndex(i, x, xs) {
           ys[j] = xs[j]
         for (let j=i+1; j<n; ++j)
           ys[j-1] = xs[j]
+        if (process.env.NODE_ENV !== "production") Object.freeze(ys)
         return ys
       }
     }
@@ -372,6 +380,7 @@ function getPick(template, x) {
       r[k] = v
     }
   }
+  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r)
   return r
 }
 
@@ -416,6 +425,7 @@ const branchOnMerge = (x, keys) => xs => {
       r[k] = v
     }
   }
+  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r)
   return r
 }
 
@@ -463,6 +473,10 @@ function findIndex(xi2b, xs) {
 function partitionIntoIndex(xi2b, xs, ts, fs) {
   for (let i=0, n=xs.length, x; i<n; ++i)
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
+  if (process.env.NODE_ENV !== "production") {
+    Object.freeze(ts)
+    Object.freeze(fs)
+  }
 }
 
 const fromReader = wi2x => (F, xi2yF, w, i) =>
@@ -602,7 +616,7 @@ export const and = all(id)
 export const any = pipe2U(mkSelect(x => x ? T : U), Boolean)
 
 export const collectAs = curry((xi2y, t, s) =>
-  toArray(run(t, Collect, xi2y, s)) || [])
+  toArray(run(t, Collect, xi2y, s)) || array0)
 
 export const collect = collectAs(id)
 
@@ -691,6 +705,7 @@ export function augment(template) {
       if (x)
         for (const k in template)
           x[k] = template[k](x)
+      if (process.env.NODE_ENV !== "production" && x) Object.freeze(x)
       return x
     },
     (y, x) => {
@@ -713,6 +728,7 @@ export function augment(template) {
           if (x && hasU(k, x))
             set(k, x[k])
       }
+      if (process.env.NODE_ENV !== "production" && z) Object.freeze(z)
       return z
     })
 }
