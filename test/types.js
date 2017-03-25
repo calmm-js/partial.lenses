@@ -180,15 +180,9 @@ export const augment = T.fn([T.props(T.fn([T.any], T_maybeDataI))], T_lens)
 
 export const defaults = T.fn([T_dataI], T_lens)
 export const define = T.fn([T_dataI], T_lens)
-export const normalize =
-  T.fn([T.fn([T_dataO, T_index],
-             T_maybeDataI)],
-       T_lens)
+export const normalize = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const required = T.fn([T_dataI], T_lens)
-export const rewrite =
-  T.fn([T.fn([T_dataO, T_index],
-             T_maybeDataI)],
-       T_lens)
+export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 
 // Lensing arrays
 
