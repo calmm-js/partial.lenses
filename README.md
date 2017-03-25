@@ -591,7 +591,7 @@ which both help to avoid bugs.
 
 #### On immutability
 
-Starting with version [10.0.0](CHANGELOG.md#1000), to strongly guide away from
+Starting with version [10.0.0](./CHANGELOG.md#1000), to strongly guide away from
 mutating data structures, optics
 call
 [`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) on
