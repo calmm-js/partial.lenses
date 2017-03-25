@@ -12,7 +12,7 @@ export const lazy = ty2ty => {
 
 export const any = x => x
 
-export const and = R.compose
+export const and = R.pipe
 
 export const or = (...ps) => x => {
   const es = [], n = ps.length
@@ -53,9 +53,7 @@ export const frozen = fromPredicate(isFrozen)
 
 export const deepFrozen = fromPredicate(isDeepFrozen)
 
-export const deepFreeze = x =>
-  isntFreezable(x)
-  ? x
+export const deepFreeze = x => isFrozen(x) ? x
   : (Object.getOwnPropertyNames(x).forEach(k => deepFreeze(x[k])),
      Object.freeze(x))
 
