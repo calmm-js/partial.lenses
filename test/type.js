@@ -35,17 +35,10 @@ export const fromPredicate = p => x => {
 const type = t => fromPredicate(x => typeof x === t)
 const instance = c => fromPredicate(x => x instanceof c)
 
-const isntFreezable = x =>
-  x === null
-  || typeof x !== "object"
-  || x instanceof Int8Array
-
-const isFrozen = x =>
-  isntFreezable(x)
-  || Object.isFrozen(x)
-
+const isFreezable = x => I.isArray(x) || I.isObject(x)
+const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
 const isDeepFrozen = x =>
-  isntFreezable(x)
+  !isFreezable(x)
   || Object.isFrozen(x)
      && !Object.getOwnPropertyNames(x).find(x => !isDeepFrozen(x))
 
