@@ -72,9 +72,6 @@ export const log = L.log
 export const concatAs = L.concatAs
 export const concat = concatAs(R.identity)
 
-export const merge = concat
-export const mergeAs = concatAs
-
 // Folds over traversals
 
 export const all = L.all
@@ -102,9 +99,6 @@ export const sum = concatDefined(Sum)
 
 export const selectAs = L.selectAs
 export const select = selectAs(R.identity)
-
-export const first = select
-export const firstAs = selectAs
 
 // Creating new traversals
 
@@ -197,11 +191,6 @@ export const valueOr = v =>
 
 export const orElse = R.curry((d, l) =>
   choose(x => isDefined(get(l, x)) ? l : d))
-
-// Read-only mapping
-
-export const just = R.always
-export const to = R.identity
 
 // Transforming data
 

@@ -166,8 +166,6 @@ describe("arities", () => {
     filter: 1,
     find: 1,
     findWith: 0,
-    first: 2,
-    firstAs: 3,
     foldl: 4,
     foldr: 4,
     get: 2,
@@ -176,14 +174,11 @@ describe("arities", () => {
     index: 1,
     inverse: 1,
     iso: 2,
-    just: 1,
     last: 4,
     lazy: 1,
     lens: 2,
     log: 0,
     maximum: 2,
-    merge: 3,
-    mergeAs: 4,
     minimum: 2,
     modify: 3,
     normalize: 1,
@@ -205,7 +200,6 @@ describe("arities", () => {
     set: 3,
     slice: 2,
     sum: 2,
-    to: 1,
     toFunction: 1,
     valueOr: 1,
     values: 4,
@@ -353,8 +347,7 @@ describe("L.zero", () => {
   testEq(`L.remove([L.elems, L.zero], [1,2])`, [1,2])
 })
 
-describe("L.to", () => {
-  testEq(`L.get(L.to(x => x+1), 2)`, 3)
+describe("composing with plain functions", () => {
   testEq(`L.get(x => x+1, 2)`, 3)
   testEq(`L.modify(R.inc, R.negate, 1)`, 1)
   testEq(`L.get(["x", (x,i) => [x, i]], {x:-1})`, [-1, "x"])
@@ -365,10 +358,6 @@ describe("L.to", () => {
   testEq(`L.get([0, (x,i) => [x, i]], [-1])`, [-1, 0])
   testEq(`L.get([0, "x", R.negate], [{x:-1}])`, 1)
   testEq(`L.set([0, "x", R.negate], 2, [{x:-1}])`, [{x:-1}])
-})
-
-describe("L.just", () => {
-  testEq(`L.get(L.just("always"), "anything")`, "always")
   testEq(`L.get(R.always("always"), "anything")`, "always")
   testEq(`L.set(R.always("always"), "anything", "original")`, "original")
 })
@@ -543,7 +532,7 @@ describe("L.optional", () => {
 
 describe("L.when", () => {
   testEq(`L.get(L.when(x => x > 2), 1)`, undefined)
-  testEq(`L.get([L.when(x => x > 2), L.just(2)], 1)`, 2)
+  testEq(`L.get([L.when(x => x > 2), R.always(2)], 1)`, 2)
   testEq(`L.get(L.when(x => x > 2), 3)`, 3)
   testEq(`L.collect([L.elems, L.when(x => x > 2)], [1,3,2,4])`, [3,4])
   testEq(`L.modify([L.elems, L.when(x => x > 2)], R.negate, [1,3,2,4])`,
@@ -586,8 +575,6 @@ describe("L.concatAs", () => {
 describe("folds", () => {
   testEq(`X.concat(Sum, X.elems, a100000)`, 100000)
   testEq(`X.concatAs(id, Sum, X.elems, a100000)`, 100000)
-  testEq(`X.merge(Sum, X.elems, a100000)`, 100000)
-  testEq(`X.mergeAs(id, Sum, X.elems, a100000)`, 100000)
   testEq(`L.maximum([L.elems, "x"], [])`, undefined)
   testEq(`L.minimum([L.elems, "x"], [])`, undefined)
   testEq(`L.maximum(L.elems, "JavaScript")`, "v")
@@ -804,7 +791,6 @@ describe("lazy folds", () => {
   testEq(`L.select(flatten, [[[[[[[[[[101]]]]]]]]]])`, 101)
   testEq(`L.select(L.elems, [])`, undefined)
   testEq(`L.select(L.values, {})`, undefined)
-  testEq(`X.first(L.values, {})`, undefined)
   testEq(`L.selectAs((x, i) => x > 3 ? [x + 2, i] : undefined,
                      L.elems,
                      [3, 1, 4, 1, 5])`,
@@ -814,7 +800,6 @@ describe("lazy folds", () => {
                      {a:3, b:1, c:4, d:1, e:5})`,
          [6, "c"])
   testEq(`L.selectAs(x => {}, L.values, {x:1})`, undefined)
-  testEq(`X.firstAs(x => {}, L.values, {x:1})`, undefined)
   testEq(`L.selectAs(x => x < 9 ? undefined : [x],
                      flatten,
                      [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,

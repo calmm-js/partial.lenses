@@ -87,12 +87,12 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 const expectedOptic = "Expecting an optic"
 const header = "partial.lenses: "
 
-function warn(f, m) {
-  if (!f.warned) {
-    f.warned = 1
-    console.warn(header + m)
-  }
-}
+//function warn(f, m) {
+//  if (!f.warned) {
+//    f.warned = 1
+//    console.warn(header + m)
+//  }
+//}
 
 function errorGiven(m, o) {
   console.error(header + m + " - given:", o)
@@ -184,8 +184,6 @@ const Select = ConcatOf(
   id)
 
 const mkSelect = toM => (xi2yM, t, s) => {
-  if (process.env.NODE_ENV !== "production")
-    warn(mkSelect, "Lazy folds over traversals are experimental")
   s = run(t, Select, pipe2U(xi2yM, toM), s)
   while (s.constructor === Function)
     s = s()
@@ -595,14 +593,6 @@ export const concatAs = curryN(4, (xMi2y, m) => {
 
 export const concat = concatAs(id)
 
-export const mergeAs = process.env.NODE_ENV === "production" ? concatAs : curry((f, m, t, d) =>
-  warn(mergeAs, "`mergeAs` is obsolete, just use `concatAs`") ||
-  concatAs(f, m, t, d))
-
-export const merge = process.env.NODE_ENV === "production" ? concat : curry((m, t, d) =>
-  warn(merge, "`merge` is obsolete, just use `concat`") ||
-  concat(m, t, d))
-
 // Folds over traversals
 
 export const all = pipe2U(mkSelect(x => x ? U : T), not)
@@ -641,14 +631,6 @@ export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
 export const selectAs = curry(mkSelect(v => void 0 !== v ? {v} : U))
 
 export const select = selectAs(id)
-
-export const firstAs = process.env.NODE_ENV === "production" ? selectAs : curry((f, t, d) =>
-  warn(firstAs, "`firstAs` has been renamed `selectAs`") ||
-  selectAs(f, t, d))
-
-export const first = process.env.NODE_ENV === "production" ? select : curry((t, d) =>
-  warn(first, "`first` has been renamed `select`") ||
-  select(t, d))
 
 export const sum = concatAs(unto(0), Sum)
 
@@ -857,16 +839,6 @@ export const valueOr = v => (_F, xi2yF, x, i) =>
 
 export const orElse =
   curry((d, l) => choose(x => void 0 !== getU(l, x) ? l : d))
-
-// Read-only mapping
-
-export const to = process.env.NODE_ENV === "production" ? id : wi2x =>
-  warn(to, "`to` is obsolete, you can directly `compose` plain functions with optics") ||
-  wi2x
-
-export const just = process.env.NODE_ENV === "production" ? always : x =>
-  warn(just, "`just` is obsolete, just use e.g. `R.always`") ||
-  always(x)
 
 // Transforming data
 

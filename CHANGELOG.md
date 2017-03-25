@@ -1,5 +1,24 @@
 # Changelog
 
+## 10.0.0
+
+Removed previously obsoleted exports:
+
+* `L.firstAs`,
+* `L.first`,
+* `L.just`,
+* `L.mergeAs`,
+* `L.merge`, and
+* `L.to`.
+
+See previous changelog entries on how you should deal with those.
+
+Lazy folds are no longer considered experimental.  Note, however, that the
+technique, an optional `delay` function, upon which they are based is currently
+not included in the [Static Land](https://github.com/rpominov/static-land)
+specification.  See
+issue [40](https://github.com/rpominov/static-land/issues/40) for discussion.
+
 ## 9.8.0
 
 Renamed experimental `L.first` and `L.firstAs` as follows:
