@@ -7,11 +7,8 @@ import * as BST from "./bst"
 import * as C   from "./core"
 import * as T   from "./types"
 
-import * as P from "./type"
-
 //
 
-const deepFreeze = P.deepFreeze
 const id = I.id
 const X = L
 
@@ -51,17 +48,17 @@ const everywhere = [L.optional, L.lazy(rec => {
 })]
 
 const CollectM = {
-  of: x => [x, deepFreeze([])],
+  of: x => [x, Object.freeze([])],
   map: (x2y, [x, s]) => [x2y(x), s],
-  ap: ([x2y, sl], [x, sr]) => [x2y(x), deepFreeze([...sr, ...sl])],
+  ap: ([x2y, sl], [x, sr]) => [x2y(x), Object.freeze([...sr, ...sl])],
   chain: (x2yM, [x, sr]) => {
     const [y, sl] = x2yM(x)
-    return [y, deepFreeze([...sr, ...sl])]
+    return [y, Object.freeze([...sr, ...sl])]
   }
 }
 
 const collectM = (o, s) =>
-  L.toFunction(o)(CollectM, x => [x, [x]], deepFreeze(s), undefined)[1]
+  L.toFunction(o)(CollectM, x => [x, [x]], Object.freeze(s), undefined)[1]
 
 //
 
