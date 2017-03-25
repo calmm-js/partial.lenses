@@ -58,7 +58,8 @@ function mapPartialIndexU(xi2y, xs) {
 function copyToFrom(ys, k, xs, i, j) {
   while (i < j)
     ys[k++] = xs[i++]
-  if (process.env.PARTIAL_LENSES__FREEZE && ys.length === k) Object.freeze(ys)
+  if (process.env.NODE_ENV !== "production" && ys.length === k)
+    Object.freeze(ys)
   return ys
 }
 
