@@ -1,9 +1,9 @@
 # <a id="partial-lenses"></a> Partial Lenses &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses) [![npm](https://img.shields.io/npm/dm/partial.lenses.svg)](https://www.npmjs.com/package/partial.lenses)
 
 Lenses are basically an abstraction for simultaneously specifying operations
-to [update](#L-modify) and [query](#L-get) immutable data structures.  Lenses
-are [highly composable](#on-composability) and can be [efficient](#benchmarks).
-This library provides a collection
+to [update](#L-modify) and [query](#L-get) [immutable](#on-immutability) data
+structures.  Lenses are [highly composable](#on-composability) and can
+be [efficient](#benchmarks).  This library provides a collection
 of [partial](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and
@@ -27,6 +27,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 * [Reference](#reference)
   * [Optics](#optics)
     * [On partiality](#on-partiality)
+    * [On immutability](#on-immutability)
     * [On composability](#on-composability)
     * [Operations on optics](#operations-on-optics)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
@@ -159,10 +160,10 @@ language.  Given a language, we want to be able to
 * remove an existing text and the immediately surrounding object.
 
 Furthermore, when updating, inserting, and removing texts, we'd like the
-operations to treat the JSON as immutable and create new JSON objects with the
-changes rather than mutate existing JSON objects, because this makes it trivial
-to support features such as undo-redo and can also help to avoid bugs associated
-with mutable state.
+operations to treat the JSON as [immutable](#on-immutability) and create new
+JSON objects with the changes rather than mutate existing JSON objects, because
+this makes it trivial to support features such as undo-redo and can also help to
+avoid bugs associated with mutable state.
 
 Operations like these are what lenses are good at.  Lenses can be seen as a
 simple embedded [DSL](https://en.wikipedia.org/wiki/Domain-specific_language)
@@ -587,6 +588,22 @@ benefits.  In particular, it allows optics to seamlessly support both insertion
 and removal.  It also allows to reduce the number of necessary abstractions and
 it tends to make compositions of optics more concise with fewer required parts,
 which both help to avoid bugs.
+
+#### On immutability
+
+Starting with version [10.0.0](CHANGELOG.md#1000), to strongly guide away from
+mutating data structures, optics
+call
+[`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) on
+any new objects they create when `NODE_ENV` is not `production`.
+
+Why only non-`production` builds?  Because `Object.freeze` can be quite
+expensive and the main benefit is in catching potential bugs early during
+development.
+
+Also note that optics do not implicitly "deep freeze" data structures given to
+them or freeze data returned by user defined functions.  Only objects newly
+created by optic functions themselves are frozen.
 
 #### On composability
 
@@ -2665,7 +2682,8 @@ that signal errors later than when using total optics.
 JSON is the data-interchange format of choice today.  By being able to
 effectively and efficiently manipulate JSON data structures directly, one can
 avoid using special internal representations of data and make things simpler
-(e.g. no need to convert from JSON to efficient immutable collections and back).
+(e.g. no need to convert from JSON to efficient [immutable](#on-immutability)
+collections and back).
 
 #### Use of `undefined`
 
@@ -2886,8 +2904,8 @@ See [bench.js](./bench/bench.js) for details.
 ### Lenses all the way
 
 As said in the first sentence of this document, lenses are convenient for
-performing updates on individual elements of immutable data structures.  Having
-abilities such
+performing updates on individual elements of [immutable](#on-immutability) data
+structures.  Having abilities such
 as [nesting](#L-compose), [adapting](#L-choose), [recursing](#L-lazy)
 and [restructuring](#L-pick) using lenses makes the notion of an individual
 element quite flexible and, even further, [traversals](#traversals) make it
