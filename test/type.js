@@ -12,7 +12,7 @@ export const lazy = ty2ty => {
 
 export const any = x => x
 
-export const and = R.compose
+export const and = R.pipe
 
 export const or = (...ps) => x => {
   const es = [], n = ps.length
@@ -34,6 +34,28 @@ export const fromPredicate = p => x => {
 
 const type = t => fromPredicate(x => typeof x === t)
 const instance = c => fromPredicate(x => x instanceof c)
+
+const isntFreezable = x =>
+  x === null
+  || typeof x !== "object"
+  || x instanceof Int8Array
+
+const isFrozen = x =>
+  isntFreezable(x)
+  || Object.isFrozen(x)
+
+const isDeepFrozen = x =>
+  isntFreezable(x)
+  || Object.isFrozen(x)
+     && !Object.getOwnPropertyNames(x).find(x => !isDeepFrozen(x))
+
+export const frozen = fromPredicate(isFrozen)
+
+export const deepFrozen = fromPredicate(isDeepFrozen)
+
+export const deepFreeze = x => isFrozen(x) ? x
+  : (Object.getOwnPropertyNames(x).forEach(k => deepFreeze(x[k])),
+     Object.freeze(x))
 
 export const integer = fromPredicate(Number.isInteger)
 export const nonNegative = and(integer, fromPredicate(x => 0 <= x))

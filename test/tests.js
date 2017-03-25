@@ -48,17 +48,17 @@ const everywhere = [L.optional, L.lazy(rec => {
 })]
 
 const CollectM = {
-  of: x => [x, []],
+  of: x => [x, Object.freeze([])],
   map: (x2y, [x, s]) => [x2y(x), s],
-  ap: ([x2y, sl], [x, sr]) => [x2y(x), [...sr, ...sl]],
+  ap: ([x2y, sl], [x, sr]) => [x2y(x), Object.freeze([...sr, ...sl])],
   chain: (x2yM, [x, sr]) => {
     const [y, sl] = x2yM(x)
-    return [y, [...sr, ...sl]]
+    return [y, Object.freeze([...sr, ...sl])]
   }
 }
 
 const collectM = (o, s) =>
-  L.toFunction(o)(CollectM, x => [x, [x]], s, undefined)[1]
+  L.toFunction(o)(CollectM, x => [x, [x]], Object.freeze(s), undefined)[1]
 
 //
 

@@ -2,6 +2,16 @@
 
 ## 10.0.0
 
+As discussed in
+issue [50](https://github.com/calmm-js/partial.lenses/issues/50), to strongly
+guide away from mutating data structures, optics
+now
+[`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) any
+new objects they create when `NODE_ENV` is not `production`.  Note that optics
+do not implicitly "deep freeze" data structures given to them or freeze data
+returned by user defined functions.  Only objects newly created by optic
+functions themselves are frozen.
+
 Removed previously obsoleted exports:
 
 * `L.firstAs`,

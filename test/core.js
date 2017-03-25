@@ -14,8 +14,9 @@ const fromArrayLike = xs => R.map(i => xs[i], R.range(0, xs.length))
 
 const isDefined = x => x !== undefined
 
-const Collect = {empty: R.always([]), concat: (x, y) => x.concat(y)}
-const toCollect = x => isDefined(x) ? [x] : []
+const Collect = {empty: R.always(Object.freeze([])),
+                 concat: (x, y) => Object.freeze(x.concat(y))}
+const toCollect = x => Object.freeze(isDefined(x) ? [x] : [])
 
 const maxPartial = (x, y) => isDefined(x) && (!isDefined(y) || x > y) ? x : y
 const minPartial = (x, y) => isDefined(x) && (!isDefined(y) || x < y) ? x : y
@@ -137,13 +138,13 @@ export const rewrite = xi2x =>
 export const append = choose(s => seemsArrayLike(s) ? s.length : 0)
 export const filter = p => lens(
   xs => seemsArrayLike(xs)
-    ? fromArrayLike(xs).filter((x, i) => p(x, i))
+    ? Object.freeze(fromArrayLike(xs).filter((x, i) => p(x, i)))
     : undefined,
   (ys, xs) => {
     const zs = [].concat(
       fromArrayLike(ys || []),
       seemsArrayLike(xs) ? fromArrayLike(xs).filter((x, i) => !p(x, i)) : [])
-    return zs.length ? zs : undefined
+    return zs.length ? Object.freeze(zs) : undefined
   })
 export const find = p => choose(xs => {
   if (!seemsArrayLike(xs))
@@ -158,7 +159,9 @@ export const findWith = (...ls) => {
 export const index = L.index
 export const last = L.last
 export const slice = R.curry((b, e) => lens(
-  xs => seemsArrayLike(xs) ? fromArrayLike(xs).slice(b, e) : undefined,
+  xs => seemsArrayLike(xs)
+    ? Object.freeze(fromArrayLike(xs).slice(b, e))
+    : undefined,
   (ys, xs) => {
     xs = seemsArrayLike(xs) ? fromArrayLike(xs) : []
     const i = clamp(0, xs.length,
@@ -171,7 +174,7 @@ export const slice = R.curry((b, e) => lens(
                                         undefined === e ? xs.length :
                                         e < 0 ? xs.length + e :
                                         e)))
-    return zs.length ? zs : undefined
+    return zs.length ? Object.freeze(zs) : undefined
   }
 ))
 
