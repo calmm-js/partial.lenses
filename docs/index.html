@@ -30,9 +30,9 @@
     <hr>
     <h1 id="-a-id-partial-lenses-a-partial-lenses-middot-gitter-https-img-shields-io-gitter-room-calmm-js-chat-js-svg-https-gitter-im-calmm-js-chat-github-stars-https-img-shields-io-github-stars-calmm-js-partial-lenses-svg-style-social-https-github-com-calmm-js-partial-lenses-npm-https-img-shields-io-npm-dm-partial-lenses-svg-https-www-npmjs-com-package-partial-lenses-"><a id="partial-lenses"></a> Partial Lenses &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/partial.lenses"><img src="https://img.shields.io/npm/dm/partial.lenses.svg" alt="npm"></a></h1>
 <p>Lenses are basically an abstraction for simultaneously specifying operations
-to <a href="#L-modify">update</a> and <a href="#L-get">query</a> immutable data structures.  Lenses
-are <a href="#on-composability">highly composable</a> and can be <a href="#benchmarks">efficient</a>.
-This library provides a collection
+to <a href="#L-modify">update</a> and <a href="#L-get">query</a> <a href="#on-immutability">immutable</a> data
+structures.  Lenses are <a href="#on-composability">highly composable</a> and can
+be <a href="#benchmarks">efficient</a>.  This library provides a collection
 of <a href="#on-partiality">partial</a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
 manipulating <a href="http://json.org/">JSON</a> and
@@ -54,6 +54,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#optics">Optics</a><ul>
 <li><a href="#on-partiality">On partiality</a></li>
+<li><a href="#on-immutability">On immutability</a></li>
 <li><a href="#on-composability">On composability</a></li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></li>
@@ -243,10 +244,10 @@ language.  Given a language, we want to be able to</p>
 <li>remove an existing text and the immediately surrounding object.</li>
 </ul>
 <p>Furthermore, when updating, inserting, and removing texts, we&#39;d like the
-operations to treat the JSON as immutable and create new JSON objects with the
-changes rather than mutate existing JSON objects, because this makes it trivial
-to support features such as undo-redo and can also help to avoid bugs associated
-with mutable state.</p>
+operations to treat the JSON as <a href="#on-immutability">immutable</a> and create new
+JSON objects with the changes rather than mutate existing JSON objects, because
+this makes it trivial to support features such as undo-redo and can also help to
+avoid bugs associated with mutable state.</p>
 <p>Operations like these are what lenses are good at.  Lenses can be seen as a
 simple embedded <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a>
 for specifying data manipulation and querying functions.  Lenses allow you to
@@ -544,6 +545,18 @@ benefits.  In particular, it allows optics to seamlessly support both insertion
 and removal.  It also allows to reduce the number of necessary abstractions and
 it tends to make compositions of optics more concise with fewer required parts,
 which both help to avoid bugs.</p>
+<h4 id="on-immutability">On immutability</h4>
+<p>Starting with version <a href="CHANGELOG.md#1000">10.0.0</a>, to strongly guide away from
+mutating data structures, optics
+call
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze"><code>Object.freeze</code></a> on
+any new objects they create when <code>NODE_ENV</code> is not <code>production</code>.</p>
+<p>Why only non-<code>production</code> builds?  Because <code>Object.freeze</code> can be quite
+expensive and the main benefit is in catching potential bugs early during
+development.</p>
+<p>Also note that optics do not implicitly &quot;deep freeze&quot; data structures given to
+them or freeze data returned by user defined functions.  Only objects newly
+created by optic functions themselves are frozen.</p>
 <h4 id="on-composability">On composability</h4>
 <p>A lot of libraries these days claim to
 be <a href="https://en.wikipedia.org/wiki/Composability">composable</a>.  Is any collection
@@ -1864,7 +1877,8 @@ that signal errors later than when using total optics.</p>
 <p>JSON is the data-interchange format of choice today.  By being able to
 effectively and efficiently manipulate JSON data structures directly, one can
 avoid using special internal representations of data and make things simpler
-(e.g. no need to convert from JSON to efficient immutable collections and back).</p>
+(e.g. no need to convert from JSON to efficient <a href="#on-immutability">immutable</a>
+collections and back).</p>
 <h4 id="use-of-undefined-">Use of <code>undefined</code></h4>
 <p><code>undefined</code> is a natural choice in JavaScript, especially when dealing with
 JSON, to represent nothingness.  Some libraries use <code>null</code>, but that is arguably
@@ -2060,8 +2074,8 @@ use them.</p>
 <p>See <a href="https://github.com/calmm-js/partial.lenses/blob/master/bench/bench.js">bench.js</a> for details.</p>
 <h3 id="lenses-all-the-way">Lenses all the way</h3>
 <p>As said in the first sentence of this document, lenses are convenient for
-performing updates on individual elements of immutable data structures.  Having
-abilities such
+performing updates on individual elements of <a href="#on-immutability">immutable</a> data
+structures.  Having abilities such
 as <a href="#L-compose">nesting</a>, <a href="#L-choose">adapting</a>, <a href="#L-lazy">recursing</a>
 and <a href="#L-pick">restructuring</a> using lenses makes the notion of an individual
 element quite flexible and, even further, <a href="#traversals">traversals</a> make it
