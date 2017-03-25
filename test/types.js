@@ -52,6 +52,8 @@ const T_isomorphism = T_lens
 const T_monoid = T.object({empty: T.fn([], T.any),
                            concat: T.fn([T.any, T.any], T.any)})
 
+const T_frozenOnDev = process.env.NODE_ENV === "production" ? T.any : T.frozen
+
 //
 
 export const toFunction = T.fn([T_optic],
@@ -59,12 +61,21 @@ export const toFunction = T.fn([T_optic],
 
 // Operations on optics
 
-export const modify = T.fn([T_optic,
-                            T.fn([T_maybeData, T_index], T_maybeData),
-                            T_maybeData],
-                           T_maybeData)
-export const remove = T.fn([T_optic, T_maybeData], T_maybeData)
-export const set = T.fn([T_optic, T_maybeData, T_maybeData], T_maybeData)
+export const modify =
+  T.fn([T_optic,
+        T.fn([T_maybeData, T_index],
+             T.and(T_maybeData, T.deepFreeze)),
+        T.and(T_maybeData, T.deepFreeze)],
+       T.and(T_maybeData, T_frozenOnDev))
+export const remove =
+  T.fn([T_optic,
+        T.and(T_maybeData, T.deepFreeze)],
+       T.and(T_maybeData, T_frozenOnDev))
+export const set =
+  T.fn([T_optic,
+        T.and(T_maybeData, T.deepFreeze),
+        T.and(T_maybeData, T.deepFreeze)],
+       T.and(T_maybeData, T_frozenOnDev))
 
 // Sequencing
 
@@ -170,11 +181,17 @@ export const augment = T.fn([T.props(T.fn([T.any], T_data))], T_lens)
 
 // Enforcing invariants
 
-export const defaults = T.fn([T_data], T_lens)
-export const define = T.fn([T_data], T_lens)
-export const normalize = T.fn([T.fn([T_data, T_index], T_data)], T_lens)
-export const required = T.fn([T_data], T_lens)
-export const rewrite = T.fn([T.fn([T_data, T_index], T_data)], T_lens)
+export const defaults = T.fn([T.and(T_data, T.deepFreeze)], T_lens)
+export const define = T.fn([T.and(T_data, T.deepFreeze)], T_lens)
+export const normalize =
+  T.fn([T.fn([T_data, T_index],
+             T.and(T_data, T.deepFreeze))],
+       T_lens)
+export const required = T.fn([T.and(T_data, T.deepFreeze)], T_lens)
+export const rewrite =
+  T.fn([T.fn([T_data, T_index],
+             T.and(T_data, T.deepFreeze))],
+       T_lens)
 
 // Lensing arrays
 

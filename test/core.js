@@ -143,7 +143,7 @@ export const filter = p => lens(
     const zs = [].concat(
       fromArrayLike(ys || []),
       seemsArrayLike(xs) ? fromArrayLike(xs).filter((x, i) => !p(x, i)) : [])
-    return zs.length ? zs : undefined
+    return zs.length ? Object.freeze(zs) : undefined
   })
 export const find = p => choose(xs => {
   if (!seemsArrayLike(xs))
@@ -171,7 +171,7 @@ export const slice = R.curry((b, e) => lens(
                                         undefined === e ? xs.length :
                                         e < 0 ? xs.length + e :
                                         e)))
-    return zs.length ? zs : undefined
+    return zs.length ? Object.freeze(zs) : undefined
   }
 ))
 
