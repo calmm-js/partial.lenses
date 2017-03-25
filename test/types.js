@@ -66,11 +66,10 @@ export const toFunction = T.fn([T_optic],
 
 // Operations on optics
 
-export const modify =
-  T.fn([T_optic,
-        T.fn([T_maybeDataO, T_index], T_maybeDataI),
-        T_maybeDataI],
-       T_maybeDataO)
+export const modify = T.fn([T_optic,
+                            T.fn([T_maybeDataO, T_index], T_maybeDataI),
+                            T_maybeDataI],
+                           T_maybeDataO)
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
 
