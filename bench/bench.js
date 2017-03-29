@@ -15,6 +15,7 @@ const R = require("ramda")
 const O = tryRequire("flunc-optics")
 const K = tryRequire("optika")
 const sprintf = require("sprintf-js").sprintf
+const _get = tryRequire('lodash.get')
 
 const xyz = {x: 1, y: 2, z: 3}
 const xs = [1,2,3]
@@ -214,6 +215,7 @@ R.forEach(bs => {
     `R.nth(1, xs)`,
     `R.view(l_1, xs)`,
     `K.idx(1).get(xs)`,
+    `_get(xs, 1)`,
   ], [
     `xs.map((x, i) => i === 1 ? 0 : x)`,
     `(() => { let ys = xs.slice(); ys[1] = 0; return ys; })()`,
@@ -226,6 +228,7 @@ R.forEach(bs => {
     `R.prop("y", xyz)`,
     `R.view(l_y, xyz)`,
     `K.key("y").get(xyz)`,
+    `_get(xyz, "y")`,
   ], [
     `L.set("y", 0, xyz)`,
     `R.assoc("y", 0, xyz)`,
@@ -237,6 +240,7 @@ R.forEach(bs => {
     `R.view(l_0_x_0_y, axay)`,
     `R.view(l_0x0y, axay)`,
     `K.idx(0).key("x").idx(0).key("y").get(axay)`,
+    `_get(axay, [0,"x",0,"y"])`,
   ], [
     `L.set([0,"x",0,"y"], 0, axay)`,
     `R.assocPath([0,"x",0,"y"], 0, axay)`,
@@ -261,6 +265,7 @@ R.forEach(bs => {
     `R.view(l_x_y_z, xyzn)`,
     `R.view(l_xyz, xyzn)`,
     `K.key("x").key("y").key("z").get(xyzn)`,
+    `_get(xyzn, ["x", "y", "z"])`,
   ], [
     `L.set(["x","y","z"], 0, xyzn)`,
     `O.Setter.set(o_x_y_z, 0, xyzn)`,
