@@ -566,6 +566,8 @@ stable subset:
 The main intention behind the stable subset is to enable a dependent library to
 make basic use of lenses created by client code using the dependent library.
 
+In retrospect, the stable subset has existed since version 2.2.0.
+
 ### Optics
 
 The abstractions, [traversals](#traversals), [lenses](#lenses),
