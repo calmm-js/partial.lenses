@@ -25,6 +25,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 
 * [Tutorial](#tutorial)
 * [Reference](#reference)
+  * [Stable subset](#stable-subset)
   * [Optics](#optics)
     * [On partiality](#on-partiality)
     * [On immutability](#on-immutability)
@@ -529,6 +530,34 @@ are available as named imports.  Typically one just imports the library as:
 ```jsx
 import * as L from "partial.lenses"
 ```
+
+### Stable subset
+
+This library has historically been developed in a fairly aggressive manner so
+that features have been marked as absolete and removed in subsequent major
+versions.  This can be particularly burdensome for developers of libraries that
+depend on partial lenses.  To help the development of such libraries, this
+section specifies a tiny subset of this library as *stable*.  While it is
+possible that the stable subset is later extended, nothing in the stable subset
+will ever be changed in a backwards incompatible manner.
+
+The following operations, with the below mentioned limitations, constitute the
+stable subset:
+
+* [`L.get(lens, maybeData) ~> maybeValue`](#L-get) is stable without limitations.
+
+* [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData) ~> lens`](#L-lens) is
+  stable with the exception that one must not depend on the user specified
+  getter and setter functions being passed more than 1 and 2 arguments,
+  respectively, and one must make no assumptions about any extra parameters
+  being passed.
+
+* [`L.modify(optic, maybeValue => maybeValue, maybeData) ~> maybeData`](#L-modify) is
+  stable with the exception that one must not depend on the user specified
+  function being passed more than 1 argument and one must make no assumptions
+  about any extra parameters being passed.
+
+* [`L.set(optic, maybeValue, maybeData)`](#L-set) is stable without limitations.
 
 ### Optics
 
