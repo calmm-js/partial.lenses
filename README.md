@@ -559,6 +559,9 @@ stable subset:
 
 * [`L.set(optic, maybeValue, maybeData)`](#L-set) is stable without limitations.
 
+The main intention behind the stable subset is to enable a dependent library to
+make basic use of lenses created by client code using the dependent library.
+
 ### Optics
 
 The abstractions, [traversals](#traversals), [lenses](#lenses),
