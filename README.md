@@ -557,7 +557,11 @@ stable subset:
   function being passed more than 1 argument and one must make no assumptions
   about any extra parameters being passed.
 
-* [`L.set(optic, maybeValue, maybeData)`](#L-set) is stable without limitations.
+* [`L.remove(optic, maybeData) ~> maybeData`](#L-remove) is stable without
+  limitations.
+
+* [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set) is stable without
+  limitations.
 
 The main intention behind the stable subset is to enable a dependent library to
 make basic use of lenses created by client code using the dependent library.
