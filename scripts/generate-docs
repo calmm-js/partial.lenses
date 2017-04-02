@@ -57,7 +57,7 @@ fs.writeFileSync("docs/index.html",
   </head>
   <body class="markdown-body">
     <div class="loading-message">
-      Please wait... The interactive code snippets on this page take a moment to load.
+      Please wait... The interactive code snippets on this page take a moment to render.
     </div>
     <div class="menu">
       <div class="menu-overlay"></div>
