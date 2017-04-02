@@ -615,17 +615,19 @@ no longer the same operation&mdash;the special value is not the first element of
 the array.
 
 Now, in partial lenses, the idea is that in case the input does not match the
-expectation of the operation, then the input is treated as being `undefined`.
-This makes the optics in this library partial.
+expectation of an optic, then the input is treated as being `undefined`, which
+is the equivalent of non-existent: reading through the optic gives `undefined`
+and writing through the optic replaces the focus with the written value.  This
+makes the optics in this library partial.
 
 Making all optics partial has a number of consequences.  For one thing, it can
 potentially hide bugs: an incorrectly specified optic treats the input as
 `undefined` and may seem to work without raising an error.  We have not found
-this to be an issue in practice.  However, partiality also has a number of
-benefits.  In particular, it allows optics to seamlessly support both insertion
-and removal.  It also allows to reduce the number of necessary abstractions and
-it tends to make compositions of optics more concise with fewer required parts,
-which both help to avoid bugs.
+this to be a major source of bugs in practice.  However, partiality also has a
+number of benefits.  In particular, it allows optics to seamlessly support both
+insertion and removal.  It also allows to reduce the number of necessary
+abstractions and it tends to make compositions of optics more concise with fewer
+required parts, which both help to avoid bugs.
 
 #### On immutability
 
