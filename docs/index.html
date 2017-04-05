@@ -1285,8 +1285,9 @@ while <code>L.rewrite</code> only applies the transform when writing.</p>
 <p>Objects that have a non-negative integer <code>length</code> and strings, which are not
 considered <code>Object</code> instances in JavaScript, are considered <em>array-like</em> objects
 by partial optics.</p>
-<p>When writing a defined value through an optic that operates on array-like
-objects, the result is always an <code>Array</code>.  For example:</p>
+<p>When writing through an optic that operates on array-like objects, the result is
+always either <code>undefined</code>, in case the result would be empty, or a plain
+<code>Array</code>.  For example:</p>
 <pre><code class="hljs lang-js">L.set(1, &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
 <p>It may seem like the result should be of the same type as the object being
@@ -1296,6 +1297,9 @@ objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert 
 desired type, if necessary.  For example:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(R.join(&quot;&quot;)), 1], &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
+<p>Also, when manipulating array-like objects, partial lenses generally ignore
+everything but the <code>length</code> property and the integer properties from <code>0</code> to
+<code>length-1</code>.</p>
 <h5 id="-a-id-l-append-a-contents-https-github-com-calmm-js-partial-lenses-l-append-l-append-lens-l-append-l-append-plens-a-a-"><a id="L-append"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-append">■</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a></h5>
 <p><code>L.append</code> is a write-only lens that can be used to append values to
 an <a href="#array-like">array-like</a> object.  The view of <code>L.append</code> is always
@@ -1422,6 +1426,33 @@ of arrays, basically</p>
 <pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 </code></pre>
 <h4 id="lensing-objects">Lensing objects</h4>
+<p>Anything that is an <code>instanceof Object</code> is considered an object by partial
+lenses.</p>
+<p>When writing through an optic that operates on objects, the result is always
+either <code>undefined</code>, in case the result would be empty, or a plain <code>Object</code>.  For
+example:</p>
+<pre><code class="hljs lang-js">function Custom(gold, silver, bronze) {
+  this.gold   = gold
+  this.silver = silver
+  this.bronze = bronze
+}
+
+L.set(&quot;silver&quot;, -2, new Custom(1,2,3))
+</code></pre>
+<p>When manipulating objects whose constructor is not
+<code>Object</code>, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
+desired type, if necessary:</p>
+<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(Custom)), &quot;silver&quot;], -2, new Custom(1,2,3))
+</code></pre>
+<p>Partial lenses also generally guarantees that the creation order of keys is
+preserved (even though the library used to print out evaluation results from
+code snippets might not preserve the creation order).  For example:</p>
+<pre><code class="hljs lang-js">for (var k in L.set(&quot;silver&quot;, -2, new Custom(1,2,3)))
+  console.log(k)
+</code></pre>
+<p>When creating new objects, partial lenses generally ignore everything but own
+string keys.  In particular, properties from the prototype chain are not copied
+and neither are properties with symbol keys.</p>
 <h5 id="-a-id-l-prop-a-contents-https-github-com-calmm-js-partial-lenses-l-prop-l-prop-propname-lens-l-prop-l-prop-p-a-plens-p-a-ps-a-or-propname-"><a id="L-prop"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-prop">■</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></h5>
 <p><code>L.prop(propName)</code> or just <code>propName</code> focuses on the specified object property.</p>
 <ul>

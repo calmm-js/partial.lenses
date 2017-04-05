@@ -1718,8 +1718,9 @@ Objects that have a non-negative integer `length` and strings, which are not
 considered `Object` instances in JavaScript, are considered *array-like* objects
 by partial optics.
 
-When writing a defined value through an optic that operates on array-like
-objects, the result is always an `Array`.  For example:
+When writing through an optic that operates on array-like objects, the result is
+always either `undefined`, in case the result would be empty, or a plain
+`Array`.  For example:
 
 ```js
 L.set(1, "a", "LoLa")
@@ -1736,6 +1737,10 @@ desired type, if necessary.  For example:
 L.set([L.rewrite(R.join("")), 1], "a", "LoLa")
 // 'LaLa'
 ```
+
+Also, when manipulating array-like objects, partial lenses generally ignore
+everything but the `length` property and the integer properties from `0` to
+`length-1`.
 
 ##### <a id="L-append"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-append) [`L.append ~> lens`](#L-append "L.append: PLens [a] a")
 
@@ -1943,6 +1948,49 @@ L.set(L.slice(-2, undefined), [0], [1,2,3,4])
 ```
 
 #### Lensing objects
+
+Anything that is an `instanceof Object` is considered an object by partial
+lenses.
+
+When writing through an optic that operates on objects, the result is always
+either `undefined`, in case the result would be empty, or a plain `Object`.  For
+example:
+
+```js
+function Custom(gold, silver, bronze) {
+  this.gold   = gold
+  this.silver = silver
+  this.bronze = bronze
+}
+
+L.set("silver", -2, new Custom(1,2,3))
+// { gold: 1, silver: -2, bronze: 3 }
+```
+
+When manipulating objects whose constructor is not
+`Object`, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+desired type, if necessary:
+
+```js
+L.set([L.rewrite(objectTo(Custom)), "silver"], -2, new Custom(1,2,3))
+// Custom { gold: 1, silver: -2, bronze: 3 }
+```
+
+Partial lenses also generally guarantees that the creation order of keys is
+preserved (even though the library used to print out evaluation results from
+code snippets might not preserve the creation order).  For example:
+
+```js
+for (const k in L.set("silver", -2, new Custom(1,2,3)))
+  console.log(k)
+// gold
+// silver
+// bronze
+```
+
+When creating new objects, partial lenses generally ignore everything but own
+string keys.  In particular, properties from the prototype chain are not copied
+and neither are properties with symbol keys.
 
 ##### <a id="L-prop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-prop) [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
 
