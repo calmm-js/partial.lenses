@@ -1569,8 +1569,8 @@ selective use of <a href="#L-defaults"><code>defaults</code></a>, <a href="#L-re
 and <a href="#L-define"><code>define</code></a>.</p>
 <h3 id="isomorphisms">Isomorphisms</h3>
 <p><a href="https://en.wikipedia.org/wiki/Isomorphism">Isomorphisms</a> are <a href="#lenses">lenses</a>
-with an <a href="#L-inverse">inverse</a>.  The focus of an isomorphism is the whole data
-structure rather than a part of it.</p>
+with a kind of <a href="#L-inverse">inverse</a>.  The focus of an isomorphism is the whole
+data structure rather than a part of it.</p>
 <p>More specifically, a lens, <code>iso</code>, is an isomorphism iff the following equations
 hold for all <code>x</code> and <code>y</code> in the domain and range, respectively, of the lens:</p>
 <pre><code class="hljs lang-jsx">L.set(iso, L.get(iso, x), undefined) = x
@@ -1578,6 +1578,11 @@ L.get(iso, L.set(iso, y, undefined)) = y
 </code></pre>
 <p>The above equations mean that <code>x =&gt; L.get(iso, x)</code> and <code>y =&gt; L.set(iso, y,
 undefined)</code> are inverses of each other.</p>
+<p>That is the general idea.  Strictly speaking it is not required that the two
+functions are precisely inverses of each other.  It can be useful to have
+&quot;isomorphisms&quot; that, when written through, actually change the data structure.
+For that reason the name &quot;adapter&quot;, rather than &quot;isomorphism&quot;, is sometimes used
+for the concept.</p>
 <h4 id="operations-on-isomorphisms">Operations on isomorphisms</h4>
 <h5 id="-a-id-l-getinverse-a-contents-https-github-com-calmm-js-partial-lenses-l-getinverse-l-getinverse-isomorphism-maybedata-maybedata-l-getinverse-l-getinverse-piso-a-b-maybe-b-maybe-a-"><a id="L-getInverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-getInverse">■</a> <a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.getInverse</code> views through an isomorphism in the inverse direction.</p>

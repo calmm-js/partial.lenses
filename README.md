@@ -2180,8 +2180,8 @@ and [`define`](#L-define).
 ### Isomorphisms
 
 [Isomorphisms](https://en.wikipedia.org/wiki/Isomorphism) are [lenses](#lenses)
-with an [inverse](#L-inverse).  The focus of an isomorphism is the whole data
-structure rather than a part of it.
+with a kind of [inverse](#L-inverse).  The focus of an isomorphism is the whole
+data structure rather than a part of it.
 
 More specifically, a lens, `iso`, is an isomorphism iff the following equations
 hold for all `x` and `y` in the domain and range, respectively, of the lens:
@@ -2193,6 +2193,12 @@ L.get(iso, L.set(iso, y, undefined)) = y
 
 The above equations mean that `x => L.get(iso, x)` and `y => L.set(iso, y,
 undefined)` are inverses of each other.
+
+That is the general idea.  Strictly speaking it is not required that the two
+functions are precisely inverses of each other.  It can be useful to have
+"isomorphisms" that, when written through, actually change the data structure.
+For that reason the name "adapter", rather than "isomorphism", is sometimes used
+for the concept.
 
 #### Operations on isomorphisms
 
