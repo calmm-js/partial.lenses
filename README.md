@@ -3069,6 +3069,7 @@ links&mdash;feel free to suggest more!
 * [Functional Lenses, How Do They Work](https://medium.com/@dtipson/functional-lenses-d1aba9e52254#.qja55h7uh)
 * [Lenses with Immutable.js](https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.4irzg5u1q)
 * [Polymorphic Update with van Laarhoven Lenses](http://r6.ca/blog/20120623T104901Z.html)
+* [Profunctor Optics: Modular Data Accessors](https://arxiv.org/abs/1703.10857)
 
 #### JavaScript / TypeScript / Flow libraries
 
