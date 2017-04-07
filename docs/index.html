@@ -725,8 +725,13 @@ to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</co
 <h5 id="-a-id-l-traverse-a-contents-https-github-com-calmm-js-partial-lenses-l-traverse-l-traverse-category-maybevalue-index-operation-optic-maybedata-operation-l-traverse-l-traverse-functor-applicative-monad-c-maybe-a-index-c-b-poptic-s-t-a-b-maybe-s-c-t-"><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a></h5>
 <p><code>L.traverse</code> maps each focus to an operation and returns an operation that runs
 those operations in-order and collects the results.  The <code>category</code> argument
-must be either a <code>Functor</code>, <code>Applicative</code>, or <code>Monad</code> depending on the optic as
-specified in <a href="#L-function"><code>L.toFunction</code></a>.</p>
+must be either
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a>,
+or
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a> depending
+on the optic as specified in <a href="#L-toFunction"><code>L.toFunction</code></a>.</p>
 <p>Here is a bit involved example that uses the State monad and <code>L.traverse</code> to
 replace elements in a data structure by the number of times those elements have
 appeared at that point in the data structure:</p>

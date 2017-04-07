@@ -786,8 +786,13 @@ to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
 `L.traverse` maps each focus to an operation and returns an operation that runs
 those operations in-order and collects the results.  The `category` argument
-must be either a `Functor`, `Applicative`, or `Monad` depending on the optic as
-specified in [`L.toFunction`](#L-function).
+must be either
+a
+[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor),
+[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
+or
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad) depending
+on the optic as specified in [`L.toFunction`](#L-toFunction).
 
 Here is a bit involved example that uses the State monad and `L.traverse` to
 replace elements in a data structure by the number of times those elements have
