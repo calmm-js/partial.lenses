@@ -47,12 +47,16 @@ const everywhere = [L.optional, L.lazy(rec => {
                L.identity)
 })]
 
+//
+
 const Monad = ({of, chain}) => ({
   of,
   chain,
   ap: (x2yS, xS) => chain(x2y => chain(x => of(x2y(x)), xS), x2yS),
   map: (x2y, xS) => chain(x => of(x2y(x)), xS)
 })
+
+//
 
 const MapConcatOf = Monoid => Monad({
   of: x => [x, Monoid.empty()],
