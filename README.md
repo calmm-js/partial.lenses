@@ -546,7 +546,9 @@ stable subset:
 
 * [`L.compose(...optics) ~> optic`](#L-compose) is stable with the exception
   that one must not depend on being able to compose optics with ordinary
-  functions.
+  functions.  Also, the use of arrays to denote composition is not part of the
+  stable subset.  Note that [`L.compose()`](#L-compose) is guaranteed to be
+  equivalent to the [`L.identity`](#L-identity) optic.
 
 * [`L.get(lens, maybeData) ~> maybeValue`](#L-get) is stable without limitations.
 

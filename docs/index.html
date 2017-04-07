@@ -510,7 +510,9 @@ stable subset:</p>
 <ul>
 <li><p><a href="#L-compose"><code>L.compose(...optics) ~&gt; optic</code></a> is stable with the exception
 that one must not depend on being able to compose optics with ordinary
-functions.</p>
+functions.  Also, the use of arrays to denote composition is not part of the
+stable subset.  Note that <a href="#L-compose"><code>L.compose()</code></a> is guaranteed to be
+equivalent to the <a href="#L-identity"><code>L.identity</code></a> optic.</p>
 </li>
 <li><p><a href="#L-get"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> is stable without limitations.</p>
 </li>
