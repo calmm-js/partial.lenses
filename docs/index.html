@@ -85,7 +85,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#internals">Internals</a><ul>
-<li><a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></li>
+<li><a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; ((Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></li>
 </ul>
 </li>
 </ul>
@@ -863,7 +863,7 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <h4 id="internals">Internals</h4>
-<h5 id="-a-id-l-tofunction-a-contents-https-github-com-calmm-js-partial-lenses-l-tofunction-l-tofunction-optic-optic-l-tofunction-l-tofunction-poptic-s-a-functor-applicative-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s a -&gt; ((Functor|Applicative) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></h5>
+<h5 id="-a-id-l-tofunction-a-contents-https-github-com-calmm-js-partial-lenses-l-tofunction-l-tofunction-optic-optic-l-tofunction-l-tofunction-poptic-s-t-a-b-functor-applicative-monad-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; ((Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>,
 an <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.
 This can be useful for implementing new combinators and operations that cannot

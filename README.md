@@ -48,7 +48,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
-      * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+      * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> ((Functor|Applicative|Monad) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
   * [Transforms](#transforms)
     * [Sequencing](#sequencing)
       * [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
@@ -1027,7 +1027,7 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 
 #### Internals
 
-##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s a -> ((Functor|Applicative) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> ((Functor|Applicative|Monad) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
 
 `L.toFunction` converts a given optic, which can be a [string](#L-prop),
 an [integer](#L-index), an [array](#L-compose), or a function to a function.
