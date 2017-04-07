@@ -527,6 +527,8 @@ export const remove = curry((o, s) => setU(o, void 0, s))
 
 export const set = curry(setU)
 
+export const traverse = curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
+
 // Sequencing
 
 export function seq() {

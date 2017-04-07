@@ -78,6 +78,21 @@ const collectM = R.curry((o, s) =>
 
 //
 
+const StateM = Monad({
+  of: x => s => [x, s],
+  chain: (x2yS, xS) => s1 => {
+    const [x, s] = xS(s1)
+    return x2yS(x)(s)
+  }
+})
+
+const countS = x => x2n => {
+  const n = (x2n[x] || 0) + 1
+  return [n, R.assoc(x, n, x2n)]
+}
+
+//
+
 function show(x) {
   switch (typeof x) {
   case "string":
@@ -91,10 +106,12 @@ function show(x) {
 const run = expr => eval(`() => ${expr}`)(
   C,
   Sum,
+  StateM,
   T,
   XYZ,
   a100000,
   collectM,
+  countS,
   everywhere,
   flatten,
   id,
@@ -217,6 +234,7 @@ describe("arities", () => {
     slice: 2,
     sum: 2,
     toFunction: 1,
+    traverse: 4,
     valueOr: 1,
     values: 4,
     when: 1,
@@ -586,6 +604,15 @@ describe("L.concatAs", () => {
                      [L.elems, "x", L.optional],
                      [{x:1}, {y:2}, {x:3}])`,
          6)
+})
+
+describe("L.traverse", () => {
+  testEq(`L.traverse(StateM,
+                     countS,
+                     flatten,
+                     [1, [[2, 1], 1], 2, [3, [[4]], [3, 4]], 5])({})`,
+         [[1, [[1, 2], 3], 2, [1, [[1]], [2, 2]], 1],
+          {1: 3, 2: 2, 3: 2, 4: 2, 5: 1}])
 })
 
 describe("folds", () => {

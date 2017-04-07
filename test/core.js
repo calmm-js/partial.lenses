@@ -38,6 +38,7 @@ export const toFunction = L.toFunction
 export const modify = L.modify
 export const remove = R.curry((o, s) => set(o, undefined, s))
 export const set = R.curry((o, x, s) => modify(o, R.always(x), s))
+export const traverse = L.traverse
 
 // Sequencing
 
