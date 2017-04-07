@@ -544,6 +544,10 @@ will ever be changed in a backwards incompatible manner.
 The following operations, with the below mentioned limitations, constitute the
 stable subset:
 
+* [`L.compose(...optics) ~> optic`](#L-compose) is stable with the exception
+  that one must not depend on being able to compose optics with ordinary
+  functions.
+
 * [`L.get(lens, maybeData) ~> maybeValue`](#L-get) is stable without limitations.
 
 * [`L.lens(maybeData => maybeValue, (maybeValue, maybeData) => maybeData) ~> lens`](#L-lens) is

@@ -508,6 +508,10 @@ will ever be changed in a backwards incompatible manner.</p>
 <p>The following operations, with the below mentioned limitations, constitute the
 stable subset:</p>
 <ul>
+<li><p><a href="#L-compose"><code>L.compose(...optics) ~&gt; optic</code></a> is stable with the exception
+that one must not depend on being able to compose optics with ordinary
+functions.</p>
+</li>
 <li><p><a href="#L-get"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> is stable without limitations.</p>
 </li>
 <li><p><a href="#L-lens"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData) ~&gt; lens</code></a> is
