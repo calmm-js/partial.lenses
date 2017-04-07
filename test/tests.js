@@ -47,18 +47,30 @@ const everywhere = [L.optional, L.lazy(rec => {
                L.identity)
 })]
 
-const CollectM = {
-  of: x => [x, Object.freeze([])],
-  map: (x2y, [x, s]) => [x2y(x), s],
-  ap: ([x2y, sl], [x, sr]) => [x2y(x), Object.freeze([...sr, ...sl])],
+const Monad = ({of, chain}) => ({
+  of,
+  chain,
+  ap: (x2yS, xS) => chain(x2y => chain(x => of(x2y(x)), xS), x2yS),
+  map: (x2y, xS) => chain(x => of(x2y(x)), xS)
+})
+
+const MapConcatOf = Monoid => Monad({
+  of: x => [x, Monoid.empty()],
   chain: (x2yM, [x, sr]) => {
     const [y, sl] = x2yM(x)
-    return [y, Object.freeze([...sr, ...sl])]
+    return [y, Monoid.concat(sl, sr)]
   }
+})
+
+const Collect = {
+  empty: () => Object.freeze([]),
+  concat: (ls, rs) => Object.freeze([...rs, ...ls])
 }
 
-const collectM = (o, s) =>
-  L.toFunction(o)(CollectM, x => [x, [x]], Object.freeze(s), undefined)[1]
+const CollectM = MapConcatOf(Collect)
+
+const collectM = R.curry((o, s) =>
+  L.toFunction(o)(CollectM, x => [x, [x]], Object.freeze(s), undefined)[1])
 
 //
 
