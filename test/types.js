@@ -72,6 +72,11 @@ export const modify = T.fn([T_optic,
                            T_maybeDataO)
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
+export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
+                              T.fn([T_maybeDataO, T_index], T.any),
+                              T_optic,
+                              T_maybeDataI],
+                             T.any)
 
 // Sequencing
 

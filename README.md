@@ -34,6 +34,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
       * [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s")
+      * [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t")
     * [Nesting](#nesting)
       * [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
     * [Querying](#querying)
@@ -780,6 +781,42 @@ of a data structure.
 
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
+
+##### <a id="L-traverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-traverse) [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t")
+
+`L.traverse` maps each focus to an operation and returns an operation that runs
+those operations in-order and collects the results.  The `category` argument
+must be either a `Functor`, `Applicative`, or `Monad` depending on the optic as
+specified in [`L.toFunction`](#L-function).
+
+Here is a bit involved example that uses the State monad and `L.traverse` to
+replace elements in a data structure by the number of times those elements have
+appeared at that point in the data structure:
+
+```js
+const Monad = ({of, chain}) => ({
+  of,
+  chain,
+  ap: (x2yS, xS) => chain(x2y => chain(x => of(x2y(x)), xS), x2yS),
+  map: (x2y, xS) => chain(x => of(x2y(x)), xS)
+})
+
+const StateM = Monad({
+  of: x => s => [x, s],
+  chain: (x2yS, xS) => s1 => {
+    const [x, s] = xS(s1)
+    return x2yS(x)(s)
+  }
+})
+
+const countS = x => x2n => {
+  const n = (x2n[x] || 0) + 1
+  return [n, R.assoc(x, n, x2n)]
+}
+
+L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
+// [1, 1, 2, 3, 2, 1, 1, 2, 2, 1]
+```
 
 #### Nesting
 
