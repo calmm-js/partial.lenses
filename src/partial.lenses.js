@@ -58,8 +58,9 @@ function mapPartialIndexU(xi2y, xs) {
 function copyToFrom(ys, k, xs, i, j) {
   while (i < j)
     ys[k++] = xs[i++]
-  if (process.env.NODE_ENV !== "production" && ys.length === k)
-    Object.freeze(ys)
+  if (process.env.NODE_ENV !== "production")
+    if (ys.length === k)
+      Object.freeze(ys)
   return ys
 }
 
@@ -237,7 +238,9 @@ const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 function setProp(k, v, o) {
   const r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
-  return process.env.NODE_ENV !== "production" && r ? Object.freeze(r) : r
+  if (process.env.NODE_ENV !== "production")
+    if (r) Object.freeze(r)
+  return r
 }
 
 const funProp = lensFrom(getProp, setProp)
@@ -381,14 +384,15 @@ function getPick(template, x) {
       r[k] = v
     }
   }
-  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r)
+  if (process.env.NODE_ENV !== "production")
+    if (r) Object.freeze(r)
   return r
 }
 
 const setPick = (template, x) => value => {
-  if (process.env.NODE_ENV !== "production" &&
-      !(void 0 === value || value instanceof Object))
-    errorGiven("`pick` must be set with undefined or an object", value)
+  if (process.env.NODE_ENV !== "production")
+    if (!(void 0 === value || value instanceof Object))
+      errorGiven("`pick` must be set with undefined or an object", value)
   for (const k in template)
     x = setU(template[k], value && value[k], x)
   return x
@@ -426,7 +430,8 @@ const branchOnMerge = (x, keys) => xs => {
       r[k] = v
     }
   }
-  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r)
+  if (process.env.NODE_ENV !== "production")
+    if (r) Object.freeze(r)
   return r
 }
 
@@ -539,8 +544,9 @@ export function seq() {
     ? M.of
     : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](M, xi2xM, x, i))
   return (M, xi2xM, x, i) => {
-    if (process.env.NODE_ENV !== "production" && !M.chain)
-      errorGiven("`seq` requires a monad", M)
+    if (process.env.NODE_ENV !== "production")
+      if (!M.chain)
+        errorGiven("`seq` requires a monad", M)
     return loop(M, xi2xM, i, 0)(x)
   }
 }
@@ -654,8 +660,9 @@ export const sum = concatAs(unto(0), Sum)
 // Creating new traversals
 
 export function branch(template) {
-  if (process.env.NODE_ENV !== "production" && !isObject(template))
-    errorGiven("`branch` expects a plain Object template", template)
+  if (process.env.NODE_ENV !== "production")
+    if (!isObject(template))
+      errorGiven("`branch` expects a plain Object template", template)
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
@@ -700,21 +707,23 @@ export const lens = curry((get, set) => (F, xi2yF, x, i) =>
 // Computing derived props
 
 export function augment(template) {
-  if (process.env.NODE_ENV !== "production" && !isObject(template))
-    errorGiven("`augment` expects a plain Object template", template)
+  if (process.env.NODE_ENV !== "production")
+    if (!isObject(template))
+      errorGiven("`augment` expects a plain Object template", template)
   return lens(
     x => {
       x = dissocPartialU(0, x)
       if (x)
         for (const k in template)
           x[k] = template[k](x)
-      if (process.env.NODE_ENV !== "production" && x) Object.freeze(x)
+      if (process.env.NODE_ENV !== "production")
+        if (x) Object.freeze(x)
       return x
     },
     (y, x) => {
-      if (process.env.NODE_ENV !== "production" &&
-          !(void 0 === y || y instanceof Object))
-        errorGiven("`augment` must be set with undefined or an object", y)
+      if (process.env.NODE_ENV !== "production")
+        if (!(void 0 === y || y instanceof Object))
+          errorGiven("`augment` must be set with undefined or an object", y)
       y = toObject(y)
       if (!(x instanceof Object))
         x = void 0
@@ -731,7 +740,8 @@ export function augment(template) {
           if (x && hasU(k, x))
             set(k, x[k])
       }
-      if (process.env.NODE_ENV !== "production" && z) Object.freeze(z)
+      if (process.env.NODE_ENV !== "production")
+        if (z) Object.freeze(z)
       return z
     })
 }
@@ -769,9 +779,9 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
   return (0,F.map)(
     ts => {
-      if (process.env.NODE_ENV !== "production" &&
-          !(void 0 === ts || seemsArrayLike(ts)))
-        errorGiven("`filter` must be set with undefined or an array-like object", ts)
+      if (process.env.NODE_ENV !== "production")
+        if (!(void 0 === ts || seemsArrayLike(ts)))
+          errorGiven("`filter` must be set with undefined or an array-like object", ts)
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
             n = tsN + fsN
@@ -806,9 +816,9 @@ export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
         e = sliceIndex(b, xsN, xsN, end)
   return (0,F.map)(
     zs => {
-      if (process.env.NODE_ENV !== "production" &&
-          !(void 0 === zs || seemsArrayLike(zs)))
-        errorGiven("`slice` must be set with undefined or an array-like object", zs)
+      if (process.env.NODE_ENV !== "production")
+        if (!(void 0 === zs || seemsArrayLike(zs)))
+          errorGiven("`slice` must be set with undefined or an array-like object", zs)
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
       return n
         ? copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
@@ -862,8 +872,9 @@ export const orElse =
 // Transforming data
 
 export function pick(template) {
-  if (process.env.NODE_ENV !== "production" && !isObject(template))
-    errorGiven("`pick` expects a plain Object template", template)
+  if (process.env.NODE_ENV !== "production")
+    if (!isObject(template))
+      errorGiven("`pick` expects a plain Object template", template)
   return (F, xi2yF, x, i) =>
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 }
