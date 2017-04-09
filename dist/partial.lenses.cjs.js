@@ -1,8 +1,8 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('infestines')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'infestines'], factory) :
-	(factory((global.L = global.L || {}),global.infestines));
-}(this, (function (exports,infestines) { 'use strict';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var infestines = require('infestines');
 
 //
 
@@ -47,7 +47,7 @@ function mapPartialIndexU(xi2y, xs) {
     if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y;
   }if (j) {
     if (j < n) ys.length = j;
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
 }
@@ -55,7 +55,7 @@ function mapPartialIndexU(xi2y, xs) {
 function copyToFrom(ys, k, xs, i, j) {
   while (i < j) {
     ys[k++] = xs[i++];
-  }if ("dev" !== "production" && ys.length === k) Object.freeze(ys);
+  }if (process.env.NODE_ENV !== "production" && ys.length === k) Object.freeze(ys);
   return ys;
 }
 
@@ -166,7 +166,7 @@ function toArray(n) {
   if (void 0 !== n) {
     var ys = [];
     pushTo(n, ys);
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
 }
@@ -215,7 +215,7 @@ var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, del
 };
 
 function traversePartialIndex(A, xi2yA, xs) {
-  reqApplicative(A);
+  if (process.env.NODE_ENV !== "production") reqApplicative(A);
   var map = A.map,
       ap = A.ap,
       of = A.of,
@@ -257,7 +257,7 @@ var getProp = function getProp(k, o) {
 
 function setProp(k, v, o) {
   var r = void 0 !== v ? infestines.assocPartialU(k, v, o) : infestines.dissocPartialU(k, o);
-  return "dev" !== "production" && r ? Object.freeze(r) : r;
+  return process.env.NODE_ENV !== "production" && r ? Object.freeze(r) : r;
 }
 
 var funProp = lensFrom(getProp, setProp);
@@ -269,7 +269,7 @@ var getIndex = function getIndex(i, xs) {
 };
 
 function setIndex(i, x, xs) {
-  checkIndex(i);
+  if (process.env.NODE_ENV !== "production") checkIndex(i);
   if (!seemsArrayLike(xs)) xs = "";
   var n = xs.length;
   if (void 0 !== x) {
@@ -278,7 +278,7 @@ function setIndex(i, x, xs) {
     for (var j = 0; j < m; ++j) {
       ys[j] = xs[j];
     }ys[i] = x;
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   } else {
     if (0 < n) {
@@ -289,7 +289,7 @@ function setIndex(i, x, xs) {
           _ys[_j] = xs[_j];
         }for (var _j2 = i + 1; _j2 < n; ++_j2) {
           _ys[_j2 - 1] = xs[_j2];
-        }Object.freeze(_ys);
+        }if (process.env.NODE_ENV !== "production") Object.freeze(_ys);
         return _ys;
       }
     }
@@ -331,10 +331,10 @@ function setU(o, x, s) {
     case "number":
       return setIndex(o, x, s);
     case "object":
-      reqArray(o);
+      if (process.env.NODE_ENV !== "production") reqArray(o);
       return modifyComposed(o, 0, s, x);
     default:
-      reqFunction(o);
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o(Ident, infestines.always(x), s, void 0) : s;
   }
 }
@@ -346,7 +346,7 @@ function getU(l, s) {
     case "number":
       return getIndex(l, s);
     case "object":
-      reqArray(l);
+      if (process.env.NODE_ENV !== "production") reqArray(l);
       for (var i = 0, n = l.length, o; i < n; ++i) {
         switch (typeof (o = l[i])) {
           case "string":
@@ -358,13 +358,13 @@ function getU(l, s) {
         }
       }return s;
     default:
-      reqFunction(l);
+      if (process.env.NODE_ENV !== "production") reqFunction(l);
       return l.length === 4 ? l(Const, infestines.id, s, void 0) : l(s, void 0);
   }
 }
 
 function modifyComposed(os, xi2y, x, y) {
-  reqArray(os);
+  if (process.env.NODE_ENV !== "production") reqArray(os);
   var n = os.length;
   var xs = Array(n);
   for (var i = 0, o; i < n; ++i) {
@@ -399,13 +399,13 @@ function getPick(template, x) {
       r[k] = v;
     }
   }
-  if ("dev" !== "production" && r) Object.freeze(r);
+  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r);
   return r;
 }
 
 var setPick = function setPick(template, x) {
   return function (value) {
-    if ("dev" !== "production" && !(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
+    if (process.env.NODE_ENV !== "production" && !(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
     for (var k in template) {
       x = setU(template[k], value && value[k], x);
     }return x;
@@ -446,7 +446,7 @@ var branchOnMerge = function branchOnMerge(x, keys$$1) {
         r[_k] = _v2;
       }
     }
-    if ("dev" !== "production" && r) Object.freeze(r);
+    if (process.env.NODE_ENV !== "production" && r) Object.freeze(r);
     return r;
   };
 };
@@ -465,7 +465,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
 
 var branchOn = function branchOn(keys$$1, vals) {
   return function (A, xi2yA, x, _) {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     var map = A.map,
         ap = A.ap,
         of = A.of,
@@ -501,7 +501,7 @@ function findIndex(xi2b, xs) {
 function partitionIntoIndex(xi2b, xs, ts, fs) {
   for (var i = 0, n = xs.length, x; i < n; ++i) {
     (xi2b(x = xs[i], i) ? ts : fs).push(x);
-  }{
+  }if (process.env.NODE_ENV !== "production") {
     Object.freeze(ts);
     Object.freeze(fs);
   }
@@ -520,13 +520,13 @@ function toFunction(o) {
     case "string":
       return funProp(o);
     case "number":
-      checkIndex(o);
+      if (process.env.NODE_ENV !== "production") checkIndex(o);
       return funIndex(o);
     case "object":
-      reqArray(o);
+      if (process.env.NODE_ENV !== "production") reqArray(o);
       return composed(0, o);
     default:
-      reqFunction(o);
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o : fromReader(o);
   }
 }
@@ -542,7 +542,7 @@ var modify = infestines.curry(function (o, xi2x, s) {
     case "object":
       return modifyComposed(o, xi2x, s);
     default:
-      reqFunction(o);
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o(Ident, xi2x, s, void 0) : (xi2x(o(s, void 0), void 0), s);
   }
 });
@@ -570,7 +570,7 @@ function seq() {
     };
   };
   return function (M, xi2xM, x, i) {
-    if ("dev" !== "production" && !M.chain) errorGiven("`seq` requires a monad", M);
+    if (process.env.NODE_ENV !== "production" && !M.chain) errorGiven("`seq` requires a monad", M);
     return loop(M, xi2xM, i, 0)(x);
   };
 }
@@ -723,7 +723,7 @@ var sum = concatAs(unto(0), Sum);
 // Creating new traversals
 
 function branch(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !infestines.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
   var keys$$1 = [],
       vals = [];
   for (var k in template) {
@@ -739,7 +739,7 @@ function elems(A, xi2yA, xs, _) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     return (0, A.of)(xs);
   }
 }
@@ -748,7 +748,7 @@ function values(A, xi2yA, xs, _) {
   if (xs instanceof Object) {
     return branchOn(infestines.keys(xs))(A, xi2yA, xs);
   } else {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     return (0, A.of)(xs);
   }
 }
@@ -770,15 +770,15 @@ var lens = infestines.curry(function (get, set) {
 // Computing derived props
 
 function augment(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`augment` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !infestines.isObject(template)) errorGiven("`augment` expects a plain Object template", template);
   return lens(function (x) {
     x = infestines.dissocPartialU(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
-    }if ("dev" !== "production" && x) Object.freeze(x);
+    }if (process.env.NODE_ENV !== "production" && x) Object.freeze(x);
     return x;
   }, function (y, x) {
-    if ("dev" !== "production" && !(void 0 === y || y instanceof Object)) errorGiven("`augment` must be set with undefined or an object", y);
+    if (process.env.NODE_ENV !== "production" && !(void 0 === y || y instanceof Object)) errorGiven("`augment` must be set with undefined or an object", y);
     y = toObject(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
@@ -789,7 +789,7 @@ function augment(template) {
     for (var k in y) {
       if (!infestines.hasU(k, template)) set(k, y[k]);else if (x && infestines.hasU(k, x)) set(k, x[k]);
     }
-    if ("dev" !== "production" && z) Object.freeze(z);
+    if (process.env.NODE_ENV !== "production" && z) Object.freeze(z);
     return z;
   });
 }
@@ -846,7 +846,7 @@ var filter = function filter(xi2b) {
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
     return (0, F.map)(function (ts) {
-      if ("dev" !== "production" && !(void 0 === ts || seemsArrayLike(ts))) errorGiven("`filter` must be set with undefined or an array-like object", ts);
+      if (process.env.NODE_ENV !== "production" && !(void 0 === ts || seemsArrayLike(ts))) errorGiven("`filter` must be set with undefined or an array-like object", ts);
       var tsN = ts ? ts.length : 0,
           fsN = fs ? fs.length : 0,
           n = tsN + fsN;
@@ -870,7 +870,7 @@ function findWith() {
   }), lls];
 }
 
-var index = checkIndex;
+var index = process.env.NODE_ENV === "production" ? infestines.id : checkIndex;
 
 var last = choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : append;
@@ -883,7 +883,7 @@ var slice = infestines.curry(function (begin, end) {
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end);
     return (0, F.map)(function (zs) {
-      if ("dev" !== "production" && !(void 0 === zs || seemsArrayLike(zs))) errorGiven("`slice` must be set with undefined or an array-like object", zs);
+      if (process.env.NODE_ENV !== "production" && !(void 0 === zs || seemsArrayLike(zs))) errorGiven("`slice` must be set with undefined or an array-like object", zs);
       var zsN = zs ? zs.length : 0,
           bPzsN = b + zsN,
           n = xsN - e + bPzsN;
@@ -894,7 +894,7 @@ var slice = infestines.curry(function (begin, end) {
 
 // Lensing objects
 
-var prop = function (x) {
+var prop = process.env.NODE_ENV === "production" ? infestines.id : function (x) {
   if (!infestines.isString(x)) errorGiven("`prop` expects a string", x);
   return x;
 };
@@ -942,7 +942,7 @@ var orElse = infestines.curry(function (d, l) {
 // Transforming data
 
 function pick(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`pick` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !infestines.isObject(template)) errorGiven("`pick` expects a plain Object template", template);
   return function (F, xi2yF, x, i) {
     return (0, F.map)(setPick(template, x), xi2yF(getPick(template, x), i));
   };
@@ -1047,7 +1047,3 @@ exports.iso = iso;
 exports.complement = complement;
 exports.identity = identity;
 exports.inverse = inverse;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));

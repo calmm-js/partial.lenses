@@ -1,8 +1,4 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('infestines')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'infestines'], factory) :
-	(factory((global.L = global.L || {}),global.infestines));
-}(this, (function (exports,infestines) { 'use strict';
+import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
 
 //
 
@@ -34,7 +30,7 @@ var notPartial = function notPartial(x) {
 };
 
 var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || infestines.isString(x);
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
 //
@@ -47,7 +43,7 @@ function mapPartialIndexU(xi2y, xs) {
     if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y;
   }if (j) {
     if (j < n) ys.length = j;
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
 }
@@ -55,18 +51,18 @@ function mapPartialIndexU(xi2y, xs) {
 function copyToFrom(ys, k, xs, i, j) {
   while (i < j) {
     ys[k++] = xs[i++];
-  }if ("dev" !== "production" && ys.length === k) Object.freeze(ys);
+  }if (process.env.NODE_ENV !== "production" && ys.length === k) Object.freeze(ys);
   return ys;
 }
 
 //
 
-var Ident = { map: infestines.applyU, of: infestines.id, ap: infestines.applyU, chain: infestines.applyU };
+var Ident = { map: applyU, of: id, ap: applyU, chain: applyU };
 
-var Const = { map: infestines.sndU };
+var Const = { map: sndU };
 
 function ConcatOf(ap, empty, delay) {
-  var c = { map: infestines.sndU, ap: ap, of: infestines.always(empty) };
+  var c = { map: sndU, ap: ap, of: always(empty) };
   if (delay) c.delay = delay;
   return c;
 }
@@ -115,7 +111,7 @@ function checkIndex(x) {
 }
 
 function reqFunction(o) {
-  if (!(infestines.isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o);
+  if (!(isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o);
 }
 
 function reqArray(o) {
@@ -166,7 +162,7 @@ function toArray(n) {
   if (void 0 !== n) {
     var ys = [];
     pushTo(n, ys);
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
 }
@@ -195,11 +191,11 @@ var Select = ConcatOf(function (l, r) {
   while (l.constructor === Function) {
     l = l();
   }return void 0 !== l.v ? l : r;
-}, U, infestines.id);
+}, U, id);
 
 var mkSelect = function mkSelect(toM) {
   return function (xi2yM, t, s) {
-    s = run(t, Select, infestines.pipe2U(xi2yM, toM), s);
+    s = run(t, Select, pipe2U(xi2yM, toM), s);
     while (s.constructor === Function) {
       s = s();
     }return s.v;
@@ -215,7 +211,7 @@ var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, del
 };
 
 function traversePartialIndex(A, xi2yA, xs) {
-  reqApplicative(A);
+  if (process.env.NODE_ENV !== "production") reqApplicative(A);
   var map = A.map,
       ap = A.ap,
       of = A.of,
@@ -256,8 +252,8 @@ var getProp = function getProp(k, o) {
 };
 
 function setProp(k, v, o) {
-  var r = void 0 !== v ? infestines.assocPartialU(k, v, o) : infestines.dissocPartialU(k, o);
-  return "dev" !== "production" && r ? Object.freeze(r) : r;
+  var r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o);
+  return process.env.NODE_ENV !== "production" && r ? Object.freeze(r) : r;
 }
 
 var funProp = lensFrom(getProp, setProp);
@@ -269,7 +265,7 @@ var getIndex = function getIndex(i, xs) {
 };
 
 function setIndex(i, x, xs) {
-  checkIndex(i);
+  if (process.env.NODE_ENV !== "production") checkIndex(i);
   if (!seemsArrayLike(xs)) xs = "";
   var n = xs.length;
   if (void 0 !== x) {
@@ -278,7 +274,7 @@ function setIndex(i, x, xs) {
     for (var j = 0; j < m; ++j) {
       ys[j] = xs[j];
     }ys[i] = x;
-    Object.freeze(ys);
+    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   } else {
     if (0 < n) {
@@ -289,7 +285,7 @@ function setIndex(i, x, xs) {
           _ys[_j] = xs[_j];
         }for (var _j2 = i + 1; _j2 < n; ++_j2) {
           _ys[_j2 - 1] = xs[_j2];
-        }Object.freeze(_ys);
+        }if (process.env.NODE_ENV !== "production") Object.freeze(_ys);
         return _ys;
       }
     }
@@ -331,11 +327,11 @@ function setU(o, x, s) {
     case "number":
       return setIndex(o, x, s);
     case "object":
-      reqArray(o);
+      if (process.env.NODE_ENV !== "production") reqArray(o);
       return modifyComposed(o, 0, s, x);
     default:
-      reqFunction(o);
-      return o.length === 4 ? o(Ident, infestines.always(x), s, void 0) : s;
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
+      return o.length === 4 ? o(Ident, always(x), s, void 0) : s;
   }
 }
 
@@ -346,7 +342,7 @@ function getU(l, s) {
     case "number":
       return getIndex(l, s);
     case "object":
-      reqArray(l);
+      if (process.env.NODE_ENV !== "production") reqArray(l);
       for (var i = 0, n = l.length, o; i < n; ++i) {
         switch (typeof (o = l[i])) {
           case "string":
@@ -354,17 +350,17 @@ function getU(l, s) {
           case "number":
             s = getIndex(o, s);break;
           default:
-            return composed(i, l)(Const, infestines.id, s, l[i - 1]);
+            return composed(i, l)(Const, id, s, l[i - 1]);
         }
       }return s;
     default:
-      reqFunction(l);
-      return l.length === 4 ? l(Const, infestines.id, s, void 0) : l(s, void 0);
+      if (process.env.NODE_ENV !== "production") reqFunction(l);
+      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0);
   }
 }
 
 function modifyComposed(os, xi2y, x, y) {
-  reqArray(os);
+  if (process.env.NODE_ENV !== "production") reqArray(os);
   var n = os.length;
   var xs = Array(n);
   for (var i = 0, o; i < n; ++i) {
@@ -377,14 +373,14 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(Ident, xi2y || infestines.always(y), x, os[i - 1]);
+        x = composed(i, os)(Ident, xi2y || always(y), x, os[i - 1]);
         n = i;
         break;
     }
   }
   if (n === os.length) x = xi2y ? xi2y(x, os[n - 1]) : y;
   for (var _o; 0 <= --n;) {
-    x = infestines.isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
+    x = isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
   }return x;
 }
 
@@ -399,13 +395,13 @@ function getPick(template, x) {
       r[k] = v;
     }
   }
-  if ("dev" !== "production" && r) Object.freeze(r);
+  if (process.env.NODE_ENV !== "production" && r) Object.freeze(r);
   return r;
 }
 
 var setPick = function setPick(template, x) {
   return function (value) {
-    if ("dev" !== "production" && !(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
+    if (process.env.NODE_ENV !== "production" && !(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
     for (var k in template) {
       x = setU(template[k], value && value[k], x);
     }return x;
@@ -415,7 +411,7 @@ var setPick = function setPick(template, x) {
 //
 
 var toObject = function toObject(x) {
-  return infestines.constructorOf(x) !== Object ? Object.assign({}, x) : x;
+  return constructorOf(x) !== Object ? Object.assign({}, x) : x;
 };
 
 //
@@ -446,7 +442,7 @@ var branchOnMerge = function branchOnMerge(x, keys$$1) {
         r[_k] = _v2;
       }
     }
-    if ("dev" !== "production" && r) Object.freeze(r);
+    if (process.env.NODE_ENV !== "production" && r) Object.freeze(r);
     return r;
   };
 };
@@ -465,7 +461,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
 
 var branchOn = function branchOn(keys$$1, vals) {
   return function (A, xi2yA, x, _) {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     var map = A.map,
         ap = A.ap,
         of = A.of,
@@ -473,7 +469,7 @@ var branchOn = function branchOn(keys$$1, vals) {
 
     var i = keys$$1.length;
     if (!i) return of(object0ToUndefined(x));
-    if (!(x instanceof Object)) x = infestines.object0;
+    if (!(x instanceof Object)) x = object0;
     var xsA = of(0);
     if (delay) {
       xsA = branchOnLazy(keys$$1, vals, map, ap, xsA, delay, A, xi2yA, x, 0);
@@ -489,7 +485,7 @@ var branchOn = function branchOn(keys$$1, vals) {
 };
 
 var replaced = function replaced(inn, out, x) {
-  return infestines.acyclicEqualsU(x, inn) ? out : x;
+  return acyclicEqualsU(x, inn) ? out : x;
 };
 
 function findIndex(xi2b, xs) {
@@ -501,7 +497,7 @@ function findIndex(xi2b, xs) {
 function partitionIntoIndex(xi2b, xs, ts, fs) {
   for (var i = 0, n = xs.length, x; i < n; ++i) {
     (xi2b(x = xs[i], i) ? ts : fs).push(x);
-  }{
+  }if (process.env.NODE_ENV !== "production") {
     Object.freeze(ts);
     Object.freeze(fs);
   }
@@ -509,7 +505,7 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 
 var fromReader = function fromReader(wi2x) {
   return function (F, xi2yF, w, i) {
-    return (0, F.map)(infestines.always(w), xi2yF(wi2x(w, i), i));
+    return (0, F.map)(always(w), xi2yF(wi2x(w, i), i));
   };
 };
 
@@ -520,20 +516,20 @@ function toFunction(o) {
     case "string":
       return funProp(o);
     case "number":
-      checkIndex(o);
+      if (process.env.NODE_ENV !== "production") checkIndex(o);
       return funIndex(o);
     case "object":
-      reqArray(o);
+      if (process.env.NODE_ENV !== "production") reqArray(o);
       return composed(0, o);
     default:
-      reqFunction(o);
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o : fromReader(o);
   }
 }
 
 // Operations on optics
 
-var modify = infestines.curry(function (o, xi2x, s) {
+var modify = curry(function (o, xi2x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s);
@@ -542,18 +538,18 @@ var modify = infestines.curry(function (o, xi2x, s) {
     case "object":
       return modifyComposed(o, xi2x, s);
     default:
-      reqFunction(o);
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o(Ident, xi2x, s, void 0) : (xi2x(o(s, void 0), void 0), s);
   }
 });
 
-var remove = infestines.curry(function (o, s) {
+var remove = curry(function (o, s) {
   return setU(o, void 0, s);
 });
 
-var set = infestines.curry(setU);
+var set = curry(setU);
 
-var traverse = infestines.curry(function (C, xMi2yC, t, s) {
+var traverse = curry(function (C, xMi2yC, t, s) {
   return run(t, C, xMi2yC, s);
 });
 
@@ -570,7 +566,7 @@ function seq() {
     };
   };
   return function (M, xi2xM, x, i) {
-    if ("dev" !== "production" && !M.chain) errorGiven("`seq` requires a monad", M);
+    if (process.env.NODE_ENV !== "production" && !M.chain) errorGiven("`seq` requires a monad", M);
     return loop(M, xi2xM, i, 0)(x);
   };
 }
@@ -591,7 +587,7 @@ function compose() {
 
 // Querying
 
-var chain = infestines.curry(function (xi2yO, xO) {
+var chain = curry(function (xi2yO, xO) {
   return [xO, choose(function (xM, i) {
     return void 0 !== xM ? xi2yO(xM, i) : zero;
   })];
@@ -622,11 +618,11 @@ var when = function when(p) {
   };
 };
 
-var optional = when(infestines.isDefined);
+var optional = when(isDefined);
 
 function zero(C, xi2yC, x, i) {
   var of = C.of;
-  return of ? of(x) : (0, C.map)(infestines.always(x), xi2yC(void 0, i));
+  return of ? of(x) : (0, C.map)(always(x), xi2yC(void 0, i));
 }
 
 // Recursing
@@ -646,7 +642,7 @@ function lazy(o2o) {
 function log() {
   var _arguments = arguments;
 
-  var show = infestines.curry(function (dir, x) {
+  var show = curry(function (dir, x) {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
   return iso(show("get"), show("set"));
@@ -654,42 +650,42 @@ function log() {
 
 // Operations on traversals
 
-var concatAs = infestines.curryN(4, function (xMi2y, m) {
+var concatAs = curryN(4, function (xMi2y, m) {
   var C = ConcatOf(m.concat, (0, m.empty)(), m.delay);
   return function (t, s) {
     return run(t, C, xMi2y, s);
   };
 });
 
-var concat = concatAs(infestines.id);
+var concat = concatAs(id);
 
 // Folds over traversals
 
-var all = infestines.pipe2U(mkSelect(function (x) {
+var all = pipe2U(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = all(infestines.id);
+var and = all(id);
 
-var any = infestines.pipe2U(mkSelect(function (x) {
+var any = pipe2U(mkSelect(function (x) {
   return x ? T : U;
 }), Boolean);
 
-var collectAs = infestines.curry(function (xi2y, t, s) {
-  return toArray(run(t, Collect, xi2y, s)) || infestines.array0;
+var collectAs = curry(function (xi2y, t, s) {
+  return toArray(run(t, Collect, xi2y, s)) || array0;
 });
 
-var collect = collectAs(infestines.id);
+var collect = collectAs(id);
 
 var count = concatAs(function (x) {
   return void 0 !== x ? 1 : 0;
 }, Sum);
 
-var foldl = infestines.curry(function (f, r, t, s) {
+var foldl = curry(function (f, r, t, s) {
   return fold(f, r, run(t, Collect, pair, s));
 });
 
-var foldr = infestines.curry(function (f, r, t, s) {
+var foldr = curry(function (f, r, t, s) {
   var xs = collectAs(pair, t, s);
   for (var i = xs.length - 1; 0 <= i; --i) {
     var x = xs[i];
@@ -706,24 +702,24 @@ var minimum = concat(Mum(function (x, y) {
   return x < y;
 }));
 
-var or = any(infestines.id);
+var or = any(id);
 
 var product = concatAs(unto(1), Monoid(function (y, x) {
   return x * y;
 }, 1));
 
-var selectAs = infestines.curry(mkSelect(function (v) {
+var selectAs = curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = selectAs(infestines.id);
+var select = selectAs(id);
 
 var sum = concatAs(unto(0), Sum);
 
 // Creating new traversals
 
 function branch(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !isObject(template)) errorGiven("`branch` expects a plain Object template", template);
   var keys$$1 = [],
       vals = [];
   for (var k in template) {
@@ -739,27 +735,27 @@ function elems(A, xi2yA, xs, _) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     return (0, A.of)(xs);
   }
 }
 
 function values(A, xi2yA, xs, _) {
   if (xs instanceof Object) {
-    return branchOn(infestines.keys(xs))(A, xi2yA, xs);
+    return branchOn(keys(xs))(A, xi2yA, xs);
   } else {
-    reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A);
     return (0, A.of)(xs);
   }
 }
 
 // Operations on lenses
 
-var get = infestines.curry(getU);
+var get = curry(getU);
 
 // Creating new lenses
 
-var lens = infestines.curry(function (get, set) {
+var lens = curry(function (get, set) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
@@ -770,15 +766,15 @@ var lens = infestines.curry(function (get, set) {
 // Computing derived props
 
 function augment(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`augment` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !isObject(template)) errorGiven("`augment` expects a plain Object template", template);
   return lens(function (x) {
-    x = infestines.dissocPartialU(0, x);
+    x = dissocPartialU(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
-    }if ("dev" !== "production" && x) Object.freeze(x);
+    }if (process.env.NODE_ENV !== "production" && x) Object.freeze(x);
     return x;
   }, function (y, x) {
-    if ("dev" !== "production" && !(void 0 === y || y instanceof Object)) errorGiven("`augment` must be set with undefined or an object", y);
+    if (process.env.NODE_ENV !== "production" && !(void 0 === y || y instanceof Object)) errorGiven("`augment` must be set with undefined or an object", y);
     y = toObject(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
@@ -787,9 +783,9 @@ function augment(template) {
       z[k] = v;
     }
     for (var k in y) {
-      if (!infestines.hasU(k, template)) set(k, y[k]);else if (x && infestines.hasU(k, x)) set(k, x[k]);
+      if (!hasU(k, template)) set(k, y[k]);else if (x && hasU(k, x)) set(k, x[k]);
     }
-    if ("dev" !== "production" && z) Object.freeze(z);
+    if (process.env.NODE_ENV !== "production" && z) Object.freeze(z);
     return z;
   });
 }
@@ -846,7 +842,7 @@ var filter = function filter(xi2b) {
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
     return (0, F.map)(function (ts) {
-      if ("dev" !== "production" && !(void 0 === ts || seemsArrayLike(ts))) errorGiven("`filter` must be set with undefined or an array-like object", ts);
+      if (process.env.NODE_ENV !== "production" && !(void 0 === ts || seemsArrayLike(ts))) errorGiven("`filter` must be set with undefined or an array-like object", ts);
       var tsN = ts ? ts.length : 0,
           fsN = fs ? fs.length : 0,
           n = tsN + fsN;
@@ -870,20 +866,20 @@ function findWith() {
   }), lls];
 }
 
-var index = checkIndex;
+var index = process.env.NODE_ENV === "production" ? id : checkIndex;
 
 var last = choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : append;
 });
 
-var slice = infestines.curry(function (begin, end) {
+var slice = curry(function (begin, end) {
   return function (F, xsi2yF, xs, i) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end);
     return (0, F.map)(function (zs) {
-      if ("dev" !== "production" && !(void 0 === zs || seemsArrayLike(zs))) errorGiven("`slice` must be set with undefined or an array-like object", zs);
+      if (process.env.NODE_ENV !== "production" && !(void 0 === zs || seemsArrayLike(zs))) errorGiven("`slice` must be set with undefined or an array-like object", zs);
       var zsN = zs ? zs.length : 0,
           bPzsN = b + zsN,
           n = xsN - e + bPzsN;
@@ -894,8 +890,8 @@ var slice = infestines.curry(function (begin, end) {
 
 // Lensing objects
 
-var prop = function (x) {
-  if (!infestines.isString(x)) errorGiven("`prop` expects a string", x);
+var prop = process.env.NODE_ENV === "production" ? id : function (x) {
+  if (!isString(x)) errorGiven("`prop` expects a string", x);
   return x;
 };
 
@@ -915,7 +911,7 @@ var removable = function removable() {
   function drop(y) {
     if (!(y instanceof Object)) return y;
     for (var i = 0, n = ps.length; i < n; ++i) {
-      if (infestines.hasU(ps[i], y)) return y;
+      if (hasU(ps[i], y)) return y;
     }
   }
   return function (F, xi2yF, x, i) {
@@ -933,7 +929,7 @@ var valueOr = function valueOr(v) {
 
 // Adapting to data
 
-var orElse = infestines.curry(function (d, l) {
+var orElse = curry(function (d, l) {
   return choose(function (x) {
     return void 0 !== getU(l, x) ? l : d;
   });
@@ -942,13 +938,13 @@ var orElse = infestines.curry(function (d, l) {
 // Transforming data
 
 function pick(template) {
-  if ("dev" !== "production" && !infestines.isObject(template)) errorGiven("`pick` expects a plain Object template", template);
+  if (process.env.NODE_ENV !== "production" && !isObject(template)) errorGiven("`pick` expects a plain Object template", template);
   return function (F, xi2yF, x, i) {
     return (0, F.map)(setPick(template, x), xi2yF(getPick(template, x), i));
   };
 }
 
-var replace = infestines.curry(function (inn, out) {
+var replace = curry(function (inn, out) {
   var o2i = function o2i(x) {
     return replaced(out, inn, x);
   };
@@ -959,11 +955,11 @@ var replace = infestines.curry(function (inn, out) {
 
 // Operations on isomorphisms
 
-var getInverse = infestines.arityN(2, setU);
+var getInverse = arityN(2, setU);
 
 // Creating new isomorphisms
 
-var iso = infestines.curry(function (bwd, fwd) {
+var iso = curry(function (bwd, fwd) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
@@ -985,69 +981,4 @@ var inverse = function inverse(iso) {
   };
 };
 
-exports.toFunction = toFunction;
-exports.modify = modify;
-exports.remove = remove;
-exports.set = set;
-exports.traverse = traverse;
-exports.seq = seq;
-exports.compose = compose;
-exports.chain = chain;
-exports.choice = choice;
-exports.choose = choose;
-exports.when = when;
-exports.optional = optional;
-exports.zero = zero;
-exports.lazy = lazy;
-exports.log = log;
-exports.concatAs = concatAs;
-exports.concat = concat;
-exports.all = all;
-exports.and = and;
-exports.any = any;
-exports.collectAs = collectAs;
-exports.collect = collect;
-exports.count = count;
-exports.foldl = foldl;
-exports.foldr = foldr;
-exports.maximum = maximum;
-exports.minimum = minimum;
-exports.or = or;
-exports.product = product;
-exports.selectAs = selectAs;
-exports.select = select;
-exports.sum = sum;
-exports.branch = branch;
-exports.elems = elems;
-exports.values = values;
-exports.get = get;
-exports.lens = lens;
-exports.augment = augment;
-exports.defaults = defaults;
-exports.define = define;
-exports.normalize = normalize;
-exports.required = required;
-exports.rewrite = rewrite;
-exports.append = append;
-exports.filter = filter;
-exports.find = find;
-exports.findWith = findWith;
-exports.index = index;
-exports.last = last;
-exports.slice = slice;
-exports.prop = prop;
-exports.props = props;
-exports.removable = removable;
-exports.valueOr = valueOr;
-exports.orElse = orElse;
-exports.pick = pick;
-exports.replace = replace;
-exports.getInverse = getInverse;
-exports.iso = iso;
-exports.complement = complement;
-exports.identity = identity;
-exports.inverse = inverse;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, get, lens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse };

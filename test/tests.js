@@ -1,7 +1,7 @@
 import * as I from "infestines"
 import * as R from "ramda"
 
-import * as L from "../src/partial.lenses"
+import * as L from "../dist/partial.lenses.cjs"
 
 import * as BST from "./bst"
 import * as C   from "./core"
