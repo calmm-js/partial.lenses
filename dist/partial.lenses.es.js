@@ -907,7 +907,7 @@ function props() {
   }return pick(template);
 }
 
-var removable = function removable() {
+function removable() {
   for (var _len2 = arguments.length, ps = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
     ps[_key2] = arguments[_key2];
   }
@@ -921,7 +921,7 @@ var removable = function removable() {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(drop, xi2yF(x, i));
   };
-};
+}
 
 // Providing defaults
 
