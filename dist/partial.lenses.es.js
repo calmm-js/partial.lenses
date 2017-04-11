@@ -91,7 +91,7 @@ var run = function run(o, C, xi2yC, s, i) {
 //
 
 var expectedOptic = "Expecting an optic";
-var header = "partial.lenses: ";
+var header = "partial.lenses:";
 
 //function warn(f, m) {
 //  if (!f.warned) {
@@ -100,9 +100,12 @@ var header = "partial.lenses: ";
 //  }
 //}
 
-function errorGiven(m, o) {
-  console.error(header + m + " - given:", o);
-  throw new Error(m);
+function errorGiven(m, o, e) {
+  m += ".";
+  var args = [header, m, "Given:", o];
+  if (e) args.push("\n" + e);
+  console.error.apply(console, args);
+  throw new Error(e ? m + " " + e : m);
 }
 
 function checkIndex(x) {
@@ -121,7 +124,7 @@ function reqArray(o) {
 //
 
 function reqApplicative(f) {
-  if (!f.of) errorGiven("Traversals require an applicative", f);
+  if (!f.of) errorGiven("Traversals require an applicative", f, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
 }
 
 //
@@ -567,7 +570,7 @@ function seq() {
     };
   };
   return function (M, xi2xM, x, i) {
-    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M);
+    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
     return loop(M, xi2xM, i, 0)(x);
   };
 }
