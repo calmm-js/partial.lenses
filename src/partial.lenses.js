@@ -90,7 +90,7 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 //
 
 const expectedOptic = "Expecting an optic"
-const header = "partial.lenses: "
+const header = "partial.lenses:"
 
 //function warn(f, m) {
 //  if (!f.warned) {
@@ -99,9 +99,11 @@ const header = "partial.lenses: "
 //  }
 //}
 
-function errorGiven(m, o) {
-  console.error(header + m + " - given:", o)
-  throw new Error(m)
+function errorGiven(m, o, e) {
+  const args = [header, m, ". Given:", o]
+  if (e) args.push(e)
+  console.error.apply(console, args)
+  throw new Error(e ? m + ". " + e : m)
 }
 
 function checkIndex(x) {
@@ -124,7 +126,7 @@ function reqArray(o) {
 
 function reqApplicative(f) {
   if (!f.of)
-    errorGiven("Traversals require an applicative", f)
+    errorGiven("Traversals require an applicative", f, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
 }
 
 //
@@ -546,7 +548,7 @@ export function seq() {
   return (M, xi2xM, x, i) => {
     if (process.env.NODE_ENV !== "production")
       if (!M.chain)
-        errorGiven("`seq` requires a monad", M)
+        errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
     return loop(M, xi2xM, i, 0)(x)
   }
 }
