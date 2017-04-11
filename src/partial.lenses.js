@@ -851,7 +851,7 @@ export function props() {
   return pick(template)
 }
 
-export const removable = (...ps) => {
+export function removable(...ps) {
   function drop(y) {
     if (!(y instanceof Object))
       return y
