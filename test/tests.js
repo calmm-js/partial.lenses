@@ -738,39 +738,6 @@ describe("L.toFunction", () => {
   testEq("typeof L.toFunction(L.find(R.identity))", "function")
 })
 
-if (process.env.NODE_ENV !== "production") {
-  describe("debug", () => {
-    testThrows(`X.set(-1, 0, 0)`)
-
-    testThrows(`X.index("x")`)
-    testThrows(`X.index(-1)`)
-    testThrows(`X.index()`)
-
-    testThrows(`X.prop(2)`)
-    testThrows(`X.prop(x => x)`)
-    testThrows(`X.prop()`)
-
-    testThrows(`X.get(L.elems, [])`)
-
-    testThrows(`L.set(L.props("length"), "lol", undefined)`)
-    testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
-    testThrows(`L.pick(new XYZ(1,2,3))`)
-    testThrows(`L.set(L.filter(undefined, undefined), {x: 11}, [])`)
-    testThrows(`L.augment(new XYZ(1,2,3))`)
-    testThrows(`L.set(L.augment({y: () => 1}), 45, {x: 1})`)
-
-    testThrows(`L.set(null, 1, 2)`)
-
-    testThrows(`L.toFunction((one, too, many) => 1)`)
-
-    testThrows(`L.get(L.seq(0), ["x"])`)
-
-    testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
-
-    testThrows(`L.toFunction(-1)`)
-  })
-}
-
 describe("BST", () => {
   const randomInt = (min, max) =>
     Math.floor(Math.random() * (max - min)) + min
@@ -864,3 +831,36 @@ describe("L.last", () => {
   testEq(`L.set(L.last, 5, [])`, [5])
   testEq(`L.set(L.last, 5, [1,2])`, [1,5])
 })
+
+if (process.env.NODE_ENV !== "production") {
+  describe("debug", () => {
+    testThrows(`X.set(-1, 0, 0)`)
+
+    testThrows(`X.index("x")`)
+    testThrows(`X.index(-1)`)
+    testThrows(`X.index()`)
+
+    testThrows(`X.prop(2)`)
+    testThrows(`X.prop(x => x)`)
+    testThrows(`X.prop()`)
+
+    testThrows(`X.get(L.elems, [])`)
+
+    testThrows(`L.set(L.props("length"), "lol", undefined)`)
+    testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
+    testThrows(`L.pick(new XYZ(1,2,3))`)
+    testThrows(`L.set(L.filter(undefined, undefined), {x: 11}, [])`)
+    testThrows(`L.augment(new XYZ(1,2,3))`)
+    testThrows(`L.set(L.augment({y: () => 1}), 45, {x: 1})`)
+
+    testThrows(`L.set(null, 1, 2)`)
+
+    testThrows(`L.toFunction((one, too, many) => 1)`)
+
+    testThrows(`L.get(L.seq(0), ["x"])`)
+
+    testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
+
+    testThrows(`L.toFunction(-1)`)
+  })
+}
