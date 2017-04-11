@@ -208,7 +208,7 @@ export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
 // Creating new isomorphisms
 
-export const iso = lens
+export const iso = R.curry((xy, yx) => lens(x => xy(x), y => yx(y)))
 
 // Isomorphisms and combinators
 
