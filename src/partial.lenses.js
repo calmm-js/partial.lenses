@@ -700,7 +700,9 @@ export function values(A, xi2yA, xs, _) {
 
 // Operations on lenses
 
-export const get = curry(getU)
+export function get(l, s) {
+  return 1 < arguments.length ? getU(l, s) : s => getU(l, s)
+}
 
 // Creating new lenses
 
