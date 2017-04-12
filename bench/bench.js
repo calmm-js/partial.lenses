@@ -60,6 +60,12 @@ const inc = x => x + 1
 const add = (x, y) => x+y
 const addC = x => y => x+y
 
+const L_get_1 = L.get(1)
+const R_nth_1 = R.nth(1)
+
+const L_get_y = L.get("y")
+const R_prop_y = R.prop("y")
+
 const Sum = {empty: () => 0, concat: add}
 const List = {empty: always([]), concat: (x, y) => x.concat(y)}
 const toList = x => x !== undefined ? [x] : []
@@ -217,6 +223,11 @@ R.forEach(bs => {
     `K.idx(1).get(xs)`,
     `_get(xs, 1)`,
   ], [
+    `L.get(1)(xs)`,
+    `L_get_1(xs)`,
+    `R.nth(1)(xs)`,
+    `R_nth_1(xs)`,
+  ], [
     `xs.map((x, i) => i === 1 ? 0 : x)`,
     `(() => { let ys = xs.slice(); ys[1] = 0; return ys; })()`,
     `L.set(1, 0, xs)`,
@@ -229,6 +240,11 @@ R.forEach(bs => {
     `R.view(l_y, xyz)`,
     `K.key("y").get(xyz)`,
     `_get(xyz, "y")`,
+  ], [
+    `L.get("y")(xyz)`,
+    `L_get_y(xyz)`,
+    `R.prop("y")(xyz)`,
+    `R_prop_y(xyz)`,
   ], [
     `L.set("y", 0, xyz)`,
     `R.assoc("y", 0, xyz)`,
