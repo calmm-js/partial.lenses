@@ -72,7 +72,7 @@ var Monoid = function Monoid(concat, _empty) {
       return _empty;
     } };
 };
-var Sum = Monoid(function (y, x) {
+var Sum = /*#__PURE__*/Monoid(function (y, x) {
   return x + y;
 }, 0);
 
@@ -183,14 +183,14 @@ var fold = function fold(f, r, n) {
   return void 0 !== n ? foldRec(f, r, n) : r;
 };
 
-var Collect = ConcatOf(join);
+var Collect = /*#__PURE__*/ConcatOf(join);
 
 //
 
 var U = {};
 var T = { v: true };
 
-var Select = ConcatOf(function (l, r) {
+var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   while (l.constructor === Function) {
     l = l();
   }return void 0 !== l.v ? l : r;
@@ -260,7 +260,7 @@ function setProp(k, v, o) {
   return r;
 }
 
-var funProp = lensFrom(getProp, setProp);
+var funProp = /*#__PURE__*/lensFrom(getProp, setProp);
 
 //
 
@@ -296,7 +296,7 @@ function setIndex(i, x, xs) {
   }
 }
 
-var funIndex = lensFrom(getIndex, setIndex);
+var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
 //
 
@@ -533,7 +533,7 @@ function toFunction(o) {
 
 // Operations on optics
 
-var modify = curry(function (o, xi2x, s) {
+var modify = /*#__PURE__*/curry(function (o, xi2x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s);
@@ -547,13 +547,13 @@ var modify = curry(function (o, xi2x, s) {
   }
 });
 
-var remove = curry(function (o, s) {
+var remove = /*#__PURE__*/curry(function (o, s) {
   return setU(o, void 0, s);
 });
 
-var set = curry(setU);
+var set = /*#__PURE__*/curry(setU);
 
-var traverse = curry(function (C, xMi2yC, t, s) {
+var traverse = /*#__PURE__*/curry(function (C, xMi2yC, t, s) {
   return run(t, C, xMi2yC, s);
 });
 
@@ -591,7 +591,7 @@ function compose() {
 
 // Querying
 
-var chain = curry(function (xi2yO, xO) {
+var chain = /*#__PURE__*/curry(function (xi2yO, xO) {
   return [xO, choose(function (xM, i) {
     return void 0 !== xM ? xi2yO(xM, i) : zero;
   })];
@@ -622,7 +622,7 @@ var when = function when(p) {
   };
 };
 
-var optional = when(isDefined);
+var optional = /*#__PURE__*/when(isDefined);
 
 function zero(C, xi2yC, x, i) {
   var of = C.of;
@@ -654,42 +654,42 @@ function log() {
 
 // Operations on traversals
 
-var concatAs = curryN(4, function (xMi2y, m) {
+var concatAs = /*#__PURE__*/curryN(4, function (xMi2y, m) {
   var C = ConcatOf(m.concat, (0, m.empty)(), m.delay);
   return function (t, s) {
     return run(t, C, xMi2y, s);
   };
 });
 
-var concat = concatAs(id);
+var concat = /*#__PURE__*/concatAs(id);
 
 // Folds over traversals
 
-var all = pipe2U(mkSelect(function (x) {
+var all = /*#__PURE__*/pipe2U(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = all(id);
+var and = /*#__PURE__*/all(id);
 
-var any = pipe2U(mkSelect(function (x) {
+var any = /*#__PURE__*/pipe2U(mkSelect(function (x) {
   return x ? T : U;
 }), Boolean);
 
-var collectAs = curry(function (xi2y, t, s) {
+var collectAs = /*#__PURE__*/curry(function (xi2y, t, s) {
   return toArray(run(t, Collect, xi2y, s)) || array0;
 });
 
-var collect = collectAs(id);
+var collect = /*#__PURE__*/collectAs(id);
 
-var count = concatAs(function (x) {
+var count = /*#__PURE__*/concatAs(function (x) {
   return void 0 !== x ? 1 : 0;
 }, Sum);
 
-var foldl = curry(function (f, r, t, s) {
+var foldl = /*#__PURE__*/curry(function (f, r, t, s) {
   return fold(f, r, run(t, Collect, pair, s));
 });
 
-var foldr = curry(function (f, r, t, s) {
+var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
   var xs = collectAs(pair, t, s);
   for (var i = xs.length - 1; 0 <= i; --i) {
     var x = xs[i];
@@ -698,27 +698,27 @@ var foldr = curry(function (f, r, t, s) {
   return r;
 });
 
-var maximum = concat(Mum(function (x, y) {
+var maximum = /*#__PURE__*/concat(Mum(function (x, y) {
   return x > y;
 }));
 
-var minimum = concat(Mum(function (x, y) {
+var minimum = /*#__PURE__*/concat(Mum(function (x, y) {
   return x < y;
 }));
 
-var or = any(id);
+var or = /*#__PURE__*/any(id);
 
-var product = concatAs(unto(1), Monoid(function (y, x) {
+var product = /*#__PURE__*/concatAs(unto(1), Monoid(function (y, x) {
   return x * y;
 }, 1));
 
-var selectAs = curry(mkSelect(function (v) {
+var selectAs = /*#__PURE__*/curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = selectAs(id);
+var select = /*#__PURE__*/selectAs(id);
 
-var sum = concatAs(unto(0), Sum);
+var sum = /*#__PURE__*/concatAs(unto(0), Sum);
 
 // Creating new traversals
 
@@ -763,7 +763,7 @@ function get(l, s) {
 
 // Creating new lenses
 
-var lens = curry(function (get, set) {
+var lens = /*#__PURE__*/curry(function (get, set) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
@@ -876,11 +876,11 @@ function findWith() {
 
 var index = process.env.NODE_ENV === "production" ? id : checkIndex;
 
-var last = choose(function (maybeArray) {
+var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : append;
 });
 
-var slice = curry(function (begin, end) {
+var slice = /*#__PURE__*/curry(function (begin, end) {
   return function (F, xsi2yF, xs, i) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
@@ -937,7 +937,7 @@ var valueOr = function valueOr(v) {
 
 // Adapting to data
 
-var orElse = curry(function (d, l) {
+var orElse = /*#__PURE__*/curry(function (d, l) {
   return choose(function (x) {
     return void 0 !== getU(l, x) ? l : d;
   });
@@ -952,7 +952,7 @@ function pick(template) {
   };
 }
 
-var replace = curry(function (inn, out) {
+var replace = /*#__PURE__*/curry(function (inn, out) {
   var o2i = function o2i(x) {
     return replaced(out, inn, x);
   };
@@ -963,11 +963,11 @@ var replace = curry(function (inn, out) {
 
 // Operations on isomorphisms
 
-var getInverse = arityN(2, setU);
+var getInverse = /*#__PURE__*/arityN(2, setU);
 
 // Creating new isomorphisms
 
-var iso = curry(function (bwd, fwd) {
+var iso = /*#__PURE__*/curry(function (bwd, fwd) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
@@ -975,7 +975,7 @@ var iso = curry(function (bwd, fwd) {
 
 // Isomorphisms and combinators
 
-var complement = iso(notPartial, notPartial);
+var complement = /*#__PURE__*/iso(notPartial, notPartial);
 
 var identity = function identity(_F, xi2yF, x, i) {
   return xi2yF(x, i);

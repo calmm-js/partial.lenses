@@ -78,7 +78,7 @@ function ConcatOf(ap, empty, delay) {
 }
 
 const Monoid = (concat, empty) => ({concat, empty: () => empty})
-const Sum = Monoid((y, x) => x + y, 0)
+const Sum = /*#__PURE__*/Monoid((y, x) => x + y, 0)
 
 const Mum = ord =>
   Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
@@ -176,14 +176,14 @@ function foldRec(f, r, n) {
 
 const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
-const Collect = ConcatOf(join)
+const Collect = /*#__PURE__*/ConcatOf(join)
 
 //
 
 const U = {}
 const T = {v:true}
 
-const Select = ConcatOf(
+const Select = /*#__PURE__*/ConcatOf(
   (l, r) => {
     while (l.constructor === Function)
       l = l()
@@ -246,7 +246,7 @@ function setProp(k, v, o) {
   return r
 }
 
-const funProp = lensFrom(getProp, setProp)
+const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
 
 //
 
@@ -282,7 +282,7 @@ function setIndex(i, x, xs) {
   }
 }
 
-const funIndex = lensFrom(getIndex, setIndex)
+const funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex)
 
 //
 
@@ -514,7 +514,7 @@ export function toFunction(o) {
 
 // Operations on optics
 
-export const modify = curry((o, xi2x, s) => {
+export const modify = /*#__PURE__*/curry((o, xi2x, s) => {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s)
@@ -531,11 +531,11 @@ export const modify = curry((o, xi2x, s) => {
   }
 })
 
-export const remove = curry((o, s) => setU(o, void 0, s))
+export const remove = /*#__PURE__*/curry((o, s) => setU(o, void 0, s))
 
-export const set = curry(setU)
+export const set = /*#__PURE__*/curry(setU)
 
-export const traverse = curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
+export const traverse = /*#__PURE__*/curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
 
 // Sequencing
 
@@ -570,7 +570,7 @@ export function compose() {
 
 // Querying
 
-export const chain = curry((xi2yO, xO) =>
+export const chain = /*#__PURE__*/curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
@@ -584,7 +584,7 @@ export const choose = xiM2o => (C, xi2yC, x, i) =>
 export const when = p => (C, xi2yC, x, i) =>
   p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
 
-export const optional = when(isDefined)
+export const optional = /*#__PURE__*/when(isDefined)
 
 export function zero(C, xi2yC, x, i) {
   const of = C.of
@@ -612,32 +612,32 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = curryN(4, (xMi2y, m) => {
+export const concatAs = /*#__PURE__*/curryN(4, (xMi2y, m) => {
   const C = ConcatOf(m.concat, (0,m.empty)(), m.delay)
   return (t, s) => run(t, C, xMi2y, s)
 })
 
-export const concat = concatAs(id)
+export const concat = /*#__PURE__*/concatAs(id)
 
 // Folds over traversals
 
-export const all = pipe2U(mkSelect(x => x ? U : T), not)
+export const all = /*#__PURE__*/pipe2U(mkSelect(x => x ? U : T), not)
 
-export const and = all(id)
+export const and = /*#__PURE__*/all(id)
 
-export const any = pipe2U(mkSelect(x => x ? T : U), Boolean)
+export const any = /*#__PURE__*/pipe2U(mkSelect(x => x ? T : U), Boolean)
 
-export const collectAs = curry((xi2y, t, s) =>
+export const collectAs = /*#__PURE__*/curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || array0)
 
-export const collect = collectAs(id)
+export const collect = /*#__PURE__*/collectAs(id)
 
-export const count = concatAs(x => void 0 !== x ? 1 : 0, Sum)
+export const count = /*#__PURE__*/concatAs(x => void 0 !== x ? 1 : 0, Sum)
 
-export const foldl = curry((f, r, t, s) =>
+export const foldl = /*#__PURE__*/curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
 
-export const foldr = curry((f, r, t, s) => {
+export const foldr = /*#__PURE__*/curry((f, r, t, s) => {
   const xs = collectAs(pair, t, s)
   for (let i=xs.length-1; 0<=i; --i) {
     const x = xs[i]
@@ -646,19 +646,19 @@ export const foldr = curry((f, r, t, s) => {
   return r
 })
 
-export const maximum = concat(Mum((x, y) => x > y))
+export const maximum = /*#__PURE__*/concat(Mum((x, y) => x > y))
 
-export const minimum = concat(Mum((x, y) => x < y))
+export const minimum = /*#__PURE__*/concat(Mum((x, y) => x < y))
 
-export const or = any(id)
+export const or = /*#__PURE__*/any(id)
 
-export const product = concatAs(unto(1), Monoid((y, x) => x * y, 1))
+export const product = /*#__PURE__*/concatAs(unto(1), Monoid((y, x) => x * y, 1))
 
-export const selectAs = curry(mkSelect(v => void 0 !== v ? {v} : U))
+export const selectAs = /*#__PURE__*/curry(mkSelect(v => void 0 !== v ? {v} : U))
 
-export const select = selectAs(id)
+export const select = /*#__PURE__*/selectAs(id)
 
-export const sum = concatAs(unto(0), Sum)
+export const sum = /*#__PURE__*/concatAs(unto(0), Sum)
 
 // Creating new traversals
 
@@ -706,7 +706,7 @@ export function get(l, s) {
 
 // Creating new lenses
 
-export const lens = curry((get, set) => (F, xi2yF, x, i) =>
+export const lens = /*#__PURE__*/curry((get, set) => (F, xi2yF, x, i) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
 // Computing derived props
@@ -812,9 +812,10 @@ export function findWith(...ls) {
 
 export const index = process.env.NODE_ENV === "production" ? id : checkIndex
 
-export const last = choose(maybeArray => seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
+export const last = /*#__PURE__*/choose(maybeArray =>
+  seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
 
-export const slice = curry((begin, end) => (F, xsi2yF, xs, i) => {
+export const slice = /*#__PURE__*/curry((begin, end) => (F, xsi2yF, xs, i) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
@@ -871,8 +872,8 @@ export const valueOr = v => (_F, xi2yF, x, i) =>
 
 // Adapting to data
 
-export const orElse =
-  curry((d, l) => choose(x => void 0 !== getU(l, x) ? l : d))
+export const orElse = /*#__PURE__*/curry((d, l) =>
+  choose(x => void 0 !== getU(l, x) ? l : d))
 
 // Transforming data
 
@@ -884,23 +885,23 @@ export function pick(template) {
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 }
 
-export const replace = curry((inn, out) => {
+export const replace = /*#__PURE__*/curry((inn, out) => {
   const o2i = x => replaced(out, inn, x)
   return (F, xi2yF, x, i) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
 })
 
 // Operations on isomorphisms
 
-export const getInverse = arityN(2, setU)
+export const getInverse = /*#__PURE__*/arityN(2, setU)
 
 // Creating new isomorphisms
 
-export const iso =
-  curry((bwd, fwd) => (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
+export const iso = /*#__PURE__*/curry((bwd, fwd) =>
+  (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
 // Isomorphisms and combinators
 
-export const complement = iso(notPartial, notPartial)
+export const complement = /*#__PURE__*/iso(notPartial, notPartial)
 
 export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
 

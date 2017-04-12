@@ -76,7 +76,7 @@ var Monoid = function Monoid(concat, _empty) {
       return _empty;
     } };
 };
-var Sum = Monoid(function (y, x) {
+var Sum = /*#__PURE__*/Monoid(function (y, x) {
   return x + y;
 }, 0);
 
@@ -187,14 +187,14 @@ var fold = function fold(f, r, n) {
   return void 0 !== n ? foldRec(f, r, n) : r;
 };
 
-var Collect = ConcatOf(join);
+var Collect = /*#__PURE__*/ConcatOf(join);
 
 //
 
 var U = {};
 var T = { v: true };
 
-var Select = ConcatOf(function (l, r) {
+var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   while (l.constructor === Function) {
     l = l();
   }return void 0 !== l.v ? l : r;
@@ -264,7 +264,7 @@ function setProp(k, v, o) {
   return r;
 }
 
-var funProp = lensFrom(getProp, setProp);
+var funProp = /*#__PURE__*/lensFrom(getProp, setProp);
 
 //
 
@@ -300,7 +300,7 @@ function setIndex(i, x, xs) {
   }
 }
 
-var funIndex = lensFrom(getIndex, setIndex);
+var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
 //
 
@@ -537,7 +537,7 @@ function toFunction(o) {
 
 // Operations on optics
 
-var modify = infestines.curry(function (o, xi2x, s) {
+var modify = /*#__PURE__*/infestines.curry(function (o, xi2x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s);
@@ -551,13 +551,13 @@ var modify = infestines.curry(function (o, xi2x, s) {
   }
 });
 
-var remove = infestines.curry(function (o, s) {
+var remove = /*#__PURE__*/infestines.curry(function (o, s) {
   return setU(o, void 0, s);
 });
 
-var set = infestines.curry(setU);
+var set = /*#__PURE__*/infestines.curry(setU);
 
-var traverse = infestines.curry(function (C, xMi2yC, t, s) {
+var traverse = /*#__PURE__*/infestines.curry(function (C, xMi2yC, t, s) {
   return run(t, C, xMi2yC, s);
 });
 
@@ -595,7 +595,7 @@ function compose() {
 
 // Querying
 
-var chain = infestines.curry(function (xi2yO, xO) {
+var chain = /*#__PURE__*/infestines.curry(function (xi2yO, xO) {
   return [xO, choose(function (xM, i) {
     return void 0 !== xM ? xi2yO(xM, i) : zero;
   })];
@@ -626,7 +626,7 @@ var when = function when(p) {
   };
 };
 
-var optional = when(infestines.isDefined);
+var optional = /*#__PURE__*/when(infestines.isDefined);
 
 function zero(C, xi2yC, x, i) {
   var of = C.of;
@@ -658,42 +658,42 @@ function log() {
 
 // Operations on traversals
 
-var concatAs = infestines.curryN(4, function (xMi2y, m) {
+var concatAs = /*#__PURE__*/infestines.curryN(4, function (xMi2y, m) {
   var C = ConcatOf(m.concat, (0, m.empty)(), m.delay);
   return function (t, s) {
     return run(t, C, xMi2y, s);
   };
 });
 
-var concat = concatAs(infestines.id);
+var concat = /*#__PURE__*/concatAs(infestines.id);
 
 // Folds over traversals
 
-var all = infestines.pipe2U(mkSelect(function (x) {
+var all = /*#__PURE__*/infestines.pipe2U(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = all(infestines.id);
+var and = /*#__PURE__*/all(infestines.id);
 
-var any = infestines.pipe2U(mkSelect(function (x) {
+var any = /*#__PURE__*/infestines.pipe2U(mkSelect(function (x) {
   return x ? T : U;
 }), Boolean);
 
-var collectAs = infestines.curry(function (xi2y, t, s) {
+var collectAs = /*#__PURE__*/infestines.curry(function (xi2y, t, s) {
   return toArray(run(t, Collect, xi2y, s)) || infestines.array0;
 });
 
-var collect = collectAs(infestines.id);
+var collect = /*#__PURE__*/collectAs(infestines.id);
 
-var count = concatAs(function (x) {
+var count = /*#__PURE__*/concatAs(function (x) {
   return void 0 !== x ? 1 : 0;
 }, Sum);
 
-var foldl = infestines.curry(function (f, r, t, s) {
+var foldl = /*#__PURE__*/infestines.curry(function (f, r, t, s) {
   return fold(f, r, run(t, Collect, pair, s));
 });
 
-var foldr = infestines.curry(function (f, r, t, s) {
+var foldr = /*#__PURE__*/infestines.curry(function (f, r, t, s) {
   var xs = collectAs(pair, t, s);
   for (var i = xs.length - 1; 0 <= i; --i) {
     var x = xs[i];
@@ -702,27 +702,27 @@ var foldr = infestines.curry(function (f, r, t, s) {
   return r;
 });
 
-var maximum = concat(Mum(function (x, y) {
+var maximum = /*#__PURE__*/concat(Mum(function (x, y) {
   return x > y;
 }));
 
-var minimum = concat(Mum(function (x, y) {
+var minimum = /*#__PURE__*/concat(Mum(function (x, y) {
   return x < y;
 }));
 
-var or = any(infestines.id);
+var or = /*#__PURE__*/any(infestines.id);
 
-var product = concatAs(unto(1), Monoid(function (y, x) {
+var product = /*#__PURE__*/concatAs(unto(1), Monoid(function (y, x) {
   return x * y;
 }, 1));
 
-var selectAs = infestines.curry(mkSelect(function (v) {
+var selectAs = /*#__PURE__*/infestines.curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = selectAs(infestines.id);
+var select = /*#__PURE__*/selectAs(infestines.id);
 
-var sum = concatAs(unto(0), Sum);
+var sum = /*#__PURE__*/concatAs(unto(0), Sum);
 
 // Creating new traversals
 
@@ -767,7 +767,7 @@ function get(l, s) {
 
 // Creating new lenses
 
-var lens = infestines.curry(function (get, set) {
+var lens = /*#__PURE__*/infestines.curry(function (get, set) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
@@ -880,11 +880,11 @@ function findWith() {
 
 var index = process.env.NODE_ENV === "production" ? infestines.id : checkIndex;
 
-var last = choose(function (maybeArray) {
+var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : append;
 });
 
-var slice = infestines.curry(function (begin, end) {
+var slice = /*#__PURE__*/infestines.curry(function (begin, end) {
   return function (F, xsi2yF, xs, i) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
@@ -941,7 +941,7 @@ var valueOr = function valueOr(v) {
 
 // Adapting to data
 
-var orElse = infestines.curry(function (d, l) {
+var orElse = /*#__PURE__*/infestines.curry(function (d, l) {
   return choose(function (x) {
     return void 0 !== getU(l, x) ? l : d;
   });
@@ -956,7 +956,7 @@ function pick(template) {
   };
 }
 
-var replace = infestines.curry(function (inn, out) {
+var replace = /*#__PURE__*/infestines.curry(function (inn, out) {
   var o2i = function o2i(x) {
     return replaced(out, inn, x);
   };
@@ -967,11 +967,11 @@ var replace = infestines.curry(function (inn, out) {
 
 // Operations on isomorphisms
 
-var getInverse = infestines.arityN(2, setU);
+var getInverse = /*#__PURE__*/infestines.arityN(2, setU);
 
 // Creating new isomorphisms
 
-var iso = infestines.curry(function (bwd, fwd) {
+var iso = /*#__PURE__*/infestines.curry(function (bwd, fwd) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
@@ -979,7 +979,7 @@ var iso = infestines.curry(function (bwd, fwd) {
 
 // Isomorphisms and combinators
 
-var complement = iso(notPartial, notPartial);
+var complement = /*#__PURE__*/iso(notPartial, notPartial);
 
 var identity = function identity(_F, xi2yF, x, i) {
   return xi2yF(x, i);
