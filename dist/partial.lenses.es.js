@@ -755,7 +755,11 @@ function values(A, xi2yA, xs, _) {
 
 // Operations on lenses
 
-var get = curry(getU);
+function get(l, s) {
+  return 1 < arguments.length ? getU(l, s) : function (s) {
+    return getU(l, s);
+  };
+}
 
 // Creating new lenses
 
