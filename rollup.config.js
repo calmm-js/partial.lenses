@@ -6,14 +6,12 @@ import uglify      from "rollup-plugin-uglify"
 export default {
   external: ["infestines"],
   globals: {"infestines": "I"},
-  plugins: [].concat(
-    process.env.NODE_ENV
-    ? [replace({"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)})]
-    : [],
-    [nodeResolve({modulesOnly: true})],
-    [babel()],
-    process.env.NODE_ENV === "production"
-    ? [uglify()]
-    : []
-  )
+  plugins: [
+    process.env.NODE_ENV &&
+      replace({"process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV)}),
+    nodeResolve({modulesOnly: true}),
+    babel(),
+    process.env.NODE_ENV === "production" &&
+      uglify()
+  ].filter(x => x)
 }
