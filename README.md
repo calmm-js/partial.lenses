@@ -535,7 +535,7 @@ import * as L from "partial.lenses"
 ### Stable subset
 
 This library has historically been developed in a fairly aggressive manner so
-that features have been marked as absolete and removed in subsequent major
+that features have been marked as obsolete and removed in subsequent major
 versions.  This can be particularly burdensome for developers of libraries that
 depend on partial lenses.  To help the development of such libraries, this
 section specifies a tiny subset of this library as *stable*.  While it is
