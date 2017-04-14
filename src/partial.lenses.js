@@ -830,7 +830,7 @@ export function findWith(...ls) {
 export const index = process.env.NODE_ENV === "production" ? id : checkIndex
 
 export const last = /*#__PURE__*/choose(maybeArray =>
-  seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : append)
+  seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : 0)
 
 export const slice = /*#__PURE__*/curry((begin, end) => (F, xsi2yF, xs, i) => {
   const seems = seemsArrayLike(xs),
