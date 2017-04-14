@@ -1,5 +1,11 @@
 # Changelog
 
+## 10.1.1
+
+Previously `L.append` didn't provide its own index.  Now it produces an index
+that is the length of the focused array-like object or 0.  This is considered a
+bug fix as the behaviour wasn't previously strictly specified.
+
 ## 10.0.0
 
 As discussed in

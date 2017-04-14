@@ -786,9 +786,10 @@ export const rewrite = yi2y => (F, xi2yF, x, i) =>
 
 // Lensing arrays
 
-export const append = (F, xi2yF, xs, i) =>
-  (0,F.map)(x => setIndex(seemsArrayLike(xs) ? xs.length : 0, x, xs),
-            xi2yF(void 0, i))
+export function append(F, xi2yF, xs, _) {
+  const i = seemsArrayLike(xs) ? xs.length : 0
+  return (0,F.map)(x => setIndex(i, x, xs), xi2yF(void 0, i))
+}
 
 export const filter = xi2b => (F, xi2yF, xs, i) => {
   let ts, fs

@@ -851,11 +851,12 @@ var rewrite = function rewrite(yi2y) {
 
 // Lensing arrays
 
-var append = function append(F, xi2yF, xs, i) {
+function append(F, xi2yF, xs, _) {
+  var i = seemsArrayLike(xs) ? xs.length : 0;
   return (0, F.map)(function (x) {
-    return setIndex(seemsArrayLike(xs) ? xs.length : 0, x, xs);
+    return setIndex(i, x, xs);
   }, xi2yF(void 0, i));
-};
+}
 
 var filter = function filter(xi2b) {
   return function (F, xi2yF, xs, i) {
@@ -874,12 +875,19 @@ var filter = function filter(xi2b) {
 
 var findHint = /*#__PURE__*/infestines.curry(function (hint, xi2b) {
   if (process.env.NODE_ENV !== "production") if (void 0 !== hint) warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
-  return choose(function (xs) {
-    if (!seemsArrayLike(xs)) return 0;
-    var i = findIndexHint(hint, xi2b, xs);
-    if (i < 0) i = xs.length;
-    return void 0 !== hint ? hint = i : i;
-  });
+  return function (F, xi2yF, xs, i) {
+    if (seemsArrayLike(xs)) {
+      i = findIndexHint(hint, xi2b, xs);
+      if (i < 0) i = xs.length;
+      if (void 0 !== hint) hint = i;
+    } else {
+      xs = void 0;
+      i = 0;
+    }
+    return (0, F.map)(function (v) {
+      return setIndex(i, v, xs);
+    }, xi2yF(xs && xs[i], i));
+  };
 });
 
 var find = /*#__PURE__*/findHint();
