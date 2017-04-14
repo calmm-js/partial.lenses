@@ -198,6 +198,7 @@ describe("arities", () => {
     elems: 4,
     filter: 1,
     find: 1,
+    findHint: 2,
     findWith: 0,
     foldl: 4,
     foldr: 4,
@@ -258,6 +259,12 @@ describe(`L.find`, () => {
          "LOL")
   testEq(`L.set([L.rewrite(R.join("")), L.find(R.equals("O"))], "A-", "LOLA")`,
          "LA-LA")
+})
+
+describe(`L.findHint`, () => {
+  testEq(`L.get(L.findHint(2, R.pipe(Math.abs, R.equals(2))), [-1,-2,3,1,2,1])`,
+         -2)
+  testEq(`L.get(L.findHint(10, R.equals(2)), [3,2,1,0])`, 2)
 })
 
 describe(`L.get`, () => {

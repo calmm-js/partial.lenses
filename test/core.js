@@ -153,6 +153,7 @@ export const find = p => choose(xs => {
   const i = fromArrayLike(xs).findIndex((x, i) => p(x, i))
   return i < 0 ? append : i
 })
+export const findHint = L.findHint
 export const findWith = (...ls) => {
   const lls = compose(...ls)
   return [find(x => isDefined(get(lls, x))), lls]

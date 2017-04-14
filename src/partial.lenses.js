@@ -472,10 +472,22 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
 
 const replaced = (inn, out, x) => acyclicEqualsU(x, inn) ? out : x
 
-function findIndex(xi2b, xs) {
-  for (let i=0, n=xs.length; i<n; ++i)
-    if (xi2b(xs[i], i))
-      return i
+function findIndexHint(u, xi2b, xs) {
+  const n = xs.length
+  u = 0 <= u ? u < n ? u : n-1 : 0
+  let d = u-1
+  for (; 0 <= d && u < n; ++u, --d) {
+    if (xi2b(xs[u], u))
+      return u
+    if (xi2b(xs[d], d))
+      return d
+  }
+  for (; u < n; ++u)
+    if (xi2b(xs[u], u))
+      return u
+  for (; 0 <= d; --d)
+    if (xi2b(xs[d], d))
+      return d
   return -1
 }
 
@@ -574,7 +586,7 @@ export const chain = /*#__PURE__*/curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
-  const i = findIndex(l => void 0 !== getU(l, x), ls)
+  const i = findIndexHint(0, l => void 0 !== getU(l, x), ls)
   return i < 0 ? zero : ls[i]
 })
 
@@ -798,12 +810,17 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     xi2yF(ts, i))
 }
 
-export const find = xi2b => choose(xs => {
+export const findHint = /*#__PURE__*/curry((hint, xi2b) => choose(xs => {
   if (!seemsArrayLike(xs))
     return 0
-  const i = findIndex(xi2b, xs)
-  return i < 0 ? append : i
-})
+  let i = findIndexHint(hint, xi2b, xs)
+  if (i < 0) i = xs.length
+  if (void 0 !== hint)
+    hint = i
+  return i
+}))
+
+export const find = /*#__PURE__*/findHint()
 
 export function findWith(...ls) {
   const lls = compose(...ls)
