@@ -92,12 +92,12 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 const expectedOptic = "Expecting an optic"
 const header = "partial.lenses:"
 
-//function warn(f, m) {
-//  if (!f.warned) {
-//    f.warned = 1
-//    console.warn(header + m)
-//  }
-//}
+function warn(f, m) {
+  if (!f.warned) {
+    f.warned = 1
+    console.warn(header, m)
+  }
+}
 
 function errorGiven(m, o, e) {
   m += "."
@@ -810,15 +810,20 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     xi2yF(ts, i))
 }
 
-export const findHint = /*#__PURE__*/curry((hint, xi2b) => choose(xs => {
-  if (!seemsArrayLike(xs))
-    return 0
-  let i = findIndexHint(hint, xi2b, xs)
-  if (i < 0) i = xs.length
-  if (void 0 !== hint)
-    hint = i
-  return i
-}))
+export const findHint = /*#__PURE__*/curry((hint, xi2b) => {
+  if (process.env.NODE_ENV !== "production")
+    if (void 0 !== hint)
+      warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
+  return choose(xs => {
+    if (!seemsArrayLike(xs))
+      return 0
+    let i = findIndexHint(hint, xi2b, xs)
+    if (i < 0) i = xs.length
+    if (void 0 !== hint)
+      hint = i
+    return i
+  })
+})
 
 export const find = /*#__PURE__*/findHint()
 

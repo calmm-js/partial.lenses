@@ -1859,14 +1859,17 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 
 ##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint(index, (maybeValue, index) => testable) ~> lens`](#L-findHint "L.findHint: (Index, (Maybe a, Index) -> Boolean) -> PLens [a] a")
 
-`L.findHint` is similar to [`L.find`](#L-find), but the given index value is
-used as a hint and the search is started from that index and then by increasing
-distance from that index.  The hint is also stored internally by the returned
-lens and is updated after each operation.  Under the intended usage scenarios
-this can be used to eliminate the linear search.  Note that as long as the
-result of the search is guaranteed to be unique, such as when operating on an
-array where each object has a unique `id` property, `L.findHint` can safely be
-considered referentially transparent.
+**WARNING: `L.findHint` is experimental and might be removed or changed before
+next major release.**
+
+`L.findHint` is similar to [`L.find`](#L-find), but the given index is used as a
+hint and the search is started from closest existing index to the hint and then
+by increasing distance from that index.  The hint is also stored internally by
+the returned lens and is updated after each operation.  Under the intended usage
+scenarios this can be used to eliminate the linear search.  Note that as long as
+the result of the search is guaranteed to be unique, such as when operating on
+an array where each object has a unique `id` property, `L.findHint` can safely
+be considered referentially transparent.
 
 ```js
 L.remove(L.findHint(4, x => x <= 2), [3,1,4,1,5,9,2])
