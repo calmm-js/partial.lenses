@@ -27,6 +27,8 @@ const xs10000 = Array(10000).fill(1)
 const xs100000 = Array(100000).fill(1)
 const ids = R.range(0, 10000).map(i => ({id: i, value: i}))
 
+const L_findHint_id_5000 = L.findHint(5000, o => o.id === 5000)
+
 const xs10o = Object.assign(xs10)
 const xs100o = Object.assign(xs100)
 const xs1000o = Object.assign(xs1000)
@@ -144,6 +146,8 @@ R.forEach(bs => {
   s.run()
 }, [
   [
+    `L.get(L_findHint_id_5000, ids)`,
+  ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
