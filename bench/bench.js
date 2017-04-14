@@ -374,6 +374,18 @@ R.forEach(bs => {
     `R.find(x => x > 3, pi)`,
     `O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)`,
   ], [
+    `L.get(L.findHint(0, x => x !== 1), xs)`,
+    `L.get(L.find(x => x !== 1), xs)`,
+    `R.find(x => x !== 1, xs)`,
+  ], [
+    `L.get(L.findHint(0, x => x !== 1), xs100)`,
+    `L.get(L.find(x => x !== 1), xs100)`,
+    `R.find(x => x !== 1, xs100)`,
+  ], [
+    `L.get(L.findHint(0, x => x !== 1), xs1000)`,
+    `L.get(L.find(x => x !== 1), xs1000)`,
+    `R.find(x => x !== 1, xs1000)`,
+  ], [
     `L.get(d0x0y, axay)`,
   ], [
     `L.set(d0x0y, 1, undefined)`,

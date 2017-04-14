@@ -193,6 +193,8 @@ export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
+export const findHint =
+  T.fn([T.number, T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
