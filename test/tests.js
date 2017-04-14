@@ -480,6 +480,9 @@ describe("L.slice", () => {
 })
 
 describe("L.append", () => {
+  testEq(`L.get([L.append, (_, i) => i], 56)`, 0)
+  testEq(`L.get([L.append, (_, i) => i], [11])`, 1)
+  testEq(`L.get([L.append, (_, i) => i], "Hello")`, 5)
   testEq(`L.remove(L.append, 45)`, undefined)
   testEq(`L.remove([L.rewrite(R.join("")), L.append], "anything")`, "anything")
   empties.forEach(invalid => {
