@@ -1872,8 +1872,18 @@ an array where each object has a unique `id` property, `L.findHint` can safely
 be considered referentially transparent.
 
 ```js
-L.remove(L.findHint(4, x => x <= 2), [3,1,4,1,5,9,2])
-// [ 3, 1, 4, 5, 9, 2 ]
+L.modify([L.findHint(2, R.whereEq({id: 2})), "value"],
+         R.toUpper,
+         [{id: 3, value: "a"},
+          {id: 2, value: "b"},
+          {id: 1, value: "c"},
+          {id: 4, value: "d"},
+          {id: 5, value: "e"}])
+// [{id: 3, value: "a"},
+//  {id: 2, value: "B"},
+//  {id: 1, value: "c"},
+//  {id: 4, value: "d"},
+//  {id: 5, value: "e"}]
 ```
 
 ##### <a id="L-findWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findWith) [`L.findWith(...lenses) ~> lens`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
