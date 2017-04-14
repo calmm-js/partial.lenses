@@ -819,9 +819,7 @@ export const findHint = /*#__PURE__*/curry((hint, xi2b) => {
       return 0
     let i = findIndexHint(hint, xi2b, xs)
     if (i < 0) i = xs.length
-    if (void 0 !== hint)
-      hint = i
-    return i
+    return void 0 !== hint ? (hint = i) : i
   })
 })
 
