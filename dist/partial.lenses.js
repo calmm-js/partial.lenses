@@ -97,12 +97,12 @@ var run = function run(o, C, xi2yC, s, i) {
 var expectedOptic = "Expecting an optic";
 var header = "partial.lenses:";
 
-//function warn(f, m) {
-//  if (!f.warned) {
-//    f.warned = 1
-//    console.warn(header + m)
-//  }
-//}
+function warn(f, m) {
+  if (!f.warned) {
+    f.warned = 1;
+    console.warn(header, m);
+  }
+}
 
 function errorGiven(m, o, e) {
   m += ".";
@@ -496,9 +496,18 @@ var replaced = function replaced(inn, out, x) {
   return infestines.acyclicEqualsU(x, inn) ? out : x;
 };
 
-function findIndex(xi2b, xs) {
-  for (var i = 0, n = xs.length; i < n; ++i) {
-    if (xi2b(xs[i], i)) return i;
+function findIndexHint(u, xi2b, xs) {
+  var n = xs.length;
+  u = 0 <= u ? u < n ? u : n - 1 : 0;
+  var d = u - 1;
+  for (; 0 <= d && u < n; ++u, --d) {
+    if (xi2b(xs[u], u)) return u;
+    if (xi2b(xs[d], d)) return d;
+  }
+  for (; u < n; ++u) {
+    if (xi2b(xs[u], u)) return u;
+  }for (; 0 <= d; --d) {
+    if (xi2b(xs[d], d)) return d;
   }return -1;
 }
 
@@ -607,7 +616,7 @@ var choice = function choice() {
   }
 
   return choose(function (x) {
-    var i = findIndex(function (l) {
+    var i = findIndexHint(0, function (l) {
       return void 0 !== getU(l, x);
     }, ls);
     return i < 0 ? zero : ls[i];
@@ -863,13 +872,17 @@ var filter = function filter(xi2b) {
   };
 };
 
-var find = function find(xi2b) {
+var findHint = /*#__PURE__*/infestines.curry(function (hint, xi2b) {
+  if (void 0 !== hint) warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
   return choose(function (xs) {
     if (!seemsArrayLike(xs)) return 0;
-    var i = findIndex(xi2b, xs);
-    return i < 0 ? append : i;
+    var i = findIndexHint(hint, xi2b, xs);
+    if (i < 0) i = xs.length;
+    return void 0 !== hint ? hint = i : i;
   });
-};
+});
+
+var find = /*#__PURE__*/findHint();
 
 function findWith() {
   var lls = compose.apply(undefined, arguments);
@@ -881,7 +894,7 @@ function findWith() {
 var index = checkIndex;
 
 var last = /*#__PURE__*/choose(function (maybeArray) {
-  return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : append;
+  return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
 });
 
 var slice = /*#__PURE__*/infestines.curry(function (begin, end) {
@@ -1038,6 +1051,7 @@ exports.required = required;
 exports.rewrite = rewrite;
 exports.append = append;
 exports.filter = filter;
+exports.findHint = findHint;
 exports.find = find;
 exports.findWith = findWith;
 exports.index = index;

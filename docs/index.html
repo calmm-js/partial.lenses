@@ -158,6 +158,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a></li>
 <li><a href="#L-filter" title="L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-find" title="L.find: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
+<li><a href="#L-findHint" title="L.findHint: (Index, (Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.findHint(index, (maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a></li>
@@ -1383,6 +1384,19 @@ like <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is 
 the first element from the focus that matches the given predicate.  When no
 matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
+</code></pre>
+<h5 id="-a-id-l-findhint-a-contents-https-github-com-calmm-js-partial-lenses-l-findhint-l-findhint-index-maybevalue-index-testable-lens-l-findhint-l-findhint-index-maybe-a-index-boolean-plens-a-a-"><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: (Index, (Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.findHint(index, (maybeValue, index) =&gt; testable) ~&gt; lens</code></a></h5>
+<p><strong>WARNING: <code>L.findHint</code> is experimental and might be removed or changed before
+next major release.</strong></p>
+<p><code>L.findHint</code> is similar to <a href="#L-find"><code>L.find</code></a>, but the given index is used as a
+hint and the search is started from closest existing index to the hint and then
+by increasing distance from that index.  The hint is also stored internally by
+the returned lens and is updated after each operation.  Under the intended usage
+scenarios this can be used to eliminate the linear search.  Note that as long as
+the result of the search is guaranteed to be unique, such as when operating on
+an array where each object has a unique <code>id</code> property, <code>L.findHint</code> can safely
+be considered referentially transparent.</p>
+<pre><code class="hljs lang-js">L.remove(L.findHint(4, x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
 <h5 id="-a-id-l-findwith-a-contents-https-github-com-calmm-js-partial-lenses-l-findwith-l-findwith-lenses-lens-l-findwith-l-findwith-plens-s-s1-plens-sn-a-plens-s-a-"><a id="L-findWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findWith">■</a> <a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></h5>
 <p><code>L.findWith(...lenses)</code> chooses an index from an <a href="#array-like">array-like</a>
