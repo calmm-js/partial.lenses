@@ -814,13 +814,17 @@ export const findHint = /*#__PURE__*/curry((hint, xi2b) => {
   if (process.env.NODE_ENV !== "production")
     if (void 0 !== hint)
       warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
-  return choose(xs => {
-    if (!seemsArrayLike(xs))
-      return 0
-    let i = findIndexHint(hint, xi2b, xs)
-    if (i < 0) i = xs.length
-    return void 0 !== hint ? (hint = i) : i
-  })
+  return (F, xi2yF, xs, i) => {
+    if (seemsArrayLike(xs)) {
+      i = findIndexHint(hint, xi2b, xs)
+      if (i < 0) i = xs.length
+      if (void 0 !== hint) hint = i
+    } else {
+      xs = void 0
+      i = 0
+    }
+    return (0,F.map)(v => setIndex(i, v, xs), xi2yF(xs && xs[i], i))
+  }
 })
 
 export const find = /*#__PURE__*/findHint()
