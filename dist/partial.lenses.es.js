@@ -438,8 +438,8 @@ var branchOnMerge = function branchOnMerge(x, keys$$1) {
         r[k] = void 0 !== _v ? _v : x[k];
       }
     }
-    for (var _i = 0; _i < n; ++_i) {
-      var _k = keys$$1[_i];
+    for (var _i2 = 0; _i2 < n; ++_i2) {
+      var _k = keys$$1[_i2];
       var _v2 = o[_k];
       if (o !== _v2) {
         if (!r) r = {};
@@ -492,19 +492,28 @@ var replaced = function replaced(inn, out, x) {
   return acyclicEqualsU(x, inn) ? out : x;
 };
 
-function findIndexHint(u, xi2b, xs) {
+function findIndex(xi2b, xs) {
   var n = xs.length;
-  u = 0 <= u ? u < n ? u : n - 1 : 0;
+  for (var i = 0; i < n; ++i) {
+    if (xi2b(xs[i], i)) return i;
+  }return n;
+}
+
+function findIndexHint(hint, xi2b, xs) {
+  var n = xs.length;
+  var u = hint.hint;
+  if (n <= u) u = n - 1;
+  if (u < 0) u = 0;
   var d = u - 1;
   for (; 0 <= d && u < n; ++u, --d) {
-    if (xi2b(xs[u], u)) return u;
-    if (xi2b(xs[d], d)) return d;
+    if (xi2b(xs[u], hint)) return u;
+    if (xi2b(xs[d], hint)) return d;
   }
   for (; u < n; ++u) {
-    if (xi2b(xs[u], u)) return u;
+    if (xi2b(xs[u], hint)) return u;
   }for (; 0 <= d; --d) {
-    if (xi2b(xs[d], d)) return d;
-  }return -1;
+    if (xi2b(xs[d], hint)) return d;
+  }return n;
 }
 
 function partitionIntoIndex(xi2b, xs, ts, fs) {
@@ -612,10 +621,10 @@ var choice = function choice() {
   }
 
   return choose(function (x) {
-    var i = findIndexHint(0, function (l) {
+    var l = ls[findIndex(function (l) {
       return void 0 !== getU(l, x);
-    }, ls);
-    return i < 0 ? zero : ls[i];
+    }, ls)];
+    return void 0 !== l ? l : zero;
   });
 };
 
@@ -869,24 +878,26 @@ var filter = function filter(xi2b) {
   };
 };
 
-var findHint = /*#__PURE__*/curry(function (hint, xi2b) {
-  if (process.env.NODE_ENV !== "production") if (void 0 !== hint) warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
-  return function (F, xi2yF, xs, i) {
-    if (seemsArrayLike(xs)) {
-      i = findIndexHint(hint, xi2b, xs);
-      if (i < 0) i = xs.length;
-      if (void 0 !== hint) hint = i;
-    } else {
-      xs = void 0;
-      i = 0;
-    }
+var find = function find(xi2b) {
+  return function (F, xi2yF, xs, _i) {
+    var ys = seemsArrayLike(xs) ? xs : array0,
+        i = findIndex(xi2b, ys);
     return (0, F.map)(function (v) {
-      return setIndex(i, v, xs);
-    }, xi2yF(xs && xs[i], i));
+      return setIndex(i, v, ys);
+    }, xi2yF(ys[i], i));
+  };
+};
+
+var findHint = /*#__PURE__*/curry(function (xh2b, hint) {
+  if (process.env.NODE_ENV !== "production") warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
+  return function (F, xi2yF, xs, _i) {
+    var ys = seemsArrayLike(xs) ? xs : array0,
+        i = hint.hint = findIndexHint(hint, xh2b, ys);
+    return (0, F.map)(function (v) {
+      return setIndex(i, v, ys);
+    }, xi2yF(ys[i], i));
   };
 });
-
-var find = /*#__PURE__*/findHint();
 
 function findWith() {
   var lls = compose.apply(undefined, arguments);
@@ -1010,4 +1021,4 @@ var inverse = function inverse(iso) {
   };
 };
 
-export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, get, lens, augment, defaults, define, normalize, required, rewrite, append, filter, findHint, find, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse };
+export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, get, lens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse };

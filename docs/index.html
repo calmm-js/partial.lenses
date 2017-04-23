@@ -158,7 +158,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a></li>
 <li><a href="#L-filter" title="L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-find" title="L.find: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
-<li><a href="#L-findHint" title="L.findHint: (Index, (Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.findHint(index, (maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
+<li><a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a></li>
 <li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a></li>
@@ -1385,18 +1385,21 @@ the first element from the focus that matches the given predicate.  When no
 matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
-<h5 id="-a-id-l-findhint-a-contents-https-github-com-calmm-js-partial-lenses-l-findhint-l-findhint-index-maybevalue-index-testable-lens-l-findhint-l-findhint-index-maybe-a-index-boolean-plens-a-a-"><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: (Index, (Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.findHint(index, (maybeValue, index) =&gt; testable) ~&gt; lens</code></a></h5>
+<h5 id="-a-id-l-findhint-a-contents-https-github-com-calmm-js-partial-lenses-l-findhint-l-findhint-maybevalue-hint-index-testable-hint-index-lens-l-findhint-l-findhint-maybe-a-hint-index-boolean-hint-index-plens-a-a-"><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a></h5>
 <p><strong>WARNING: <code>L.findHint</code> is experimental and might be removed or changed before
 next major release.</strong></p>
-<p><code>L.findHint</code> is similar to <a href="#L-find"><code>L.find</code></a>, but the given index is used as a
-hint and the search is started from closest existing index to the hint and then
-by increasing distance from that index.  The hint is also stored internally by
-the returned lens and is updated after each operation.  Under the intended usage
-scenarios this can be used to eliminate the linear search.  Note that as long as
-the result of the search is guaranteed to be unique, such as when operating on
-an array where each object has a unique <code>id</code> property, <code>L.findHint</code> can safely
-be considered referentially transparent.</p>
-<pre><code class="hljs lang-js">L.modify([L.findHint(2, R.whereEq({id: 2})), &quot;value&quot;],
+<p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of
+an <a href="#array-like">array-like</a> object to operate on by searching with the given
+predicate.  Unlike <a href="#L-find"><code>L.find</code></a>, <code>L.findHint</code> is designed to operate
+efficiently when used repeatedly on uniquely identifiable targets, such as
+objects with unique <code>id</code>s.  To this end, <code>L.findHint</code> is given an object with a
+<code>hint</code> property.  The search is started from the closest existing index to the
+<code>hint</code> and then by increasing distance from that index.  The <code>hint</code> is updated
+after each search and the <code>hint</code> can also be mutated from the outside.  The
+<code>hint</code> object is also passed to the predicate as the second argument.  This
+makes it possible to both practically eliminate the linear search and to
+implement the predicate without allocating extra memory for it.</p>
+<pre><code class="hljs lang-js">L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), &quot;value&quot;],
          R.toUpper,
          [{id: 3, value: &quot;a&quot;},
           {id: 2, value: &quot;b&quot;},
