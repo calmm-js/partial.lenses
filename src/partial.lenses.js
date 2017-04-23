@@ -472,23 +472,33 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
 
 const replaced = (inn, out, x) => acyclicEqualsU(x, inn) ? out : x
 
-function findIndexHint(u, xi2b, xs) {
+function findIndex(xi2b, xs) {
   const n = xs.length
-  u = 0 <= u ? u < n ? u : n-1 : 0
+  for (let i=0; i<n; ++i)
+    if (xi2b(xs[i], i))
+      return i
+  return n
+}
+
+function findIndexHint(hint, xi2b, xs) {
+  const n = xs.length
+  let u = hint.hint
+  if (n <= u) u = n-1
+  if (u < 0) u = 0
   let d = u-1
   for (; 0 <= d && u < n; ++u, --d) {
-    if (xi2b(xs[u], u))
+    if (xi2b(xs[u], hint))
       return u
-    if (xi2b(xs[d], d))
+    if (xi2b(xs[d], hint))
       return d
   }
   for (; u < n; ++u)
-    if (xi2b(xs[u], u))
+    if (xi2b(xs[u], hint))
       return u
   for (; 0 <= d; --d)
-    if (xi2b(xs[d], d))
+    if (xi2b(xs[d], hint))
       return d
-  return -1
+  return n
 }
 
 function partitionIntoIndex(xi2b, xs, ts, fs) {
@@ -586,8 +596,8 @@ export const chain = /*#__PURE__*/curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
-  const i = findIndexHint(0, l => void 0 !== getU(l, x), ls)
-  return i < 0 ? zero : ls[i]
+  const l = ls[findIndex(l => void 0 !== getU(l, x), ls)]
+  return void 0 !== l ? l : zero
 })
 
 export const choose = xiM2o => (C, xi2yC, x, i) =>
@@ -811,24 +821,21 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     xi2yF(ts, i))
 }
 
-export const findHint = /*#__PURE__*/curry((hint, xi2b) => {
+export const find = xi2b => (F, xi2yF, xs, _i) => {
+  const ys = seemsArrayLike(xs) ? xs : array0,
+        i = findIndex(xi2b, ys)
+  return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
+}
+
+export const findHint = /*#__PURE__*/curry((xh2b, hint) => {
   if (process.env.NODE_ENV !== "production")
-    if (void 0 !== hint)
-      warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
-  return (F, xi2yF, xs, i) => {
-    if (seemsArrayLike(xs)) {
-      i = findIndexHint(hint, xi2b, xs)
-      if (i < 0) i = xs.length
-      if (void 0 !== hint) hint = i
-    } else {
-      xs = void 0
-      i = 0
-    }
-    return (0,F.map)(v => setIndex(i, v, xs), xi2yF(xs && xs[i], i))
+    warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
+  return (F, xi2yF, xs, _i) => {
+    const ys = seemsArrayLike(xs) ? xs : array0,
+          i = hint.hint = findIndexHint(hint, xh2b, ys)
+    return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
   }
 })
-
-export const find = /*#__PURE__*/findHint()
 
 export function findWith(...ls) {
   const lls = compose(...ls)

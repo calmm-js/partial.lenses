@@ -1,5 +1,12 @@
 # Changelog
 
+## 10.2.0
+
+Redesigned the experimental `L.findHint`.  The main lesson in the redesign is
+that the internally allocated local state for the `hint` was changed to be
+explicitly allocated by the caller.  This allows the caller to update the hint
+and allows the search to be eliminated in more cases.
+
 ## 10.1.1
 
 Previously `L.append` didn't provide its own index.  Now it produces an index

@@ -95,7 +95,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a")
       * [`L.filter((maybeValue, index) => testable) ~> lens`](#L-filter "L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]")
       * [`L.find((maybeValue, index) => testable) ~> lens`](#L-find "L.find: ((Maybe a, Index) -> Boolean) -> PLens [a] a")
-      * [`L.findHint(index, (maybeValue, index) => testable) ~> lens`](#L-findHint "L.findHint: (Index, (Maybe a, Index) -> Boolean) -> PLens [a] a")
+      * [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a")
       * [`L.findWith(...lenses) ~> lens`](#L-findWith "L.findWith: (PLens s s1, ...PLens sN a) -> PLens [s] a")
       * [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex`
       * [`L.last ~> lens`](#L-last "L.last: PLens [a] a")
@@ -1857,22 +1857,25 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 // [ 3, 4, 1, 5, 9, 2 ]
 ```
 
-##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint(index, (maybeValue, index) => testable) ~> lens`](#L-findHint "L.findHint: (Index, (Maybe a, Index) -> Boolean) -> PLens [a] a")
+##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a")
 
 **WARNING: `L.findHint` is experimental and might be removed or changed before
 next major release.**
 
-`L.findHint` is similar to [`L.find`](#L-find), but the given index is used as a
-hint and the search is started from closest existing index to the hint and then
-by increasing distance from that index.  The hint is also stored internally by
-the returned lens and is updated after each operation.  Under the intended usage
-scenarios this can be used to eliminate the linear search.  Note that as long as
-the result of the search is guaranteed to be unique, such as when operating on
-an array where each object has a unique `id` property, `L.findHint` can safely
-be considered referentially transparent.
+`L.findHint` is much like [`L.find`](#L-find) and determines the index of
+an [array-like](#array-like) object to operate on by searching with the given
+predicate.  Unlike [`L.find`](#L-find), `L.findHint` is designed to operate
+efficiently when used repeatedly on uniquely identifiable targets, such as
+objects with unique `id`s.  To this end, `L.findHint` is given an object with a
+`hint` property.  The search is started from the closest existing index to the
+`hint` and then by increasing distance from that index.  The `hint` is updated
+after each search and the `hint` can also be mutated from the outside.  The
+`hint` object is also passed to the predicate as the second argument.  This
+makes it possible to both practically eliminate the linear search and to
+implement the predicate without allocating extra memory for it.
 
 ```js
-L.modify([L.findHint(2, R.whereEq({id: 2})), "value"],
+L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), "value"],
          R.toUpper,
          [{id: 3, value: "a"},
           {id: 2, value: "b"},
