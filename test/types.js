@@ -59,6 +59,7 @@ const T_isomorphism = T_lens
 const T_monoid = T.object({empty: T.fn([], T.any),
                            concat: T.fn([T.any, T.any], T.any)})
 
+const hint = T.object({hint: T.number})
 //
 
 export const toFunction = T.fn([T_optic],
@@ -193,8 +194,7 @@ export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
-export const findHint =
-  T.fn([T.number, T.fn([T_maybeDataO, T_index], T.any)], T_lens)
+export const findHint = T.fn([T.fn([T_maybeDataO, hint], T.any), hint], T_lens)
 export const findWith = T.fnVar(T_lens, T_lens)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
