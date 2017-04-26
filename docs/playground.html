@@ -28,8 +28,12 @@
     <script type="text/javascript">
 if (location.hash)
   document.querySelector(".hljs.lang-js").innerText = decodeURIComponent(location.hash.slice(1))
+var $$hashUpdate = null
 document.onkeyup = function () {
-  location.hash = encodeURIComponent(document.querySelector(".CodeMirror-lines").innerText.replace(/\s*$/,""))
+  clearTimeout($$hashUpdate)
+  $$hashUpdate = setTimeout(function () {
+    location.hash = encodeURIComponent(document.querySelector(".CodeMirror-lines").innerText.trim().replace("\u200B", ""))
+  }, 250)
 }
     </script>
     <script type="text/javascript" src="start.js"></script>
