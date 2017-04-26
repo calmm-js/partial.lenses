@@ -28,7 +28,7 @@
     <script type="text/javascript">
 if (location.hash)
   document.querySelector(".hljs.lang-js").innerText = decodeURIComponent(location.hash.slice(1))
-document.onkeypress = function () {
+document.onkeyup = function () {
   location.hash = encodeURIComponent(document.querySelector(".CodeMirror-lines").innerText.replace(/\s*$/,""))
 }
     </script>
