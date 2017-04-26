@@ -27,7 +27,7 @@
     <p>Powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>.</p>
     <script type="text/javascript">
 if (location.hash)
-  document.querySelector(".hljs.lang-js").innerHTML = decodeURIComponent(location.hash.slice(1))
+  document.querySelector(".hljs.lang-js").innerHTML = decodeURIComponent(location.hash.slice(1)).trim().replace(/\u200B/g, "")
 var $$hashUpdate = null
 document.onkeyup = function () {
   clearTimeout($$hashUpdate)
