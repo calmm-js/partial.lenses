@@ -3,11 +3,33 @@
 
   function initBundle(k) {
     require("babel-polyfill")
+    window.LZString = require("lz-string")
     window.I = require("infestines")
     window.Immutable = require("immutable")
     window.L = require("partial.lenses")
     window.R = require("ramda")
     window.moment = require("moment")
+    k()
+  }
+
+  function maybeInitPlayground(k) {
+    var pg = document.getElementById("playground")
+    if (pg) {
+      var hash = window.location.hash.slice(1)
+      if (hash)
+        pg.innerHTML = window.LZString.decompressFromEncodedURIComponent(hash)
+      var to = null
+      document.onkeyup = function () {
+        clearTimeout(to)
+        to = setTimeout(function () {
+          var elem = document.querySelector(".CodeMirror-lines")
+          if (elem)
+            window.location.hash =
+              window.LZString.compressToEncodedURIComponent(
+                elem.innerText.replace(/\u200B|^\s*|\s*$/gm, ""))
+        }, 250)
+      }
+    }
     k()
   }
 
@@ -169,6 +191,7 @@
     [loadScript("https://www.google-analytics.com/analytics.js"),
      loadScript("bundle.js"),
      initBundle,
+     maybeInitPlayground,
      loadScript("https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"),
      loadScript("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js")],
     hljsLanguages.map(function (lang) {
