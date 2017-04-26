@@ -83,6 +83,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
     * [Creating new lenses](#creating-new-lenses)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a")
+      * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a")
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}")
     * [Enforcing invariants](#enforcing-invariants)
@@ -1649,6 +1650,10 @@ adding dependency to [Moment.js](http://momentjs.com/).
 
 See the [Interfacing with Immutable.js](#interfacing) section for another
 example of using `L.lens`.
+
+##### <a id="L-setter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-setter) [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a")
+
+`L.setter(set)` is shorthand for [`L.lens(x => x, set)`](#L-lens).
 
 #### Computing derived props
 

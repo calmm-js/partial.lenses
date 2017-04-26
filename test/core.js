@@ -119,6 +119,8 @@ export const get = L.get
 
 export const lens = L.lens
 
+export const setter = lens(R.identity)
+
 // Computing derived props
 
 export const augment = L.augment

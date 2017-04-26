@@ -731,6 +731,8 @@ export function get(l, s) {
 export const lens = /*#__PURE__*/curry((get, set) => (F, xi2yF, x, i) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
+export const setter = /*#__PURE__*/lens(id)
+
 // Computing derived props
 
 export function augment(template) {

@@ -232,6 +232,7 @@ describe("arities", () => {
     selectAs: 3,
     seq: 0,
     set: 3,
+    setter: 1,
     slice: 2,
     sum: 2,
     toFunction: 1,
@@ -379,6 +380,16 @@ describe("L.rewrite", () => {
   testEq(`L.get(L.rewrite(x => x-1), undefined)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), undefined, 1)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), 3, 1)`, 2)
+})
+
+describe("L.setter", () => {
+  testEq(`L.get([0,
+                 L.setter((x, y, i) => [x, y, i]),
+                 (x, i) => [x, i]],
+                ["x"])`,
+         ["x", 0])
+  testEq(`L.set([0, L.setter((x, y, i) => [x, y, i])], "y", ["x"])`,
+         [["y", "x", 0]])
 })
 
 describe("L.zero", () => {
