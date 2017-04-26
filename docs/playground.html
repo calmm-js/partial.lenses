@@ -25,14 +25,16 @@
     </ul>
     <hr>
     <p>Powered by the <a href="https://github.com/viebel/klipse">klipse plugin</a>.</p>
+    <script type="text/javascript" src="https://unpkg.com/lz-string"></script>
     <script type="text/javascript">
-if (location.hash)
-  document.querySelector(".hljs.lang-js").innerHTML = decodeURIComponent(location.hash.slice(1)).trim().replace(/\u200B/g, "")
+if (location.hash.slice(1))
+  document.querySelector(".hljs.lang-js").innerHTML = LZString.decompressFromEncodedURIComponent(location.hash.slice(1))
 var $$hashUpdate = null
 document.onkeyup = function () {
   clearTimeout($$hashUpdate)
   $$hashUpdate = setTimeout(function () {
-    location.hash = encodeURIComponent(document.querySelector(".CodeMirror-lines").innerText.trim().replace(/\u200B/g, ""))
+    var elem = document.querySelector(".CodeMirror-lines")
+    if (elem) location.hash = LZString.compressToEncodedURIComponent(elem.innerText.replace(/\u200B|^\s*|\s*$/gm, ""))
   }, 250)
 }
     </script>
