@@ -793,6 +793,8 @@ var lens = /*#__PURE__*/infestines.curry(function (get, set) {
   };
 });
 
+var setter = /*#__PURE__*/lens(infestines.id);
+
 // Computing derived props
 
 function augment(template) {
@@ -1062,6 +1064,7 @@ exports.elems = elems;
 exports.values = values;
 exports.get = get;
 exports.lens = lens;
+exports.setter = setter;
 exports.augment = augment;
 exports.defaults = defaults;
 exports.define = define;

@@ -140,6 +140,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
 <li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></li>
+<li><a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#computing-derived-props">Computing derived props</a><ul>
@@ -1259,6 +1260,8 @@ the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 <p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
 example of using <code>L.lens</code>.</p>
+<h5 id="-a-id-l-setter-a-contents-https-github-com-calmm-js-partial-lenses-l-setter-l-setter-maybevalue-maybedata-index-maybedata-lens-l-setter-l-setter-maybe-a-maybe-s-index-maybe-s-plens-s-a-"><a id="L-setter"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-setter">■</a> <a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></h5>
+<p><code>L.setter(set)</code> is shorthand for <a href="#L-lens"><code>L.lens(x =&gt; x, set)</code></a>.</p>
 <h4 id="computing-derived-props">Computing derived props</h4>
 <h5 id="-a-id-l-augment-a-contents-https-github-com-calmm-js-partial-lenses-l-augment-l-augment-prop-object-value-props-lens-l-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a id="L-augment"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-augment">■</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props}) ~&gt; lens</code></a></h5>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
