@@ -824,7 +824,7 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
 }
 
 export const find = xi2b => (F, xi2yF, xs, _i) => {
-  const ys = seemsArrayLike(xs) ? xs : array0,
+  const ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys)
   return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
@@ -833,7 +833,7 @@ export const findHint = /*#__PURE__*/curry((xh2b, hint) => {
   if (process.env.NODE_ENV !== "production")
     warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
   return (F, xi2yF, xs, _i) => {
-    const ys = seemsArrayLike(xs) ? xs : array0,
+    const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
     return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
   }

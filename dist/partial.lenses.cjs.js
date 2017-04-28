@@ -886,7 +886,7 @@ var filter = function filter(xi2b) {
 
 var find = function find(xi2b) {
   return function (F, xi2yF, xs, _i) {
-    var ys = seemsArrayLike(xs) ? xs : infestines.array0,
+    var ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys);
     return (0, F.map)(function (v) {
       return setIndex(i, v, ys);
@@ -897,7 +897,7 @@ var find = function find(xi2b) {
 var findHint = /*#__PURE__*/infestines.curry(function (xh2b, hint) {
   if (process.env.NODE_ENV !== "production") warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
   return function (F, xi2yF, xs, _i) {
-    var ys = seemsArrayLike(xs) ? xs : infestines.array0,
+    var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
     return (0, F.map)(function (v) {
       return setIndex(i, v, ys);
