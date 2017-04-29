@@ -857,6 +857,7 @@ describe("L.last", () => {
 
 describe("L.matches", () => {
   testEq(`L.collect(L.matches(/\\w+/g), "Hello, world!")`, ["Hello", "world"])
+  testEq(`L.and(L.matches(/\\w+/g), "This is another test!")`, true)
   testEq(`L.modify(L.matches(/\\w+/g), R.toUpper, "Hello, world!")`,
          "HELLO, WORLD!")
   testEq(`L.modify(L.matches(/does not match/g),
@@ -865,6 +866,7 @@ describe("L.matches", () => {
          "what does't match")
   testEq(`L.modify(L.matches(/does not matter/g), R.toUpper, ["Not a string"])`,
          ["Not a string"])
+  testEq(`L.or(L.matches(/does not matter/g), ["Not a string"])`, false)
   testEq(`L.set(L.matches(/\\w+|\\W+/g), "", "Hello, world!")`, undefined)
 
   testEq(`L.collect(L.matches(/a?b?/g), "x")`, [])
