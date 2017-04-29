@@ -504,16 +504,11 @@ const scope = th => th()
 
 const startMatch = /*#__PURE__*/scope(x => (x = [""], x.index = 0, x))
 
-function nextMatch(re, string, prevMatch) {
+const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
   const lastIndex = re.lastIndex
   re.lastIndex = prevMatch.index + prevMatch[0].length
-  const match = re.exec(string)
+  const m = re.exec(string)
   re.lastIndex = lastIndex
-  return match
-}
-
-const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
-  const m = nextMatch(re, string, prevMatch)
 
   if (process.env.NODE_ENV !== "production")
     if (m && !m[0])
