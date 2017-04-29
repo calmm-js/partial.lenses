@@ -768,6 +768,8 @@ export function matches(re) {
     if (isString(x)) {
       const {map} = C
       if (re.global) {
+        if (process.env.NODE_ENV !== "production")
+          reqApplicative(C)
         const {ap, of, delay} = C
         const m0 = [""]
         m0.input = x
