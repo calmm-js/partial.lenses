@@ -90,21 +90,19 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 //
 
 const expectedOptic = "Expecting an optic"
-const header = "partial.lenses:"
+const header = "partial.lenses: "
 
 function warn(f, m) {
   if (!f.warned) {
     f.warned = 1
-    console.warn(header, m)
+    console.warn(header + m)
   }
 }
 
 function errorGiven(m, o, e) {
-  m += "."
-  const args = [header, m, "Given:", o]
-  if (e) args.push("\n" + e)
-  console.error.apply(console, args)
-  throw Error(e ? m + " " + e : m)
+  m = header + m + "."
+  console.error(m, "Given:", o, e ? "\n" + e : "")
+  throw Error(m)
 }
 
 function checkIndex(x) {
