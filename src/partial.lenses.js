@@ -500,38 +500,58 @@ const fromReader = wi2x => (F, xi2yF, w, i) =>
 
 //
 
-const scope = th => th()
-
-const startMatch = /*#__PURE__*/scope(x => (x = [""], x.index = 0, x))
-
-const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
+function reNext(m, re) {
   const lastIndex = re.lastIndex
-  re.lastIndex = prevMatch.index + prevMatch[0].length
-  const m = re.exec(string)
+  re.lastIndex = m.index + m[0].length
+  const n = re.exec(m.input)
   re.lastIndex = lastIndex
-
-  if (process.env.NODE_ENV !== "production")
-    if (m && !m[0])
-      warn(matchesLazy, `\`matches(${re})\` empty match at ${m.index} in ${JSON.stringify(string)}.  This may be caused by an incorrect regular expression.`)
-
-  return m && m[0]
-    ? ap(map(x => xs => [m, x, xs], xi2yA(m[0], m.index)),
-         delay(() => matchesLazy(map, ap, of, delay, xi2yA, re, string, m)))
-    : of(void 0)
+  if (n && n[0])
+    return n
 }
 
+const reValue = m => m[0]
+const reIndex = m => m.index
+
+//
+
+const iterCollect = s => x => xs => [s, x, xs]
+
+const iterLazy = (map, ap, of, delay, xi2yA, t, s) =>
+  (s = reNext(s, t))
+  ? ap(ap(map(iterCollect, of(s)),
+          xi2yA(reValue(s), reIndex(s))),
+       delay(() => iterLazy(map, ap, of, delay, xi2yA, t, s)))
+  : of(void 0)
+
+function iterEager(map, ap, of, _, xi2yA, t, s) {
+  const ss = []
+  while ((s = reNext(s, t)))
+    ss.push(s)
+  let i = ss.length
+  let r = of(void 0)
+  while (i--) {
+    s = ss[i]
+    r = ap(ap(map(iterCollect, of(s)),
+              xi2yA(reValue(s), reIndex(s))),
+           r)
+  }
+  return r
+}
+
+//
+
 const matchesJoin = input => matches => {
-  const snippets = []
+  let result = ""
   let lastIndex = 0
   while (matches) {
     const m = matches[0]
-    snippets.push(input.slice(lastIndex, m.index))
-    snippets.push(matches[1])
+    result += input.slice(lastIndex, m.index)
+    result += matches[1]
     lastIndex = m[0].length + m.index
     matches = matches[2]
   }
-  snippets.push(input.slice(lastIndex))
-  return snippets.join("") || void 0
+  result += input.slice(lastIndex)
+  return result || void 0
 }
 
 //
@@ -746,15 +766,21 @@ export function matches(re) {
     warn(matches, "`matches` is experimental and might be removed or changed before next major release.")
   return (C, xi2yC, x, _) => {
     if (isString(x)) {
+      const {map} = C
       if (re.global) {
-        const {map, ap, of, delay = scope} = C
+        const {ap, of, delay} = C
+        const m0 = [""]
+        m0.input = x
+        m0.index = 0
         return map(matchesJoin(x),
-                   matchesLazy(map, ap, of, delay, xi2yC, re, x, startMatch))
+                   (delay
+                    ? iterLazy
+                    : iterEager)(map, ap, of, delay, xi2yC, re, m0))
       } else {
         const m = x.match(re)
         if (m)
-          return (0,C.map)(y => x.replace(re, void 0 !== y ? y : "") || void 0,
-                           xi2yC(m[0], m.index))
+          return map(y => x.replace(re, void 0 !== y ? y : "") || void 0,
+                     xi2yC(m[0], m.index))
       }
     }
     return zero(C, xi2yC, x, void 0)
