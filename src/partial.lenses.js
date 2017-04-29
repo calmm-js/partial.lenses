@@ -517,7 +517,7 @@ const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
 
   if (process.env.NODE_ENV !== "production")
     if (m && !m[0])
-      warn(matchesLazy, `\`matches(${re})\` empty match at ${m.index} in ${JSON.stringify(string)}.  This is typically caused by an incorrect regular expression.`)
+      warn(matchesLazy, `\`matches(${re})\` empty match at ${m.index} in ${JSON.stringify(string)}.  This may be caused by an incorrect regular expression.`)
 
   return m && m[0]
     ? ap(map(x => xs => [m, x, xs], xi2yA(m[0], m.index)),
