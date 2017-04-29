@@ -110,6 +110,7 @@ export const branch = L.branch
 
 export const elems = L.elems
 export const values = L.values
+export const matches = L.matches
 
 // Operations on lenses
 

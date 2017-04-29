@@ -500,6 +500,45 @@ const fromReader = wi2x => (F, xi2yF, w, i) =>
 
 //
 
+const scope = th => th()
+
+const startMatch = /*#__PURE__*/scope(x => (x = [""], x.index = 0, x))
+
+function nextMatch(re, string, prevMatch) {
+  const lastIndex = re.lastIndex
+  re.lastIndex = prevMatch.index + prevMatch[0].length
+  const match = re.exec(string)
+  re.lastIndex = lastIndex
+  return match
+}
+
+const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
+  const m = nextMatch(re, string, prevMatch)
+  if (m) {
+    if (m[0].length === 0)
+      throw Error(`${header} \`matches(${re})\` empty match at ${m.index}.`)
+    return ap(map(x => xs => [m, x, xs], xi2yA(m[0], m.index)),
+              delay(() => matchesLazy(map, ap, of, delay, xi2yA, re, string, m)))
+  }
+  return of(void 0)
+}
+
+const matchesJoin = input => matches => {
+  const snippets = []
+  let lastIndex = 0
+  while (matches) {
+    const m = matches[0]
+    snippets.push(input.slice(lastIndex, m.index))
+    snippets.push(matches[1])
+    lastIndex = m[0].length + m.index
+    matches = matches[2]
+  }
+  snippets.push(input.slice(lastIndex))
+  return snippets.join("") || void 0
+}
+
+//
+
 export function toFunction(o) {
   switch (typeof o) {
     case "string":
@@ -702,6 +741,26 @@ export function values(A, xi2yA, xs, _) {
     if (process.env.NODE_ENV !== "production")
       reqApplicative(A, "values")
     return (0,A.of)(xs)
+  }
+}
+
+export function matches(re) {
+  if (process.env.NODE_ENV !== "production")
+    warn(matches, "`matches` is experimental and might be removed or changed before next major release.")
+  return (C, xi2yC, x, _) => {
+    if (isString(x)) {
+      if (re.global) {
+        const {map, ap, of, delay = scope} = C
+        return map(matchesJoin(x),
+                   matchesLazy(map, ap, of, delay, xi2yC, re, x, startMatch))
+      } else {
+        const m = x.match(re)
+        if (m)
+          return (0,C.map)(y => x.replace(re, void 0 !== y ? y : "") || void 0,
+                           xi2yC(m[0], m.index))
+      }
+    }
+    return zero(C, xi2yC, x, void 0)
   }
 }
 

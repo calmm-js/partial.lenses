@@ -212,6 +212,7 @@ describe("arities", () => {
     lazy: 1,
     lens: 2,
     log: 0,
+    matches: 1,
     maximum: 2,
     minimum: 2,
     modify: 3,
@@ -852,6 +853,28 @@ describe("L.last", () => {
   testEq(`L.set(L.last, 5, undefined)`, [5])
   testEq(`L.set(L.last, 5, [])`, [5])
   testEq(`L.set(L.last, 5, [1,2])`, [1,5])
+})
+
+describe("L.matches", () => {
+  testEq(`L.collect(L.matches(/\\w+/g), "Hello, world!")`, ["Hello", "world"])
+  testEq(`L.modify(L.matches(/\\w+/g), R.toUpper, "Hello, world!")`,
+         "HELLO, WORLD!")
+  testEq(`L.modify(L.matches(/does not match/g),
+                   R.toUpper,
+                   "what does't match")`,
+         "what does't match")
+  testEq(`L.modify(L.matches(/does not matter/g), R.toUpper, ["Not a string"])`,
+         ["Not a string"])
+  testEq(`L.set(L.matches(/\\w+|\\W+/g), "", "Hello, world!")`, undefined)
+
+  testEq(`L.get(L.matches(/\\w+/), "Hello, world!")`, "Hello")
+  testEq(`L.set(L.matches(/\\w+/), "Salut", "Hello, world!")`, "Salut, world!")
+  testEq(`L.get(L.matches(/does not match/), "Hello, world!")`, undefined)
+  testEq(`L.set(L.matches(/does not match/), "Anything", "Hello, world!")`,
+         "Hello, world!")
+  testEq(`L.set(L.matches(/does not match/), "Anything", {not_a_string: true})`,
+         {not_a_string: true})
+  testEq(`L.set(L.matches(/\\w+/g), "", "Hello")`, undefined)
 })
 
 if (process.env.NODE_ENV !== "production") {

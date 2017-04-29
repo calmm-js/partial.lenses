@@ -79,6 +79,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a")
       * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a")
+      * [`L.matches(/.../g) ~> traversal`](#L-matches "L.matches: RegExp -> PTraversal String String")
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a")
@@ -1568,6 +1569,18 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          new XYZ(1,2,3))
 // XYZ { x: -1, y: -2, z: -3 }
 ```
+
+##### <a id="L-matches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches) [`L.matches(/.../g) ~> traversal`](#L-matches "L.matches: RegExp -> PTraversal String String")
+
+**WARNING: `L.matches` is experimental and might be removed or changed before
+next major release.**
+
+`L.matches`, when given a regular expression with the `global` flag, `/.../g`,
+is a partial traversal over the matches that the regular expression gives over
+the focused string.  When given a regular expression without the `global` flags,
+`/.../`, `L.matches` is a partial lens over the match.  In both cases, when
+there is no match, or the target is not a string, then `L.matches` will be
+effectively read-only.
 
 ### Lenses
 
