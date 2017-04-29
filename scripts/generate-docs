@@ -32,7 +32,7 @@ const body = I.seq(
   R.replace(/([^ ])\bconst\b/g, "$1var"),
   R.replace(/\/\/ .*/g, ""),
   R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
-  R.replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z/-]*)" + esc(")"), "g"),
+  R.replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z-]*)" + esc(")"), "g"),
             `[■](${github}#$1)`),
   R.replace(new RegExp(esc(site), "g"), ""),
   marked,
