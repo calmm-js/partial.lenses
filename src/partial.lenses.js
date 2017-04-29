@@ -104,7 +104,7 @@ function errorGiven(m, o, e) {
   const args = [header, m, "Given:", o]
   if (e) args.push("\n" + e)
   console.error.apply(console, args)
-  throw new Error(e ? m + " " + e : m)
+  throw Error(e ? m + " " + e : m)
 }
 
 function checkIndex(x) {
