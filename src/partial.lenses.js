@@ -514,13 +514,15 @@ function nextMatch(re, string, prevMatch) {
 
 const matchesLazy = (map, ap, of, delay, xi2yA, re, string, prevMatch) => {
   const m = nextMatch(re, string, prevMatch)
-  if (m) {
-    if (m[0].length === 0)
-      throw Error(`${header} \`matches(${re})\` empty match at ${m.index}.`)
-    return ap(map(x => xs => [m, x, xs], xi2yA(m[0], m.index)),
-              delay(() => matchesLazy(map, ap, of, delay, xi2yA, re, string, m)))
-  }
-  return of(void 0)
+
+  if (process.env.NODE_ENV !== "production")
+    if (m && m[0].length === 0)
+      warn(matchesLazy, `\`matches(${re})\` empty match at ${m.index} in ${JSON.stringify(string)}.  This is typically caused by an incorrect regular expression.`)
+
+  return m && m[0].length
+    ? ap(map(x => xs => [m, x, xs], xi2yA(m[0], m.index)),
+         delay(() => matchesLazy(map, ap, of, delay, xi2yA, re, string, m)))
+    : of(void 0)
 }
 
 const matchesJoin = input => matches => {

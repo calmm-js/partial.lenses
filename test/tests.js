@@ -867,6 +867,8 @@ describe("L.matches", () => {
          ["Not a string"])
   testEq(`L.set(L.matches(/\\w+|\\W+/g), "", "Hello, world!")`, undefined)
 
+  testEq(`L.collect(L.matches(/a?b?/g), "x")`, [])
+
   testEq(`L.get(L.matches(/\\w+/), "Hello, world!")`, "Hello")
   testEq(`L.set(L.matches(/\\w+/), "Salut", "Hello, world!")`, "Salut, world!")
   testEq(`L.get(L.matches(/does not match/), "Hello, world!")`, undefined)
@@ -909,7 +911,5 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
 
     testThrows(`L.toFunction(-1)`)
-
-    testThrows(`L.collect(L.matches(/a?b?/g), "x")`)
   })
 }
