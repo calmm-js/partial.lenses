@@ -76,17 +76,21 @@ export const object = template => object => {
   return result
 }
 
-export const fn = (argTys, resultTy) => fn => {
-  if (typeof fn !== "function" || argTys.length < fn.length)
-    throw new Error(`fn(${argTys}, ${resultTy}): ${fn}`)
-  return R.curryN(argTys.length, function (...argIns) {
-    if (argTys.length !== argIns.length)
-      throw new Error(`fn(${argTys}, ${resultTy}): got ${argIns.length} args`)
-    const n=argIns.length, args=Array(n)
-    for (let i=0; i<n; ++i)
-      args[i] = argTys[i](argIns[i])
-    return resultTy(fn.apply(this, args))
-  })
+export const fn = (argTys, resultTy) => {
+  if (!(argTys instanceof Array))
+    throw Error(`fn arg types must be an array, given ${argTys}`)
+  return fn => {
+    if (typeof fn !== "function" || argTys.length < fn.length)
+      throw Error(`fn(${argTys}, ${resultTy}): ${fn}`)
+    return R.curryN(argTys.length, function (...argIns) {
+      if (argTys.length !== argIns.length)
+        throw Error(`fn(${argTys}, ${resultTy}): got ${argIns.length} args`)
+      const n=argIns.length, args=Array(n)
+      for (let i=0; i<n; ++i)
+        args[i] = argTys[i](argIns[i])
+      return resultTy(fn.apply(this, args))
+    })
+  }
 }
 
 export const fnVar = (argsTy, resultTy) => fn => {
