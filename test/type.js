@@ -33,7 +33,7 @@ export const fromPredicate = p => x => {
 }
 
 const type = t => fromPredicate(x => typeof x === t)
-const instance = c => fromPredicate(x => x instanceof c)
+export const instanceOf = c => fromPredicate(x => x instanceof c)
 
 const isFreezable = x => I.isArray(x) || I.isObject(x)
 const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
@@ -59,7 +59,7 @@ export const string = type("string")
 export const undef = fromPredicate(x => x === undefined)
 export const def = fromPredicate(x => x !== undefined)
 
-export const array = ty => and(instance(Array), R.map(ty))
+export const array = ty => and(instanceOf(Array), R.map(ty))
 
 export const arity = n => fromPredicate(x => x.length === n)
 
