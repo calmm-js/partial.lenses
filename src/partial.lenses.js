@@ -1,25 +1,17 @@
-import {
-  acyclicEqualsU,
-  always,
-  applyU,
-  arityN,
-  array0,
-  assocPartialU,
-  constructorOf,
-  curry,
-  curryN,
-  dissocPartialU,
-  hasU,
-  id,
-  isDefined,
-  isFunction,
-  isObject,
-  isString,
-  keys,
-  object0,
-  pipe2U,
-  sndU
-} from "infestines"
+import * as I from "infestines"
+
+//
+
+const always         = I.always
+const applyU         = I.applyU
+const curry          = I.curry
+const dissocPartialU = I.dissocPartialU
+const hasU           = I.hasU
+const id             = I.id
+const isString       = I.isString
+const object0        = I.object0
+const pipe2U         = I.pipe2U
+const sndU           = I.sndU
 
 //
 
@@ -112,7 +104,7 @@ function checkIndex(x) {
 }
 
 function reqFunction(o) {
-  if (!(isFunction(o) && (o.length === 4 || o.length <= 2)))
+  if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2)))
     errorGiven(expectedOptic, o)
 }
 
@@ -238,7 +230,7 @@ const lensFrom = (get, set) => i => (F, xi2yF, x, _) =>
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 function setProp(k, v, o) {
-  const r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o)
+  const r = void 0 !== v ? I.assocPartialU(k, v, o) : dissocPartialU(k, o)
   if (process.env.NODE_ENV !== "production")
     if (r) Object.freeze(r)
   return r
@@ -401,7 +393,7 @@ const setPick = (template, x) => value => {
 
 //
 
-const toObject = x => constructorOf(x) !== Object ? Object.assign({}, x) : x
+const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
 
 //
 
@@ -468,7 +460,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   return map(branchOnMerge(x, keys), xsA)
 }
 
-const replaced = (inn, out, x) => acyclicEqualsU(x, inn) ? out : x
+const replaced = (inn, out, x) => I.acyclicEqualsU(x, inn) ? out : x
 
 function findIndex(xi2b, xs) {
   const n = xs.length
@@ -604,7 +596,7 @@ export const choose = xiM2o => (C, xi2yC, x, i) =>
 export const when = p => (C, xi2yC, x, i) =>
   p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
 
-export const optional = /*#__PURE__*/when(isDefined)
+export const optional = /*#__PURE__*/when(I.isDefined)
 
 export function zero(C, xi2yC, x, i) {
   const of = C.of
@@ -632,7 +624,7 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = /*#__PURE__*/curryN(4, (xMi2y, m) => {
+export const concatAs = /*#__PURE__*/I.curryN(4, (xMi2y, m) => {
   const C = ConcatOf(m.concat, (0,m.empty)(), m.delay)
   return (t, s) => run(t, C, xMi2y, s)
 })
@@ -648,7 +640,7 @@ export const and = /*#__PURE__*/all(id)
 export const any = /*#__PURE__*/pipe2U(mkSelect(x => x ? T : U), Boolean)
 
 export const collectAs = /*#__PURE__*/curry((xi2y, t, s) =>
-  toArray(run(t, Collect, xi2y, s)) || array0)
+  toArray(run(t, Collect, xi2y, s)) || I.array0)
 
 export const collect = /*#__PURE__*/collectAs(id)
 
@@ -684,7 +676,7 @@ export const sum = /*#__PURE__*/concatAs(unto(0), Sum)
 
 export function branch(template) {
   if (process.env.NODE_ENV !== "production")
-    if (!isObject(template))
+    if (!I.isObject(template))
       errorGiven("`branch` expects a plain Object template", template)
   const keys = [], vals = []
   for (const k in template) {
@@ -710,7 +702,7 @@ export function elems(A, xi2yA, xs, _) {
 
 export function values(A, xi2yA, xs, _) {
   if (xs instanceof Object) {
-    return branchOn(keys(xs))(A, xi2yA, xs)
+    return branchOn(I.keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
       reqApplicative(A)
@@ -735,7 +727,7 @@ export const setter = /*#__PURE__*/lens(id)
 
 export function augment(template) {
   if (process.env.NODE_ENV !== "production")
-    if (!isObject(template))
+    if (!I.isObject(template))
       errorGiven("`augment` expects a plain Object template", template)
   return lens(
     x => {
@@ -911,7 +903,7 @@ export const orElse = /*#__PURE__*/curry((d, l) =>
 
 export function pick(template) {
   if (process.env.NODE_ENV !== "production")
-    if (!isObject(template))
+    if (!I.isObject(template))
       errorGiven("`pick` expects a plain Object template", template)
   return (F, xi2yF, x, i) =>
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
@@ -924,7 +916,7 @@ export const replace = /*#__PURE__*/curry((inn, out) => {
 
 // Operations on isomorphisms
 
-export const getInverse = /*#__PURE__*/arityN(2, setU)
+export const getInverse = /*#__PURE__*/I.arityN(2, setU)
 
 // Creating new isomorphisms
 
