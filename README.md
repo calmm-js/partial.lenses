@@ -2269,7 +2269,7 @@ and [`define`](#L-define).
 with a kind of [inverse](#L-inverse).  The focus of an isomorphism is the whole
 data structure rather than a part of it.
 
-More specifically, a lens, `iso`, is an isomorphism iff the following equations
+More specifically, a lens, `iso`, is an isomorphism if the following equations
 hold for all `x` and `y` in the domain and range, respectively, of the lens:
 
 ```jsx
