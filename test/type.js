@@ -23,13 +23,13 @@ export const or = (...ps) => x => {
       es.push([ps[i], e])
     }
   }
-  throw new Error(`or(${ps}): ${x}`)
+  throw Error(`or(${ps}): ${x}`)
 }
 
 export const fromPredicate = p => x => {
   if (p(x))
     return x
-  throw new Error(`fromPredicate(${p}): ${x}`)
+  throw Error(`fromPredicate(${p}): ${x}`)
 }
 
 const type = t => fromPredicate(x => typeof x === t)
@@ -70,7 +70,7 @@ export const object = template => object => {
   if (!I.isObject ||
       !I.hasKeysOfU(template, object) ||
       !I.hasKeysOfU(object, template))
-    throw new Error(`object(${template}): ${object}`)
+    throw Error(`object(${template}): ${object}`)
   for (const k in template)
     result[k] = template[k](object[k])
   return result
@@ -91,7 +91,7 @@ export const fn = (argTys, resultTy) => fn => {
 
 export const fnVar = (argsTy, resultTy) => fn => {
   if (typeof fn !== "function")
-    throw new Error(`fnVar(${argsTy}, ${resultTy}): ${fn}`)
+    throw Error(`fnVar(${argsTy}, ${resultTy}): ${fn}`)
   return function (...argIns) {
     const n=argIns.length, args=Array(n)
     for (let i=0; i<n; ++i)
