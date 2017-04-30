@@ -860,9 +860,9 @@ elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code><
 read-only lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.elems,
-           L.choose(x =&gt; (R.is(Array, x) ? L.elems :
-                          R.is(Object, x) ? &quot;x&quot; :
-                          L.zero))],
+           L.choose(x =&gt; R.is(Array, x)  ? L.elems
+                    :    R.is(Object, x) ? &quot;x&quot;
+                    :                      L.zero)],
           [1, {x: 2}, [3,4]])
 </code></pre>
 <h4 id="recursing">Recursing</h4>
@@ -879,9 +879,9 @@ data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">var flatten = [L.optional, L.lazy(rec =&gt; {
   const elems = [L.elems, rec]
   const values = [L.values, rec]
-  return L.choose(x =&gt; (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
+  return L.choose(x =&gt; x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity)
 })]
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>
@@ -958,9 +958,9 @@ objects and arrays:</p>
 <pre><code class="hljs lang-js">var everywhere = [L.optional, L.lazy(rec =&gt; {
   const elems = L.seq([L.elems, rec], L.identity)
   const values = L.seq([L.values, rec], L.identity)
-  return L.choose(x =&gt; (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
+  return L.choose(x =&gt; x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity))
 })]
 </code></pre>
 <p>The above <code>everywhere</code> transform is similar to

@@ -992,9 +992,9 @@ For example:
 
 ```js
 L.collect([L.elems,
-           L.choose(x => (R.is(Array, x) ? L.elems :
-                          R.is(Object, x) ? "x" :
-                          L.zero))],
+           L.choose(x => R.is(Array, x)  ? L.elems
+                    :    R.is(Object, x) ? "x"
+                    :                      L.zero)],
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
 ```
@@ -1019,9 +1019,9 @@ data structure of nested arrays and objects:
 const flatten = [L.optional, L.lazy(rec => {
   const elems = [L.elems, rec]
   const values = [L.values, rec]
-  return L.choose(x => (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
+  return L.choose(x => x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity)
 })]
 ```
 
@@ -1150,9 +1150,9 @@ objects and arrays:
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)
   const values = L.seq([L.values, rec], L.identity)
-  return L.choose(x => (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
+  return L.choose(x => x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity))
 })]
 ```
 
