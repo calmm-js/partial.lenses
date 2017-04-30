@@ -127,8 +127,8 @@ function reqArray(o) {
 
 //
 
-function reqApplicative(C, name) {
-  if (!C.of) errorGiven("`" + name + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
+function reqApplicative(C, name, arg) {
+  if (!C.of) errorGiven("`" + name + (arg ? "(" + arg + ")" : "") + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
 }
 
 //
@@ -537,6 +537,72 @@ var fromReader = function fromReader(wi2x) {
 
 //
 
+function reNext(m, re) {
+  var lastIndex = re.lastIndex;
+  re.lastIndex = m.index + m[0].length;
+  var n = re.exec(m.input);
+  re.lastIndex = lastIndex;
+  if (process.env.NODE_ENV !== "production") if (n && !n[0]) warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
+  if (n && n[0]) return n;
+}
+
+var reValue = function reValue(m) {
+  return m[0];
+};
+var reIndex = function reIndex(m) {
+  return m.index;
+};
+
+//
+
+var iterCollect = function iterCollect(s) {
+  return function (x) {
+    return function (xs) {
+      return [s, x, xs];
+    };
+  };
+};
+
+var iterLazy = function iterLazy(map, ap, of, delay, xi2yA, t, s) {
+  return (s = reNext(s, t)) ? ap(ap(map(iterCollect, of(s)), xi2yA(reValue(s), reIndex(s))), delay(function () {
+    return iterLazy(map, ap, of, delay, xi2yA, t, s);
+  })) : of(void 0);
+};
+
+function iterEager(map, ap, of, _, xi2yA, t, s) {
+  var ss = [];
+  while (s = reNext(s, t)) {
+    ss.push(s);
+  }var i = ss.length;
+  var r = of(void 0);
+  while (i--) {
+    s = ss[i];
+    r = ap(ap(map(iterCollect, of(s)), xi2yA(reValue(s), reIndex(s))), r);
+  }
+  return r;
+}
+
+//
+
+var matchesJoin = function matchesJoin(input) {
+  return function (matches) {
+    var result = "";
+    var lastIndex = 0;
+    while (matches) {
+      var m = matches[0];
+      result += input.slice(lastIndex, m.index);
+      var s = matches[1];
+      if (void 0 !== s) result += s;
+      lastIndex = m[0].length + m.index;
+      matches = matches[2];
+    }
+    result += input.slice(lastIndex);
+    return result || void 0;
+  };
+};
+
+//
+
 function toFunction(o) {
   switch (typeof o) {
     case "string":
@@ -773,6 +839,33 @@ function values(A, xi2yA, xs, _) {
     if (process.env.NODE_ENV !== "production") reqApplicative(A, "values");
     return (0, A.of)(xs);
   }
+}
+
+function matches(re) {
+  if (process.env.NODE_ENV !== "production") warn(matches, "`matches` is experimental and might be removed or changed before next major release.");
+  return function (C, xi2yC, x, _) {
+    if (I.isString(x)) {
+      var map = C.map;
+
+      if (re.global) {
+        if (process.env.NODE_ENV !== "production") reqApplicative(C, "matches", re);
+        var ap = C.ap,
+            of = C.of,
+            delay = C.delay;
+
+        var m0 = [""];
+        m0.input = x;
+        m0.index = 0;
+        return map(matchesJoin(x), (delay ? iterLazy : iterEager)(map, ap, of, delay, xi2yC, re, m0));
+      } else {
+        var m = x.match(re);
+        if (m) return map(function (y) {
+          return x.replace(re, void 0 !== y ? y : "") || void 0;
+        }, xi2yC(m[0], m.index));
+      }
+    }
+    return zero(C, xi2yC, x, void 0);
+  };
 }
 
 // Operations on lenses
@@ -1062,6 +1155,7 @@ exports.sum = sum;
 exports.branch = branch;
 exports.elems = elems;
 exports.values = values;
+exports.matches = matches;
 exports.get = get;
 exports.lens = lens;
 exports.setter = setter;

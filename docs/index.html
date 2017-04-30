@@ -133,6 +133,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
 <li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></li>
 <li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></li>
+<li><a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></li>
 </ul>
 </li>
 </ul>
@@ -174,6 +175,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a></li>
 <li><a href="#L-removable" title="L.removable (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></li>
+</ul>
+</li>
+<li><a href="#lensing-strings">Lensing strings</a><ul>
+<li><a href="#L-matches" title="L.matches: RegExp -&gt; PLens String String"><code>L.matches(/.../) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#providing-defaults">Providing defaults</a><ul>
@@ -1207,6 +1212,23 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          R.negate,
          new XYZ(1,2,3))
 </code></pre>
+<h5 id="-a-id-l-matches-g-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-g-l-matches-g-traversal-l-matches-g-l-matches-regexp-ptraversal-string-string-"><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></h5>
+<p><code>L.matches</code>, when given a regular expression with the <code>global</code> flag, <code>/.../g</code>,
+is a partial traversal over the matches that the regular expression gives over
+the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
+<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
+next major release.</strong></p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
+           L.pick({name: L.matches(/^[^=]+/),
+                   value: L.matches(/[^=]+$/)})],
+           &quot;?first=foo&amp;second=bar&quot;)
+</code></pre>
+<p>Note that when writing through <code>L.matches</code> and the result would be an empty
+string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
+<p>Note that an empty match terminates the traversal.  It is possible to make use
+of that feature, but it is also possible that an empty match is due to an
+incorrect regular expression that can match the empty string.</p>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.  Put
 in another way, a lens specific a path to a single element in a data structure.</p>
@@ -1578,6 +1600,21 @@ insert new objects.  The following lens then specifies that removing the then
 focused property (or properties) should remove the whole object.  In cases where
 the shape of the incoming object is know, <a href="#L-defaults"><code>L.defaults</code></a> can
 replace such a pair.</p>
+<h4 id="lensing-strings">Lensing strings</h4>
+<h5 id="-a-id-l-matches-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-l-matches-lens-l-matches-l-matches-regexp-plens-string-string-"><a id="L-matches"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches">■</a> <a href="#L-matches" title="L.matches: RegExp -&gt; PLens String String"><code>L.matches(/.../) ~&gt; lens</code></a></h5>
+<p><code>L.matches</code>, when given a regular expression without the <code>global</code> flags,
+<code>/.../</code>, is a partial lens over the match.  When there is no match, or the
+target is not a string, then <code>L.matches</code> will be read-only.  See
+also <a href="#L-matches-g"><code>L.matches</code></a>.</p>
+<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
+next major release.</strong></p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set(L.matches(/\.[^./]+$/),
+      &quot;.txt&quot;,
+      &quot;/dir/file.ext&quot;)
+</code></pre>
+<p>Note that when writing through <code>L.matches</code> and the result would be an empty
+string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
 <h4 id="providing-defaults">Providing defaults</h4>
 <h5 id="-a-id-l-valueor-a-contents-https-github-com-calmm-js-partial-lenses-l-valueor-l-valueor-valueout-lens-l-valueor-l-valueor-s-plens-s-s-"><a id="L-valueOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-valueOr">■</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
