@@ -93,8 +93,9 @@ function warn(f, m) {
 
 function errorGiven(m, o, e) {
   m = header + m + "."
-  console.error(m, "Given:", o, e ? "\n" + e : "")
-  throw Error(m)
+  e = e ? "\n" + e : ""
+  console.error(m, "Given:", o, e)
+  throw Error(m + e)
 }
 
 function checkIndex(x) {
