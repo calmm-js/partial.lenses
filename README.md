@@ -1592,6 +1592,10 @@ L.collect([L.matches(/[^&=?]+=[^&=]+/g),
 //   { name: 'second', value: 'bar' } ]
 ```
 
+Note that an empty match terminates the traversal.  It is possible to make use
+of that feature, but it is also possible that an empty match is due to an
+incorrect regular expression that can match the empty string.
+
 ### Lenses
 
 Lenses always have a single focus which can be [viewed](#L-get) directly.  Put
