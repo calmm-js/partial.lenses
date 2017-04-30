@@ -768,7 +768,7 @@ export function matches(re) {
   if (process.env.NODE_ENV !== "production")
     warn(matches, "`matches` is experimental and might be removed or changed before next major release.")
   return (C, xi2yC, x, _) => {
-    if (isString(x)) {
+    if (I.isString(x)) {
       const {map} = C
       if (re.global) {
         if (process.env.NODE_ENV !== "production")
