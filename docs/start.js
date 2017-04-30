@@ -164,15 +164,13 @@
     var tree = contents.nextElementSibling
     if (!tree)
       return
-    function toggle(e) {
-      menu.className = menu.className === "menu" ? "menu open" : "menu"
+    menu.onclick = function(e) {
+      menu.className = menu.className === "menu" && e.target.tagName === "DIV"
+        ? "menu open"
+        : "menu"
       e.stopPropagation()
     }
-    menu.onclick = toggle
     menuContents.appendChild(removeIds(tree.cloneNode(true)))
-    toArray(menuContents.querySelectorAll("a")).forEach(function (link) {
-      link.onclick = toggle
-    })
   }
 
   window.GoogleAnalyticsObject = "ga"

@@ -62,7 +62,10 @@ fs.writeFileSync("docs/index.html",
     <div class="menu">
       <div class="menu-overlay"></div>
       <div class="menu-body">
-        <div class="hamburger">≡</div>
+        <div class="menu-side">
+          <div>≡</div>
+          <a id="to-top" href="#" onclick="">▲</a>
+        </div>
         <div class="menu-contents"></div>
       </div>
     </div>
