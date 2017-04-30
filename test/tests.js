@@ -896,6 +896,7 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`X.get(L.elems, [])`)
     testThrows(`X.get(L.values, {})`)
     testThrows(`X.get(L.branch({a: []}), {})`)
+    testThrows(`X.get(L.matches(/a/g), "foo")`)
 
     testThrows(`L.set(L.props("length"), "lol", undefined)`)
     testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
@@ -913,7 +914,5 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
 
     testThrows(`L.toFunction(-1)`)
-
-    testThrows(`L.get(L.matches(/a/g), "foo)`)
   })
 }
