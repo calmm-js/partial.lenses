@@ -505,6 +505,9 @@ function reNext(m, re) {
   re.lastIndex = m.index + m[0].length
   const n = re.exec(m.input)
   re.lastIndex = lastIndex
+  if (process.env.NODE_ENV !== "production")
+    if (n && !n[0])
+      warn(reNext, `\`matches(${re})\` traversal terminated at index ${n.index} in ${JSON.stringify(n.input)} due to empty match.`)
   if (n && n[0])
     return n
 }
