@@ -110,9 +110,9 @@ function reqArray(o) {
 
 //
 
-function reqApplicative(C, name) {
+function reqApplicative(C, name, arg) {
   if (!C.of)
-    errorGiven(`\`${name}\` requires an applicative`, C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
+    errorGiven(`\`${name}${arg ? `(${arg})` : ""}\` requires an applicative`, C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
 }
 
 //
@@ -769,7 +769,7 @@ export function matches(re) {
       const {map} = C
       if (re.global) {
         if (process.env.NODE_ENV !== "production")
-          reqApplicative(`matches(${re})`, C)
+          reqApplicative(C, "matches", re)
         const {ap, of, delay} = C
         const m0 = [""]
         m0.input = x
