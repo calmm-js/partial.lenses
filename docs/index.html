@@ -2421,8 +2421,8 @@ in <code>docs</code>, <code>lib</code> and <code>dist</code> directories are gen
 <p>The <code>prepublish</code> script is the usual way to build after changes:</p>
 <pre><code class="hljs lang-bash">npm run prepublish
 </code></pre>
-<p>It runs the tests (and lint rules) and builds the <code>lib</code> and <code>dist</code> files if the
-tests pass.  You can also run the scripts for those subtasks separately.</p>
+<p>It builds the <code>dist</code> files and runs the lint rules and tests.  You can also run
+the scripts for those subtasks separately.</p>
 <h3 id="testing">Testing</h3>
 <p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/tests.js">tests</a> in this library are written in an atypical manner.</p>
 <p>First of all, the tests are written as strings that are <code>eval</code>ed.  This way one

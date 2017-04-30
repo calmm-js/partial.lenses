@@ -3334,8 +3334,8 @@ The `prepublish` script is the usual way to build after changes:
 npm run prepublish
 ```
 
-It runs the tests (and lint rules) and builds the `lib` and `dist` files if the
-tests pass.  You can also run the scripts for those subtasks separately.
+It builds the `dist` files and runs the lint rules and tests.  You can also run
+the scripts for those subtasks separately.
 
 ### Testing
 
