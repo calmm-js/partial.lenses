@@ -165,6 +165,7 @@ export const branch = T.fn([T.props(T_traversal)], T_traversal)
 
 export const elems = T_traversal
 export const values = T_traversal
+export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
 
 // Operations on lenses
 
