@@ -1864,9 +1864,6 @@ L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 
 ##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a")
 
-**WARNING: `L.findHint` is experimental and might be removed or changed before
-next major release.**
-
 `L.findHint` is much like [`L.find`](#L-find) and determines the index of
 an [array-like](#array-like) object to operate on by searching with the given
 predicate.  Unlike [`L.find`](#L-find), `L.findHint` is designed to operate
@@ -1878,6 +1875,11 @@ after each search and the `hint` can also be mutated from the outside.  The
 `hint` object is also passed to the predicate as the second argument.  This
 makes it possible to both practically eliminate the linear search and to
 implement the predicate without allocating extra memory for it.
+
+**WARNING: `L.findHint` is experimental and might be removed or changed before
+next major release.**
+
+For example:
 
 ```js
 L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), "value"],

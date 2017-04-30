@@ -1392,8 +1392,6 @@ matching element is found the effect is same as with <a href="#L-append"><code>L
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
 <h5 id="-a-id-l-findhint-a-contents-https-github-com-calmm-js-partial-lenses-l-findhint-l-findhint-maybevalue-hint-index-testable-hint-index-lens-l-findhint-l-findhint-maybe-a-hint-index-boolean-hint-index-plens-a-a-"><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a></h5>
-<p><strong>WARNING: <code>L.findHint</code> is experimental and might be removed or changed before
-next major release.</strong></p>
 <p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of
 an <a href="#array-like">array-like</a> object to operate on by searching with the given
 predicate.  Unlike <a href="#L-find"><code>L.find</code></a>, <code>L.findHint</code> is designed to operate
@@ -1405,6 +1403,9 @@ after each search and the <code>hint</code> can also be mutated from the outside
 <code>hint</code> object is also passed to the predicate as the second argument.  This
 makes it possible to both practically eliminate the linear search and to
 implement the predicate without allocating extra memory for it.</p>
+<p><strong>WARNING: <code>L.findHint</code> is experimental and might be removed or changed before
+next major release.</strong></p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), &quot;value&quot;],
          R.toUpper,
          [{id: 3, value: &quot;a&quot;},
