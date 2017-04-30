@@ -3160,9 +3160,11 @@ a
 However, this library is not designed to be primarily used via that bundle.
 Rather, this library is bundled with [Rollup](https://rollupjs.org/) and uses
 `/*#__PURE__*/` annotations supported
-by [UglifyJS2](https://github.com/mishoo/UglifyJS2).  This means that by using
-Rollup to generate
-and [UglifyJS2](https://github.com/TrySound/rollup-plugin-uglify) to minify
+by [UglifyJS2](https://github.com/mishoo/UglifyJS2) and uses
+`process.env.NODE_ENV` to detect `"production"` mode, to discard some warnings
+and error checks.  This means that when using Rollup
+with [replace](https://github.com/rollup/rollup-plugin-replace)
+and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
 browser bundles, the generated bundles will basically only include what you use
 from this library.
 
