@@ -64,7 +64,7 @@ const Mum = ord =>
 
 //
 
-const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
+const run = (o, C, xi2yC, s, i) => toFunction(o)(s, i, C, xi2yC)
 
 //
 
@@ -217,7 +217,7 @@ function object0ToUndefined(o) {
 
 //
 
-const lensFrom = (get, set) => i => (F, xi2yF, x, _) =>
+const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
   (0,F.map)(v => set(i, v, x), xi2yF(get(i, x), i))
 
 //
@@ -271,7 +271,7 @@ const funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex)
 
 //
 
-const close = (o, F, xi2yF) => (x, i) => o(F, xi2yF, x, i)
+const close = (o, F, xi2yF) => (x, i) => o(x, i, F, xi2yF)
 
 function composed(oi0, os) {
   const n = os.length - oi0
@@ -282,11 +282,11 @@ function composed(oi0, os) {
     fs = Array(n)
     for (let i=0;i<n;++i)
       fs[i] = toFunction(os[i+oi0])
-    return (F, xi2yF, x, i) => {
+    return (x, i, F, xi2yF) => {
       let k=n
       while (--k)
         xi2yF = close(fs[k], F, xi2yF)
-      return fs[0](F, xi2yF, x, i)
+      return fs[0](x, i, F, xi2yF)
     }
   }
 }
@@ -304,7 +304,7 @@ function setU(o, x, s) {
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(o)
-      return o.length === 4 ? o(Ident, I.always(x), s, void 0) : s
+      return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s
   }
 }
 
@@ -321,13 +321,13 @@ function getU(l, s) {
         switch (typeof (o = l[i])) {
           case "string": s = getProp(o, s); break
           case "number": s = getIndex(o, s); break
-          default: return composed(i, l)(Const, I.id, s, l[i-1])
+          default: return composed(i, l)(s, l[i-1], Const, I.id)
         }
       return s
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(l)
-      return l.length === 4 ? l(Const, I.id, s, void 0) : l(s, void 0)
+      return l(s, void 0, Const, I.id)
   }
 }
 
@@ -346,7 +346,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x)
         break
       default:
-        x = composed(i, os)(Ident, xi2y || I.always(y), x, os[i-1])
+        x = composed(i, os)(x, os[i-1], Ident, xi2y || I.always(y))
         n = i
         break
     }
@@ -427,14 +427,14 @@ function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys.length) {
     const k = keys[i], v = x[k]
     return ap(map(cpair,
-                  vals ? vals[i](A, xi2yA, x[k], k) : xi2yA(v, k)), delay(() =>
+                  vals ? vals[i](x[k], k, A, xi2yA) : xi2yA(v, k)), delay(() =>
               branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i+1)))
   } else {
     return z
   }
 }
 
-const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
+const branchOn = (keys, vals) => (x, _i, A, xi2yA) => {
   if (process.env.NODE_ENV !== "production")
     reqApplicative(A, vals ? "branch" : "values")
   const {map, ap, of, delay} = A
@@ -449,7 +449,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   } else {
     while (i--) {
       const k = keys[i], v = x[k]
-      xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA)
+      xsA = ap(map(cpair, vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), xsA)
     }
   }
   return map(branchOnMerge(x, keys), xsA)
@@ -495,7 +495,7 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
   }
 }
 
-const fromReader = wi2x => (F, xi2yF, w, i) =>
+const fromReader = wi2x => (w, i, F, xi2yF) =>
   (0,F.map)(I.always(w), xi2yF(wi2x(w, i), i))
 
 //
@@ -594,7 +594,7 @@ export const modify = /*#__PURE__*/I.curry((o, xi2x, s) => {
       if (process.env.NODE_ENV !== "production")
         reqFunction(o)
       return o.length === 4
-        ? o(Ident, xi2x, s, void 0)
+        ? o(s, void 0, Ident, xi2x)
         : (xi2x(o(s, void 0), void 0), s)
   }
 })
@@ -613,8 +613,8 @@ export function seq() {
     xMs[i] = toFunction(arguments[i])
   const loop = (M, xi2xM, i, j) => j === n
     ? M.of
-    : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](M, xi2xM, x, i))
-  return (M, xi2xM, x, i) => {
+    : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
+  return (x, i, M, xi2xM) => {
     if (process.env.NODE_ENV !== "production")
       if (!M.chain)
         errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
@@ -646,15 +646,15 @@ export const choice = (...ls) => choose(x => {
   return void 0 !== l ? l : zero
 })
 
-export const choose = xiM2o => (C, xi2yC, x, i) =>
+export const choose = xiM2o => (x, i, C, xi2yC) =>
   run(xiM2o(x, i), C, xi2yC, x, i)
 
-export const when = p => (C, xi2yC, x, i) =>
-  p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i)
+export const when = p => (x, i, C, xi2yC) =>
+  p(x, i) ? xi2yC(x, i) : zero(x, i, C, xi2yC)
 
 export const optional = /*#__PURE__*/when(I.isDefined)
 
-export function zero(C, xi2yC, x, i) {
+export function zero(x, i, C, xi2yC) {
   const of = C.of
   return of ? of(x) : (0,C.map)(I.always(x), xi2yC(void 0, i))
 }
@@ -662,8 +662,8 @@ export function zero(C, xi2yC, x, i) {
 // Recursing
 
 export function lazy(o2o) {
-  let memo = (C, xi2yC, x, i) => (memo = toFunction(o2o(rec)))(C, xi2yC, x, i)
-  function rec(C, xi2yC, x, i) {return memo(C, xi2yC, x, i)}
+  let memo = (x, i, C, xi2yC) => (memo = toFunction(o2o(rec)))(x, i, C, xi2yC)
+  function rec(x, i, C, xi2yC) {return memo(x, i, C, xi2yC)}
   return rec
 }
 
@@ -744,7 +744,7 @@ export function branch(template) {
 
 // Traversals and combinators
 
-export function elems(A, xi2yA, xs, _) {
+export function elems(xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
     return A === Ident
       ? mapPartialIndexU(xi2yA, xs)
@@ -756,9 +756,9 @@ export function elems(A, xi2yA, xs, _) {
   }
 }
 
-export function values(A, xi2yA, xs, _) {
+export function values(xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs))(A, xi2yA, xs)
+    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA)
   } else {
     if (process.env.NODE_ENV !== "production")
       reqApplicative(A, "values")
@@ -769,7 +769,7 @@ export function values(A, xi2yA, xs, _) {
 export function matches(re) {
   if (process.env.NODE_ENV !== "production")
     warn(matches, "`matches` is experimental and might be removed or changed before next major release.")
-  return (C, xi2yC, x, _) => {
+  return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
       if (re.global) {
@@ -790,7 +790,7 @@ export function matches(re) {
                      xi2yC(m[0], m.index))
       }
     }
-    return zero(C, xi2yC, x, void 0)
+    return zero(x, void 0, C, xi2yC)
   }
 }
 
@@ -802,7 +802,7 @@ export function get(l, s) {
 
 // Creating new lenses
 
-export const lens = /*#__PURE__*/I.curry((get, set) => (F, xi2yF, x, i) =>
+export const lens = /*#__PURE__*/I.curry((get, set) => (x, i, F, xi2yF) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
 export const setter = /*#__PURE__*/lens(I.id)
@@ -853,31 +853,31 @@ export function augment(template) {
 
 export function defaults(out) {
   const o2u = x => replaced(out, void 0, x)
-  return (F, xi2yF, x, i) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
+  return (x, i, F, xi2yF) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
 export function define(v) {
   const untoV = unto(v)
-  return (F, xi2yF, x, i) => (0,F.map)(untoV, xi2yF(void 0 !== x ? x : v, i))
+  return (x, i, F, xi2yF) => (0,F.map)(untoV, xi2yF(void 0 !== x ? x : v, i))
 }
 
-export const normalize = xi2x => (F, xi2yF, x, i) =>
+export const normalize = xi2x => (x, i, F, xi2yF) =>
   (0,F.map)(x => void 0 !== x ? xi2x(x, i) : x,
             xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
 
 export const required = inn => replace(inn, void 0)
 
-export const rewrite = yi2y => (F, xi2yF, x, i) =>
+export const rewrite = yi2y => (x, i, F, xi2yF) =>
   (0,F.map)(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
 
 // Lensing arrays
 
-export function append(F, xi2yF, xs, _) {
+export function append(xs, _, F, xi2yF) {
   const i = seemsArrayLike(xs) ? xs.length : 0
   return (0,F.map)(x => setIndex(i, x, xs), xi2yF(void 0, i))
 }
 
-export const filter = xi2b => (F, xi2yF, xs, i) => {
+export const filter = xi2b => (xs, i, F, xi2yF) => {
   let ts, fs
   if (seemsArrayLike(xs))
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
@@ -897,7 +897,7 @@ export const filter = xi2b => (F, xi2yF, xs, i) => {
     xi2yF(ts, i))
 }
 
-export const find = xi2b => (F, xi2yF, xs, _i) => {
+export const find = xi2b => (xs, _i, F, xi2yF) => {
   const ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys)
   return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
@@ -906,7 +906,7 @@ export const find = xi2b => (F, xi2yF, xs, _i) => {
 export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   if (process.env.NODE_ENV !== "production")
     warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
-  return (F, xi2yF, xs, _i) => {
+  return (xs, _i, F, xi2yF) => {
     const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
     return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
@@ -923,7 +923,7 @@ export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
 export const last = /*#__PURE__*/choose(maybeArray =>
   seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : 0)
 
-export const slice = /*#__PURE__*/I.curry((begin, end) => (F, xsi2yF, xs, i) => {
+export const slice = /*#__PURE__*/I.curry((begin, end) => (xs, i, F, xsi2yF) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
@@ -970,12 +970,12 @@ export function removable(...ps) {
       if (I.hasU(ps[i], y))
         return y
   }
-  return (F, xi2yF, x, i) => (0,F.map)(drop, xi2yF(x, i))
+  return (x, i, F, xi2yF) => (0,F.map)(drop, xi2yF(x, i))
 }
 
 // Providing defaults
 
-export const valueOr = v => (_F, xi2yF, x, i) =>
+export const valueOr = v => (x, i, _F, xi2yF) =>
   xi2yF(void 0 !== x && x !== null ? x : v, i)
 
 // Adapting to data
@@ -989,13 +989,13 @@ export function pick(template) {
   if (process.env.NODE_ENV !== "production")
     if (!I.isObject(template))
       errorGiven("`pick` expects a plain Object template", template)
-  return (F, xi2yF, x, i) =>
+  return (x, i, F, xi2yF) =>
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 }
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   const o2i = x => replaced(out, inn, x)
-  return (F, xi2yF, x, i) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
+  return (x, i, F, xi2yF) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
 })
 
 // Operations on isomorphisms
@@ -1005,13 +1005,13 @@ export const getInverse = /*#__PURE__*/I.arityN(2, setU)
 // Creating new isomorphisms
 
 export const iso = /*#__PURE__*/I.curry((bwd, fwd) =>
-  (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
+  (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
 // Isomorphisms and combinators
 
 export const complement = /*#__PURE__*/iso(notPartial, notPartial)
 
-export const identity = (_F, xi2yF, x, i) => xi2yF(x, i)
+export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
-export const inverse = iso => (F, xi2yF, x, i) =>
+export const inverse = iso => (x, i, F, xi2yF) =>
   (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))
