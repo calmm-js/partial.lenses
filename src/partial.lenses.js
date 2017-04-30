@@ -2,19 +2,6 @@ import * as I from "infestines"
 
 //
 
-const always         = I.always
-const applyU         = I.applyU
-const curry          = I.curry
-const dissocPartialU = I.dissocPartialU
-const hasU           = I.hasU
-const id             = I.id
-const isString       = I.isString
-const object0        = I.object0
-const pipe2U         = I.pipe2U
-const sndU           = I.sndU
-
-//
-
 const not = x => !x
 
 const sliceIndex = (m, l, d, i) =>
@@ -29,7 +16,7 @@ const notPartial = x => void 0 !== x ? !x : x
 
 const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  isString(x)
+  I.isString(x)
 
 //
 
@@ -58,12 +45,12 @@ function copyToFrom(ys, k, xs, i, j) {
 
 //
 
-const Ident = {map: applyU, of: id, ap: applyU, chain: applyU}
+const Ident = {map: I.applyU, of: I.id, ap: I.applyU, chain: I.applyU}
 
-const Const = {map: sndU}
+const Const = {map: I.sndU}
 
 function ConcatOf(ap, empty, delay) {
-  const c = {map: sndU, ap, of: always(empty)}
+  const c = {map: I.sndU, ap, of: I.always(empty)}
   if (delay)
     c.delay = delay
   return c
@@ -181,10 +168,10 @@ const Select = /*#__PURE__*/ConcatOf(
     return void 0 !== l.v ? l : r
   },
   U,
-  id)
+  I.id)
 
 const mkSelect = toM => (xi2yM, t, s) => {
-  s = run(t, Select, pipe2U(xi2yM, toM), s)
+  s = run(t, Select, I.pipe2U(xi2yM, toM), s)
   while (s.constructor === Function)
     s = s()
   return s.v
@@ -231,7 +218,7 @@ const lensFrom = (get, set) => i => (F, xi2yF, x, _) =>
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 function setProp(k, v, o) {
-  const r = void 0 !== v ? I.assocPartialU(k, v, o) : dissocPartialU(k, o)
+  const r = void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o)
   if (process.env.NODE_ENV !== "production")
     if (r) Object.freeze(r)
   return r
@@ -310,7 +297,7 @@ function setU(o, x, s) {
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(o)
-      return o.length === 4 ? o(Ident, always(x), s, void 0) : s
+      return o.length === 4 ? o(Ident, I.always(x), s, void 0) : s
   }
 }
 
@@ -327,13 +314,13 @@ function getU(l, s) {
         switch (typeof (o = l[i])) {
           case "string": s = getProp(o, s); break
           case "number": s = getIndex(o, s); break
-          default: return composed(i, l)(Const, id, s, l[i-1])
+          default: return composed(i, l)(Const, I.id, s, l[i-1])
         }
       return s
     default:
       if (process.env.NODE_ENV !== "production")
         reqFunction(l)
-      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0)
+      return l.length === 4 ? l(Const, I.id, s, void 0) : l(s, void 0)
   }
 }
 
@@ -352,7 +339,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x)
         break
       default:
-        x = composed(i, os)(Ident, xi2y || always(y), x, os[i-1])
+        x = composed(i, os)(Ident, xi2y || I.always(y), x, os[i-1])
         n = i
         break
     }
@@ -360,7 +347,7 @@ function modifyComposed(os, xi2y, x, y) {
   if (n === os.length)
     x = xi2y ? xi2y(x, os[n-1]) : y
   for (let o; 0 <= --n;)
-    x = isString(o = os[n])
+    x = I.isString(o = os[n])
         ? setProp(o, x, xs[n])
         : setIndex(o, x, xs[n])
   return x
@@ -448,7 +435,7 @@ const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (!i)
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
-    x = object0
+    x = I.object0
   let xsA = of(0)
   if (delay) {
     xsA = branchOnLazy(keys, vals, map, ap, xsA, delay, A, xi2yA, x, 0)
@@ -502,7 +489,7 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 }
 
 const fromReader = wi2x => (F, xi2yF, w, i) =>
-  (0,F.map)(always(w), xi2yF(wi2x(w, i), i))
+  (0,F.map)(I.always(w), xi2yF(wi2x(w, i), i))
 
 //
 
@@ -527,7 +514,7 @@ export function toFunction(o) {
 
 // Operations on optics
 
-export const modify = /*#__PURE__*/curry((o, xi2x, s) => {
+export const modify = /*#__PURE__*/I.curry((o, xi2x, s) => {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s)
@@ -544,11 +531,11 @@ export const modify = /*#__PURE__*/curry((o, xi2x, s) => {
   }
 })
 
-export const remove = /*#__PURE__*/curry((o, s) => setU(o, void 0, s))
+export const remove = /*#__PURE__*/I.curry((o, s) => setU(o, void 0, s))
 
-export const set = /*#__PURE__*/curry(setU)
+export const set = /*#__PURE__*/I.curry(setU)
 
-export const traverse = /*#__PURE__*/curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
+export const traverse = /*#__PURE__*/I.curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
 
 // Sequencing
 
@@ -583,7 +570,7 @@ export function compose() {
 
 // Querying
 
-export const chain = /*#__PURE__*/curry((xi2yO, xO) =>
+export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...ls) => choose(x => {
@@ -601,7 +588,7 @@ export const optional = /*#__PURE__*/when(I.isDefined)
 
 export function zero(C, xi2yC, x, i) {
   const of = C.of
-  return of ? of(x) : (0,C.map)(always(x), xi2yC(void 0, i))
+  return of ? of(x) : (0,C.map)(I.always(x), xi2yC(void 0, i))
 }
 
 // Recursing
@@ -615,7 +602,7 @@ export function lazy(o2o) {
 // Debugging
 
 export function log() {
-  const show = curry((dir, x) =>
+  const show = I.curry((dir, x) =>
    (console.log.apply(console,
                       copyToFrom([], 0, arguments, 0, arguments.length)
                       .concat([dir, x])),
@@ -630,27 +617,27 @@ export const concatAs = /*#__PURE__*/I.curryN(4, (xMi2y, m) => {
   return (t, s) => run(t, C, xMi2y, s)
 })
 
-export const concat = /*#__PURE__*/concatAs(id)
+export const concat = /*#__PURE__*/concatAs(I.id)
 
 // Folds over traversals
 
-export const all = /*#__PURE__*/pipe2U(mkSelect(x => x ? U : T), not)
+export const all = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? U : T), not)
 
-export const and = /*#__PURE__*/all(id)
+export const and = /*#__PURE__*/all(I.id)
 
-export const any = /*#__PURE__*/pipe2U(mkSelect(x => x ? T : U), Boolean)
+export const any = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? T : U), Boolean)
 
-export const collectAs = /*#__PURE__*/curry((xi2y, t, s) =>
+export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
   toArray(run(t, Collect, xi2y, s)) || I.array0)
 
-export const collect = /*#__PURE__*/collectAs(id)
+export const collect = /*#__PURE__*/collectAs(I.id)
 
 export const count = /*#__PURE__*/concatAs(x => void 0 !== x ? 1 : 0, Sum)
 
-export const foldl = /*#__PURE__*/curry((f, r, t, s) =>
+export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
 
-export const foldr = /*#__PURE__*/curry((f, r, t, s) => {
+export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   const xs = collectAs(pair, t, s)
   for (let i=xs.length-1; 0<=i; --i) {
     const x = xs[i]
@@ -663,13 +650,13 @@ export const maximum = /*#__PURE__*/concat(Mum((x, y) => x > y))
 
 export const minimum = /*#__PURE__*/concat(Mum((x, y) => x < y))
 
-export const or = /*#__PURE__*/any(id)
+export const or = /*#__PURE__*/any(I.id)
 
 export const product = /*#__PURE__*/concatAs(unto(1), Monoid((y, x) => x * y, 1))
 
-export const selectAs = /*#__PURE__*/curry(mkSelect(v => void 0 !== v ? {v} : U))
+export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
 
-export const select = /*#__PURE__*/selectAs(id)
+export const select = /*#__PURE__*/selectAs(I.id)
 
 export const sum = /*#__PURE__*/concatAs(unto(0), Sum)
 
@@ -719,10 +706,10 @@ export function get(l, s) {
 
 // Creating new lenses
 
-export const lens = /*#__PURE__*/curry((get, set) => (F, xi2yF, x, i) =>
+export const lens = /*#__PURE__*/I.curry((get, set) => (F, xi2yF, x, i) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
 
-export const setter = /*#__PURE__*/lens(id)
+export const setter = /*#__PURE__*/lens(I.id)
 
 // Computing derived props
 
@@ -732,7 +719,7 @@ export function augment(template) {
       errorGiven("`augment` expects a plain Object template", template)
   return lens(
     x => {
-      x = dissocPartialU(0, x)
+      x = I.dissocPartialU(0, x)
       if (x)
         for (const k in template)
           x[k] = template[k](x)
@@ -754,10 +741,10 @@ export function augment(template) {
         z[k] = v
       }
       for (const k in y) {
-        if (!hasU(k, template))
+        if (!I.hasU(k, template))
           set(k, y[k])
         else
-          if (x && hasU(k, x))
+          if (x && I.hasU(k, x))
             set(k, x[k])
       }
       if (process.env.NODE_ENV !== "production")
@@ -820,7 +807,7 @@ export const find = xi2b => (F, xi2yF, xs, _i) => {
   return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
 
-export const findHint = /*#__PURE__*/curry((xh2b, hint) => {
+export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   if (process.env.NODE_ENV !== "production")
     warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
   return (F, xi2yF, xs, _i) => {
@@ -835,12 +822,12 @@ export function findWith(...ls) {
   return [find(x => void 0 !== getU(lls, x)), lls]
 }
 
-export const index = process.env.NODE_ENV === "production" ? id : checkIndex
+export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
 
 export const last = /*#__PURE__*/choose(maybeArray =>
   seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : 0)
 
-export const slice = /*#__PURE__*/curry((begin, end) => (F, xsi2yF, xs, i) => {
+export const slice = /*#__PURE__*/I.curry((begin, end) => (F, xsi2yF, xs, i) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
@@ -866,8 +853,8 @@ export const slice = /*#__PURE__*/curry((begin, end) => (F, xsi2yF, xs, i) => {
 
 // Lensing objects
 
-export const prop = process.env.NODE_ENV === "production" ? id : x => {
-  if (!isString(x))
+export const prop = process.env.NODE_ENV === "production" ? I.id : x => {
+  if (!I.isString(x))
     errorGiven("`prop` expects a string", x)
   return x
 }
@@ -884,7 +871,7 @@ export function removable(...ps) {
     if (!(y instanceof Object))
       return y
     for (let i=0, n=ps.length; i<n; ++i)
-      if (hasU(ps[i], y))
+      if (I.hasU(ps[i], y))
         return y
   }
   return (F, xi2yF, x, i) => (0,F.map)(drop, xi2yF(x, i))
@@ -897,7 +884,7 @@ export const valueOr = v => (_F, xi2yF, x, i) =>
 
 // Adapting to data
 
-export const orElse = /*#__PURE__*/curry((d, l) =>
+export const orElse = /*#__PURE__*/I.curry((d, l) =>
   choose(x => void 0 !== getU(l, x) ? l : d))
 
 // Transforming data
@@ -910,7 +897,7 @@ export function pick(template) {
     (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
 }
 
-export const replace = /*#__PURE__*/curry((inn, out) => {
+export const replace = /*#__PURE__*/I.curry((inn, out) => {
   const o2i = x => replaced(out, inn, x)
   return (F, xi2yF, x, i) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
 })
@@ -921,7 +908,7 @@ export const getInverse = /*#__PURE__*/I.arityN(2, setU)
 
 // Creating new isomorphisms
 
-export const iso = /*#__PURE__*/curry((bwd, fwd) =>
+export const iso = /*#__PURE__*/I.curry((bwd, fwd) =>
   (F, xi2yF, x, i) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
 // Isomorphisms and combinators
