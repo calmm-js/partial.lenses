@@ -1574,9 +1574,11 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
 
 ##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String")
 
-`L.matches`, when given a regular expression with the `global` flag, `/.../g`,
-is a partial traversal over the matches that the regular expression gives over
-the focused string.  See also [`L.matches`](#L-matches).
+`L.matches`, when given a regular expression with
+the
+[`global`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global) flag,
+`/.../g`, is a partial traversal over the matches that the regular expression
+gives over the focused string.  See also [`L.matches`](#L-matches).
 
 **WARNING: `L.matches` is experimental and might be removed or changed before
 next major release.**
@@ -2196,7 +2198,9 @@ replace such a pair.
 
 ##### <a id="L-matches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches) [`L.matches(/.../) ~> lens`](#L-matches "L.matches: RegExp -> PLens String String")
 
-`L.matches`, when given a regular expression without the `global` flags,
+`L.matches`, when given a regular expression without
+the
+[`global`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global) flags,
 `/.../`, is a partial lens over the match.  When there is no match, or the
 target is not a string, then `L.matches` will be read-only.  See
 also [`L.matches`](#L-matches-g).

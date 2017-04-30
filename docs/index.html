@@ -1213,9 +1213,11 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          new XYZ(1,2,3))
 </code></pre>
 <h5 id="-a-id-l-matches-g-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-g-l-matches-g-traversal-l-matches-g-l-matches-regexp-ptraversal-string-string-"><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></h5>
-<p><code>L.matches</code>, when given a regular expression with the <code>global</code> flag, <code>/.../g</code>,
-is a partial traversal over the matches that the regular expression gives over
-the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
+<p><code>L.matches</code>, when given a regular expression with
+the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flag,
+<code>/.../g</code>, is a partial traversal over the matches that the regular expression
+gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
 <p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
 next major release.</strong></p>
 <p>For example:</p>
@@ -1602,7 +1604,9 @@ the shape of the incoming object is know, <a href="#L-defaults"><code>L.defaults
 replace such a pair.</p>
 <h4 id="lensing-strings">Lensing strings</h4>
 <h5 id="-a-id-l-matches-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-l-matches-lens-l-matches-l-matches-regexp-plens-string-string-"><a id="L-matches"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches">■</a> <a href="#L-matches" title="L.matches: RegExp -&gt; PLens String String"><code>L.matches(/.../) ~&gt; lens</code></a></h5>
-<p><code>L.matches</code>, when given a regular expression without the <code>global</code> flags,
+<p><code>L.matches</code>, when given a regular expression without
+the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flags,
 <code>/.../</code>, is a partial lens over the match.  When there is no match, or the
 target is not a string, then <code>L.matches</code> will be read-only.  See
 also <a href="#L-matches-g"><code>L.matches</code></a>.</p>
