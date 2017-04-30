@@ -1639,7 +1639,7 @@ and <a href="#L-define"><code>define</code></a>.</p>
 <p><a href="https://en.wikipedia.org/wiki/Isomorphism">Isomorphisms</a> are <a href="#lenses">lenses</a>
 with a kind of <a href="#L-inverse">inverse</a>.  The focus of an isomorphism is the whole
 data structure rather than a part of it.</p>
-<p>More specifically, a lens, <code>iso</code>, is an isomorphism iff the following equations
+<p>More specifically, a lens, <code>iso</code>, is an isomorphism if the following equations
 hold for all <code>x</code> and <code>y</code> in the domain and range, respectively, of the lens:</p>
 <pre><code class="hljs lang-jsx">L.set(iso, L.get(iso, x), undefined) = x
 L.get(iso, L.set(iso, y, undefined)) = y

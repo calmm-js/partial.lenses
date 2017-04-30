@@ -1,4 +1,18 @@
 import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
+import * as I from 'infestines';
+
+//
+
+var always$1 = always;
+var applyU$1 = applyU;
+var curry$1 = curry;
+var dissocPartialU$1 = dissocPartialU;
+var hasU$1 = hasU;
+var id$1 = id;
+var isString$1 = isString;
+var object0$1 = object0;
+var pipe2U$1 = pipe2U;
+var sndU$1 = sndU;
 
 //
 
@@ -30,7 +44,7 @@ var notPartial = function notPartial(x) {
 };
 
 var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString$1(x);
 };
 
 //
@@ -57,12 +71,12 @@ function copyToFrom(ys, k, xs, i, j) {
 
 //
 
-var Ident = { map: applyU, of: id, ap: applyU, chain: applyU };
+var Ident = { map: applyU$1, of: id$1, ap: applyU$1, chain: applyU$1 };
 
-var Const = { map: sndU };
+var Const = { map: sndU$1 };
 
 function ConcatOf(ap, empty, delay) {
-  var c = { map: sndU, ap: ap, of: always(empty) };
+  var c = { map: sndU$1, ap: ap, of: always$1(empty) };
   if (delay) c.delay = delay;
   return c;
 }
@@ -91,21 +105,19 @@ var run = function run(o, C, xi2yC, s, i) {
 //
 
 var expectedOptic = "Expecting an optic";
-var header = "partial.lenses:";
+var header = "partial.lenses: ";
 
 function warn(f, m) {
   if (!f.warned) {
     f.warned = 1;
-    console.warn(header, m);
+    console.warn(header + m);
   }
 }
 
 function errorGiven(m, o, e) {
-  m += ".";
-  var args = [header, m, "Given:", o];
-  if (e) args.push("\n" + e);
-  console.error.apply(console, args);
-  throw new Error(e ? m + " " + e : m);
+  m = header + m + ".";
+  console.error(m, "Given:", o, e ? "\n" + e : "");
+  throw Error(m);
 }
 
 function checkIndex(x) {
@@ -123,8 +135,8 @@ function reqArray(o) {
 
 //
 
-function reqApplicative(f) {
-  if (!f.of) errorGiven("Traversals require an applicative", f, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
+function reqApplicative(C, name) {
+  if (!C.of) errorGiven("`" + name + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
 }
 
 //
@@ -194,11 +206,11 @@ var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   while (l.constructor === Function) {
     l = l();
   }return void 0 !== l.v ? l : r;
-}, U, id);
+}, U, id$1);
 
 var mkSelect = function mkSelect(toM) {
   return function (xi2yM, t, s) {
-    s = run(t, Select, pipe2U(xi2yM, toM), s);
+    s = run(t, Select, pipe2U$1(xi2yM, toM), s);
     while (s.constructor === Function) {
       s = s();
     }return s.v;
@@ -214,7 +226,7 @@ var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, del
 };
 
 function traversePartialIndex(A, xi2yA, xs) {
-  if (process.env.NODE_ENV !== "production") reqApplicative(A);
+  if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
   var map = A.map,
       ap = A.ap,
       of = A.of,
@@ -255,7 +267,7 @@ var getProp = function getProp(k, o) {
 };
 
 function setProp(k, v, o) {
-  var r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU(k, o);
+  var r = void 0 !== v ? assocPartialU(k, v, o) : dissocPartialU$1(k, o);
   if (process.env.NODE_ENV !== "production") if (r) Object.freeze(r);
   return r;
 }
@@ -335,7 +347,7 @@ function setU(o, x, s) {
       return modifyComposed(o, 0, s, x);
     default:
       if (process.env.NODE_ENV !== "production") reqFunction(o);
-      return o.length === 4 ? o(Ident, always(x), s, void 0) : s;
+      return o.length === 4 ? o(Ident, always$1(x), s, void 0) : s;
   }
 }
 
@@ -354,12 +366,12 @@ function getU(l, s) {
           case "number":
             s = getIndex(o, s);break;
           default:
-            return composed(i, l)(Const, id, s, l[i - 1]);
+            return composed(i, l)(Const, id$1, s, l[i - 1]);
         }
       }return s;
     default:
       if (process.env.NODE_ENV !== "production") reqFunction(l);
-      return l.length === 4 ? l(Const, id, s, void 0) : l(s, void 0);
+      return l.length === 4 ? l(Const, id$1, s, void 0) : l(s, void 0);
   }
 }
 
@@ -377,14 +389,14 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(Ident, xi2y || always(y), x, os[i - 1]);
+        x = composed(i, os)(Ident, xi2y || always$1(y), x, os[i - 1]);
         n = i;
         break;
     }
   }
   if (n === os.length) x = xi2y ? xi2y(x, os[n - 1]) : y;
   for (var _o; 0 <= --n;) {
-    x = isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
+    x = isString$1(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
   }return x;
 }
 
@@ -465,7 +477,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
 
 var branchOn = function branchOn(keys$$1, vals) {
   return function (A, xi2yA, x, _) {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A, vals ? "branch" : "values");
     var map = A.map,
         ap = A.ap,
         of = A.of,
@@ -473,7 +485,7 @@ var branchOn = function branchOn(keys$$1, vals) {
 
     var i = keys$$1.length;
     if (!i) return of(object0ToUndefined(x));
-    if (!(x instanceof Object)) x = object0;
+    if (!(x instanceof Object)) x = object0$1;
     var xsA = of(0);
     if (delay) {
       xsA = branchOnLazy(keys$$1, vals, map, ap, xsA, delay, A, xi2yA, x, 0);
@@ -527,7 +539,7 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 
 var fromReader = function fromReader(wi2x) {
   return function (F, xi2yF, w, i) {
-    return (0, F.map)(always(w), xi2yF(wi2x(w, i), i));
+    return (0, F.map)(always$1(w), xi2yF(wi2x(w, i), i));
   };
 };
 
@@ -551,7 +563,7 @@ function toFunction(o) {
 
 // Operations on optics
 
-var modify = /*#__PURE__*/curry(function (o, xi2x, s) {
+var modify = /*#__PURE__*/curry$1(function (o, xi2x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s);
@@ -565,13 +577,13 @@ var modify = /*#__PURE__*/curry(function (o, xi2x, s) {
   }
 });
 
-var remove = /*#__PURE__*/curry(function (o, s) {
+var remove = /*#__PURE__*/curry$1(function (o, s) {
   return setU(o, void 0, s);
 });
 
-var set = /*#__PURE__*/curry(setU);
+var set = /*#__PURE__*/curry$1(setU);
 
-var traverse = /*#__PURE__*/curry(function (C, xMi2yC, t, s) {
+var traverse = /*#__PURE__*/curry$1(function (C, xMi2yC, t, s) {
   return run(t, C, xMi2yC, s);
 });
 
@@ -609,7 +621,7 @@ function compose() {
 
 // Querying
 
-var chain = /*#__PURE__*/curry(function (xi2yO, xO) {
+var chain = /*#__PURE__*/curry$1(function (xi2yO, xO) {
   return [xO, choose(function (xM, i) {
     return void 0 !== xM ? xi2yO(xM, i) : zero;
   })];
@@ -644,7 +656,7 @@ var optional = /*#__PURE__*/when(isDefined);
 
 function zero(C, xi2yC, x, i) {
   var of = C.of;
-  return of ? of(x) : (0, C.map)(always(x), xi2yC(void 0, i));
+  return of ? of(x) : (0, C.map)(always$1(x), xi2yC(void 0, i));
 }
 
 // Recursing
@@ -664,7 +676,7 @@ function lazy(o2o) {
 function log() {
   var _arguments = arguments;
 
-  var show = curry(function (dir, x) {
+  var show = curry$1(function (dir, x) {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
   return iso(show("get"), show("set"));
@@ -679,35 +691,35 @@ var concatAs = /*#__PURE__*/curryN(4, function (xMi2y, m) {
   };
 });
 
-var concat = /*#__PURE__*/concatAs(id);
+var concat = /*#__PURE__*/concatAs(id$1);
 
 // Folds over traversals
 
-var all = /*#__PURE__*/pipe2U(mkSelect(function (x) {
+var all = /*#__PURE__*/pipe2U$1(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = /*#__PURE__*/all(id);
+var and = /*#__PURE__*/all(id$1);
 
-var any = /*#__PURE__*/pipe2U(mkSelect(function (x) {
+var any = /*#__PURE__*/pipe2U$1(mkSelect(function (x) {
   return x ? T : U;
 }), Boolean);
 
-var collectAs = /*#__PURE__*/curry(function (xi2y, t, s) {
+var collectAs = /*#__PURE__*/curry$1(function (xi2y, t, s) {
   return toArray(run(t, Collect, xi2y, s)) || array0;
 });
 
-var collect = /*#__PURE__*/collectAs(id);
+var collect = /*#__PURE__*/collectAs(id$1);
 
 var count = /*#__PURE__*/concatAs(function (x) {
   return void 0 !== x ? 1 : 0;
 }, Sum);
 
-var foldl = /*#__PURE__*/curry(function (f, r, t, s) {
+var foldl = /*#__PURE__*/curry$1(function (f, r, t, s) {
   return fold(f, r, run(t, Collect, pair, s));
 });
 
-var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
+var foldr = /*#__PURE__*/curry$1(function (f, r, t, s) {
   var xs = collectAs(pair, t, s);
   for (var i = xs.length - 1; 0 <= i; --i) {
     var x = xs[i];
@@ -724,17 +736,17 @@ var minimum = /*#__PURE__*/concat(Mum(function (x, y) {
   return x < y;
 }));
 
-var or = /*#__PURE__*/any(id);
+var or = /*#__PURE__*/any(id$1);
 
 var product = /*#__PURE__*/concatAs(unto(1), Monoid(function (y, x) {
   return x * y;
 }, 1));
 
-var selectAs = /*#__PURE__*/curry(mkSelect(function (v) {
+var selectAs = /*#__PURE__*/curry$1(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = /*#__PURE__*/selectAs(id);
+var select = /*#__PURE__*/selectAs(id$1);
 
 var sum = /*#__PURE__*/concatAs(unto(0), Sum);
 
@@ -757,7 +769,7 @@ function elems(A, xi2yA, xs, _) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
     return (0, A.of)(xs);
   }
 }
@@ -766,7 +778,7 @@ function values(A, xi2yA, xs, _) {
   if (xs instanceof Object) {
     return branchOn(keys(xs))(A, xi2yA, xs);
   } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A);
+    if (process.env.NODE_ENV !== "production") reqApplicative(A, "values");
     return (0, A.of)(xs);
   }
 }
@@ -781,7 +793,7 @@ function get(l, s) {
 
 // Creating new lenses
 
-var lens = /*#__PURE__*/curry(function (get, set) {
+var lens = /*#__PURE__*/curry$1(function (get, set) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
@@ -789,14 +801,14 @@ var lens = /*#__PURE__*/curry(function (get, set) {
   };
 });
 
-var setter = /*#__PURE__*/lens(id);
+var setter = /*#__PURE__*/lens(id$1);
 
 // Computing derived props
 
 function augment(template) {
   if (process.env.NODE_ENV !== "production") if (!isObject(template)) errorGiven("`augment` expects a plain Object template", template);
   return lens(function (x) {
-    x = dissocPartialU(0, x);
+    x = dissocPartialU$1(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
     }if (process.env.NODE_ENV !== "production") if (x) Object.freeze(x);
@@ -811,7 +823,7 @@ function augment(template) {
       z[k] = v;
     }
     for (var k in y) {
-      if (!hasU(k, template)) set(k, y[k]);else if (x && hasU(k, x)) set(k, x[k]);
+      if (!hasU$1(k, template)) set(k, y[k]);else if (x && hasU$1(k, x)) set(k, x[k]);
     }
     if (process.env.NODE_ENV !== "production") if (z) Object.freeze(z);
     return z;
@@ -890,7 +902,7 @@ var find = function find(xi2b) {
   };
 };
 
-var findHint = /*#__PURE__*/curry(function (xh2b, hint) {
+var findHint = /*#__PURE__*/curry$1(function (xh2b, hint) {
   if (process.env.NODE_ENV !== "production") warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
   return function (F, xi2yF, xs, _i) {
     var ys = seemsArrayLike(xs) ? xs : "",
@@ -908,13 +920,13 @@ function findWith() {
   }), lls];
 }
 
-var index = process.env.NODE_ENV === "production" ? id : checkIndex;
+var index = process.env.NODE_ENV === "production" ? id$1 : checkIndex;
 
 var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
 });
 
-var slice = /*#__PURE__*/curry(function (begin, end) {
+var slice = /*#__PURE__*/curry$1(function (begin, end) {
   return function (F, xsi2yF, xs, i) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
@@ -932,8 +944,8 @@ var slice = /*#__PURE__*/curry(function (begin, end) {
 
 // Lensing objects
 
-var prop = process.env.NODE_ENV === "production" ? id : function (x) {
-  if (!isString(x)) errorGiven("`prop` expects a string", x);
+var prop = process.env.NODE_ENV === "production" ? id$1 : function (x) {
+  if (!isString$1(x)) errorGiven("`prop` expects a string", x);
   return x;
 };
 
@@ -953,7 +965,7 @@ function removable() {
   function drop(y) {
     if (!(y instanceof Object)) return y;
     for (var i = 0, n = ps.length; i < n; ++i) {
-      if (hasU(ps[i], y)) return y;
+      if (hasU$1(ps[i], y)) return y;
     }
   }
   return function (F, xi2yF, x, i) {
@@ -971,7 +983,7 @@ var valueOr = function valueOr(v) {
 
 // Adapting to data
 
-var orElse = /*#__PURE__*/curry(function (d, l) {
+var orElse = /*#__PURE__*/curry$1(function (d, l) {
   return choose(function (x) {
     return void 0 !== getU(l, x) ? l : d;
   });
@@ -986,7 +998,7 @@ function pick(template) {
   };
 }
 
-var replace = /*#__PURE__*/curry(function (inn, out) {
+var replace = /*#__PURE__*/curry$1(function (inn, out) {
   var o2i = function o2i(x) {
     return replaced(out, inn, x);
   };
@@ -1001,7 +1013,7 @@ var getInverse = /*#__PURE__*/arityN(2, setU);
 
 // Creating new isomorphisms
 
-var iso = /*#__PURE__*/curry(function (bwd, fwd) {
+var iso = /*#__PURE__*/curry$1(function (bwd, fwd) {
   return function (F, xi2yF, x, i) {
     return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
