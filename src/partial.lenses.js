@@ -549,7 +549,9 @@ const matchesJoin = input => matches => {
   while (matches) {
     const m = matches[0]
     result += input.slice(lastIndex, m.index)
-    result += matches[1]
+    const s = matches[1]
+    if (void 0 !== s)
+      result += s
     lastIndex = m[0].length + m.index
     matches = matches[2]
   }
