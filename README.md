@@ -1592,6 +1592,9 @@ L.collect([L.matches(/[^&=?]+=[^&=]+/g),
 //   { name: 'second', value: 'bar' } ]
 ```
 
+Note that when writing through `L.matches` and the result would be an empty
+string, `""`, the result will be `undefined` to support propagating removal.
+
 Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.
@@ -2209,6 +2212,9 @@ L.set(L.matches(/\.[^./]+$/),
       "/dir/file.ext")
 // '/dir/file.txt'
 ```
+
+Note that when writing through `L.matches` and the result would be an empty
+string, `""`, the result will be `undefined` to support propagating removal.
 
 #### Providing defaults
 
