@@ -115,9 +115,9 @@ function reqArray(o) {
 
 //
 
-function reqApplicative(f) {
-  if (!f.of)
-    errorGiven("Traversals require an applicative", f, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
+function reqApplicative(name, C) {
+  if (!C.of)
+    errorGiven(`\`${name}\` requires an applicative`, C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
 }
 
 //
@@ -199,7 +199,7 @@ const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
 
 function traversePartialIndex(A, xi2yA, xs) {
   if (process.env.NODE_ENV !== "production")
-    reqApplicative(A)
+    reqApplicative("elems", A)
   const {map, ap, of, delay} = A
   let xsA = of(void 0),
       i = xs.length
@@ -441,7 +441,7 @@ function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
 
 const branchOn = (keys, vals) => (A, xi2yA, x, _) => {
   if (process.env.NODE_ENV !== "production")
-    reqApplicative(A)
+    reqApplicative(vals ? "branch" : "values", A)
   const {map, ap, of, delay} = A
   let i = keys.length
   if (!i)
@@ -695,7 +695,7 @@ export function elems(A, xi2yA, xs, _) {
       : traversePartialIndex(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
-      reqApplicative(A)
+      reqApplicative("elems", A)
     return (0,A.of)(xs)
   }
 }
@@ -705,7 +705,7 @@ export function values(A, xi2yA, xs, _) {
     return branchOn(I.keys(xs))(A, xi2yA, xs)
   } else {
     if (process.env.NODE_ENV !== "production")
-      reqApplicative(A)
+      reqApplicative("values", A)
     return (0,A.of)(xs)
   }
 }

@@ -867,6 +867,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`X.prop()`)
 
     testThrows(`X.get(L.elems, [])`)
+    testThrows(`X.get(L.values, {})`)
+    testThrows(`X.get(L.branch({a: []}), {})`)
 
     testThrows(`L.set(L.props("length"), "lol", undefined)`)
     testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
