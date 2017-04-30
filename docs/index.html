@@ -960,7 +960,7 @@ objects and arrays:</p>
   const values = L.seq([L.values, rec], L.identity)
   return L.choose(x =&gt; x instanceof Array  ? elems
                   :    x instanceof Object ? values
-                  :                          L.identity))
+                  :                          L.identity)
 })]
 </code></pre>
 <p>The above <code>everywhere</code> transform is similar to

@@ -1152,7 +1152,7 @@ const everywhere = [L.optional, L.lazy(rec => {
   const values = L.seq([L.values, rec], L.identity)
   return L.choose(x => x instanceof Array  ? elems
                   :    x instanceof Object ? values
-                  :                          L.identity))
+                  :                          L.identity)
 })]
 ```
 
