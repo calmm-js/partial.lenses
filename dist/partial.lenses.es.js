@@ -92,6 +92,7 @@ var run = function run(o, C, xi2yC, s, i) {
 //
 
 var expectedOptic = "Expecting an optic";
+var opticIsEither = "An optic can be either\n- a string,\n- a non-negative integer,\n- a ternary optic function,\n- an ordinary unary or binary function, or\n- an array of optics.\nSee documentation of `toFunction` and `compose` for details.";
 var header = "partial.lenses: ";
 
 function warn(f, m) {
@@ -114,11 +115,11 @@ function checkIndex(x) {
 }
 
 function reqFunction(o) {
-  if (!(isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o);
+  if (!(isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o, opticIsEither);
 }
 
 function reqArray(o) {
-  if (!Array.isArray(o)) errorGiven(expectedOptic, o);
+  if (!Array.isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
 }
 
 //

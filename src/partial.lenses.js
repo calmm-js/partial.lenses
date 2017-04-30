@@ -69,6 +69,13 @@ const run = (o, C, xi2yC, s, i) => toFunction(o)(C, xi2yC, s, i)
 //
 
 const expectedOptic = "Expecting an optic"
+const opticIsEither = `An optic can be either
+- a string,
+- a non-negative integer,
+- a ternary optic function,
+- an ordinary unary or binary function, or
+- an array of optics.
+See documentation of \`toFunction\` and \`compose\` for details.`
 const header = "partial.lenses: "
 
 function warn(f, m) {
@@ -93,12 +100,12 @@ function checkIndex(x) {
 
 function reqFunction(o) {
   if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2)))
-    errorGiven(expectedOptic, o)
+    errorGiven(expectedOptic, o, opticIsEither)
 }
 
 function reqArray(o) {
   if (!Array.isArray(o))
-    errorGiven(expectedOptic, o)
+    errorGiven(expectedOptic, o, opticIsEither)
 }
 
 //
