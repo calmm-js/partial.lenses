@@ -868,6 +868,7 @@ describe("L.matches", () => {
          ["Not a string"])
   testEq(`L.or(L.matches(/does not matter/g), ["Not a string"])`, false)
   testEq(`L.set(L.matches(/\\w+|\\W+/g), "", "Hello, world!")`, undefined)
+  testEq(`L.remove(L.matches(/\\w+|\\W+/g), "Hello, world!")`, undefined)
 
   testEq(`L.collect(L.matches(/a?b?/g), "x")`, [])
 
@@ -879,6 +880,7 @@ describe("L.matches", () => {
   testEq(`L.set(L.matches(/does not match/), "Anything", {not_a_string: true})`,
          {not_a_string: true})
   testEq(`L.set(L.matches(/\\w+/g), "", "Hello")`, undefined)
+  testEq(`L.remove(L.matches(/\\w+/g), "Hello")`, undefined)
 })
 
 if (process.env.NODE_ENV !== "production") {
