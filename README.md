@@ -3,7 +3,8 @@
 Lenses are basically an abstraction for simultaneously specifying operations
 to [update](#L-modify) and [query](#L-get) [immutable](#on-immutability) data
 structures.  Lenses are [highly composable](#on-composability) and can
-be [efficient](#benchmarks).  This library provides a collection
+be [efficient](#benchmarks).  This library provides
+a [rich collection](#on-bundle-size-and-minification)
 of [partial](#on-partiality) [isomorphisms](#isomorphisms), [lenses](#lenses),
 and [traversals](#traversals), collectively known as [optics](#optics), for
 manipulating [JSON](http://json.org/) and
@@ -132,6 +133,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Design choices](#design-choices)
   * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
+  * [On bundle size and minification](#on-bundle-size-and-minification)
   * [Related work](#related-work)
 * [Contributing](#contributing)
 
@@ -3149,6 +3151,20 @@ transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
 //                   filter: ['out'],
 //                   including: {the: 'following'} } ] }
 ```
+
+### On bundle size and minification
+
+The distribution of this library includes
+a
+[prebuilt and minified browser bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).
+However, this library is not designed to be primarily used via that bundle.
+Rather, this library is bundled with [Rollup](https://rollupjs.org/) and uses
+`/*#__PURE__*/` annotations supported
+by [UglifyJS2](https://github.com/mishoo/UglifyJS2).  This means that by using
+Rollup to generate
+and [UglifyJS2](https://github.com/TrySound/rollup-plugin-uglify) to minify
+browser bundles, the generated bundles will basically only include what you use
+from this library.
 
 ### Related work
 

@@ -35,7 +35,8 @@
 <p>Lenses are basically an abstraction for simultaneously specifying operations
 to <a href="#L-modify">update</a> and <a href="#L-get">query</a> <a href="#on-immutability">immutable</a> data
 structures.  Lenses are <a href="#on-composability">highly composable</a> and can
-be <a href="#benchmarks">efficient</a>.  This library provides a collection
+be <a href="#benchmarks">efficient</a>.  This library provides
+a <a href="#on-bundle-size-and-minification">rich collection</a>
 of <a href="#on-partiality">partial</a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
 and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
 manipulating <a href="http://json.org/">JSON</a> and
@@ -222,6 +223,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#design-choices">Design choices</a></li>
 <li><a href="#benchmarks">Benchmarks</a></li>
 <li><a href="#lenses-all-the-way">Lenses all the way</a></li>
+<li><a href="#on-bundle-size-and-minification">On bundle size and minification</a></li>
 <li><a href="#related-work">Related work</a></li>
 </ul>
 </li>
@@ -2269,6 +2271,18 @@ are given the following data:</p>
                    R.identity),
           sampleBloated)
 </code></pre>
+<h3 id="on-bundle-size-and-minification">On bundle size and minification</h3>
+<p>The distribution of this library includes
+a
+<a href="https://unpkg.com/partial.lenses/dist/partial.lenses.min.js">prebuilt and minified browser bundle</a>.
+However, this library is not designed to be primarily used via that bundle.
+Rather, this library is bundled with <a href="https://rollupjs.org/">Rollup</a> and uses
+<code>/*#__PURE__*/</code> annotations supported
+by <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a>.  This means that by using
+Rollup to generate
+and <a href="https://github.com/TrySound/rollup-plugin-uglify">UglifyJS2</a> to minify
+browser bundles, the generated bundles will basically only include what you use
+from this library.</p>
 <h3 id="related-work">Related work</h3>
 <p>Lenses are an old concept and there are dozens of academic papers on lenses and
 dozens of lens libraries for various languages.  Below are just a few
