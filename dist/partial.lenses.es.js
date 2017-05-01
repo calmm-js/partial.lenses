@@ -340,6 +340,34 @@ function setU(o, x, s) {
   }
 }
 
+function makeIx(i) {
+  var ix = function ix(s, j) {
+    return ix.v = j, s;
+  };
+  ix.v = i;
+  return ix;
+}
+
+function getNestedU(l, s, j, ix) {
+  for (var n = l.length, o; j < n; ++j) {
+    switch (typeof (o = l[j])) {
+      case "string":
+        s = getProp(ix.v = o, s);
+        break;
+      case "number":
+        s = getIndex(ix.v = o, s);
+        break;
+      case "object":
+        if (process.env.NODE_ENV !== "production") reqArray(o);
+        s = getNestedU(o, s, 0, ix);
+        break;
+      default:
+        if (process.env.NODE_ENV !== "production") reqFunction(o);
+        s = o(s, ix.v, Const, ix);
+    }
+  }return s;
+}
+
 function getU(l, s) {
   switch (typeof l) {
     case "string":
@@ -355,7 +383,7 @@ function getU(l, s) {
           case "number":
             s = getIndex(o, s);break;
           default:
-            return composed(i, l)(s, l[i - 1], Const, id);
+            return getNestedU(l, s, i, makeIx(l[i - 1]));
         }
       }return s;
     default:
