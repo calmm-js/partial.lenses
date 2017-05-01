@@ -16,7 +16,7 @@ significant performance improvement in some operations as taking the `length` of
 a function is very expensive in V8.  This also means that the behavior of
 composing optics and ordinary functions is different in the sense that more
 arguments may be passed to an ordinary function.  This change should only affect
-a very small number of users who have written new optics directly agains the
+a very small number of users who have written new optics directly against the
 internal encoding.  In such a case, you will need to switch the order of
 arguments as shown in the above diff.
 
