@@ -1,5 +1,16 @@
 # Changelog
 
+## 11.0.0
+
+Switched the order of arguments to optics so that the first two arguments are
+now the same as for an ordinary "read-only" function.  This way it is not
+necessary to distinguish between optics and read-only functions in the `get`
+operation.  On V8 based JavaScript engines this gives a significant performance
+improvement as taking the `length` of a function is very expensive in V8.  This
+also means that the behavior of composing optics and ordinary functions is
+different in the sense that more arguments may be passed to an ordinary
+function.
+
 ## 10.2.0
 
 Redesigned the experimental `L.findHint`.  The main lesson in the redesign is
