@@ -1043,3 +1043,7 @@ export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
 export const inverse = iso => (x, i, F, xi2yF) =>
   (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))
+
+export const is = v =>
+  iso(x => I.acyclicEqualsU(v, x),
+      b => true === b ? v : void 0)

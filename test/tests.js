@@ -207,6 +207,7 @@ describe("arities", () => {
     identity: 4,
     index: 1,
     inverse: 1,
+    is: 1,
     iso: 2,
     last: 4,
     lazy: 1,
@@ -737,6 +738,17 @@ describe("removable", () => {
   testEq(`L.get([L.removable("y"), "y"], {x: 1, y: 2})`, 2)
   testEq(`L.set([L.removable("y"), "y"], 3, {x: 1, y: 2})`, {x: 1, y: 3})
   testEq(`L.set([L.removable("x"), "x"], undefined, {x: 1, y: 2})`, undefined)
+})
+
+describe("is", () => {
+  testEq(`L.get(L.is("foo"), "bar")`, false)
+  testEq(`L.get(L.is("foo"), undefined)`, false)
+  testEq(`L.get(L.is("foo"), "foo")`, true)
+  testEq(`L.set(L.is("foo"), false, "bar")`, undefined)
+  testEq(`L.set(L.is("foo"), undefined, "bar")`, undefined)
+  testEq(`L.set(L.is("foo"), "bar", "bar")`, undefined)
+  testEq(`L.set(L.is("foo"), true, "bar")`, "foo")
+  testEq(`L.set(L.is("foo"), true, undefined)`, "foo")
 })
 
 describe("indexing", () => {

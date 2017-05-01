@@ -125,6 +125,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean")
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
+      * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [Dependent fields](#dependent-fields)
@@ -2470,6 +2471,12 @@ L.get(L.inverse(offBy1), 1)
 // 0
 ```
 
+##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
+
+`L.is` reads the given value as `true` and everything else as `false` and writes
+`true` as the given value and everything else as `undefined`.
+See [here](#an-array-of-ids-as-boolean-flags) for an example.
+
 ## Examples
 
 Note that if you are new to lenses, then you probably want to start with
@@ -2490,8 +2497,7 @@ Here is a parameterized lens that does just that:
 ```js
 const flag = id => [L.normalize(R.sortBy(R.identity)),
                     L.find(R.equals(id)),
-                    L.replace(undefined, false),
-                    L.replace(id, true)]
+                    L.is(id)]
 ```
 
 Now we can treat individual constants as boolean flags:

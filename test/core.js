@@ -219,3 +219,4 @@ export const iso = R.curry((xy, yx) => lens(x => xy(x), y => yx(y)))
 export const complement = iso(toPartial(R.not), toPartial(R.not))
 export const identity = iso(R.identity, R.identity)
 export const inverse = i => iso(getInverse(i), get(i))
+export const is = L.is
