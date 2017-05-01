@@ -125,7 +125,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean")
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
-      * [`L.is(value) ~> lens`](#L-is "L.is: v -> PLens v Boolean")
+      * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [Dependent fields](#dependent-fields)
@@ -2471,7 +2471,7 @@ L.get(L.inverse(offBy1), 1)
 // 0
 ```
 
-##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-is) [`L.is(value) ~> lens`](#L-is "L.is: v -> PLens v Boolean")
+##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
 
 `L.is` reads the given value as `true` and everything else as `false` and writes
 `true` as the given value and everything else as `undefined`.
