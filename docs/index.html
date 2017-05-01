@@ -90,7 +90,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#internals">Internals</a><ul>
-<li><a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; ((Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></li>
+<li><a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></li>
 </ul>
 </li>
 </ul>
@@ -793,13 +793,19 @@ L.modify([o, ...os]) = R.compose(L.modify(o), ...os.map(L.modify))
 </code></pre>
 <pre><code class="hljs lang-js">L.get([&quot;a&quot;, 1], {a: [&quot;b&quot;, &quot;c&quot;]})
 </code></pre>
-<p>You can also directly compose optics with ordinary functions (with max arity of
-2).  The result of such a composition is a read-only optic.</p>
+<p>You can also directly compose optics with ordinary functions.  The result of
+such a composition is a read-only optic.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get([&quot;x&quot;, x =&gt; x + 1], {x: 1})
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, x =&gt; x + 1], 3, {x: 1})
 </code></pre>
+<p>Note that eligible ordinary functions must have a maximum arity of two: the
+first argument will be the data and second will be the index.  Both can, of
+course, be <code>undefined</code>.  Also starting from version <a href="CHANGELOG.md#1100">11.0.0</a>
+it is not guaranteed that such ordinary functions would not be passed other
+arguments and therefore such functions should not depend on the number of
+arguments being passed nor on any arguments beyond the first two.</p>
 <p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
 <code>L.compose</code>.</p>
 <h4 id="querying">Querying</h4>
@@ -917,20 +923,21 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <h4 id="internals">Internals</h4>
-<h5 id="-a-id-l-tofunction-a-contents-https-github-com-calmm-js-partial-lenses-l-tofunction-l-tofunction-optic-optic-l-tofunction-l-tofunction-poptic-s-t-a-b-functor-applicative-monad-c-maybe-a-index-c-b-maybe-s-index-c-t-"><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; ((Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></h5>
+<h5 id="-a-id-l-tofunction-a-contents-https-github-com-calmm-js-partial-lenses-l-tofunction-l-tofunction-optic-optic-l-tofunction-l-tofunction-poptic-s-t-a-b-maybe-s-index-functor-applicative-monad-c-maybe-a-index-c-b-c-t-"><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>,
 an <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.
-This can be useful for implementing new combinators and operations that cannot
-otherwise be implemented using the combinators provided by this library.</p>
+This can be useful for implementing new combinators that cannot otherwise be
+implemented using the combinators provided by this library.  See
+also <a href="#L-traverse"><code>L.traverse</code></a>.</p>
 <p>For <a href="#isomorphisms">isomorphisms</a> and <a href="#lenses">lenses</a>, the returned function
 will have the signature</p>
-<pre><code class="hljs lang-jsx">(Functor c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t
+<pre><code class="hljs lang-jsx">(Maybe s, Index, Functor c, (Maybe a, Index) -&gt; c b) -&gt; c t
 </code></pre>
 <p>for <a href="#traversals">traversals</a> the signature will be</p>
-<pre><code class="hljs lang-jsx">(Applicative c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t
+<pre><code class="hljs lang-jsx">(Maybe s, Index, Applicative c, (Maybe a, Index) -&gt; c b) -&gt; c t
 </code></pre>
 <p>and for <a href="#transforms">transforms</a> the signature will be</p>
-<pre><code class="hljs lang-jsx">(Monad c, (Maybe a, Index) -&gt; c b, Maybe s, Index) -&gt; c t
+<pre><code class="hljs lang-jsx">(Maybe s, Index, Monad c, (Maybe a, Index) -&gt; c b) -&gt; c t
 </code></pre>
 <p>Note that the above signatures are written using the &quot;tupled&quot; parameter notation
 <code>(...) -&gt; ...</code> to denote that the functions are not curried.</p>
@@ -947,6 +954,11 @@ specifications.</p>
 the algebras to allow for partiality.  With traversals it is also possible, for
 example, to simply post compose optics with <a href="#L-optional"><code>L.optional</code></a> to
 skip <code>undefined</code> elements.</p>
+<p>Note that if you simply wish to perform an operation that needs roughly the full
+expressive power of the underlying lens encoding, you should
+use <a href="#L-traverse"><code>L.traverse</code></a>, because it is independent of the underlying
+encoding, while <code>L.toFunction</code> essentially exposes the underlying encoding and
+it is better to avoid depending on that.</p>
 <h3 id="transforms">Transforms</h3>
 <p>A transform operates over focuses that may overlap and may be visited multiple
 times.  This allows operations that are impossible to implement using other
