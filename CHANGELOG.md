@@ -18,7 +18,9 @@ composing optics and ordinary functions is different in the sense that more
 arguments may be passed to an ordinary function.  This change should only affect
 a very small number of users who have written new optics directly against the
 internal encoding.  In such a case, you will need to switch the order of
-arguments as shown in the above diff.
+arguments as shown in the above diff.  Also, if you compose optics with ordinary
+functions that may use more than two arguments, then you will need to limit
+those functions two arguments.
 
 ## 10.2.0
 
