@@ -1093,8 +1093,9 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 
 `L.toFunction` converts a given optic, which can be a [string](#L-prop),
 an [integer](#L-index), an [array](#L-compose), or a function to a function.
-This can be useful for implementing new combinators and operations that cannot
-otherwise be implemented using the combinators provided by this library.
+This can be useful for implementing new combinators that cannot otherwise be
+implemented using the combinators provided by this library.  See
+also [`L.traverse`](#L-traverse).
 
 For [isomorphisms](#isomorphisms) and [lenses](#lenses), the returned function
 will have the signature
@@ -1132,6 +1133,12 @@ Note that, in conjunction with partial optics, it may be advantageous to have
 the algebras to allow for partiality.  With traversals it is also possible, for
 example, to simply post compose optics with [`L.optional`](#L-optional) to
 skip `undefined` elements.
+
+Note that if you simply wish to perform an operation that needs roughly the full
+expressive power of the underlying lens encoding, you should
+use [`L.traverse`](#L-traverse), because it is independent of the underlying
+encoding, while `L.toFunction` essentially exposes the underlying encoding and
+it is better to avoid depending on that.
 
 ### Transforms
 
