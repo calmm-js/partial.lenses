@@ -239,3 +239,4 @@ export const iso = T.fn([T.fn([T_maybeDataO], T_maybeDataI),
 export const complement = T_isomorphism
 export const identity = T_isomorphism
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
+export const is = T.fn([T.def], T_lens)
