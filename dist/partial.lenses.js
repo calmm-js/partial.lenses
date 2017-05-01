@@ -89,7 +89,7 @@ var Mum = function Mum(ord) {
 //
 
 var run = function run(o, C, xi2yC, s, i) {
-  return toFunction(o)(C, xi2yC, s, i);
+  return toFunction(o)(s, i, C, xi2yC);
 };
 
 //
@@ -244,7 +244,7 @@ function object0ToUndefined(o) {
 
 var lensFrom = function lensFrom(get, set) {
   return function (i) {
-    return function (F, xi2yF, x, _) {
+    return function (x, _i, F, xi2yF) {
       return (0, F.map)(function (v) {
         return set(i, v, x);
       }, xi2yF(get(i, x), i));
@@ -306,7 +306,7 @@ var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
 var close = function close(o, F, xi2yF) {
   return function (x, i) {
-    return o(F, xi2yF, x, i);
+    return o(x, i, F, xi2yF);
   };
 };
 
@@ -319,11 +319,11 @@ function composed(oi0, os) {
     fs = Array(n);
     for (var i = 0; i < n; ++i) {
       fs[i] = toFunction(os[i + oi0]);
-    }return function (F, xi2yF, x, i) {
+    }return function (x, i, F, xi2yF) {
       var k = n;
       while (--k) {
         xi2yF = close(fs[k], F, xi2yF);
-      }return fs[0](F, xi2yF, x, i);
+      }return fs[0](x, i, F, xi2yF);
     };
   }
 }
@@ -339,7 +339,7 @@ function setU(o, x, s) {
       return modifyComposed(o, 0, s, x);
     default:
       reqFunction(o);
-      return o.length === 4 ? o(Ident, I.always(x), s, void 0) : s;
+      return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s;
   }
 }
 
@@ -358,12 +358,12 @@ function getU(l, s) {
           case "number":
             s = getIndex(o, s);break;
           default:
-            return composed(i, l)(Const, I.id, s, l[i - 1]);
+            return composed(i, l)(s, l[i - 1], Const, I.id);
         }
       }return s;
     default:
       reqFunction(l);
-      return l.length === 4 ? l(Const, I.id, s, void 0) : l(s, void 0);
+      return l(s, void 0, Const, I.id);
   }
 }
 
@@ -381,7 +381,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(Ident, xi2y || I.always(y), x, os[i - 1]);
+        x = composed(i, os)(x, os[i - 1], Ident, xi2y || I.always(y));
         n = i;
         break;
     }
@@ -459,7 +459,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys$$1.length) {
     var k = keys$$1[i],
         v = x[k];
-    return ap(map(cpair, vals ? vals[i](A, xi2yA, x[k], k) : xi2yA(v, k)), delay(function () {
+    return ap(map(cpair, vals ? vals[i](x[k], k, A, xi2yA) : xi2yA(v, k)), delay(function () {
       return branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i + 1);
     }));
   } else {
@@ -468,7 +468,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
 }
 
 var branchOn = function branchOn(keys$$1, vals) {
-  return function (A, xi2yA, x, _) {
+  return function (x, _i, A, xi2yA) {
     reqApplicative(A, vals ? "branch" : "values");
     var map = A.map,
         ap = A.ap,
@@ -485,7 +485,7 @@ var branchOn = function branchOn(keys$$1, vals) {
       while (i--) {
         var k = keys$$1[i],
             v = x[k];
-        xsA = ap(map(cpair, vals ? vals[i](A, xi2yA, v, k) : xi2yA(v, k)), xsA);
+        xsA = ap(map(cpair, vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), xsA);
       }
     }
     return map(branchOnMerge(x, keys$$1), xsA);
@@ -530,7 +530,7 @@ function partitionIntoIndex(xi2b, xs, ts, fs) {
 }
 
 var fromReader = function fromReader(wi2x) {
-  return function (F, xi2yF, w, i) {
+  return function (w, i, F, xi2yF) {
     return (0, F.map)(I.always(w), xi2yF(wi2x(w, i), i));
   };
 };
@@ -631,7 +631,7 @@ var modify = /*#__PURE__*/I.curry(function (o, xi2x, s) {
       return modifyComposed(o, xi2x, s);
     default:
       reqFunction(o);
-      return o.length === 4 ? o(Ident, xi2x, s, void 0) : (xi2x(o(s, void 0), void 0), s);
+      return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
 });
 
@@ -654,10 +654,10 @@ function seq() {
     xMs[i] = toFunction(arguments[i]);
   }var loop = function loop(M, xi2xM, i, j) {
     return j === n ? M.of : function (x) {
-      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](M, xi2xM, x, i));
+      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
     };
   };
-  return function (M, xi2xM, x, i) {
+  return function (x, i, M, xi2xM) {
     if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
     return loop(M, xi2xM, i, 0)(x);
   };
@@ -699,20 +699,20 @@ var choice = function choice() {
 };
 
 var choose = function choose(xiM2o) {
-  return function (C, xi2yC, x, i) {
+  return function (x, i, C, xi2yC) {
     return run(xiM2o(x, i), C, xi2yC, x, i);
   };
 };
 
 var when = function when(p) {
-  return function (C, xi2yC, x, i) {
-    return p(x, i) ? xi2yC(x, i) : zero(C, xi2yC, x, i);
+  return function (x, i, C, xi2yC) {
+    return p(x, i) ? xi2yC(x, i) : zero(x, i, C, xi2yC);
   };
 };
 
 var optional = /*#__PURE__*/when(I.isDefined);
 
-function zero(C, xi2yC, x, i) {
+function zero(x, i, C, xi2yC) {
   var of = C.of;
   return of ? of(x) : (0, C.map)(I.always(x), xi2yC(void 0, i));
 }
@@ -720,11 +720,11 @@ function zero(C, xi2yC, x, i) {
 // Recursing
 
 function lazy(o2o) {
-  var _memo = function memo(C, xi2yC, x, i) {
-    return (_memo = toFunction(o2o(rec)))(C, xi2yC, x, i);
+  var _memo = function memo(x, i, C, xi2yC) {
+    return (_memo = toFunction(o2o(rec)))(x, i, C, xi2yC);
   };
-  function rec(C, xi2yC, x, i) {
-    return _memo(C, xi2yC, x, i);
+  function rec(x, i, C, xi2yC) {
+    return _memo(x, i, C, xi2yC);
   }
   return rec;
 }
@@ -823,7 +823,7 @@ function branch(template) {
 
 // Traversals and combinators
 
-function elems(A, xi2yA, xs, _) {
+function elems(xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
@@ -832,9 +832,9 @@ function elems(A, xi2yA, xs, _) {
   }
 }
 
-function values(A, xi2yA, xs, _) {
+function values(xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs))(A, xi2yA, xs);
+    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA);
   } else {
     reqApplicative(A, "values");
     return (0, A.of)(xs);
@@ -843,7 +843,7 @@ function values(A, xi2yA, xs, _) {
 
 function matches(re) {
   warn(matches, "`matches` is experimental and might be removed or changed before next major release.");
-  return function (C, xi2yC, x, _) {
+  return function (x, _i, C, xi2yC) {
     if (I.isString(x)) {
       var map = C.map;
 
@@ -864,7 +864,7 @@ function matches(re) {
         }, xi2yC(m[0], m.index));
       }
     }
-    return zero(C, xi2yC, x, void 0);
+    return zero(x, void 0, C, xi2yC);
   };
 }
 
@@ -879,7 +879,7 @@ function get(l, s) {
 // Creating new lenses
 
 var lens = /*#__PURE__*/I.curry(function (get, set) {
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
     }, xi2yF(get(x, i), i));
@@ -921,20 +921,20 @@ function defaults(out) {
   var o2u = function o2u(x) {
     return replaced(out, void 0, x);
   };
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(o2u, xi2yF(void 0 !== x ? x : out, i));
   };
 }
 
 function define(v) {
   var untoV = unto(v);
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(untoV, xi2yF(void 0 !== x ? x : v, i));
   };
 }
 
 var normalize = function normalize(xi2x) {
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(function (x) {
       return void 0 !== x ? xi2x(x, i) : x;
     }, xi2yF(void 0 !== x ? xi2x(x, i) : x, i));
@@ -946,7 +946,7 @@ var required = function required(inn) {
 };
 
 var rewrite = function rewrite(yi2y) {
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(function (y) {
       return void 0 !== y ? yi2y(y, i) : y;
     }, xi2yF(x, i));
@@ -955,7 +955,7 @@ var rewrite = function rewrite(yi2y) {
 
 // Lensing arrays
 
-function append(F, xi2yF, xs, _) {
+function append(xs, _, F, xi2yF) {
   var i = seemsArrayLike(xs) ? xs.length : 0;
   return (0, F.map)(function (x) {
     return setIndex(i, x, xs);
@@ -963,7 +963,7 @@ function append(F, xi2yF, xs, _) {
 }
 
 var filter = function filter(xi2b) {
-  return function (F, xi2yF, xs, i) {
+  return function (xs, i, F, xi2yF) {
     var ts = void 0,
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
@@ -978,7 +978,7 @@ var filter = function filter(xi2b) {
 };
 
 var find = function find(xi2b) {
-  return function (F, xi2yF, xs, _i) {
+  return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys);
     return (0, F.map)(function (v) {
@@ -989,7 +989,7 @@ var find = function find(xi2b) {
 
 var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
   warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
-  return function (F, xi2yF, xs, _i) {
+  return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
     return (0, F.map)(function (v) {
@@ -1012,7 +1012,7 @@ var last = /*#__PURE__*/choose(function (maybeArray) {
 });
 
 var slice = /*#__PURE__*/I.curry(function (begin, end) {
-  return function (F, xsi2yF, xs, i) {
+  return function (xs, i, F, xsi2yF) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
@@ -1053,7 +1053,7 @@ function removable() {
       if (I.hasU(ps[i], y)) return y;
     }
   }
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(drop, xi2yF(x, i));
   };
 }
@@ -1061,7 +1061,7 @@ function removable() {
 // Providing defaults
 
 var valueOr = function valueOr(v) {
-  return function (_F, xi2yF, x, i) {
+  return function (x, i, _F, xi2yF) {
     return xi2yF(void 0 !== x && x !== null ? x : v, i);
   };
 };
@@ -1078,7 +1078,7 @@ var orElse = /*#__PURE__*/I.curry(function (d, l) {
 
 function pick(template) {
   if (!I.isObject(template)) errorGiven("`pick` expects a plain Object template", template);
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(setPick(template, x), xi2yF(getPick(template, x), i));
   };
 }
@@ -1087,7 +1087,7 @@ var replace = /*#__PURE__*/I.curry(function (inn, out) {
   var o2i = function o2i(x) {
     return replaced(out, inn, x);
   };
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(o2i, xi2yF(replaced(inn, out, x), i));
   };
 });
@@ -1099,7 +1099,7 @@ var getInverse = /*#__PURE__*/I.arityN(2, setU);
 // Creating new isomorphisms
 
 var iso = /*#__PURE__*/I.curry(function (bwd, fwd) {
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
 });
@@ -1108,12 +1108,12 @@ var iso = /*#__PURE__*/I.curry(function (bwd, fwd) {
 
 var complement = /*#__PURE__*/iso(notPartial, notPartial);
 
-var identity = function identity(_F, xi2yF, x, i) {
+var identity = function identity(x, i, _F, xi2yF) {
   return xi2yF(x, i);
 };
 
 var inverse = function inverse(iso) {
-  return function (F, xi2yF, x, i) {
+  return function (x, i, F, xi2yF) {
     return (0, F.map)(function (x) {
       return getU(iso, x);
     }, xi2yF(setU(iso, x), i));
