@@ -1148,6 +1148,14 @@ var inverse = function inverse(iso) {
   };
 };
 
+var is = function is(v) {
+  return iso(function (x) {
+    return I.acyclicEqualsU(v, x);
+  }, function (b) {
+    return true === b ? v : void 0;
+  });
+};
+
 exports.toFunction = toFunction;
 exports.modify = modify;
 exports.remove = remove;
@@ -1213,6 +1221,7 @@ exports.iso = iso;
 exports.complement = complement;
 exports.identity = identity;
 exports.inverse = inverse;
+exports.is = is;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

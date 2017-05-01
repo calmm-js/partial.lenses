@@ -209,6 +209,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a></li>
 <li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></li>
 <li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></li>
+<li><a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1780,6 +1781,10 @@ operation only makes sense on isomorphisms.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(offBy1), 1)
 </code></pre>
+<h5 id="-a-id-l-is-a-contents-https-github-com-calmm-js-partial-lenses-l-is-l-is-value-isomorphism-l-is-l-is-v-piso-v-boolean-"><a id="L-is"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-is">■</a> <a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a></h5>
+<p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes
+<code>true</code> as the given value and everything else as <code>undefined</code>.
+See <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
 <h2 id="examples">Examples</h2>
 <p>Note that if you are new to lenses, then you probably want to start with
 the <a href="#tutorial">tutorial</a>.</p>
@@ -1792,8 +1797,7 @@ flags:</p>
 <p>Here is a parameterized lens that does just that:</p>
 <pre><code class="hljs lang-js">var flag = id =&gt; [L.normalize(R.sortBy(R.identity)),
                     L.find(R.equals(id)),
-                    L.replace(undefined, false),
-                    L.replace(id, true)]
+                    L.is(id)]
 </code></pre>
 <p>Now we can treat individual constants as boolean flags:</p>
 <pre><code class="hljs lang-js">L.get(flag(&quot;id-69&quot;), sampleFlags)

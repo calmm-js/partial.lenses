@@ -1145,4 +1145,12 @@ var inverse = function inverse(iso) {
   };
 };
 
-export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse };
+var is = function is(v) {
+  return iso(function (x) {
+    return acyclicEqualsU(v, x);
+  }, function (b) {
+    return true === b ? v : void 0;
+  });
+};
+
+export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse, is };
