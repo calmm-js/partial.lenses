@@ -50,7 +50,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
-      * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> ((Functor|Applicative|Monad) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+      * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t")
   * [Transforms](#transforms)
     * [Sequencing](#sequencing)
       * [`L.seq(...optics) ~> transform`](#L-seq "L.seq: (...POptic s a) -> PTransform s a")
@@ -868,8 +868,8 @@ L.get(["a", 1], {a: ["b", "c"]})
 // 'c'
 ```
 
-You can also directly compose optics with ordinary functions (with max arity of
-2).  The result of such a composition is a read-only optic.
+You can also directly compose optics with ordinary functions.  The result of
+such a composition is a read-only optic.
 
 For example:
 
@@ -881,6 +881,13 @@ L.get(["x", x => x + 1], {x: 1})
 L.set(["x", x => x + 1], 3, {x: 1})
 // { x: 1 }
 ```
+
+Note that eligible ordinary functions must have a maximum arity of two: the
+first argument will be the data and second will be the index.  Both can, of
+course, be `undefined`.  Also starting from version [11.0.0](CHANGELOG.md#1100)
+it is not guaranteed that such ordinary functions would not be passed other
+arguments and therefore such functions should not depend on the number of
+arguments being passed nor on any arguments beyond the first two.
 
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
@@ -1082,30 +1089,31 @@ L.set(["x", L.log("%s x: %j")], "11", {x: 10})
 
 #### Internals
 
-##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> ((Functor|Applicative|Monad) c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t")
+##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t")
 
 `L.toFunction` converts a given optic, which can be a [string](#L-prop),
 an [integer](#L-index), an [array](#L-compose), or a function to a function.
-This can be useful for implementing new combinators and operations that cannot
-otherwise be implemented using the combinators provided by this library.
+This can be useful for implementing new combinators that cannot otherwise be
+implemented using the combinators provided by this library.  See
+also [`L.traverse`](#L-traverse).
 
 For [isomorphisms](#isomorphisms) and [lenses](#lenses), the returned function
 will have the signature
 
 ```jsx
-(Functor c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+(Maybe s, Index, Functor c, (Maybe a, Index) -> c b) -> c t
 ```
 
 for [traversals](#traversals) the signature will be
 
 ```jsx
-(Applicative c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+(Maybe s, Index, Applicative c, (Maybe a, Index) -> c b) -> c t
 ```
 
 and for [transforms](#transforms) the signature will be
 
 ```jsx
-(Monad c, (Maybe a, Index) -> c b, Maybe s, Index) -> c t
+(Maybe s, Index, Monad c, (Maybe a, Index) -> c b) -> c t
 ```
 
 Note that the above signatures are written using the "tupled" parameter notation
@@ -1125,6 +1133,12 @@ Note that, in conjunction with partial optics, it may be advantageous to have
 the algebras to allow for partiality.  With traversals it is also possible, for
 example, to simply post compose optics with [`L.optional`](#L-optional) to
 skip `undefined` elements.
+
+Note that if you simply wish to perform an operation that needs roughly the full
+expressive power of the underlying lens encoding, you should
+use [`L.traverse`](#L-traverse), because it is independent of the underlying
+encoding, while `L.toFunction` essentially exposes the underlying encoding and
+it is better to avoid depending on that.
 
 ### Transforms
 

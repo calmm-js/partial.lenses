@@ -83,11 +83,11 @@ export const fn = (argTys, resultTy) => {
     if (typeof fn !== "function" || argTys.length < fn.length)
       throw Error(`fn(${argTys}, ${resultTy}): ${fn}`)
     return R.curryN(argTys.length, function (...argIns) {
-      if (argTys.length !== argIns.length)
+      if (argIns.length < argTys.length)
         throw Error(`fn(${argTys}, ${resultTy}): got ${argIns.length} args`)
       const n=argIns.length, args=Array(n)
       for (let i=0; i<n; ++i)
-        args[i] = argTys[i](argIns[i])
+        args[i] = i < argTys.length ? argTys[i](argIns[i]) : argIns[i]
       return resultTy(fn.apply(this, args))
     })
   }

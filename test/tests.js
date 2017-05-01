@@ -74,7 +74,7 @@ const Collect = {
 const CollectM = MapConcatOf(Collect)
 
 const collectM = R.curry((o, s) =>
-  L.toFunction(o)(CollectM, x => [x, [x]], Object.freeze(s), undefined)[1])
+  L.toFunction(o)(Object.freeze(s), undefined, CollectM, x => [x, [x]])[1])
 
 //
 

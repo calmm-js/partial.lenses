@@ -35,10 +35,10 @@ const T_monad = T.object({
 })
 
 const T_opticFnOf = Category =>
-  T.fn([Category,
-        T.fn([T_maybeDataO, T_index], T.any),
-        T_maybeDataO,
-        T_index],
+  T.fn([T_maybeDataO,
+        T_index,
+        Category,
+        T.fn([T_maybeDataO, T_index], T.any)],
        T.any)
 
 const T_opticOf = Category => T.lazy(T_optic => T.or(
