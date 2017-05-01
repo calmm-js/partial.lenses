@@ -72,7 +72,13 @@ const Sum = {empty: () => 0, concat: add}
 const List = {empty: always([]), concat: (x, y) => x.concat(y)}
 const toList = x => x !== undefined ? [x] : []
 
-const d0x0y = [L.defaults([]), 0, "x", 0, "y"]
+const valueOr1 = L.valueOr(1)
+const define1 = L.define(1)
+const defaults1 = L.defaults(1)
+
+const valueOr0x0y = [L.valueOr([]), 0, "x", 0, "y"]
+const define0x0y = [L.define([]), 0, "x", 0, "y"]
+const defaults0x0y = [L.defaults([]), 0, "x", 0, "y"]
 
 const flatten = [L.optional, L.lazy(rec => {
   const elems = L.toFunction([L.elems, rec])
@@ -363,12 +369,22 @@ R.forEach(bs => {
     `L.get(L.defaults(1), 2)`,
     `L.get(L.defaults(1), undefined)`,
   ], [
+    `L.get(defaults1, 2)`,
+    `L.get(defaults1, undefined)`,
+  ], [
     `L.get(L.define(1), 2)`,
     `L.get(L.define(1), undefined)`,
+  ], [
+    `L.get(define1, 2)`,
+    `L.get(define1, undefined)`,
   ], [
     `L.get(L.valueOr(1), 2)`,
     `L.get(L.valueOr(1), null)`,
     `L.get(L.valueOr(1), undefined)`,
+  ], [
+    `L.get(valueOr1, 2)`,
+    `L.get(valueOr1, null)`,
+    `L.get(valueOr1, undefined)`,
   ], [
     `L.concatAs(toList, List, L.elems, xs100)`,
   ], [
@@ -390,9 +406,13 @@ R.forEach(bs => {
     `L.get(L.find(x => x !== 1), xs1000)`,
     `R.find(x => x !== 1, xs1000)`,
   ], [
-    `L.get(d0x0y, axay)`,
+    `L.get(defaults0x0y, axay)`,
+    `L.get(define0x0y, axay)`,
+    `L.get(valueOr0x0y, axay)`,
   ], [
-    `L.set(d0x0y, 1, undefined)`,
+    `L.set(defaults0x0y, 1, undefined)`,
+    `L.set(define0x0y, 1, undefined)`,
+    `L.set(valueOr0x0y, 1, undefined)`,
   ], [
     `L.set(L.findWith("x"), 2, axay)`,
   ], [
