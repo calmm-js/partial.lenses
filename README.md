@@ -3348,10 +3348,10 @@ in `docs`, `lib` and `dist` directories are generated.
 
 ### Building
 
-The `prepublish` script is the usual way to build after changes:
+The `prepare` script is the usual way to build after changes:
 
 ```bash
-npm run prepublish
+npm run prepare
 ```
 
 It builds the `dist` files and runs the lint rules and tests.  You can also run

@@ -16,7 +16,7 @@
     "docs-bundle": "NODE_ENV=dev browserify -r ./dist/partial.lenses.cjs:partial.lenses -r lz-string -r ramda -r moment -r infestines -r immutable -r babel-polyfill -g envify -g uglifyify | uglifyjs -m -c > docs/bundle.js",
     "docs-watch": "watch-run -i -p README.md npm run docs",
     "lint": "eslint src test",
-    "prepublish": "npm run lint && npm run dist && npm run test",
+    "prepare":  "npm run lint && npm run dist && npm run test",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha"
   },
