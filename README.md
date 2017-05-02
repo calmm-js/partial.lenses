@@ -135,9 +135,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Design choices](#design-choices)
+  * [On bundle size and minification](#on-bundle-size-and-minification)
   * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
-  * [On bundle size and minification](#on-bundle-size-and-minification)
   * [Related work](#related-work)
 * [Contributing](#contributing)
 
@@ -3031,6 +3031,22 @@ time.  The basic principles can be summarized in order of importance:
 * Avoid optimizations that require large amounts of code
 * Run [benchmarks](#benchmarks) continuously to detect performance regressions
 
+### On bundle size and minification
+
+The distribution of this library includes
+a
+[prebuilt and minified browser bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).
+However, this library is not designed to be primarily used via that bundle.
+Rather, this library is bundled with [Rollup](https://rollupjs.org/), uses
+`/*#__PURE__*/` annotations to
+help [UglifyJS2](https://github.com/mishoo/UglifyJS2) do better dead code
+elimination, and uses `process.env.NODE_ENV` to detect `"production"` mode to
+discard some warnings and error checks.  This means that when using Rollup
+with [replace](https://github.com/rollup/rollup-plugin-replace)
+and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
+browser bundles, the generated bundles will basically only include what you use
+from this library.
+
 ### Benchmarks
 
 Here are a few benchmark results on partial lenses (as `L` version 11.0.0) and
@@ -3271,22 +3287,6 @@ transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
 //                   filter: ['out'],
 //                   including: {the: 'following'} } ] }
 ```
-
-### On bundle size and minification
-
-The distribution of this library includes
-a
-[prebuilt and minified browser bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).
-However, this library is not designed to be primarily used via that bundle.
-Rather, this library is bundled with [Rollup](https://rollupjs.org/), uses
-`/*#__PURE__*/` annotations to
-help [UglifyJS2](https://github.com/mishoo/UglifyJS2) do better dead code
-elimination, and uses `process.env.NODE_ENV` to detect `"production"` mode to
-discard some warnings and error checks.  This means that when using Rollup
-with [replace](https://github.com/rollup/rollup-plugin-replace)
-and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
-browser bundles, the generated bundles will basically only include what you use
-from this library.
 
 ### Related work
 
