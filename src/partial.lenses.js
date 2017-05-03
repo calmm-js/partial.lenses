@@ -760,7 +760,7 @@ export const minimum = /*#__PURE__*/concat(Minimum)
 
 export const or = /*#__PURE__*/any(I.id)
 
-export const productAs = /*#__PURE__*/I.curryN(3, toN => concatAs(toN, Product))
+export const productAs = /*#__PURE__*/I.curryN(3, xi2n => concatAs(xi2n, Product))
 
 export const product = /*#__PURE__*/productAs(unto(1))
 
@@ -768,7 +768,7 @@ export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : 
 
 export const select = /*#__PURE__*/selectAs(I.id)
 
-export const sumAs = /*#__PURE__*/I.curryN(3, toN => concatAs(toN, Sum))
+export const sumAs = /*#__PURE__*/I.curryN(3, xi2n => concatAs(xi2n, Sum))
 
 export const sum = /*#__PURE__*/sumAs(unto(0))
 
