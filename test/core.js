@@ -101,10 +101,10 @@ export const countIf = R.curry(
   (p, t, s) => concatAs(x => p(x) ? 1 : 0, Sum, t, s))
 export const count = countIf(isDefined)
 
-export const maximumBy = R.curry((by, t, s) => concat(Mum(maxByPartial), t, s))
+export const maximumBy = R.curry((x2k, t, s) => concat(Mum(maxByPartial(x2k)), t, s))
 export const maximum = concat(Mum(maxPartial))
 
-export const minimumBy = R.curry((by, t, s) => concat(Mum(minByPartial), t, s))
+export const minimumBy = R.curry((x2k, t, s) => concat(Mum(minByPartial(x2k)), t, s))
 export const minimum = concat(Mum(minPartial))
 
 export const or = any(R.identity)
