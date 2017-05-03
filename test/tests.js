@@ -650,11 +650,21 @@ describe("folds", () => {
   testEq(`L.maximum([L.elems, "x"], [])`, undefined)
   testEq(`L.minimum([L.elems, "x"], [])`, undefined)
   testEq(`L.maximum(L.elems, "JavaScript")`, "v")
+  testEq(`L.maximumBy(R.negate, L.elems, [1,2,3])`, 1)
   testEq(`L.maximum(L.elems, [1,2,3])`, 3)
+  testEq(`L.minimumBy(R.negate, L.elems, [1,2,3])`, 3)
   testEq(`L.minimum(L.elems, [1,2,3])`, 1)
   testEq(`L.sum([L.elems, "x"], undefined)`, 0)
   testEq(`L.product([L.elems, "x"], undefined)`, 1)
+  testEq(`L.sumAs(x => x === undefined ? 0 : R.negate(x),
+                  [L.elems, "x"],
+                  [{x:-2},{y:1},{x:-3}])`,
+         5)
   testEq(`L.sum([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
+  testEq(`L.productAs(x => x === undefined ? 1 : x + 1,
+                      [L.elems, "x"],
+                      [{x:-2},{y:1},{x:-3}])`,
+         2)
   testEq(`L.product([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
