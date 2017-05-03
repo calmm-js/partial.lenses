@@ -57,10 +57,16 @@ function ConcatOf(ap, empty, delay) {
 }
 
 const Monoid = (concat, empty) => ({concat, empty: () => empty})
-const Sum = /*#__PURE__*/Monoid((y, x) => x + y, 0)
+const Sum = /*#__PURE__*/Monoid((x, y) => x + y, 0)
+const Product = /*#__PURE__*/Monoid((x, y) => x * y, 1)
 
 const Mum = ord =>
   Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
+const Maximum = /*#__PURE__*/Mum((x, y) => x > y)
+const Minimum = /*#__PURE__*/Mum((x, y) => x < y)
+
+const MaximumBy = x2k => Mum((x, y) => x2k(x) > x2k(y))
+const MinimumBy = x2k => Mum((x, y) => x2k(x) < x2k(y))
 
 //
 
@@ -728,7 +734,9 @@ export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
 
 export const collect = /*#__PURE__*/collectAs(I.id)
 
-export const count = /*#__PURE__*/concatAs(x => void 0 !== x ? 1 : 0, Sum)
+export const countIf = /*#__PURE__*/I.curryN(3, p => concatAs(x => p(x) ? 1 : 0, Sum))
+
+export const count = /*#__PURE__*/countIf(I.isDefined)
 
 export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
   fold(f, r, run(t, Collect, pair, s)))
@@ -742,19 +750,27 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
-export const maximum = /*#__PURE__*/concat(Mum((x, y) => x > y))
+export const maximumBy = /*#__PURE__*/I.curryN(3, x2k => concat(MaximumBy(x2k)))
 
-export const minimum = /*#__PURE__*/concat(Mum((x, y) => x < y))
+export const maximum = /*#__PURE__*/concat(Maximum)
+
+export const minimumBy = /*#__PURE__*/I.curryN(3, x2k => concat(MinimumBy(x2k)))
+
+export const minimum = /*#__PURE__*/concat(Minimum)
 
 export const or = /*#__PURE__*/any(I.id)
 
-export const product = /*#__PURE__*/concatAs(unto(1), Monoid((y, x) => x * y, 1))
+export const productAs = /*#__PURE__*/I.curryN(3, toN => concatAs(toN, Product))
+
+export const product = /*#__PURE__*/productAs(unto(1))
 
 export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
 
 export const select = /*#__PURE__*/selectAs(I.id)
 
-export const sum = /*#__PURE__*/concatAs(unto(0), Sum)
+export const sumAs = /*#__PURE__*/I.curryN(3, toN => concatAs(toN, Sum))
+
+export const sum = /*#__PURE__*/sumAs(unto(0))
 
 // Creating new traversals
 

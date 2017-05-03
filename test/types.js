@@ -132,6 +132,11 @@ export const collectAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
                                T_maybeDataI],
                               T.array(T.def))
 
+export const countIf =
+  T.fn([T.fn([T_maybeDataO, T_index], T.boolean),
+        T_traversal,
+        T_maybeDataI],
+       T.number)
 export const count = T.fn([T_traversal, T_maybeDataI], T.number)
 
 export const foldl =
@@ -142,13 +147,27 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const maximumBy =
+  T.fn([T.fn([T_maybeDataO, T_index], T.any),
+        T_traversal,
+        T_maybeDataI],
+       T.any)
 export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
-export const minimum = T.fn([T_traversal, T_maybeDataI], T.any)
+
+export const minimumBy = maximumBy
+export const minimum = maximum
 
 export const or = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
+export const productAs =
+  T.fn([T.fn([T_maybeDataO, T_index], T.number),
+        T_traversal,
+        T_maybeDataI],
+       T.number)
 export const product = count
-export const sum = count
+
+export const sumAs = productAs
+export const sum = product
 
 export const select = T.fn([T_traversal, T_maybeDataI], T.any)
 export const selectAs =

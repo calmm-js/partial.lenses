@@ -18,8 +18,15 @@ const Collect = {empty: R.always(Object.freeze([])),
                  concat: (x, y) => Object.freeze(x.concat(y))}
 const toCollect = x => Object.freeze(isDefined(x) ? [x] : [])
 
-const maxPartial = (x, y) => isDefined(x) && (!isDefined(y) || x > y) ? x : y
-const minPartial = (x, y) => isDefined(x) && (!isDefined(y) || x < y) ? x : y
+const mumPartial = cmp => (x, y) => isDefined(x) && (!isDefined(y) || cmp(x, y)) ? x : y
+
+const maxPartial = mumPartial((x, y) => x > y)
+const minPartial = mumPartial((x, y) => x < y)
+
+const maxByPartial = by => mumPartial((x, y) => by(x) > by(y))
+const minByPartial = by => mumPartial((x, y) => by(x) < by(y))
+
+const Mum = concat => ({empty: () => {}, concat})
 
 const foldx = concat => R.curry((f, r, t, s) =>
   concatAs((x, i) => r => f(r, x, i), {empty: () => R.identity, concat}, t, s)(r))
@@ -28,6 +35,7 @@ const concatDefined = m => R.curry((t, s) => concat(m, [t, optional], s))
 const toPartial = f => x => isDefined(x) ? f(x) : x
 
 const Sum = {empty: () => 0, concat: R.add}
+const Product = {empty: () => 1, concat: R.multiply}
 
 // Optics
 
@@ -86,17 +94,25 @@ export const foldl = foldx(R.pipe)
 export const foldr = foldx(R.compose)
 
 export const collect = R.curry((t, s) => collectAs(R.identity, t, s))
-export const collectAs = R.curry((to, t, s) =>
-  concatAs(R.pipe(to, toCollect), Collect, t, s))
+export const collectAs = R.curry(
+  (to, t, s) => concatAs(R.pipe(to, toCollect), Collect, t, s))
 
-export const count = concatAs(x => x !== undefined ? 1 : 0, Sum)
+export const countIf = R.curry(
+  (p, t, s) => concatAs(x => p(x) ? 1 : 0, Sum, t, s))
+export const count = countIf(isDefined)
 
-export const maximum = concat({empty: () => {}, concat: maxPartial})
-export const minimum = concat({empty: () => {}, concat: minPartial})
+export const maximumBy = R.curry((by, t, s) => concat(Mum(maxByPartial), t, s))
+export const maximum = concat(Mum(maxPartial))
+
+export const minimumBy = R.curry((by, t, s) => concat(Mum(minByPartial), t, s))
+export const minimum = concat(Mum(minPartial))
 
 export const or = any(R.identity)
 
-export const product = concatDefined({empty: () => 1, concat: R.multiply})
+export const productAs = R.curry((f, t, s) => concatAs(f, Product, t, s))
+export const product = concatDefined(Product)
+
+export const sumAs = R.curry((f, t, s) => concatAs(f, Sum, t, s))
 export const sum = concatDefined(Sum)
 
 export const selectAs = L.selectAs
