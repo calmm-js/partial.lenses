@@ -1362,7 +1362,7 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 ##### <a id="L-countIf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countIf) [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number")
 
 `L.countIf` goes through all the elements focused on by the traversal and counts
-the number of elements for which the given predicate returnes a truthy value.
+the number of elements for which the given predicate returns a truthy value.
 
 For example:
 
