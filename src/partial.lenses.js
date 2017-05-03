@@ -117,19 +117,19 @@ function reqApplicative(C, name, arg) {
 
 //
 
-function Join(l, r) {this.l = l; this.r = r}
+function Both(l, r) {this.l = l; this.r = r}
 
-const isJoin = n => n.constructor === Join
+const isBoth = n => n.constructor === Both
 
-const join = (l, r) => void 0 !== l ? void 0 !== r ? new Join(l, r) : l : r
+const both = (l, r) => void 0 !== l ? void 0 !== r ? new Both(l, r) : l : r
 
-const cjoin = h => t => join(h, t)
+const cboth = h => t => both(h, t)
 
 function pushTo(n, ys) {
-  while (n && isJoin(n)) {
+  while (n && isBoth(n)) {
     const l = n.l
     n = n.r
-    if (l && isJoin(l)) {
+    if (l && isBoth(l)) {
       pushTo(l.l, ys)
       pushTo(l.r, ys)
     } else {
@@ -149,10 +149,10 @@ function toArray(n) {
 }
 
 function foldRec(f, r, n) {
-  while (isJoin(n)) {
+  while (isBoth(n)) {
     const l = n.l
     n = n.r
-    r = isJoin(l)
+    r = isBoth(l)
       ? foldRec(f, foldRec(f, r, l.l), l.r)
       : f(r, l[0], l[1])
   }
@@ -161,7 +161,7 @@ function foldRec(f, r, n) {
 
 const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
 
-const Collect = /*#__PURE__*/ConcatOf(join)
+const Collect = /*#__PURE__*/ConcatOf(both)
 
 //
 
@@ -188,7 +188,7 @@ const mkSelect = toM => (xi2yM, t, s) => {
 
 const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
   i < n
-  ? ap(map(cjoin, xi2yA(xs[i], i)), delay(() =>
+  ? ap(map(cboth, xi2yA(xs[i], i)), delay(() =>
        traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
   : z
 
@@ -202,7 +202,7 @@ function traversePartialIndex(A, xi2yA, xs) {
     xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i)
   else
     while (i--)
-      xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA)
+      xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA)
   return map(toArray, xsA)
 }
 
