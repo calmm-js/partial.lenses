@@ -733,8 +733,8 @@ export const and = /*#__PURE__*/all(I.id)
 
 export const any = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? T : U), Boolean)
 
-export const collectAs = /*#__PURE__*/I.curry((f, t, s) =>
-  toArray(traverseU(Collect, f, t, s)) || I.array0)
+export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
+  toArray(traverseU(Collect, xi2y, t, s)) || I.array0)
 
 export const collect = /*#__PURE__*/collectAs(I.id)
 
