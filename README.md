@@ -1472,6 +1472,8 @@ L.minimumBy(L.get("x"), L.elems, [{x: 1}, {x: -3}, {x: 2}])
 // {x: -3}
 ```
 
+Note that the key extraction function is not indexed.
+
 ##### <a id="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
 
 `L.or` determines whether any of the elements focused on by the given traversal
