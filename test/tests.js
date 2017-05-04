@@ -193,6 +193,7 @@ describe("arities", () => {
     concat: 3,
     concatAs: 4,
     count: 2,
+    countIf: 3,
     defaults: 1,
     define: 1,
     elems: 4,
@@ -209,13 +210,17 @@ describe("arities", () => {
     inverse: 1,
     is: 1,
     iso: 2,
+    join: 3,
+    joinAs: 4,
     last: 4,
     lazy: 1,
     lens: 2,
     log: 0,
     matches: 1,
     maximum: 2,
+    maximumBy: 3,
     minimum: 2,
+    minimumBy: 3,
     modify: 3,
     normalize: 1,
     optional: 4,
@@ -223,6 +228,7 @@ describe("arities", () => {
     orElse: 2,
     pick: 1,
     product: 2,
+    productAs: 3,
     prop: 1,
     props: 0,
     removable: 0,
@@ -237,6 +243,7 @@ describe("arities", () => {
     setter: 1,
     slice: 2,
     sum: 2,
+    sumAs: 3,
     toFunction: 1,
     traverse: 4,
     valueOr: 1,
@@ -645,12 +652,28 @@ describe("folds", () => {
   testEq(`L.maximum([L.elems, "x"], [])`, undefined)
   testEq(`L.minimum([L.elems, "x"], [])`, undefined)
   testEq(`L.maximum(L.elems, "JavaScript")`, "v")
+  testEq(`L.maximumBy(R.negate, L.elems, [1,2,3])`, 1)
+  testEq(`L.maximumBy(R.length, L.elems, ["x", "xx", "y", "yy"])`, "xx")
+  testEq(`L.minimumBy(R.length, L.elems, ["x", "xx", "y", "yy"])`, "x")
   testEq(`L.maximum(L.elems, [1,2,3])`, 3)
+  testEq(`L.minimumBy(R.negate, L.elems, [1,2,3])`, 3)
   testEq(`L.minimum(L.elems, [1,2,3])`, 1)
   testEq(`L.sum([L.elems, "x"], undefined)`, 0)
   testEq(`L.product([L.elems, "x"], undefined)`, 1)
+  testEq(`L.sumAs(x => x === undefined ? 0 : R.negate(x),
+                  [L.elems, "x"],
+                  [{x:-2},{y:1},{x:-3}])`,
+         5)
   testEq(`L.sum([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, -5)
+  testEq(`L.productAs(x => x === undefined ? 1 : x + 1,
+                      [L.elems, "x"],
+                      [{x:-2},{y:1},{x:-3}])`,
+         2)
   testEq(`L.product([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
+  testEq(`L.join(", ", L.elems, [])`, "")
+  testEq(`L.join(", ", L.elems, [1,2,3])`, "1, 2, 3")
+  testEq(`L.join(", ", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])`, "1, 3")
+  testEq(`L.joinAs(x => "(" + x + ")", ", ", L.elems, [1, 2])`, "(1), (2)")
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,

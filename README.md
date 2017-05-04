@@ -65,15 +65,22 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
       * [`L.count(traversal, maybeData) ~> number`](#L-count "L.count: PTraversal s a -> Number")
+      * [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number")
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
+      * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
+      * [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String")
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
+      * [`L.maximumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
+      * [`L.minimumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
       * [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
+      * [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
       * [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a")
       * [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
       * [`L.sum(traversal, maybeData) ~> number`](#L-sum "L.sum: PTraversal s Number -> Maybe s -> Number")
+      * [`L.sumAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-sumAs "L.sumAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
     * [Traversals and combinators](#traversals-and-combinators)
@@ -1354,6 +1361,18 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 // 1
 ```
 
+##### <a id="L-countIf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countIf) [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number")
+
+`L.countIf` goes through all the elements focused on by the traversal and counts
+the number of elements for which the given predicate returns a truthy value.
+
+For example:
+
+```js
+L.countIf(R.has("x"), [L.elems], [{x: 11}, {y: 12}])
+// 1
+```
+
 ##### <a id="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
 
 `L.foldl` performs a fold from left over the elements focused on by the given
@@ -1378,6 +1397,29 @@ L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 // 6
 ```
 
+##### <a id="L-join"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-join) [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
+
+`L.join` creates a string by joining the optional elements targeted by the given
+traversal with the given delimiter.
+
+```js
+L.join(",", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])
+// "1,3"
+```
+
+##### <a id="L-joinAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-joinAs) [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String")
+
+`L.joinAs` creates a string by converting the elements targeted by the given
+traversal to optional strings with the given function and then joining those
+strings with the given delimiter.
+
+For example:
+
+```js
+L.joinAs(JSON.stringify, ",", L.elems, [{x: 1}, {y: 2}])
+// '{"x":1},{"y":2}'
+```
+
 ##### <a id="L-maximum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximum) [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
 
 `L.maximum` computes a maximum, according to the `>` operator, of the optional
@@ -1390,6 +1432,21 @@ L.maximum(L.elems, [1,2,3])
 // 3
 ```
 
+##### <a id="L-maximumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximumBy) [`L.maximumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+
+`L.maximumBy` computes a maximum, according to the `>` operator, of the optional
+elements targeted by the traversal based on the keys returned by the given
+function.
+
+For example:
+
+```js
+L.maximumBy(R.length, L.elems, ["first", "second", "--||--", "third"])
+// "second"
+```
+
+Note that the key extraction function is not indexed.
+
 ##### <a id="L-minimum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimum) [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
 
 `L.minimum` computes a minimum, according to the `<` operator, of the optional
@@ -1400,6 +1457,19 @@ For example:
 ```js
 L.minimum(L.elems, [1,2,3])
 // 1
+```
+
+##### <a id="L-minimumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimumBy) [`L.minimumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+
+`L.minimumBy` computes a minimum, according to the `<` operator, of the optional
+elements targeted by the traversal based on the keys returned by the given
+function.
+
+For example:
+
+```js
+L.minimumBy(L.get("x"), L.elems, [{x: 1}, {x: -3}, {x: 2}])
+// {x: -3}
 ```
 
 ##### <a id="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
@@ -1427,6 +1497,18 @@ For example:
 ```js
 L.product(L.elems, [1,2,3])
 // 6
+```
+
+##### <a id="L-productAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-productAs) [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
+
+`L.productAs` computes the product of the numbers returned by the given function
+for the elements targeted by the traversal.
+
+For example:
+
+```js
+L.productAs((x, i) => x + i, L.elems, [3,2,1])
+// 27
 ```
 
 ##### <a id="L-select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-select) [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a")
@@ -1483,6 +1565,18 @@ For example:
 ```js
 L.sum(L.elems, [1,2,3])
 // 6
+```
+
+##### <a id="L-sumAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-sumAs) [`L.sum(traversal, maybeData) ~> number`](#L-sum "L.sum: PTraversal s Number -> Maybe s -> Number")
+
+`L.sumAs` computes the sum of the numbers returned by the given function for the
+elements targeted by the traversal.
+
+For example:
+
+```js
+L.sumAs((x, i) => x + i, L.elems, [3,2,1])
+// 9
 ```
 
 #### Creating new traversals
@@ -2731,9 +2825,8 @@ Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
 example:
 
 ```js
-const Concat = {empty: () => "", concat: R.concat}
-L.concatAs(R.toUpper, Concat, values, sampleBST)
-// 'MAGIC'
+L.join("-", values, sampleBST)
+// 'm-a-g-i-c'
 ```
 ```js
 L.modify(values, R.toUpper, sampleBST)
@@ -2870,10 +2963,10 @@ L.remove([seqList, L.when(c => c < "i")], sampleList)
 And:
 
 ```js
-L.concatAs(R.toUpper,
-           Concat,
-           [seqList, L.when(c => c <= "i")],
-           sampleList)
+L.joinAs(R.toUpper,
+         "",
+         [seqList, L.when(c => c <= "i")],
+         sampleList)
 // 'AI'
 ```
 

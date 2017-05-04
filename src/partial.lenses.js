@@ -2,6 +2,8 @@ import * as I from "infestines"
 
 //
 
+const toStringPartial = x => void 0 !== x ? String(x) : ""
+
 const not = x => !x
 
 const sliceIndex = (m, l, d, i) =>
@@ -56,15 +58,22 @@ function ConcatOf(ap, empty, delay) {
   return c
 }
 
-const Monoid = (concat, empty) => ({concat, empty: () => empty})
-const Sum = /*#__PURE__*/Monoid((y, x) => x + y, 0)
+const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
+const Product = /*#__PURE__*/ConcatOf((x, y) => x * y, 1)
+const Join = d =>
+  ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
 
 const Mum = ord =>
-  Monoid((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
+  ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
+const Maximum = /*#__PURE__*/Mum((x, y) => x > y)
+const Minimum = /*#__PURE__*/Mum((x, y) => x < y)
+
+const MaximumBy = x2k => Mum((x, y) => x2k(x) > x2k(y))
+const MinimumBy = x2k => Mum((x, y) => x2k(x) < x2k(y))
 
 //
 
-const run = (o, C, xi2yC, s, i) => toFunction(o)(s, i, C, xi2yC)
+const traverseU = (C, xi2yC, t, s) => toFunction(t)(s, void 0, C, xi2yC)
 
 //
 
@@ -168,21 +177,24 @@ const Collect = /*#__PURE__*/ConcatOf(both)
 const U = {}
 const T = {v:true}
 
+function force(x) {
+  while (x.constructor === Function)
+    x = x()
+  return x
+}
+
 const Select = /*#__PURE__*/ConcatOf(
-  (l, r) => {
-    while (l.constructor === Function)
-      l = l()
-    return void 0 !== l.v ? l : r
-  },
+  (l, r) => void 0 !== (l = force(l)).v ? l : r,
   U,
   I.id)
 
-const mkSelect = toM => (xi2yM, t, s) => {
-  s = run(t, Select, I.pipe2U(xi2yM, toM), s)
-  while (s.constructor === Function)
-    s = s()
-  return s.v
-}
+const mkSelect = toM => (xi2yM, t, s) =>
+  force(traverseU(Select, I.pipe2U(xi2yM, toM), t, s)).v
+
+const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) => {
+  const C = toC(m)
+  return (t, s) => after(traverseU(C, xi2yC, t, s))
+})
 
 //
 
@@ -631,7 +643,7 @@ export const remove = /*#__PURE__*/I.curry((o, s) => setU(o, void 0, s))
 
 export const set = /*#__PURE__*/I.curry(setU)
 
-export const traverse = /*#__PURE__*/I.curry((C, xMi2yC, t, s) => run(t, C, xMi2yC, s))
+export const traverse = /*#__PURE__*/I.curry(traverseU)
 
 // Sequencing
 
@@ -675,7 +687,7 @@ export const choice = (...ls) => choose(x => {
 })
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
-  run(xiM2o(x, i), C, xi2yC, x, i)
+  toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
 export const when = p => (x, i, C, xi2yC) =>
   p(x, i) ? xi2yC(x, i) : zero(x, i, C, xi2yC)
@@ -708,10 +720,8 @@ export function log() {
 
 // Operations on traversals
 
-export const concatAs = /*#__PURE__*/I.curryN(4, (xMi2y, m) => {
-  const C = ConcatOf(m.concat, (0,m.empty)(), m.delay)
-  return (t, s) => run(t, C, xMi2y, s)
-})
+export const concatAs =
+  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, (0,m.empty)(), m.delay))
 
 export const concat = /*#__PURE__*/concatAs(I.id)
 
@@ -724,14 +734,17 @@ export const and = /*#__PURE__*/all(I.id)
 export const any = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? T : U), Boolean)
 
 export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
-  toArray(run(t, Collect, xi2y, s)) || I.array0)
+  toArray(traverseU(Collect, xi2y, t, s)) || I.array0)
 
 export const collect = /*#__PURE__*/collectAs(I.id)
 
-export const count = /*#__PURE__*/concatAs(x => void 0 !== x ? 1 : 0, Sum)
+export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
+  traverseU(Sum, x => p(x) ? 1 : 0, t, s))
+
+export const count = /*#__PURE__*/countIf(I.isDefined)
 
 export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
-  fold(f, r, run(t, Collect, pair, s)))
+  fold(f, r, traverseU(Collect, pair, t, s)))
 
 export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   const xs = collectAs(pair, t, s)
@@ -742,19 +755,31 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
-export const maximum = /*#__PURE__*/concat(Mum((x, y) => x > y))
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, Join)
 
-export const minimum = /*#__PURE__*/concat(Mum((x, y) => x < y))
+export const join = /*#__PURE__*/joinAs(I.id)
+
+export const maximumBy = /*#__PURE__*/mkTraverse(I.id, MaximumBy)(I.id)
+
+export const maximum = /*#__PURE__*/traverse(Maximum, I.id)
+
+export const minimumBy = /*#__PURE__*/mkTraverse(I.id, MinimumBy)(I.id)
+
+export const minimum = /*#__PURE__*/traverse(Minimum, I.id)
 
 export const or = /*#__PURE__*/any(I.id)
 
-export const product = /*#__PURE__*/concatAs(unto(1), Monoid((y, x) => x * y, 1))
+export const productAs = /*#__PURE__*/traverse(Product)
+
+export const product = /*#__PURE__*/productAs(unto(1))
 
 export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
 
 export const select = /*#__PURE__*/selectAs(I.id)
 
-export const sum = /*#__PURE__*/concatAs(unto(0), Sum)
+export const sumAs = /*#__PURE__*/traverse(Sum)
+
+export const sum = /*#__PURE__*/sumAs(unto(0))
 
 // Creating new traversals
 
