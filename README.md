@@ -1416,8 +1416,8 @@ function.
 For example:
 
 ```js
-L.maximumBy(L.get("x"), L.elems, [{x: 1}, {x: 3}, {x: 2}])
-// {x: 3}
+L.maximumBy(R.length, L.elems, ["first", "second", "--||--", "third"])
+// "second"
 ```
 
 Note that the key extraction function is not indexed.
