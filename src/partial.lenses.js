@@ -59,17 +59,9 @@ function ConcatOf(ap, empty, delay) {
 }
 
 const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
-const Product = /*#__PURE__*/ConcatOf((x, y) => x * y, 1)
-const Join = d =>
-  ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
 
 const Mum = ord =>
   ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
-const Maximum = /*#__PURE__*/Mum((x, y) => x > y)
-const Minimum = /*#__PURE__*/Mum((x, y) => x < y)
-
-const MaximumBy = x2k => Mum((x, y) => x2k(x) > x2k(y))
-const MinimumBy = x2k => Mum((x, y) => x2k(x) < x2k(y))
 
 //
 
@@ -755,21 +747,24 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
-export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, Join)
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d =>
+  ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y))
 
 export const join = /*#__PURE__*/joinAs(I.id)
 
-export const maximumBy = /*#__PURE__*/mkTraverse(I.id, MaximumBy)(I.id)
+export const maximumBy =
+  /*#__PURE__*/mkTraverse(I.id, x2k => Mum((x, y) => x2k(x) > x2k(y)))(I.id)
 
-export const maximum = /*#__PURE__*/traverse(Maximum, I.id)
+export const maximum = /*#__PURE__*/traverse(Mum((x, y) => x > y), I.id)
 
-export const minimumBy = /*#__PURE__*/mkTraverse(I.id, MinimumBy)(I.id)
+export const minimumBy =
+  /*#__PURE__*/mkTraverse(I.id, x2k => Mum((x, y) => x2k(x) < x2k(y)))(I.id)
 
-export const minimum = /*#__PURE__*/traverse(Minimum, I.id)
+export const minimum = /*#__PURE__*/traverse(Mum((x, y) => x < y), I.id)
 
 export const or = /*#__PURE__*/any(I.id)
 
-export const productAs = /*#__PURE__*/traverse(Product)
+export const productAs = /*#__PURE__*/traverse(ConcatOf((x, y) => x * y, 1))
 
 export const product = /*#__PURE__*/productAs(unto(1))
 
