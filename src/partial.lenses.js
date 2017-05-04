@@ -2,6 +2,8 @@ import * as I from "infestines"
 
 //
 
+const toStringPartial = x => void 0 !== x ? String(x) : ""
+
 const not = x => !x
 
 const sliceIndex = (m, l, d, i) =>
@@ -58,6 +60,8 @@ function ConcatOf(ap, empty, delay) {
 
 const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
 const Product = /*#__PURE__*/ConcatOf((x, y) => x * y, 1)
+const Join = d =>
+  ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
 
 const Mum = ord =>
   ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
@@ -750,6 +754,10 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   }
   return r
 })
+
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, Join)
+
+export const join = /*#__PURE__*/joinAs(I.id)
 
 export const maximumBy = /*#__PURE__*/mkTraverse(I.id, MaximumBy)(I.id)
 

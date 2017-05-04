@@ -147,6 +147,15 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const joinAs =
+  T.fn([T.fn([T_maybeDataO, T_index], T.or(T.string, T.undef)),
+        T.string,
+        T_traversal,
+        T_maybeDataI],
+       T.string)
+
+export const join = T.fn([T.string, T_traversal, T_maybeDataI], T.string)
+
 export const maximumBy =
   T.fn([T.fn([T_dataO], T.any),
         T_traversal,

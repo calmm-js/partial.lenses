@@ -210,6 +210,8 @@ describe("arities", () => {
     inverse: 1,
     is: 1,
     iso: 2,
+    join: 3,
+    joinAs: 4,
     last: 4,
     lazy: 1,
     lens: 2,
@@ -668,6 +670,10 @@ describe("folds", () => {
                       [{x:-2},{y:1},{x:-3}])`,
          2)
   testEq(`L.product([L.elems, "x"], [{x:-2},{y:1},{x:-3}])`, 6)
+  testEq(`L.join(", ", L.elems, [])`, "")
+  testEq(`L.join(", ", L.elems, [1,2,3])`, "1, 2, 3")
+  testEq(`L.join(", ", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])`, "1, 3")
+  testEq(`L.joinAs(x => "(" + x + ")", ", ", L.elems, [1, 2])`, "(1), (2)")
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,

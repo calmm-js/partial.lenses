@@ -101,6 +101,9 @@ export const countIf = R.curry(
   (p, t, s) => concatAs(x => p(x) ? 1 : 0, Sum, t, s))
 export const count = countIf(isDefined)
 
+export const joinAs = L.joinAs
+export const join = joinAs(R.identity)
+
 export const maximumBy = R.curry((x2k, t, s) => concat(Mum(maxByPartial(x2k)), t, s))
 export const maximum = concat(Mum(maxPartial))
 

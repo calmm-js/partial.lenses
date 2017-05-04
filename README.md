@@ -68,6 +68,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number")
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r")
+      * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
+      * [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String")
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
       * [`L.maximumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
@@ -1393,6 +1395,29 @@ For example:
 ```js
 L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 // 6
+```
+
+##### <a id="L-join"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-join) [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
+
+`L.join` creates a string by joining the optional elements targeted by the given
+traversal with the given delimiter.
+
+```js
+L.join(",", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])
+// "1,3"
+```
+
+##### <a id="L-joinAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-joinAs) [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String")
+
+`L.joinAs` creates a string by converting the elements targeted by the given
+traversal to optional strings with the given function and then joining those
+strings with the given delimiter.
+
+For example:
+
+```js
+L.joinAs(JSON.stringify, ",", L.elems, [{x: 1}, {y: 2}])
+// '{"x":1},{"y":2}'
 ```
 
 ##### <a id="L-maximum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximum) [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
@@ -2800,9 +2825,8 @@ Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
 example:
 
 ```js
-const Concat = {empty: () => "", concat: R.concat}
-L.concatAs(R.toUpper, Concat, values, sampleBST)
-// 'MAGIC'
+L.join("-", values, sampleBST)
+// 'm-a-g-i-c'
 ```
 ```js
 L.modify(values, R.toUpper, sampleBST)
@@ -2939,10 +2963,10 @@ L.remove([seqList, L.when(c => c < "i")], sampleList)
 And:
 
 ```js
-L.concatAs(R.toUpper,
-           Concat,
-           [seqList, L.when(c => c <= "i")],
-           sampleList)
+L.joinAs(R.toUpper,
+         "",
+         [seqList, L.when(c => c <= "i")],
+         sampleList)
 // 'AI'
 ```
 
