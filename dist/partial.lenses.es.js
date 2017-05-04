@@ -3,6 +3,10 @@ import * as I from 'infestines';
 
 //
 
+var toStringPartial = function toStringPartial(x) {
+  return void 0 !== x ? String(x) : "";
+};
+
 var not = function not(x) {
   return !x;
 };
@@ -68,25 +72,20 @@ function ConcatOf(ap, empty, delay) {
   return c;
 }
 
-var Monoid = function Monoid(concat, _empty) {
-  return { concat: concat, empty: function empty() {
-      return _empty;
-    } };
-};
-var Sum = /*#__PURE__*/Monoid(function (y, x) {
+var Sum = /*#__PURE__*/ConcatOf(function (x, y) {
   return x + y;
 }, 0);
 
 var Mum = function Mum(ord) {
-  return Monoid(function (y, x) {
+  return ConcatOf(function (y, x) {
     return void 0 !== x && (void 0 === y || ord(x, y)) ? x : y;
   });
 };
 
 //
 
-var run = function run(o, C, xi2yC, s, i) {
-  return toFunction(o)(s, i, C, xi2yC);
+var traverseU = function traverseU(C, xi2yC, t, s) {
+  return toFunction(t)(s, void 0, C, xi2yC);
 };
 
 //
@@ -130,29 +129,29 @@ function reqApplicative(C, name, arg) {
 
 //
 
-function Join(l, r) {
+function Both(l, r) {
   this.l = l;this.r = r;
 }
 
-var isJoin = function isJoin(n) {
-  return n.constructor === Join;
+var isBoth = function isBoth(n) {
+  return n.constructor === Both;
 };
 
-var join = function join(l, r) {
-  return void 0 !== l ? void 0 !== r ? new Join(l, r) : l : r;
+var both = function both(l, r) {
+  return void 0 !== l ? void 0 !== r ? new Both(l, r) : l : r;
 };
 
-var cjoin = function cjoin(h) {
+var cboth = function cboth(h) {
   return function (t) {
-    return join(h, t);
+    return both(h, t);
   };
 };
 
 function pushTo(n, ys) {
-  while (n && isJoin(n)) {
+  while (n && isBoth(n)) {
     var l = n.l;
     n = n.r;
-    if (l && isJoin(l)) {
+    if (l && isBoth(l)) {
       pushTo(l.l, ys);
       pushTo(l.r, ys);
     } else {
@@ -172,10 +171,10 @@ function toArray(n) {
 }
 
 function foldRec(f, r, n) {
-  while (isJoin(n)) {
+  while (isBoth(n)) {
     var l = n.l;
     n = n.r;
-    r = isJoin(l) ? foldRec(f, foldRec(f, r, l.l), l.r) : f(r, l[0], l[1]);
+    r = isBoth(l) ? foldRec(f, foldRec(f, r, l.l), l.r) : f(r, l[0], l[1]);
   }
   return f(r, n[0], n[1]);
 }
@@ -184,32 +183,42 @@ var fold = function fold(f, r, n) {
   return void 0 !== n ? foldRec(f, r, n) : r;
 };
 
-var Collect = /*#__PURE__*/ConcatOf(join);
+var Collect = /*#__PURE__*/ConcatOf(both);
 
 //
 
 var U = {};
 var T = { v: true };
 
+function force(x) {
+  while (x.constructor === Function) {
+    x = x();
+  }return x;
+}
+
 var Select = /*#__PURE__*/ConcatOf(function (l, r) {
-  while (l.constructor === Function) {
-    l = l();
-  }return void 0 !== l.v ? l : r;
+  return void 0 !== (l = force(l)).v ? l : r;
 }, U, id);
 
 var mkSelect = function mkSelect(toM) {
   return function (xi2yM, t, s) {
-    s = run(t, Select, pipe2U(xi2yM, toM), s);
-    while (s.constructor === Function) {
-      s = s();
-    }return s.v;
+    return force(traverseU(Select, pipe2U(xi2yM, toM), t, s)).v;
   };
+};
+
+var mkTraverse = function mkTraverse(after, toC) {
+  return curryN(4, function (xi2yC, m) {
+    var C = toC(m);
+    return function (t, s) {
+      return after(traverseU(C, xi2yC, t, s));
+    };
+  });
 };
 
 //
 
 var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i, n) {
-  return i < n ? ap(map(cjoin, xi2yA(xs[i], i)), delay(function () {
+  return i < n ? ap(map(cboth, xi2yA(xs[i], i)), delay(function () {
     return traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i + 1, n);
   })) : z;
 };
@@ -224,7 +233,7 @@ function traversePartialIndex(A, xi2yA, xs) {
   var xsA = of(void 0),
       i = xs.length;
   if (delay) xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i);else while (i--) {
-    xsA = ap(map(cjoin, xi2yA(xs[i], i)), xsA);
+    xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA);
   }return map(toArray, xsA);
 }
 
@@ -666,9 +675,7 @@ var remove = /*#__PURE__*/curry(function (o, s) {
 
 var set = /*#__PURE__*/curry(setU);
 
-var traverse = /*#__PURE__*/curry(function (C, xMi2yC, t, s) {
-  return run(t, C, xMi2yC, s);
-});
+var traverse = /*#__PURE__*/curry(traverseU);
 
 // Sequencing
 
@@ -725,7 +732,7 @@ var choice = function choice() {
 
 var choose = function choose(xiM2o) {
   return function (x, i, C, xi2yC) {
-    return run(xiM2o(x, i), C, xi2yC, x, i);
+    return toFunction(xiM2o(x, i))(x, i, C, xi2yC);
   };
 };
 
@@ -767,11 +774,9 @@ function log() {
 
 // Operations on traversals
 
-var concatAs = /*#__PURE__*/curryN(4, function (xMi2y, m) {
-  var C = ConcatOf(m.concat, (0, m.empty)(), m.delay);
-  return function (t, s) {
-    return run(t, C, xMi2y, s);
-  };
+var concatAs =
+/*#__PURE__*/mkTraverse(id, function (m) {
+  return ConcatOf(m.concat, (0, m.empty)(), m.delay);
 });
 
 var concat = /*#__PURE__*/concatAs(id);
@@ -789,17 +794,21 @@ var any = /*#__PURE__*/pipe2U(mkSelect(function (x) {
 }), Boolean);
 
 var collectAs = /*#__PURE__*/curry(function (xi2y, t, s) {
-  return toArray(run(t, Collect, xi2y, s)) || array0;
+  return toArray(traverseU(Collect, xi2y, t, s)) || array0;
 });
 
 var collect = /*#__PURE__*/collectAs(id);
 
-var count = /*#__PURE__*/concatAs(function (x) {
-  return void 0 !== x ? 1 : 0;
-}, Sum);
+var countIf = /*#__PURE__*/curry(function (p, t, s) {
+  return traverseU(Sum, function (x) {
+    return p(x) ? 1 : 0;
+  }, t, s);
+});
+
+var count = /*#__PURE__*/countIf(isDefined);
 
 var foldl = /*#__PURE__*/curry(function (f, r, t, s) {
-  return fold(f, r, run(t, Collect, pair, s));
+  return fold(f, r, traverseU(Collect, pair, t, s));
 });
 
 var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
@@ -811,19 +820,43 @@ var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
   return r;
 });
 
-var maximum = /*#__PURE__*/concat(Mum(function (x, y) {
-  return x > y;
-}));
+var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
+  return ConcatOf(function (x, y) {
+    return void 0 !== x ? void 0 !== y ? x + d + y : x : y;
+  });
+});
 
-var minimum = /*#__PURE__*/concat(Mum(function (x, y) {
+var join = /*#__PURE__*/joinAs(id);
+
+var maximumBy =
+/*#__PURE__*/mkTraverse(id, function (x2k) {
+  return Mum(function (x, y) {
+    return x2k(x) > x2k(y);
+  });
+})(id);
+
+var maximum = /*#__PURE__*/traverse(Mum(function (x, y) {
+  return x > y;
+}), id);
+
+var minimumBy =
+/*#__PURE__*/mkTraverse(id, function (x2k) {
+  return Mum(function (x, y) {
+    return x2k(x) < x2k(y);
+  });
+})(id);
+
+var minimum = /*#__PURE__*/traverse(Mum(function (x, y) {
   return x < y;
-}));
+}), id);
 
 var or = /*#__PURE__*/any(id);
 
-var product = /*#__PURE__*/concatAs(unto(1), Monoid(function (y, x) {
+var productAs = /*#__PURE__*/traverse(ConcatOf(function (x, y) {
   return x * y;
 }, 1));
+
+var product = /*#__PURE__*/productAs(unto(1));
 
 var selectAs = /*#__PURE__*/curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
@@ -831,7 +864,9 @@ var selectAs = /*#__PURE__*/curry(mkSelect(function (v) {
 
 var select = /*#__PURE__*/selectAs(id);
 
-var sum = /*#__PURE__*/concatAs(unto(0), Sum);
+var sumAs = /*#__PURE__*/traverse(Sum);
+
+var sum = /*#__PURE__*/sumAs(unto(0));
 
 // Creating new traversals
 
@@ -1153,4 +1188,4 @@ var is = function is(v) {
   });
 };
 
-export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, count, foldl, foldr, maximum, minimum, or, product, selectAs, select, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse, is };
+export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse, is };
