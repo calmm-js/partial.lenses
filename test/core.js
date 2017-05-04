@@ -18,7 +18,7 @@ const Collect = {empty: R.always(Object.freeze([])),
                  concat: (x, y) => Object.freeze(x.concat(y))}
 const toCollect = x => Object.freeze(isDefined(x) ? [x] : [])
 
-const mumPartial = cmp => (x, y) => isDefined(x) && (!isDefined(y) || cmp(x, y)) ? x : y
+const mumPartial = cmp => (y, x) => isDefined(x) && (!isDefined(y) || cmp(x, y)) ? x : y
 
 const maxPartial = mumPartial((x, y) => x > y)
 const minPartial = mumPartial((x, y) => x < y)
