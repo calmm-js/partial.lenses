@@ -824,6 +824,7 @@ var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
 });
 
 var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
+  if (process.env.NODE_ENV !== "production") if (!I.isString(d)) errorGiven("`join` and `joinAs` expect a string delimiter", d);
   return ConcatOf(function (x, y) {
     return void 0 !== x ? void 0 !== y ? x + d + y : x : y;
   });

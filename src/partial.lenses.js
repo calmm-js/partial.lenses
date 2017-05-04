@@ -747,8 +747,12 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
-export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d =>
-  ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y))
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
+  if (process.env.NODE_ENV !== "production")
+    if (!I.isString(d))
+      errorGiven("`join` and `joinAs` expect a string delimiter", d)
+  return ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
+})
 
 export const join = /*#__PURE__*/joinAs(I.id)
 
