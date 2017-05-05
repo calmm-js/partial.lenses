@@ -673,6 +673,12 @@ var matchesJoin = function matchesJoin(input) {
   };
 };
 
+var isoU = function isoU(bwd, fwd) {
+  return function (x, i, F, xi2yF) {
+    return (0, F.map)(fwd, xi2yF(bwd(x), i));
+  };
+};
+
 //
 
 function toFunction(o) {
@@ -807,7 +813,7 @@ function log() {
   var show = I.curry(function (dir, x) {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
-  return iso(show("get"), show("set"));
+  return isoU(show("get"), show("set"));
 }
 
 // Operations on traversals
@@ -1183,11 +1189,7 @@ var getInverse = /*#__PURE__*/I.arityN(2, setU);
 
 // Creating new isomorphisms
 
-var iso = /*#__PURE__*/I.curry(function (bwd, fwd) {
-  return function (x, i, F, xi2yF) {
-    return (0, F.map)(fwd, xi2yF(bwd(x), i));
-  };
-});
+var iso = /*#__PURE__*/I.curry(isoU);
 
 // Isomorphism combinators
 
@@ -1201,14 +1203,14 @@ var inverse = function inverse(iso) {
 
 // Basic isomorphisms
 
-var complement = /*#__PURE__*/iso(notPartial, notPartial);
+var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
 var identity = function identity(x, i, _F, xi2yF) {
   return xi2yF(x, i);
 };
 
 var is = function is(v) {
-  return iso(function (x) {
+  return isoU(function (x) {
     return I.acyclicEqualsU(v, x);
   }, function (b) {
     return true === b ? v : void 0;
@@ -1218,10 +1220,10 @@ var is = function is(v) {
 // Standard isomorphisms
 
 var uri =
-/*#__PURE__*/iso(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
+/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
 
 var uriComponent =
-/*#__PURE__*/iso(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
+/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
 
 function json(options) {
   var _ref = options || I.object0,
@@ -1229,7 +1231,7 @@ function json(options) {
       replacer = _ref.replacer,
       space = _ref.space;
 
-  return iso(expect(I.isString, function (text) {
+  return isoU(expect(I.isString, function (text) {
     var json = JSON.parse(text, reviver);
     deepFreeze(json);
     return json;
