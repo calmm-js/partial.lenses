@@ -616,6 +616,8 @@ const matchesJoin = input => matches => {
   return result || void 0
 }
 
+const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
+
 //
 
 export function toFunction(o) {
@@ -732,7 +734,7 @@ export function log() {
                       copyToFrom([], 0, arguments, 0, arguments.length)
                       .concat([dir, x])),
     x))
-  return iso(show("get"), show("set"))
+  return isoU(show("get"), show("set"))
 }
 
 // Operations on traversals
@@ -1079,8 +1081,7 @@ export const getInverse = /*#__PURE__*/I.arityN(2, setU)
 
 // Creating new isomorphisms
 
-export const iso = /*#__PURE__*/I.curry((bwd, fwd) =>
-  (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
+export const iso = /*#__PURE__*/I.curry(isoU)
 
 // Isomorphism combinators
 
@@ -1089,27 +1090,27 @@ export const inverse = iso => (x, i, F, xi2yF) =>
 
 // Basic isomorphisms
 
-export const complement = /*#__PURE__*/iso(notPartial, notPartial)
+export const complement = /*#__PURE__*/isoU(notPartial, notPartial)
 
 export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
 export const is = v =>
-  iso(x => I.acyclicEqualsU(v, x),
-      b => true === b ? v : void 0)
+  isoU(x => I.acyclicEqualsU(v, x),
+       b => true === b ? v : void 0)
 
 // Standard isomorphisms
 
 export const uri =
-  /*#__PURE__*/iso(expect(I.isString, decodeURI),
-                   expect(I.isString, encodeURI))
+  /*#__PURE__*/isoU(expect(I.isString, decodeURI),
+                    expect(I.isString, encodeURI))
 
 export const uriComponent =
-  /*#__PURE__*/iso(expect(I.isString, decodeURIComponent),
-                   expect(I.isString, encodeURIComponent))
+  /*#__PURE__*/isoU(expect(I.isString, decodeURIComponent),
+                    expect(I.isString, encodeURIComponent))
 
 export function json(options) {
   const {reviver, replacer, space} = options || I.object0
-  return iso(expect(I.isString, text => {
+  return isoU(expect(I.isString, text => {
     const json = JSON.parse(text, reviver)
     if (process.env.NODE_ENV !== "production")
       deepFreeze(json)
