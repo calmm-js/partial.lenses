@@ -413,6 +413,9 @@ function modifyComposed(os, xi2y, x, y) {
   return x
 }
 
+const lensU = (get, set) => (x, i, F, xi2yF) =>
+  (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i))
+
 //
 
 function getPick(template, x) {
@@ -877,10 +880,12 @@ export function get(l, s) {
 
 // Creating new lenses
 
-export const lens = /*#__PURE__*/I.curry((get, set) => (x, i, F, xi2yF) =>
-  (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i)))
+export const lens = /*#__PURE__*/I.curry(lensU)
 
 export const setter = /*#__PURE__*/lens(I.id)
+
+export const lensFromFT = /*#__PURE__*/I.curry((fold, traversal) =>
+  lensU(fold(traversal), set(traversal)))
 
 // Computing derived props
 
@@ -888,7 +893,7 @@ export function augment(template) {
   if (process.env.NODE_ENV !== "production")
     if (!I.isObject(template))
       errorGiven("`augment` expects a plain Object template", template)
-  return lens(
+  return lensU(
     x => {
       x = I.dissocPartialU(0, x)
       if (x)

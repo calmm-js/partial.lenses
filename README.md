@@ -94,6 +94,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Creating new lenses](#creating-new-lenses)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a")
       * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a")
+      * [`L.lensFromFT((traversal, maybeData) ~> maybeValue, traversal) ~> lens`](#L-lensFromFT "L.lensFromFT: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a")
     * [Computing derived props](#computing-derived-props)
       * [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}")
     * [Enforcing invariants](#enforcing-invariants)
@@ -1821,6 +1822,28 @@ example of using `L.lens`.
 
 `L.setter(set)` is shorthand for [`L.lens(x => x, set)`](#L-lens).
 
+##### <a id="L-lensFromFT"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-lensFromFT) [`L.lensFromFT((traversal, maybeData) ~> maybeValue, traversal) ~> lens`](#L-lensFromFT "L.lensFromFT: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a")
+
+`L.lensFromFT` creates a lens from a fold and a traversal.  To make sense, the
+fold should compute or pick a representative from the elements focused on by the
+traversal such that when all the elements are equal then so is the
+representative.
+
+For example:
+
+```js
+L.get(L.lensFromFT(L.minimum, L.elems), [3,1,4])
+// 1
+```
+
+```js
+L.set(L.lensFromFT(L.minimum, L.elems), 2, [3,1,4])
+// [ 2, 2, 2 ]
+```
+
+See the [Collection toggle](#collection-toggle) section for a more interesting
+example.
+
 #### Computing derived props
 
 ##### <a id="L-augment"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-augment) [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}")
@@ -2749,10 +2772,10 @@ const completedFlags = [L.elems, "completed"]
 
 To compute a single boolean out of a traversal over booleans we can use
 the [`L.and`](#L-and) fold and use that to define a lens parameterized over flag
-traversals:
+traversals using [`L.lensFromFT`](#L-lensFromFT):
 
 ```js
-const selectAll = flags => L.lens(L.and(flags), L.set(flags))
+const selectAll = L.lensFromFT(L.and)
 ```
 
 Now we can say, for example:

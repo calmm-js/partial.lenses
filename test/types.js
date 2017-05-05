@@ -213,6 +213,11 @@ export const setter =
   T.fn([T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)],
        T_lens)
 
+export const lensFromFT =
+  T.fn([T.fn([T_traversal, T_maybeDataO], T.any),
+        T_traversal],
+       T_lens)
+
 // Computing derived props
 
 export const augment = T.fn([T.props(T.fn([T.any], T_maybeDataI))], T_lens)
