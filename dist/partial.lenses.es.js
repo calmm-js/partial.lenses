@@ -10,6 +10,12 @@ var toStringPartial = function toStringPartial(x) {
 var not = function not(x) {
   return !x;
 };
+var lt = function lt(x, y) {
+  return x < y;
+};
+var gt = function gt(x, y) {
+  return x > y;
+};
 
 var sliceIndex = function sliceIndex(m, l, d, i) {
   return void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d;
@@ -80,6 +86,18 @@ var Mum = function Mum(ord) {
   return ConcatOf(function (y, x) {
     return void 0 !== x && (void 0 === y || ord(x, y)) ? x : y;
   });
+};
+
+var MumBy = function MumBy(ord) {
+  return function (keyOf) {
+    return ConcatOf(function (y, x) {
+      var xk = x && keyOf(x[0], x[1]);
+      if (void 0 === xk) return y;
+      var yk = y && keyOf(y[0], y[1]);
+      if (void 0 === yk) return x;
+      return ord(xk, yk) ? x : y;
+    });
+  };
 };
 
 //
@@ -829,27 +847,13 @@ var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
 
 var join = /*#__PURE__*/joinAs(id);
 
-var maximumBy =
-/*#__PURE__*/mkTraverse(id, function (x2k) {
-  return Mum(function (x, y) {
-    return x2k(x) > x2k(y);
-  });
-})(id);
+var maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair);
 
-var maximum = /*#__PURE__*/traverse(Mum(function (x, y) {
-  return x > y;
-}), id);
+var maximum = /*#__PURE__*/traverse(Mum(gt), id);
 
-var minimumBy =
-/*#__PURE__*/mkTraverse(id, function (x2k) {
-  return Mum(function (x, y) {
-    return x2k(x) < x2k(y);
-  });
-})(id);
+var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
-var minimum = /*#__PURE__*/traverse(Mum(function (x, y) {
-  return x < y;
-}), id);
+var minimum = /*#__PURE__*/traverse(Mum(lt), id);
 
 var or = /*#__PURE__*/any(id);
 
