@@ -2587,7 +2587,7 @@ standard
 [`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI) and
 [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) functions.
 
-##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uri "L.uri: PIso String String")
+##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String")
 
 `L.uriComponent` is an isomorphism based on the
 standard
