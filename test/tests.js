@@ -212,6 +212,7 @@ describe("arities", () => {
     iso: 2,
     join: 3,
     joinAs: 4,
+    json: 1,
     last: 4,
     lazy: 1,
     lens: 2,
@@ -246,6 +247,8 @@ describe("arities", () => {
     sumAs: 3,
     toFunction: 1,
     traverse: 4,
+    uri: 4,
+    uriComponent: 4,
     valueOr: 1,
     values: 4,
     when: 1,
@@ -888,6 +891,23 @@ describe("L.last", () => {
   testEq(`L.set(L.last, 5, undefined)`, [5])
   testEq(`L.set(L.last, 5, [])`, [5])
   testEq(`L.set(L.last, 5, [1,2])`, [1,5])
+})
+
+describe("standard isos", () => {
+  testEq(`L.getInverse(L.uri, "http://www.Not a URL.com")`,
+         "http://www.Not%20a%20URL.com")
+  testEq(`L.get(L.uri, "http://www.Not%20a%20URL.com")`,
+         "http://www.Not a URL.com")
+
+  testEq(`L.getInverse(L.uriComponent, "Hello, world!")`,
+         "Hello%2C%20world!")
+  testEq(`L.get(L.uriComponent, "Hello%2C%20world!")`,
+         "Hello, world!")
+
+  testEq(`L.getInverse(L.json({space: 2}), {this: ["Is", true]})`,
+         "{\n  \"this\": [\n    \"Is\",\n    true\n  ]\n}")
+  testEq(`L.get(L.json(undefined), '{"this":["Is",true]}')`,
+         {this: ["Is", true]})
 })
 
 describe("L.matches", () => {

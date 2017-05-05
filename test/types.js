@@ -262,9 +262,18 @@ export const iso = T.fn([T.fn([T_maybeDataO], T_maybeDataI),
                          T.fn([T_maybeDataO], T_maybeDataI)],
                         T_isomorphism)
 
-// Isomorphisms and combinators
+// Isomorphism combinators
+
+export const inverse = T.fn([T_isomorphism], T_isomorphism)
+
+// Basic isomorphisms
 
 export const complement = T_isomorphism
 export const identity = T_isomorphism
-export const inverse = T.fn([T_isomorphism], T_isomorphism)
 export const is = T.fn([T.def], T_lens)
+
+// Standard isomorphisms
+
+export const uri = T_isomorphism
+export const uriComponent = T_isomorphism
+export const json = T.fn([T.any], T_isomorphism)

@@ -128,11 +128,16 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.getInverse(isomorphism, maybeData) ~> maybeData`](#L-getInverse "L.getInverse: PIso a b -> Maybe b -> Maybe a")
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a")
-    * [Isomorphisms and combinators](#isomorphisms-and-combinators)
+    * [Isomorphism combinators](#isomorphism-combinators)
+      * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
+    * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean")
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
-      * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
+    * [Standard isomorphisms](#standard-isomorphisms)
+      * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String")
+      * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String")
+      * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [Dependent fields](#dependent-fields)
@@ -2506,17 +2511,11 @@ doesn't match their expectation, the output is mapped to `undefined`.
 For example:
 
 ```js
-const uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
-                           expect(R.is(String), encodeURIComponent))
-
-const jsonString = L.iso(expect(R.is(String), JSON.parse),
-                         expect(R.is(Object), JSON.stringify))
-
 const reverseString = L.iso(expect(R.is(String), R.reverse),
                             expect(R.is(String), R.reverse))
 
-L.modify([uriComponent,
-          jsonString,
+L.modify([L.uriComponent,
+          L.json(),
           "bottle",
           0,
           reverseString,
@@ -2527,7 +2526,21 @@ L.modify([uriComponent,
 // "%7B%22bottle%22%3A%22egasseM%22%7D"
 ```
 
-#### Isomorphisms and combinators
+#### Isomorphism combinators
+
+##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
+
+`L.inverse` returns the inverse of the given isomorphism.  Note that this
+operation only makes sense on isomorphisms.
+
+For example:
+
+```js
+L.get(L.inverse(offBy1), 1)
+// 0
+```
+
+#### Basic isomorphisms
 
 ##### <a id="L-identity"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-identity) [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s")
 
@@ -2559,23 +2572,40 @@ L.set([L.complement, L.log()],
 // false
 ```
 
-##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a")
-
-`L.inverse` returns the inverse of the given isomorphism.  Note that this
-operation only makes sense on isomorphisms.
-
-For example:
-
-```js
-L.get(L.inverse(offBy1), 1)
-// 0
-```
-
 ##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean")
 
 `L.is` reads the given value as `true` and everything else as `false` and writes
 `true` as the given value and everything else as `undefined`.
 See [here](#an-array-of-ids-as-boolean-flags) for an example.
+
+#### Standard isomorphisms
+
+##### <a id="L-uri"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-uri) [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String")
+
+`L.uri` is an isomorphism based on the
+standard
+[`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI) and
+[`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI) functions.
+
+##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uri "L.uri: PIso String String")
+
+`L.uriComponent` is an isomorphism based on the
+standard
+[`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent) and
+[`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent) functions.
+
+##### <a id="L-json"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-json) [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON")
+
+`L.json({reviver, replacer, space})` returns an isomorphism based on the
+standard
+[`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) and
+[`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) functions.
+The optional `reviver` is passed
+to
+[`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) and
+the optional `replacer` and `space` are passed
+to
+[`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
 
 ## Examples
 
