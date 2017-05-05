@@ -2596,10 +2596,16 @@ standard
 
 ##### <a id="L-json"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-json) [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON")
 
-`L.json` returns an isomorphism based on the
+`L.json({reviver, replacer, space})` returns an isomorphism based on the
 standard
 [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) and
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) functions.
+The optional `reviver` is passed
+to
+[`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) and
+the optional `replacer` and `space` are passed
+to
+[`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
 
 ## Examples
 
