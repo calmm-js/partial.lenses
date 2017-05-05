@@ -1461,7 +1461,7 @@ L.minimum(L.elems, [1,2,3])
 // 1
 ```
 
-Note that elements are ordered according to the `>` operator.
+Note that elements are ordered according to the `<` operator.
 
 ##### <a id="L-minimumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimumBy) [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
 

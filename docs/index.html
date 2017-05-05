@@ -1149,7 +1149,7 @@ traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.minimum(L.elems, [1,2,3])
 </code></pre>
-<p>Note that elements are ordered according to the <code>&gt;</code> operator.</p>
+<p>Note that elements are ordered according to the <code>&lt;</code> operator.</p>
 <h5 id="-a-id-l-minimumby-a-contents-https-github-com-calmm-js-partial-lenses-l-minimumby-l-minimumby-maybevalue-index-maybekey-traversal-maybedata-maybevalue-l-minimumby-l-minimumby-ord-k-maybe-a-index-maybe-k-ptraversal-s-a-maybe-s-maybe-a-"><a id="L-minimumBy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-minimumBy">■</a> <a href="#L-minimumBy" title="L.minimumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.minimumBy</code> computes a minimum of the elements targeted by the traversal based
 on the optional keys returned by the given function.  Elements for which the
