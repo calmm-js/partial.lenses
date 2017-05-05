@@ -178,7 +178,7 @@ const Collect = /*#__PURE__*/ConcatOf(both)
 
 //
 
-const U = {}
+const U = I.object0
 const T = {v:true}
 
 function force(x) {
