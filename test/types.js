@@ -157,7 +157,7 @@ export const joinAs =
 export const join = T.fn([T.string, T_traversal, T_maybeDataI], T.string)
 
 export const maximumBy =
-  T.fn([T.fn([T_dataO], T.any),
+  T.fn([T.fn([T_maybeDataO, T_index], T.any),
         T_traversal,
         T_maybeDataI],
        T.any)

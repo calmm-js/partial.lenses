@@ -23,9 +23,6 @@ const mumPartial = cmp => (y, x) => isDefined(x) && (!isDefined(y) || cmp(x, y))
 const maxPartial = mumPartial((x, y) => x > y)
 const minPartial = mumPartial((x, y) => x < y)
 
-const maxByPartial = by => mumPartial((x, y) => by(x) > by(y))
-const minByPartial = by => mumPartial((x, y) => by(x) < by(y))
-
 const Mum = concat => ({empty: () => {}, concat})
 
 const foldx = concat => R.curry((f, r, t, s) =>
@@ -104,10 +101,10 @@ export const count = countIf(isDefined)
 export const joinAs = L.joinAs
 export const join = joinAs(R.identity)
 
-export const maximumBy = R.curry((x2k, t, s) => concat(Mum(maxByPartial(x2k)), t, s))
+export const maximumBy = L.maximumBy
 export const maximum = concat(Mum(maxPartial))
 
-export const minimumBy = R.curry((x2k, t, s) => concat(Mum(minByPartial(x2k)), t, s))
+export const minimumBy = L.minimumBy
 export const minimum = concat(Mum(minPartial))
 
 export const or = any(R.identity)

@@ -71,9 +71,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
       * [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String")
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
-      * [`L.maximumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+      * [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
-      * [`L.minimumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+      * [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
       * [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
       * [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
@@ -1432,11 +1432,11 @@ L.maximum(L.elems, [1,2,3])
 // 3
 ```
 
-##### <a id="L-maximumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximumBy) [`L.maximumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+##### <a id="L-maximumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximumBy) [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
 
-`L.maximumBy` computes a maximum, according to the `>` operator, of the optional
-elements targeted by the traversal based on the keys returned by the given
-function.
+`L.maximumBy` computes a maximum, according to the `>` operator, of the elements
+targeted by the traversal based on the optional keys returned by the given
+function.  Elements for which the returned key is `undefined` are skipped.
 
 For example:
 
@@ -1444,8 +1444,6 @@ For example:
 L.maximumBy(R.length, L.elems, ["first", "second", "--||--", "third"])
 // "second"
 ```
-
-Note that the key extraction function is not indexed.
 
 ##### <a id="L-minimum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimum) [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
 
@@ -1459,11 +1457,11 @@ L.minimum(L.elems, [1,2,3])
 // 1
 ```
 
-##### <a id="L-minimumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimumBy) [`L.minimumBy(value => key, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => (a -> k) -> PTraversal s a -> Maybe s -> Maybe a")
+##### <a id="L-minimumBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimumBy) [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
 
-`L.minimumBy` computes a minimum, according to the `<` operator, of the optional
-elements targeted by the traversal based on the keys returned by the given
-function.
+`L.minimumBy` computes a minimum, according to the `<` operator, of the elements
+targeted by the traversal based on the optional keys returned by the given
+function.  Elements for which the returned key is `undefined` are skipped.
 
 For example:
 
@@ -1471,8 +1469,6 @@ For example:
 L.minimumBy(L.get("x"), L.elems, [{x: 1}, {x: -3}, {x: 2}])
 // {x: -3}
 ```
-
-Note that the key extraction function is not indexed.
 
 ##### <a id="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
 

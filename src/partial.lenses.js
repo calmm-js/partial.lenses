@@ -5,6 +5,8 @@ import * as I from "infestines"
 const toStringPartial = x => void 0 !== x ? String(x) : ""
 
 const not = x => !x
+const lt = (x, y) => x < y
+const gt = (x, y) => x > y
 
 const sliceIndex = (m, l, d, i) =>
   void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d
@@ -62,6 +64,16 @@ const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
 
 const Mum = ord =>
   ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
+
+const MumBy = ord => keyOf => ConcatOf((y, x) => {
+  const xk = x && keyOf(x[0], x[1])
+  if (void 0 === xk)
+    return y
+  const yk = y && keyOf(y[0], y[1])
+  if (void 0 === yk)
+    return x
+  return ord(xk, yk) ? x : y
+})
 
 //
 
@@ -756,15 +768,13 @@ export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
 
 export const join = /*#__PURE__*/joinAs(I.id)
 
-export const maximumBy =
-  /*#__PURE__*/mkTraverse(I.id, x2k => Mum((x, y) => x2k(x) > x2k(y)))(I.id)
+export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
 
-export const maximum = /*#__PURE__*/traverse(Mum((x, y) => x > y), I.id)
+export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
 
-export const minimumBy =
-  /*#__PURE__*/mkTraverse(I.id, x2k => Mum((x, y) => x2k(x) < x2k(y)))(I.id)
+export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
 
-export const minimum = /*#__PURE__*/traverse(Mum((x, y) => x < y), I.id)
+export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
 
 export const or = /*#__PURE__*/any(I.id)
 
