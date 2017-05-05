@@ -44,6 +44,23 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
+var expect = function expect(p, f) {
+  return function (x) {
+    return p(x) ? f(x) : undefined;
+  };
+};
+
+function deepFreeze(x) {
+  if (Array.isArray(x)) {
+    x.forEach(deepFreeze);
+    Object.freeze(x);
+  } else if (isObject(x)) {
+    for (var k in x) {
+      deepFreeze(x[k]);
+    }Object.freeze(x);
+  }
+}
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -205,7 +222,7 @@ var Collect = /*#__PURE__*/ConcatOf(both);
 
 //
 
-var U = {};
+var U = object0;
 var T = { v: true };
 
 function force(x) {
@@ -1169,13 +1186,7 @@ var iso = /*#__PURE__*/curry(function (bwd, fwd) {
   };
 });
 
-// Isomorphisms and combinators
-
-var complement = /*#__PURE__*/iso(notPartial, notPartial);
-
-var identity = function identity(x, i, _F, xi2yF) {
-  return xi2yF(x, i);
-};
+// Isomorphism combinators
 
 var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
@@ -1183,6 +1194,14 @@ var inverse = function inverse(iso) {
       return getU(iso, x);
     }, xi2yF(setU(iso, x), i));
   };
+};
+
+// Basic isomorphisms
+
+var complement = /*#__PURE__*/iso(notPartial, notPartial);
+
+var identity = function identity(x, i, _F, xi2yF) {
+  return xi2yF(x, i);
 };
 
 var is = function is(v) {
@@ -1193,4 +1212,27 @@ var is = function is(v) {
   });
 };
 
-export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, complement, identity, inverse, is };
+// Standard isomorphisms
+
+var uri =
+/*#__PURE__*/iso(expect(isString, decodeURI), expect(isString, encodeURI));
+
+var uriComponent =
+/*#__PURE__*/iso(expect(isString, decodeURIComponent), expect(isString, encodeURIComponent));
+
+function json(options) {
+  var _ref = options || object0,
+      reviver = _ref.reviver,
+      replacer = _ref.replacer,
+      space = _ref.space;
+
+  return iso(expect(isString, function (text) {
+    var json = JSON.parse(text, reviver);
+    if (process.env.NODE_ENV !== "production") deepFreeze(json);
+    return json;
+  }), expect(isDefined, function (value) {
+    return JSON.stringify(value, replacer, space);
+  }));
+}
+
+export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json };

@@ -47,6 +47,23 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
 };
 
+var expect = function expect(p, f) {
+  return function (x) {
+    return p(x) ? f(x) : undefined;
+  };
+};
+
+function deepFreeze(x) {
+  if (Array.isArray(x)) {
+    x.forEach(deepFreeze);
+    Object.freeze(x);
+  } else if (I.isObject(x)) {
+    for (var k in x) {
+      deepFreeze(x[k]);
+    }Object.freeze(x);
+  }
+}
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -208,7 +225,7 @@ var Collect = /*#__PURE__*/ConcatOf(both);
 
 //
 
-var U = {};
+var U = I.object0;
 var T = { v: true };
 
 function force(x) {
@@ -1172,13 +1189,7 @@ var iso = /*#__PURE__*/I.curry(function (bwd, fwd) {
   };
 });
 
-// Isomorphisms and combinators
-
-var complement = /*#__PURE__*/iso(notPartial, notPartial);
-
-var identity = function identity(x, i, _F, xi2yF) {
-  return xi2yF(x, i);
-};
+// Isomorphism combinators
 
 var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
@@ -1188,6 +1199,14 @@ var inverse = function inverse(iso) {
   };
 };
 
+// Basic isomorphisms
+
+var complement = /*#__PURE__*/iso(notPartial, notPartial);
+
+var identity = function identity(x, i, _F, xi2yF) {
+  return xi2yF(x, i);
+};
+
 var is = function is(v) {
   return iso(function (x) {
     return I.acyclicEqualsU(v, x);
@@ -1195,6 +1214,29 @@ var is = function is(v) {
     return true === b ? v : void 0;
   });
 };
+
+// Standard isomorphisms
+
+var uri =
+/*#__PURE__*/iso(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
+
+var uriComponent =
+/*#__PURE__*/iso(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
+
+function json(options) {
+  var _ref = options || I.object0,
+      reviver = _ref.reviver,
+      replacer = _ref.replacer,
+      space = _ref.space;
+
+  return iso(expect(I.isString, function (text) {
+    var json = JSON.parse(text, reviver);
+    if (process.env.NODE_ENV !== "production") deepFreeze(json);
+    return json;
+  }), expect(I.isDefined, function (value) {
+    return JSON.stringify(value, replacer, space);
+  }));
+}
 
 exports.toFunction = toFunction;
 exports.modify = modify;
@@ -1265,7 +1307,10 @@ exports.pick = pick;
 exports.replace = replace;
 exports.getInverse = getInverse;
 exports.iso = iso;
+exports.inverse = inverse;
 exports.complement = complement;
 exports.identity = identity;
-exports.inverse = inverse;
 exports.is = is;
+exports.uri = uri;
+exports.uriComponent = uriComponent;
+exports.json = json;

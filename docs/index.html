@@ -212,11 +212,20 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a></li>
 </ul>
 </li>
-<li><a href="#isomorphisms-and-combinators">Isomorphisms and combinators</a><ul>
+<li><a href="#isomorphism-combinators">Isomorphism combinators</a><ul>
+<li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></li>
+</ul>
+</li>
+<li><a href="#basic-isomorphisms">Basic isomorphisms</a><ul>
 <li><a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a></li>
 <li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></li>
-<li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></li>
 <li><a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a></li>
+</ul>
+</li>
+<li><a href="#standard-isomorphisms">Standard isomorphisms</a><ul>
+<li><a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a></li>
+<li><a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a></li>
+<li><a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1792,17 +1801,11 @@ Usually the given functions should be inverses of each other, but that isn&#39;t
 strictly necessary.  The functions should also be partial so that when the input
 doesn&#39;t match their expectation, the output is mapped to <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var uriComponent = L.iso(expect(R.is(String), decodeURIComponent),
-                           expect(R.is(String), encodeURIComponent))
-
-var jsonString = L.iso(expect(R.is(String), JSON.parse),
-                         expect(R.is(Object), JSON.stringify))
-
-var reverseString = L.iso(expect(R.is(String), R.reverse),
+<pre><code class="hljs lang-js">var reverseString = L.iso(expect(R.is(String), R.reverse),
                             expect(R.is(String), R.reverse))
 
-L.modify([uriComponent,
-          jsonString,
+L.modify([L.uriComponent,
+          L.json(),
           &quot;bottle&quot;,
           0,
           reverseString,
@@ -1811,7 +1814,14 @@ L.modify([uriComponent,
          R.toUpper,
          &quot;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&quot;)
 </code></pre>
-<h4 id="isomorphisms-and-combinators">Isomorphisms and combinators</h4>
+<h4 id="isomorphism-combinators">Isomorphism combinators</h4>
+<h5 id="-a-id-l-inverse-a-contents-https-github-com-calmm-js-partial-lenses-l-inverse-l-inverse-isomorphism-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a id="L-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-inverse">■</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></h5>
+<p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
+operation only makes sense on isomorphisms.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.inverse(offBy1), 1)
+</code></pre>
+<h4 id="basic-isomorphisms">Basic isomorphisms</h4>
 <h5 id="-a-id-l-identity-a-contents-https-github-com-calmm-js-partial-lenses-l-identity-l-identity-isomorphism-l-identity-l-identity-piso-s-s-"><a id="L-identity"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-identity">■</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a></h5>
 <p><code>L.identity</code> is the identity element of lens composition and also the identity
 isomorphism.  <code>L.identity</code> can also been seen as specifying an empty path.
@@ -1830,16 +1840,32 @@ non-<code>undefined</code> value when either read or written through.</p>
       &quot;Could be anything truthy&quot;,
       &quot;Also converted to bool&quot;)
 </code></pre>
-<h5 id="-a-id-l-inverse-a-contents-https-github-com-calmm-js-partial-lenses-l-inverse-l-inverse-isomorphism-isomorphism-l-inverse-l-inverse-piso-a-b-piso-b-a-"><a id="L-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-inverse">■</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a></h5>
-<p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
-operation only makes sense on isomorphisms.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.get(L.inverse(offBy1), 1)
-</code></pre>
 <h5 id="-a-id-l-is-a-contents-https-github-com-calmm-js-partial-lenses-l-is-l-is-value-isomorphism-l-is-l-is-v-piso-v-boolean-"><a id="L-is"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-is">■</a> <a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a></h5>
 <p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes
 <code>true</code> as the given value and everything else as <code>undefined</code>.
 See <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
+<h4 id="standard-isomorphisms">Standard isomorphisms</h4>
+<h5 id="-a-id-l-uri-a-contents-https-github-com-calmm-js-partial-lenses-l-uri-l-uri-isomorphism-l-uri-l-uri-piso-string-string-"><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a></h5>
+<p><code>L.uri</code> is an isomorphism based on the
+standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a> and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a> functions.</p>
+<h5 id="-a-id-l-uricomponent-a-contents-https-github-com-calmm-js-partial-lenses-l-uricomponent-l-uricomponent-isomorphism-l-uri-l-uri-piso-string-string-"><a id="L-uriComponent"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-uriComponent">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a></h5>
+<p><code>L.uriComponent</code> is an isomorphism based on the
+standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a> and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a> functions.</p>
+<h5 id="-a-id-l-json-a-contents-https-github-com-calmm-js-partial-lenses-l-json-l-json-reviver-replacer-space-isomorphism-l-json-l-json-reviver-replacer-space-piso-string-json-"><a id="L-json"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-json">■</a> <a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a></h5>
+<p><code>L.json({reviver, replacer, space})</code> returns an isomorphism based on the
+standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a> and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a> functions.
+The optional <code>reviver</code> is passed
+to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a> and
+the optional <code>replacer</code> and <code>space</code> are passed
+to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>
 <h2 id="examples">Examples</h2>
 <p>Note that if you are new to lenses, then you probably want to start with
 the <a href="#tutorial">tutorial</a>.</p>
