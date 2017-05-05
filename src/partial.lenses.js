@@ -22,6 +22,19 @@ const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
   I.isString(x)
 
+const expect = (p, f) => x => p(x) ? f(x) : undefined
+
+function deepFreeze(x) {
+  if (Array.isArray(x)) {
+    x.forEach(deepFreeze)
+    Object.freeze(x)
+  } else if (I.isObject(x)) {
+    for (const k in x)
+      deepFreeze(x[k])
+    Object.freeze(x)
+  }
+}
+
 //
 
 function mapPartialIndexU(xi2y, xs) {
@@ -1069,15 +1082,37 @@ export const getInverse = /*#__PURE__*/I.arityN(2, setU)
 export const iso = /*#__PURE__*/I.curry((bwd, fwd) =>
   (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i)))
 
-// Isomorphisms and combinators
+// Isomorphism combinators
+
+export const inverse = iso => (x, i, F, xi2yF) =>
+  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))
+
+// Basic isomorphisms
 
 export const complement = /*#__PURE__*/iso(notPartial, notPartial)
 
 export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
-export const inverse = iso => (x, i, F, xi2yF) =>
-  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))
-
 export const is = v =>
   iso(x => I.acyclicEqualsU(v, x),
       b => true === b ? v : void 0)
+
+// Standard isomorphisms
+
+export const uri =
+  /*#__PURE__*/iso(expect(I.isString, decodeURI),
+                   expect(I.isString, encodeURI))
+
+export const uriComponent =
+  /*#__PURE__*/iso(expect(I.isString, decodeURIComponent),
+                   expect(I.isString, encodeURIComponent))
+
+export function json(options) {
+  const {reviver, replacer, space} = options || I.object0
+  return iso(expect(I.isString, text => {
+    const json = JSON.parse(text, reviver)
+    if (process.env.NODE_ENV !== "production")
+      deepFreeze(json)
+    return json
+  }), expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
+}

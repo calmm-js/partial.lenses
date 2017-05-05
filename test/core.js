@@ -230,9 +230,18 @@ export const getInverse = R.curry((i, s) => set(i, s, undefined))
 
 export const iso = R.curry((xy, yx) => lens(x => xy(x), y => yx(y)))
 
-// Isomorphisms and combinators
+// Isomorphism combinators
+
+export const inverse = i => iso(getInverse(i), get(i))
+
+// Basic isomorphisms
 
 export const complement = iso(toPartial(R.not), toPartial(R.not))
 export const identity = iso(R.identity, R.identity)
-export const inverse = i => iso(getInverse(i), get(i))
 export const is = L.is
+
+// Standard isomorphisms
+
+export const uriComponent = L.uriComponent
+export const uri = L.uri
+export const json = L.json
