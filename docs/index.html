@@ -504,9 +504,8 @@ lenses.</p>
 <pre><code class="hljs lang-js">L.collect(texts, sampleTitles)
 </code></pre>
 <p>More generally, we can <a href="#L-concatAs">map and fold</a> over texts.  For example, we
-can compute the length of the longest text:</p>
-<pre><code class="hljs lang-js">var Max = {empty: () =&gt; 0, concat: Math.max}
-L.concatAs(R.length, Max, texts, sampleTitles)
+could use <a href="#L-maximumBy"><code>L.maximumBy</code></a> to find a title with the maximum length:</p>
+<pre><code class="hljs lang-js">L.maximumBy(R.length, texts, sampleTitles)
 </code></pre>
 <p>Of course, we can also modify texts.  For example, we could uppercase all the
 titles:</p>

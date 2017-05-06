@@ -511,12 +511,11 @@ L.collect(texts, sampleTitles)
 ```
 
 More generally, we can [map and fold](#L-concatAs) over texts.  For example, we
-can compute the length of the longest text:
+could use [`L.maximumBy`](#L-maximumBy) to find a title with the maximum length:
 
 ```js
-const Max = {empty: () => 0, concat: Math.max}
-L.concatAs(R.length, Max, texts, sampleTitles)
-// 6
+L.maximumBy(R.length, texts, sampleTitles)
+// 'Rubrik'
 ```
 
 Of course, we can also modify texts.  For example, we could uppercase all the
