@@ -618,7 +618,7 @@ const matchesJoin = input => matches => {
 
 const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 
-//
+// Internals
 
 export function toFunction(o) {
   switch (typeof o) {
@@ -663,23 +663,6 @@ export const remove = /*#__PURE__*/I.curry((o, s) => setU(o, void 0, s))
 export const set = /*#__PURE__*/I.curry(setU)
 
 export const traverse = /*#__PURE__*/I.curry(traverseU)
-
-// Sequencing
-
-export function seq() {
-  const n = arguments.length, xMs = Array(n)
-  for (let i=0; i<n; ++i)
-    xMs[i] = toFunction(arguments[i])
-  const loop = (M, xi2xM, i, j) => j === n
-    ? M.of
-    : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
-  return (x, i, M, xi2xM) => {
-    if (process.env.NODE_ENV !== "production")
-      if (!M.chain)
-        errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
-    return loop(M, xi2xM, i, 0)(x)
-  }
-}
 
 // Nesting
 
@@ -735,6 +718,23 @@ export function log() {
                       .concat([dir, x])),
     x))
   return isoU(show("get"), show("set"))
+}
+
+// Sequencing
+
+export function seq() {
+  const n = arguments.length, xMs = Array(n)
+  for (let i=0; i<n; ++i)
+    xMs[i] = toFunction(arguments[i])
+  const loop = (M, xi2xM, i, j) => j === n
+    ? M.of
+    : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
+  return (x, i, M, xi2xM) => {
+    if (process.env.NODE_ENV !== "production")
+      if (!M.chain)
+        errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
+    return loop(M, xi2xM, i, 0)(x)
+  }
 }
 
 // Operations on traversals

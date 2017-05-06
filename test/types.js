@@ -60,7 +60,8 @@ const T_monoid = T.object({empty: T.fn([], T.any),
                            concat: T.fn([T.any, T.any], T.any)})
 
 const hint = T.object({hint: T.number})
-//
+
+// Internals
 
 export const toFunction = T.fn([T_optic],
                                T_opticFnOf(T.or(T_applicative, T_functor)))
@@ -78,10 +79,6 @@ export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
                               T_optic,
                               T_maybeDataI],
                              T.any)
-
-// Sequencing
-
-export const seq = T.fnVar(T_optic, T_transform)
 
 // Nesting
 
@@ -103,6 +100,10 @@ export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 // Debugging
 
 export const log = T.fnVar(T.string, T_optic)
+
+// Sequencing
+
+export const seq = T.fnVar(T_optic, T_transform)
 
 // Operations on traversals
 
