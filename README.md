@@ -1577,7 +1577,7 @@ L.sum(L.elems, [1,2,3])
 // 6
 ```
 
-##### <a id="L-sumAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-sumAs) [`L.sum(traversal, maybeData) ~> number`](#L-sum "L.sum: PTraversal s Number -> Maybe s -> Number")
+##### <a id="L-sumAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-sumAs) [`L.sumAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-sumAs "L.sumAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
 
 `L.sumAs` computes the sum of the numbers returned by the given function for the
 elements targeted by the traversal.

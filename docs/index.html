@@ -1217,7 +1217,7 @@ implement a for all predicate over traversals:</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.sum(L.elems, [1,2,3])
 </code></pre>
-<h5 id="-a-id-l-sumas-a-contents-https-github-com-calmm-js-partial-lenses-l-sumas-l-sum-traversal-maybedata-number-l-sum-l-sum-ptraversal-s-number-maybe-s-number-"><a id="L-sumAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-sumAs">■</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></h5>
+<h5 id="-a-id-l-sumas-a-contents-https-github-com-calmm-js-partial-lenses-l-sumas-l-sumas-maybevalue-index-number-traversal-maybedata-number-l-sumas-l-sumas-maybe-a-index-number-ptraversal-s-a-maybe-s-number-"><a id="L-sumAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-sumAs">■</a> <a href="#L-sumAs" title="L.sumAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.sumAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.sumAs</code> computes the sum of the numbers returned by the given function for the
 elements targeted by the traversal.</p>
 <p>For example:</p>
