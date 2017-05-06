@@ -4,7 +4,6 @@ import * as R from "ramda"
 import * as L from "../dist/partial.lenses.cjs"
 
 import * as BST from "./bst"
-import * as C   from "./core"
 import * as T   from "./types"
 
 //
@@ -104,7 +103,6 @@ function show(x) {
 }
 
 const run = expr => eval(`() => ${expr}`)(
-  C,
   Sum,
   StateM,
   T,
@@ -134,10 +132,6 @@ function testEq(exprIn, expect) {
     const typed = run(exprTy)
     if (!equals(actual, typed))
       throw new Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
-
-    const core = run(exprTy.replace(/\bL\./g, "C."))
-    if (!equals(actual, core))
-      throw new Error(`Core: ${show(core)}, actual: ${show(actual)}`)
   })
 }
 
@@ -302,9 +296,9 @@ describe(`L.index`, () => {
   testEq(`L.set([2], 4, [1])`, [1, undefined, 4])
   testEq(`L.remove([0], [1, 2, 3])`, [2, 3])
   testEq(`L.set([1], undefined, [1, 2, 3])`, [1, 3])
-  testEq(`L.set(2, undefined, [1, 2, 3])`, [1, 2])
+  testEq(`L.set(2)(undefined, [1, 2, 3])`, [1, 2])
   testEq(`L.set([5], undefined, [1, 2, 3])`, [1, 2, 3])
-  testEq(`L.get(5, undefined)`, undefined)
+  testEq(`L.get(5)(undefined)`, undefined)
   testEq(`L.get([5], [1, 2, 3])`, undefined)
   testEq(`L.set(1, "2", ["1", "2", "3"])`, ["1", "2", "3"])
   empties.forEach(invalid => {
@@ -330,7 +324,7 @@ describe(`L.prop`, () => {
   testEq(`L.set("z", 3, {x: 1, y: 2})`, {x: 1, y: 2, z: 3})
   testEq(`L.set(["z"], 3, undefined)`, {z: 3})
   testEq(`L.get("z", undefined)`, undefined)
-  testEq(`L.get(["z"], {x: 1})`, undefined)
+  testEq(`L.get(["z"])({x: 1})`, undefined)
   empties.forEach(invalid => {
     testEq(`L.get("x", ${show(invalid)})`, undefined)
     testEq(`L.set("ex", true, ${show(invalid)})`, {ex: true})
