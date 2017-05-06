@@ -676,7 +676,7 @@ var isoU = function isoU(bwd, fwd) {
   };
 };
 
-//
+// Internals
 
 function toFunction(o) {
   switch (typeof o) {
@@ -717,24 +717,6 @@ var remove = /*#__PURE__*/curry(function (o, s) {
 var set = /*#__PURE__*/curry(setU);
 
 var traverse = /*#__PURE__*/curry(traverseU);
-
-// Sequencing
-
-function seq() {
-  var n = arguments.length,
-      xMs = Array(n);
-  for (var i = 0; i < n; ++i) {
-    xMs[i] = toFunction(arguments[i]);
-  }var loop = function loop(M, xi2xM, i, j) {
-    return j === n ? M.of : function (x) {
-      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
-    };
-  };
-  return function (x, i, M, xi2xM) {
-    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
-    return loop(M, xi2xM, i, 0)(x);
-  };
-}
 
 // Nesting
 
@@ -811,6 +793,24 @@ function log() {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
   return isoU(show("get"), show("set"));
+}
+
+// Sequencing
+
+function seq() {
+  var n = arguments.length,
+      xMs = Array(n);
+  for (var i = 0; i < n; ++i) {
+    xMs[i] = toFunction(arguments[i]);
+  }var loop = function loop(M, xi2xM, i, j) {
+    return j === n ? M.of : function (x) {
+      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
+    };
+  };
+  return function (x, i, M, xi2xM) {
+    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
+    return loop(M, xi2xM, i, 0)(x);
+  };
 }
 
 // Operations on traversals
@@ -1237,4 +1237,4 @@ function json(options) {
   }));
 }
 
-export { toFunction, modify, remove, set, traverse, seq, compose, chain, choice, choose, when, optional, zero, lazy, log, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json };
+export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json };

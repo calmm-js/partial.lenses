@@ -679,7 +679,7 @@ var isoU = function isoU(bwd, fwd) {
   };
 };
 
-//
+// Internals
 
 function toFunction(o) {
   switch (typeof o) {
@@ -720,24 +720,6 @@ var remove = /*#__PURE__*/I.curry(function (o, s) {
 var set = /*#__PURE__*/I.curry(setU);
 
 var traverse = /*#__PURE__*/I.curry(traverseU);
-
-// Sequencing
-
-function seq() {
-  var n = arguments.length,
-      xMs = Array(n);
-  for (var i = 0; i < n; ++i) {
-    xMs[i] = toFunction(arguments[i]);
-  }var loop = function loop(M, xi2xM, i, j) {
-    return j === n ? M.of : function (x) {
-      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
-    };
-  };
-  return function (x, i, M, xi2xM) {
-    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
-    return loop(M, xi2xM, i, 0)(x);
-  };
-}
 
 // Nesting
 
@@ -814,6 +796,24 @@ function log() {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
   return isoU(show("get"), show("set"));
+}
+
+// Sequencing
+
+function seq() {
+  var n = arguments.length,
+      xMs = Array(n);
+  for (var i = 0; i < n; ++i) {
+    xMs[i] = toFunction(arguments[i]);
+  }var loop = function loop(M, xi2xM, i, j) {
+    return j === n ? M.of : function (x) {
+      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
+    };
+  };
+  return function (x, i, M, xi2xM) {
+    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
+    return loop(M, xi2xM, i, 0)(x);
+  };
 }
 
 // Operations on traversals
@@ -1245,7 +1245,6 @@ exports.modify = modify;
 exports.remove = remove;
 exports.set = set;
 exports.traverse = traverse;
-exports.seq = seq;
 exports.compose = compose;
 exports.chain = chain;
 exports.choice = choice;
@@ -1255,6 +1254,7 @@ exports.optional = optional;
 exports.zero = zero;
 exports.lazy = lazy;
 exports.log = log;
+exports.seq = seq;
 exports.concatAs = concatAs;
 exports.concat = concat;
 exports.all = all;
