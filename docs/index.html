@@ -2524,20 +2524,10 @@ the scripts for those subtasks separately.</p>
 <p>First of all, the tests are written as strings that are <code>eval</code>ed.  This way one
 doesn&#39;t need to invent names or write prose for tests.</p>
 <p>There is also a special test that checks the arity of the exports.  You&#39;ll
-notice it if you add an export.</p>
-<p>The test code string is then actually used to run more than one test:</p>
-<ul>
-<li><p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/core.js"><code>test/core.js</code></a> file contains a kind of simplified shadow
-implementation of this library.  The results from the actual library
-implementation and the shadow implementation are tested to be equal.  The idea
-is to make the shadow implementations as simple as possible while the library
-implementations are free to be tweaked and optimized.</p>
-</li>
-<li><p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/types.js"><code>test/types.js</code></a> file contains contract or type
-predicates for the library primitives.  Those are also used when running tests
-to check that the implementation matches the contracts.</p>
-</li>
-</ul>
+notice it immediately if you add an export.</p>
+<p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/types.js"><code>test/types.js</code></a> file contains contract or type predicates
+for the library primitives.  Those are also used when running tests to check
+that the implementation matches the contracts.</p>
 <p>When you implement a new combinator, you will need to also add a type contract
 and a shadow implementation for the primitive.</p>
 <h3 id="documentation">Documentation</h3>
