@@ -770,6 +770,8 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
+export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
+
 export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
   if (process.env.NODE_ENV !== "production")
     if (!I.isString(d))

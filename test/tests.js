@@ -203,6 +203,7 @@ describe("arities", () => {
     index: 1,
     inverse: 1,
     is: 1,
+    isEmpty: 2,
     iso: 2,
     join: 3,
     joinAs: 4,
@@ -645,6 +646,10 @@ describe("L.traverse", () => {
 })
 
 describe("folds", () => {
+  testEq(`L.isEmpty(L.elems, [])`, true)
+  testEq(`L.isEmpty(L.elems, [1])`, false)
+  testEq(`L.isEmpty([L.elems, "x"], [{}])`, false)
+  testEq(`L.isEmpty([L.elems, "x", L.optional], [{}])`, true)
   testEq(`X.concat(Sum, X.elems, a100000)`, 100000)
   testEq(`X.concatAs(id, Sum, X.elems, a100000)`, 100000)
   testEq(`L.maximum([L.elems, "x"], [])`, undefined)
