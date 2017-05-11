@@ -2614,8 +2614,9 @@ to
 
 `L.seemsArrayLike` determines whether the given value is an `instanceof Object`
 that has a non-negative integer `length` property or a string, which are not
-Objects in JavaScript.  In this library, such values are considered *array-like*
-objects that can be manipulated with various optics.
+Objects in JavaScript.  In this library, such values are
+considered [array-like](#array-like) objects that can be manipulated with
+various optics.
 
 Note that this function is intentionally loose, which is also intentionally
 apparent from the name of this function.  JavaScript includes many array-like
