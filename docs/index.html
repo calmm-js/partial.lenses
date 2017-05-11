@@ -230,6 +230,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 </ul>
 </li>
+<li><a href="#auxiliary">Auxiliary</a><ul>
+<li><a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#examples">Examples</a><ul>
@@ -1435,7 +1439,7 @@ while <code>L.rewrite</code> only applies the transform when writing.</p>
 <h4 id="-a-id-array-like-a-lensing-array-like-objects"><a id="array-like"></a> Lensing array-like objects</h4>
 <p>Objects that have a non-negative integer <code>length</code> and strings, which are not
 considered <code>Object</code> instances in JavaScript, are considered <em>array-like</em> objects
-by partial optics.</p>
+by partial optics.  See also <a href="#L-seemsArrayLike"><code>L.seemsArrayLike</code></a>.</p>
 <p>When writing through an optic that operates on array-like objects, the result is
 always either <code>undefined</code>, in case the result would be empty, or a plain
 <code>Array</code>.  For example:</p>
@@ -1865,6 +1869,26 @@ to
 the optional <code>replacer</code> and <code>space</code> are passed
 to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>
+<h3 id="auxiliary">Auxiliary</h3>
+<h4 id="-a-id-l-seemsarraylike-a-contents-https-github-com-calmm-js-partial-lenses-l-seemsarraylike-l-seemsarraylike-anything-boolean-l-seemsarraylike-l-seemsarraylike-any-boolean-"><a id="L-seemsArrayLike"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seemsArrayLike">■</a> <a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a></h4>
+<p><code>L.seemsArrayLike</code> determines whether the given value is an <code>instanceof Object</code>
+that has a non-negative integer <code>length</code> property or a string, which are not
+Objects in JavaScript.  In this library, such values are
+considered <a href="#array-like">array-like</a> objects that can be manipulated with
+various optics.</p>
+<p>Note that this function is intentionally loose, which is also intentionally
+apparent from the name of this function.  JavaScript includes many array-like
+values, including
+normal
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">arrays</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed arrays</a>,
+and
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String">strings</a>.
+Unfortunately there seems to be no simple way to directly and precisely test for
+all of those.  Testing explicitly for every standard variation would be costly
+and might not cover user defined types.  Fortunately, optics are targeting
+specific paths inside data-structures, rather than completely arbitrary values,
+which means that even a loose test can be accurate enough.</p>
 <h2 id="examples">Examples</h2>
 <p>Note that if you are new to lenses, then you probably want to start with
 the <a href="#tutorial">tutorial</a>.</p>

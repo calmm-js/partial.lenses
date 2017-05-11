@@ -40,10 +40,6 @@ var notPartial = function notPartial(x) {
   return void 0 !== x ? !x : x;
 };
 
-var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
-};
-
 var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : undefined;
@@ -1237,4 +1233,10 @@ function json(options) {
   }));
 }
 
-export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json };
+// Auxiliary
+
+var seemsArrayLike = function seemsArrayLike(x) {
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
+};
+
+export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

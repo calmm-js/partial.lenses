@@ -43,10 +43,6 @@ var notPartial = function notPartial(x) {
   return void 0 !== x ? !x : x;
 };
 
-var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
-};
-
 var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : undefined;
@@ -1240,6 +1236,12 @@ function json(options) {
   }));
 }
 
+// Auxiliary
+
+var seemsArrayLike = function seemsArrayLike(x) {
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
+};
+
 exports.toFunction = toFunction;
 exports.modify = modify;
 exports.remove = remove;
@@ -1316,3 +1318,4 @@ exports.is = is;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
 exports.json = json;
+exports.seemsArrayLike = seemsArrayLike;
