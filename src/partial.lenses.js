@@ -884,7 +884,7 @@ export const lens = /*#__PURE__*/I.curry(lensU)
 
 export const setter = /*#__PURE__*/lens(I.id)
 
-export const lensFromFT = /*#__PURE__*/I.curry((fold, traversal) =>
+export const foldTraversalLens = /*#__PURE__*/I.curry((fold, traversal) =>
   lensU(fold(traversal), set(traversal)))
 
 // Computing derived props
