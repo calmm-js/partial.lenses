@@ -18,10 +18,6 @@ const unto = c => x => void 0 !== x ? x : c
 
 const notPartial = x => void 0 !== x ? !x : x
 
-const seemsArrayLike = x =>
-  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  I.isString(x)
-
 const expect = (p, f) => x => p(x) ? f(x) : undefined
 
 function deepFreeze(x) {
@@ -1117,3 +1113,9 @@ export function json(options) {
     return json
   }), expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
 }
+
+// Auxiliary
+
+export const seemsArrayLike = x =>
+  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
+  I.isString(x)

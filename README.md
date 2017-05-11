@@ -138,6 +138,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String")
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String")
       * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON")
+  * [Auxiliary](#auxiliary)
+    * [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean")
 * [Examples](#examples)
   * [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
   * [Dependent fields](#dependent-fields)
@@ -1923,7 +1925,7 @@ See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
 Objects that have a non-negative integer `length` and strings, which are not
 considered `Object` instances in JavaScript, are considered *array-like* objects
-by partial optics.
+by partial optics.  See also [`L.seemsArrayLike`](#L-seemsArrayLike).
 
 When writing through an optic that operates on array-like objects, the result is
 always either `undefined`, in case the result would be empty, or a plain
@@ -2605,6 +2607,30 @@ to
 the optional `replacer` and `space` are passed
 to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+
+### Auxiliary
+
+####  <a id="L-seemsArrayLike"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seemsArrayLike) [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean")
+
+`L.seemsArrayLike` determines whether the given value is an `instanceof Object`
+that has a non-negative integer `length` property or a string, which are not
+Objects in JavaScript.  In this library, such values are
+considered [array-like](#array-like) objects that can be manipulated with
+various optics.
+
+Note that this function is intentionally loose, which is also intentionally
+apparent from the name of this function.  JavaScript includes many array-like
+values, including
+normal
+[arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array),
+[typed arrays](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays),
+and
+[strings](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String).
+Unfortunately there seems to be no simple way to directly and precisely test for
+all of those.  Testing explicitly for every standard variation would be costly
+and might not cover user defined types.  Fortunately, optics are targeting
+specific paths inside data-structures, rather than completely arbitrary values,
+which means that even a loose test can be accurate enough.
 
 ## Examples
 
