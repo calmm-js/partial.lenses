@@ -278,3 +278,7 @@ export const is = T.fn([T.def], T_lens)
 export const uri = T_isomorphism
 export const uriComponent = T_isomorphism
 export const json = T.fn([T.any], T_isomorphism)
+
+// Auxiliary
+
+export const seemsArrayLike = T.fn([T.any], T.boolean)

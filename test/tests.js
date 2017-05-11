@@ -231,6 +231,7 @@ describe("arities", () => {
     replace: 2,
     required: 1,
     rewrite: 1,
+    seemsArrayLike: 1,
     select: 2,
     selectAs: 3,
     seq: 0,
