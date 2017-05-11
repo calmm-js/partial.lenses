@@ -201,8 +201,8 @@ const Select = /*#__PURE__*/ConcatOf(
   U,
   I.id)
 
-const mkSelect = toM => (xi2yM, t, s) =>
-  force(traverseU(Select, I.pipe2U(xi2yM, toM), t, s)).v
+const mkSelect = toS => (xi2yM, t, s) =>
+  force(traverseU(Select, xi2yM ? I.pipe2U(xi2yM, toS) : toS, t, s)).v
 
 const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) => {
   const C = toC(m)
@@ -744,7 +744,7 @@ export const concat = /*#__PURE__*/concatAs(I.id)
 
 export const all = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? U : T), not)
 
-export const and = /*#__PURE__*/all(I.id)
+export const and = /*#__PURE__*/all()
 
 export const any = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? T : U), Boolean)
 
@@ -787,7 +787,7 @@ export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
 
 export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
 
-export const or = /*#__PURE__*/any(I.id)
+export const or = /*#__PURE__*/any()
 
 export const productAs = /*#__PURE__*/traverse(ConcatOf((x, y) => x * y, 1))
 
@@ -795,7 +795,7 @@ export const product = /*#__PURE__*/productAs(unto(1))
 
 export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
 
-export const select = /*#__PURE__*/selectAs(I.id)
+export const select = /*#__PURE__*/selectAs()
 
 export const sumAs = /*#__PURE__*/traverse(Sum)
 
