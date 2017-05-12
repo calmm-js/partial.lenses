@@ -148,6 +148,8 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
+
 export const joinAs =
   T.fn([T.fn([T_maybeDataO, T_index], T.or(T.string, T.undef)),
         T.string,
