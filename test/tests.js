@@ -211,6 +211,7 @@ describe("arities", () => {
     last: 4,
     lazy: 1,
     lens: 2,
+    foldTraversalLens: 2,
     log: 0,
     matches: 1,
     maximum: 2,
@@ -936,6 +937,11 @@ describe("L.matches", () => {
          {not_a_string: true})
   testEq(`L.set(L.matches(/\\w+/g), "", "Hello")`, undefined)
   testEq(`L.remove(L.matches(/\\w+/g), "Hello")`, undefined)
+})
+
+describe("foldTraversalLens", () => {
+  testEq(`L.get(L.foldTraversalLens(L.maximum, L.elems), [3,1,4,1])`, 4)
+  testEq(`L.set(L.foldTraversalLens(L.maximum, L.elems), 2, [3,1,4,1])`, [2, 2, 2, 2])
 })
 
 if (process.env.NODE_ENV !== "production") {
