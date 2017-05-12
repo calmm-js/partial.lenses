@@ -68,7 +68,7 @@
     "babelify": "^7.3.0",
     "benchmark": "^2.1.4",
     "browserify": "^14.3.0",
-    "codecov": "^2.1.0",
+    "codecov": "^2.2.0",
     "envify": "^4.0.0",
     "eslint": "^3.19.0",
     "immutable": "^3.8.1",
@@ -84,7 +84,7 @@
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.2",
     "sprintf-js": "^1.1.0",
-    "uglify-js": "^3.0.1",
+    "uglify-js": "^3.0.4",
     "uglifyify": "^3.0.4",
     "watch-run": "^1.2.5"
   }
