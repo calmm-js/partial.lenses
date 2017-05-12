@@ -231,9 +231,9 @@ var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   return void 0 !== (l = force(l)).v ? l : r;
 }, U, id);
 
-var mkSelect = function mkSelect(toM) {
+var mkSelect = function mkSelect(toS) {
   return function (xi2yM, t, s) {
-    return force(traverseU(Select, pipe2U(xi2yM, toM), t, s)).v;
+    return force(traverseU(Select, xi2yM ? pipe2U(xi2yM, toS) : toS, t, s)).v;
   };
 };
 
@@ -456,6 +456,14 @@ function modifyComposed(os, xi2y, x, y) {
     x = isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
   }return x;
 }
+
+var lensU = function lensU(get, set) {
+  return function (x, i, F, xi2yF) {
+    return (0, F.map)(function (y) {
+      return set(y, x, i);
+    }, xi2yF(get(x, i), i));
+  };
+};
 
 //
 
@@ -824,7 +832,7 @@ var all = /*#__PURE__*/pipe2U(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = /*#__PURE__*/all(id);
+var and = /*#__PURE__*/all();
 
 var any = /*#__PURE__*/pipe2U(mkSelect(function (x) {
   return x ? T : U;
@@ -857,6 +865,8 @@ var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
   return r;
 });
 
+var isEmpty = /*#__PURE__*/pipe2U(mkSelect(always(T)), not)();
+
 var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
   if (process.env.NODE_ENV !== "production") if (!isString(d)) errorGiven("`join` and `joinAs` expect a string delimiter", d);
   return ConcatOf(function (x, y) {
@@ -874,7 +884,7 @@ var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), id);
 
-var or = /*#__PURE__*/any(id);
+var or = /*#__PURE__*/any();
 
 var productAs = /*#__PURE__*/traverse(ConcatOf(function (x, y) {
   return x * y;
@@ -886,7 +896,7 @@ var selectAs = /*#__PURE__*/curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = /*#__PURE__*/selectAs(id);
+var select = /*#__PURE__*/selectAs();
 
 var sumAs = /*#__PURE__*/traverse(Sum);
 
@@ -962,21 +972,19 @@ function get(l, s) {
 
 // Creating new lenses
 
-var lens = /*#__PURE__*/curry(function (get, set) {
-  return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (y) {
-      return set(y, x, i);
-    }, xi2yF(get(x, i), i));
-  };
-});
+var lens = /*#__PURE__*/curry(lensU);
 
 var setter = /*#__PURE__*/lens(id);
+
+var foldTraversalLens = /*#__PURE__*/curry(function (fold, traversal) {
+  return lensU(fold(traversal), set(traversal));
+});
 
 // Computing derived props
 
 function augment(template) {
   if (process.env.NODE_ENV !== "production") if (!isObject(template)) errorGiven("`augment` expects a plain Object template", template);
-  return lens(function (x) {
+  return lensU(function (x) {
     x = dissocPartialU(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
@@ -1239,4 +1247,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

@@ -234,9 +234,9 @@ var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   return void 0 !== (l = force(l)).v ? l : r;
 }, U, I.id);
 
-var mkSelect = function mkSelect(toM) {
+var mkSelect = function mkSelect(toS) {
   return function (xi2yM, t, s) {
-    return force(traverseU(Select, I.pipe2U(xi2yM, toM), t, s)).v;
+    return force(traverseU(Select, xi2yM ? I.pipe2U(xi2yM, toS) : toS, t, s)).v;
   };
 };
 
@@ -459,6 +459,14 @@ function modifyComposed(os, xi2y, x, y) {
     x = I.isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
   }return x;
 }
+
+var lensU = function lensU(get, set) {
+  return function (x, i, F, xi2yF) {
+    return (0, F.map)(function (y) {
+      return set(y, x, i);
+    }, xi2yF(get(x, i), i));
+  };
+};
 
 //
 
@@ -827,7 +835,7 @@ var all = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
   return x ? U : T;
 }), not);
 
-var and = /*#__PURE__*/all(I.id);
+var and = /*#__PURE__*/all();
 
 var any = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
   return x ? T : U;
@@ -860,6 +868,8 @@ var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
   return r;
 });
 
+var isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)();
+
 var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
   if (process.env.NODE_ENV !== "production") if (!I.isString(d)) errorGiven("`join` and `joinAs` expect a string delimiter", d);
   return ConcatOf(function (x, y) {
@@ -877,7 +887,7 @@ var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), I.id);
 
-var or = /*#__PURE__*/any(I.id);
+var or = /*#__PURE__*/any();
 
 var productAs = /*#__PURE__*/traverse(ConcatOf(function (x, y) {
   return x * y;
@@ -889,7 +899,7 @@ var selectAs = /*#__PURE__*/I.curry(mkSelect(function (v) {
   return void 0 !== v ? { v: v } : U;
 }));
 
-var select = /*#__PURE__*/selectAs(I.id);
+var select = /*#__PURE__*/selectAs();
 
 var sumAs = /*#__PURE__*/traverse(Sum);
 
@@ -965,21 +975,19 @@ function get(l, s) {
 
 // Creating new lenses
 
-var lens = /*#__PURE__*/I.curry(function (get, set) {
-  return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (y) {
-      return set(y, x, i);
-    }, xi2yF(get(x, i), i));
-  };
-});
+var lens = /*#__PURE__*/I.curry(lensU);
 
 var setter = /*#__PURE__*/lens(I.id);
+
+var foldTraversalLens = /*#__PURE__*/I.curry(function (fold, traversal) {
+  return lensU(fold(traversal), set(traversal));
+});
 
 // Computing derived props
 
 function augment(template) {
   if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`augment` expects a plain Object template", template);
-  return lens(function (x) {
+  return lensU(function (x) {
     x = I.dissocPartialU(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
@@ -1268,6 +1276,7 @@ exports.countIf = countIf;
 exports.count = count;
 exports.foldl = foldl;
 exports.foldr = foldr;
+exports.isEmpty = isEmpty;
 exports.joinAs = joinAs;
 exports.join = join;
 exports.maximumBy = maximumBy;
@@ -1288,6 +1297,7 @@ exports.matches = matches;
 exports.get = get;
 exports.lens = lens;
 exports.setter = setter;
+exports.foldTraversalLens = foldTraversalLens;
 exports.augment = augment;
 exports.defaults = defaults;
 exports.define = define;

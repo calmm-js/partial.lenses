@@ -118,6 +118,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a></li>
 <li><a href="#L-joinAs" title="L.joinAs: ((Maybe a, Index) -&gt; Maybe String) -&gt; String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.joinAs((maybeValue, index) =&gt; maybeString, string, traversal, maybeData) ~&gt; string</code></a></li>
 <li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
@@ -153,6 +154,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
 <li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></li>
 <li><a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></li>
+<li><a href="#L-foldTraversalLens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) ~&gt; maybeValue, traversal) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#computing-derived-props">Computing derived props</a><ul>
@@ -1128,6 +1130,11 @@ traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
 </code></pre>
+<h5 id="-a-id-l-isempty-a-contents-https-github-com-calmm-js-partial-lenses-l-isempty-l-isempty-traversal-maybedata-boolean-l-isempty-l-isempty-ptraversal-s-a-maybe-s-boolean-"><a id="L-isEmpty"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isEmpty">■</a> <a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a></h5>
+<p><code>L.isEmpty</code> determines whether or not the given traversal focuses on any
+elements, <code>undefined</code> or otherwise, on the given data structure.</p>
+<pre><code class="hljs lang-js">L.isEmpty(flatten, [[],[[[],[]],[]]])
+</code></pre>
 <h5 id="-a-id-l-join-a-contents-https-github-com-calmm-js-partial-lenses-l-join-l-join-string-traversal-maybedata-string-l-join-l-join-string-ptraversal-s-a-maybe-s-string-"><a id="L-join"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-join">■</a> <a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a></h5>
 <p><code>L.join</code> creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.</p>
@@ -1371,6 +1378,18 @@ adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 example of using <code>L.lens</code>.</p>
 <h5 id="-a-id-l-setter-a-contents-https-github-com-calmm-js-partial-lenses-l-setter-l-setter-maybevalue-maybedata-index-maybedata-lens-l-setter-l-setter-maybe-a-maybe-s-index-maybe-s-plens-s-a-"><a id="L-setter"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-setter">■</a> <a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a></h5>
 <p><code>L.setter(set)</code> is shorthand for <a href="#L-lens"><code>L.lens(x =&gt; x, set)</code></a>.</p>
+<h5 id="-a-id-l-foldtraversallens-a-contents-https-github-com-calmm-js-partial-lenses-l-foldtraversallens-l-foldtraversallens-traversal-maybedata-maybevalue-traversal-lens-l-foldtraversallens-l-foldtraversallens-ptraversal-s-a-maybe-s-maybe-a-ptraversal-s-a-plens-s-a-"><a id="L-foldTraversalLens"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldTraversalLens">■</a> <a href="#L-foldTraversalLens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) ~&gt; maybeValue, traversal) ~&gt; lens</code></a></h5>
+<p><code>L.foldTraversalLens</code> creates a lens from a fold and a traversal.  To make
+sense, the fold should compute or pick a representative from the elements
+focused on by the traversal such that when all the elements are equal then so is
+the representative.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.foldTraversalLens(L.minimum, L.elems), [3,1,4])
+</code></pre>
+<pre><code class="hljs lang-js">L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3,1,4])
+</code></pre>
+<p>See the <a href="#collection-toggle">Collection toggle</a> section for a more interesting
+example.</p>
 <h4 id="computing-derived-props">Computing derived props</h4>
 <h5 id="-a-id-l-augment-a-contents-https-github-com-calmm-js-partial-lenses-l-augment-l-augment-prop-object-value-props-lens-l-augment-l-augment-p1-o-a1-ps-plens-o-o-p1-a1-ps-"><a id="L-augment"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-augment">■</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props}) ~&gt; lens</code></a></h5>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
@@ -1957,8 +1976,8 @@ transforms a collection of booleans into a single boolean?</p>
 </code></pre>
 <p>To compute a single boolean out of a traversal over booleans we can use
 the <a href="#L-and"><code>L.and</code></a> fold and use that to define a lens parameterized over flag
-traversals:</p>
-<pre><code class="hljs lang-js">var selectAll = flags =&gt; L.lens(L.and(flags), L.set(flags))
+traversals using <a href="#L-foldTraversalLens"><code>L.foldTraversalLens</code></a>:</p>
+<pre><code class="hljs lang-js">var selectAll = L.foldTraversalLens(L.and)
 </code></pre>
 <p>Now we can say, for example:</p>
 <pre><code class="hljs lang-js">L.get(selectAll(completedFlags), sampleTodos)
