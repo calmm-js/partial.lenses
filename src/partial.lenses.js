@@ -413,8 +413,12 @@ function modifyComposed(os, xi2y, x, y) {
   return x
 }
 
+//
+
 const lensU = (get, set) => (x, i, F, xi2yF) =>
   (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i))
+
+const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 
 //
 
@@ -615,7 +619,6 @@ const matchesJoin = input => matches => {
   return result || void 0
 }
 
-const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 
 // Internals
 
