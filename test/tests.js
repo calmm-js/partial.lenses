@@ -38,12 +38,11 @@ const flatten = [L.optional, L.lazy(rec => {
 })]
 
 const everywhere = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.seq(L.choose(x => (x instanceof Array ? elems :
-                              x instanceof Object ? values :
-                              L.zero)),
-               L.identity)
+  const elems = L.seq([L.elems, rec], L.identity)
+  const values = L.seq([L.values, rec], L.identity)
+  return L.choose(x => x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity)
 })]
 
 //
