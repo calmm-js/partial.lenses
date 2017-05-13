@@ -32,9 +32,9 @@ const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
 const flatten = [L.optional, L.lazy(rec => {
   const elems = [L.elems, rec]
   const values = [L.values, rec]
-  return L.choose(x => (x instanceof Array ? elems :
-                        x instanceof Object ? values :
-                        L.identity))
+  return L.choose(x => x instanceof Array  ? elems
+                  :    x instanceof Object ? values
+                  :                          L.identity)
 })]
 
 const everywhere = [L.optional, L.lazy(rec => {
