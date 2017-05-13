@@ -483,7 +483,7 @@ function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys.length) {
     const k = keys[i], v = x[k]
     return ap(map(cpair,
-                  vals ? vals[i](x[k], k, A, xi2yA) : xi2yA(v, k)), delay(() =>
+                  vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), delay(() =>
               branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i+1)))
   } else {
     return z
