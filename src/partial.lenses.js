@@ -1059,8 +1059,7 @@ export function removable(...ps) {
 
 // Providing defaults
 
-export const valueOr = v => (x, i, _F, xi2yF) =>
-  xi2yF(void 0 !== x && x !== null ? x : v, i)
+export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
 
 // Adapting to data
 
