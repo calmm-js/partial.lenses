@@ -914,17 +914,18 @@ export function augment(template) {
       if (!(x instanceof Object))
         x = void 0
       let z
-      function set(k, v) {
-        if (!z)
-          z = {}
-        z[k] = v
-      }
       for (const k in y) {
-        if (!I.hasU(k, template))
-          set(k, y[k])
-        else
-          if (x && I.hasU(k, x))
-            set(k, x[k])
+        if (!I.hasU(k, template)) {
+          if (!z)
+            z = {}
+          z[k] = y[k]
+        } else {
+          if (x && I.hasU(k, x)) {
+            if (!z)
+              z = {}
+            z[k] = x[k]
+          }
+        }
       }
       if (process.env.NODE_ENV !== "production")
         if (z) Object.freeze(z)
