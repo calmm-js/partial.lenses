@@ -154,7 +154,7 @@ describe("L.log", () => {
   testEq(`L.set(L.log("label"), "out", "in")`, "out")
 })
 
-describe("compose", () => {
+describe("L.compose", () => {
   testEq(`L.get(L.compose(), "any")`, "any")
   testEq(`L.compose("x")`, "x")
   testEq(`L.compose(101)`, 101)
@@ -194,6 +194,7 @@ describe("arities", () => {
     find: 1,
     findHint: 2,
     findWith: 0,
+    foldTraversalLens: 2,
     foldl: 4,
     foldr: 4,
     get: 2,
@@ -210,7 +211,6 @@ describe("arities", () => {
     last: 4,
     lazy: 1,
     lens: 2,
-    foldTraversalLens: 2,
     log: 0,
     matches: 1,
     maximum: 2,
@@ -758,7 +758,7 @@ describe("L.branch", () => {
          {x: 3, y: 2, z: 4})
 })
 
-describe("removable", () => {
+describe("L.removable", () => {
   testEq(`L.set(L.removable("x"), 42, "non object")`, 42)
   testEq(`L.get(L.removable("x"), {x: 1, y: 2})`, {x: 1, y: 2})
   testEq(`L.get([L.removable("y"), "y"], {x: 1, y: 2})`, 2)
@@ -766,7 +766,7 @@ describe("removable", () => {
   testEq(`L.set([L.removable("x"), "x"], undefined, {x: 1, y: 2})`, undefined)
 })
 
-describe("is", () => {
+describe("L.is", () => {
   testEq(`L.get(L.is("foo"), "bar")`, false)
   testEq(`L.get(L.is("foo"), undefined)`, false)
   testEq(`L.get(L.is("foo"), "foo")`, true)
@@ -848,7 +848,7 @@ describe("BST", () => {
                BST.fromPairs))
 })
 
-describe("seq", () => {
+describe("L.seq", () => {
   testEq(`L.set(L.seq(), "ignored", "anything")`, "anything")
   testEq(`L.set([L.seq(), "x"], "ignored", {x: "anything"})`, {x: "anything"})
   testEq(`L.set(L.seq("x", "y", "z"), 1, undefined)`, {x:1,y:1,z:1})
@@ -938,7 +938,7 @@ describe("L.matches", () => {
   testEq(`L.remove(L.matches(/\\w+/g), "Hello")`, undefined)
 })
 
-describe("foldTraversalLens", () => {
+describe("L.foldTraversalLens", () => {
   testEq(`L.get(L.foldTraversalLens(L.maximum, L.elems), [3,1,4,1])`, 4)
   testEq(`L.set(L.foldTraversalLens(L.maximum, L.elems), 2, [3,1,4,1])`, [2, 2, 2, 2])
 })
@@ -955,10 +955,10 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`X.prop(x => x)`)
     testThrows(`X.prop()`)
 
-    testThrows(`X.get(L.elems, [])`)
-    testThrows(`X.get(L.values, {})`)
-    testThrows(`X.get(L.branch({a: []}), {})`)
-    testThrows(`X.get(L.matches(/a/g), "foo")`)
+    testThrows(`L.get(L.elems, [])`)
+    testThrows(`L.get(L.values, {})`)
+    testThrows(`L.get(L.branch({a: []}), {})`)
+    testThrows(`L.get(L.matches(/a/g), "foo")`)
 
     testThrows(`L.set(L.props("length"), "lol", undefined)`)
     testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
