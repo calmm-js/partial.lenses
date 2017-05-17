@@ -75,6 +75,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a")
       * [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a")
+      * [`L.none((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-none "L.none: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
       * [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
       * [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
       * [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number")
@@ -1273,7 +1274,7 @@ L.all(x => 1 <= x && x <= 6,
 // true
 ```
 
-See also: [`L.any`](#L-any) and [`L.selectAs`](#L-selectAs).
+See also: [`L.any`](#L-any), [`L.none`](#L-none), and [`L.selectAs`](#L-selectAs).
 
 ##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
 
@@ -1304,7 +1305,7 @@ L.any(x => x > 5,
 // true
 ```
 
-See also: [`L.all`](#L-all) and [`L.selectAs`](#L-selectAs).
+See also: [`L.all`](#L-all), [`L.none`](#L-none), and [`L.selectAs`](#L-selectAs).
 
 ##### <a id="L-collect"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collect) [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
 
@@ -1495,6 +1496,22 @@ L.minimumBy(L.get("x"), L.elems, [{x: 1}, {x: -3}, {x: 2}])
 ```
 
 Note that keys are ordered according to the `<` operator.
+
+##### <a id="L-none"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-none) [`L.none((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-none "L.none: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
+
+`L.none` determines whether none of the elements focused on by the given
+traversal satisfy the given predicate.
+
+For example:
+
+```js
+L.none(x => x > 5,
+       flatten,
+       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// false
+```
+
+See also: [`L.all`](#L-all), [`L.any`](#L-any), and [`L.selectAs`](#L-selectAs).
 
 ##### <a id="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean")
 

@@ -166,6 +166,8 @@ export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
 export const minimumBy = maximumBy
 export const minimum = maximum
 
+export const none = all
+
 export const or = and
 
 export const productAs =
