@@ -122,10 +122,7 @@ export const all = T.fn([T.fn([T_maybeDataO, T_index], T.any),
                         T.boolean)
 export const and = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
-export const any = T.fn([T.fn([T_maybeDataO, T_index], T.any),
-                         T_traversal,
-                         T_maybeDataI],
-                        T.boolean)
+export const any = all
 
 export const collect = T.fn([T_traversal, T_maybeDataI], T.array(T.def))
 export const collectAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
@@ -169,7 +166,7 @@ export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
 export const minimumBy = maximumBy
 export const minimum = maximum
 
-export const or = T.fn([T_traversal, T_maybeDataI], T.boolean)
+export const or = and
 
 export const productAs =
   T.fn([T.fn([T_maybeDataO, T_index], T.number),
