@@ -74,7 +74,7 @@
     "immutable": "^3.8.1",
     "lz-string": "^1.4.4",
     "marked": "^0.3.6",
-    "mocha": "^3.3.0",
+    "mocha": "^3.4.1",
     "moment": "^2.18.1",
     "nyc": "^10.3.2",
     "ramda": "^0.23.0",
@@ -84,7 +84,7 @@
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.2",
     "sprintf-js": "^1.1.0",
-    "uglify-js": "^3.0.4",
+    "uglify-js": "^3.0.7",
     "uglifyify": "^3.0.4",
     "watch-run": "^1.2.5"
   }
