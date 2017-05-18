@@ -237,6 +237,10 @@ var mkSelect = function mkSelect(toS) {
   };
 };
 
+var selectAny = mkSelect(function (x) {
+  return x ? T : U;
+});
+
 var mkTraverse = function mkTraverse(after, toC) {
   return curryN(4, function (xi2yC, m) {
     var C = toC(m);
@@ -457,11 +461,19 @@ function modifyComposed(os, xi2y, x, y) {
   }return x;
 }
 
+//
+
 var lensU = function lensU(get, set) {
   return function (x, i, F, xi2yF) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
     }, xi2yF(get(x, i), i));
+  };
+};
+
+var isoU = function isoU(bwd, fwd) {
+  return function (x, i, F, xi2yF) {
+    return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
 };
 
@@ -532,7 +544,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys$$1.length) {
     var k = keys$$1[i],
         v = x[k];
-    return ap(map(cpair, vals ? vals[i](x[k], k, A, xi2yA) : xi2yA(v, k)), delay(function () {
+    return ap(map(cpair, vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), delay(function () {
       return branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i + 1);
     }));
   } else {
@@ -671,12 +683,6 @@ var matchesJoin = function matchesJoin(input) {
     }
     result += input.slice(lastIndex);
     return result || void 0;
-  };
-};
-
-var isoU = function isoU(bwd, fwd) {
-  return function (x, i, F, xi2yF) {
-    return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
 };
 
@@ -834,9 +840,7 @@ var all = /*#__PURE__*/pipe2U(mkSelect(function (x) {
 
 var and = /*#__PURE__*/all();
 
-var any = /*#__PURE__*/pipe2U(mkSelect(function (x) {
-  return x ? T : U;
-}), Boolean);
+var any = /*#__PURE__*/pipe2U(selectAny, Boolean);
 
 var collectAs = /*#__PURE__*/curry(function (xi2y, t, s) {
   return toArray(traverseU(Collect, xi2y, t, s)) || array0;
@@ -883,6 +887,8 @@ var maximum = /*#__PURE__*/traverse(Mum(gt), id);
 var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), id);
+
+var none = /*#__PURE__*/pipe2U(selectAny, not);
 
 var or = /*#__PURE__*/any();
 
@@ -995,12 +1001,16 @@ function augment(template) {
     y = toObject(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
-    function set(k, v) {
-      if (!z) z = {};
-      z[k] = v;
-    }
     for (var k in y) {
-      if (!hasU(k, template)) set(k, y[k]);else if (x && hasU(k, x)) set(k, x[k]);
+      if (!hasU(k, template)) {
+        if (!z) z = {};
+        z[k] = y[k];
+      } else {
+        if (x && hasU(k, x)) {
+          if (!z) z = {};
+          z[k] = x[k];
+        }
+      }
     }
     if (process.env.NODE_ENV !== "production") if (z) Object.freeze(z);
     return z;
@@ -1154,7 +1164,7 @@ function removable() {
 
 var valueOr = function valueOr(v) {
   return function (x, i, _F, xi2yF) {
-    return xi2yF(void 0 !== x && x !== null ? x : v, i);
+    return xi2yF(x != null ? x : v, i);
   };
 };
 
@@ -1247,4 +1257,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

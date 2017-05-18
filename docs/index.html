@@ -125,6 +125,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-maximumBy" title="L.maximumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-minimumBy" title="L.minimumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a></li>
+<li><a href="#L-none" title="L.none: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.none((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-or" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.or(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-productAs" title="L.productAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.productAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a></li>
@@ -1058,7 +1059,7 @@ satisfy the given predicate.</p>
       flatten,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<p>See also: <a href="#L-any"><code>L.any</code></a> and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
+<p>See also: <a href="#L-any"><code>L.any</code></a>, <a href="#L-none"><code>L.none</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5 id="-a-id-l-and-a-contents-https-github-com-calmm-js-partial-lenses-l-and-l-and-traversal-maybedata-boolean-l-and-l-or-ptraversal-s-boolean-boolean-"><a id="L-and"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-and">■</a> <a href="#L-and" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.and</code> determines whether all of the elements focused on by the given traversal
 are truthy.</p>
@@ -1075,7 +1076,7 @@ satisfy the given predicate.</p>
       flatten,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<p>See also: <a href="#L-all"><code>L.all</code></a> and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
+<p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-none"><code>L.none</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5 id="-a-id-l-collect-a-contents-https-github-com-calmm-js-partial-lenses-l-collect-l-collect-traversal-maybedata-values-l-collect-l-collect-ptraversal-s-a-maybe-s-a-"><a id="L-collect"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-collect">■</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></h5>
 <p><code>L.collect</code> returns an array of the non-<code>undefined</code> elements focused on by the
 given traversal or lens from a data structure.</p>
@@ -1177,6 +1178,15 @@ returned key is <code>undefined</code> are skipped.</p>
 <pre><code class="hljs lang-js">L.minimumBy(L.get(&quot;x&quot;), L.elems, [{x: 1}, {x: -3}, {x: 2}])
 </code></pre>
 <p>Note that keys are ordered according to the <code>&lt;</code> operator.</p>
+<h5 id="-a-id-l-none-a-contents-https-github-com-calmm-js-partial-lenses-l-none-l-none-maybevalue-index-testable-traversal-maybedata-boolean-l-none-l-none-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-none"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-none">■</a> <a href="#L-none" title="L.none: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.none((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></h5>
+<p><code>L.none</code> determines whether none of the elements focused on by the given
+traversal satisfy the given predicate.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.none(x =&gt; x &gt; 5,
+       flatten,
+       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+</code></pre>
+<p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-any"><code>L.any</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5 id="-a-id-l-or-a-contents-https-github-com-calmm-js-partial-lenses-l-or-l-or-traversal-maybedata-boolean-l-or-l-or-ptraversal-s-boolean-boolean-"><a id="L-or"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-or">■</a> <a href="#L-or" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.or(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.or</code> determines whether any of the elements focused on by the given traversal
 is truthy.</p>

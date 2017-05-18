@@ -240,6 +240,10 @@ var mkSelect = function mkSelect(toS) {
   };
 };
 
+var selectAny = mkSelect(function (x) {
+  return x ? T : U;
+});
+
 var mkTraverse = function mkTraverse(after, toC) {
   return I.curryN(4, function (xi2yC, m) {
     var C = toC(m);
@@ -460,11 +464,19 @@ function modifyComposed(os, xi2y, x, y) {
   }return x;
 }
 
+//
+
 var lensU = function lensU(get, set) {
   return function (x, i, F, xi2yF) {
     return (0, F.map)(function (y) {
       return set(y, x, i);
     }, xi2yF(get(x, i), i));
+  };
+};
+
+var isoU = function isoU(bwd, fwd) {
+  return function (x, i, F, xi2yF) {
+    return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
 };
 
@@ -535,7 +547,7 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys$$1.length) {
     var k = keys$$1[i],
         v = x[k];
-    return ap(map(cpair, vals ? vals[i](x[k], k, A, xi2yA) : xi2yA(v, k)), delay(function () {
+    return ap(map(cpair, vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), delay(function () {
       return branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i + 1);
     }));
   } else {
@@ -674,12 +686,6 @@ var matchesJoin = function matchesJoin(input) {
     }
     result += input.slice(lastIndex);
     return result || void 0;
-  };
-};
-
-var isoU = function isoU(bwd, fwd) {
-  return function (x, i, F, xi2yF) {
-    return (0, F.map)(fwd, xi2yF(bwd(x), i));
   };
 };
 
@@ -837,9 +843,7 @@ var all = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
 
 var and = /*#__PURE__*/all();
 
-var any = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
-  return x ? T : U;
-}), Boolean);
+var any = /*#__PURE__*/I.pipe2U(selectAny, Boolean);
 
 var collectAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
   return toArray(traverseU(Collect, xi2y, t, s)) || I.array0;
@@ -886,6 +890,8 @@ var maximum = /*#__PURE__*/traverse(Mum(gt), I.id);
 var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), I.id);
+
+var none = /*#__PURE__*/I.pipe2U(selectAny, not);
 
 var or = /*#__PURE__*/any();
 
@@ -998,12 +1004,16 @@ function augment(template) {
     y = toObject(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
-    function set(k, v) {
-      if (!z) z = {};
-      z[k] = v;
-    }
     for (var k in y) {
-      if (!I.hasU(k, template)) set(k, y[k]);else if (x && I.hasU(k, x)) set(k, x[k]);
+      if (!I.hasU(k, template)) {
+        if (!z) z = {};
+        z[k] = y[k];
+      } else {
+        if (x && I.hasU(k, x)) {
+          if (!z) z = {};
+          z[k] = x[k];
+        }
+      }
     }
     if (z) Object.freeze(z);
     return z;
@@ -1157,7 +1167,7 @@ function removable() {
 
 var valueOr = function valueOr(v) {
   return function (x, i, _F, xi2yF) {
-    return xi2yF(void 0 !== x && x !== null ? x : v, i);
+    return xi2yF(x != null ? x : v, i);
   };
 };
 
@@ -1283,6 +1293,7 @@ exports.maximumBy = maximumBy;
 exports.maximum = maximum;
 exports.minimumBy = minimumBy;
 exports.minimum = minimum;
+exports.none = none;
 exports.or = or;
 exports.productAs = productAs;
 exports.product = product;
