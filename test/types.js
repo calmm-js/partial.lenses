@@ -98,7 +98,7 @@ export const zero = T_optic
 
 export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 
-// Transform ops
+// Transforming
 
 export const modifyOp = T.fn([T.fn([T_maybeDataO, T_index], T_maybeDataI)],
                              T_optic)

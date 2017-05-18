@@ -951,7 +951,7 @@ describe("L.foldTraversalLens", () => {
   testEq(`L.set(L.foldTraversalLens(L.maximum, L.elems), 2, [3,1,4,1])`, [2, 2, 2, 2])
 })
 
-describe("transform ops", () => {
+describe("transforming", () => {
   testEq(`L.transform([L.elems, L.modifyOp(x => x+1)], [1,2,3])`, [2,3,4])
   testEq(`L.transform([L.elems, L.setOp(4)], [1,2,3])`, [4,4,4])
   testEq(`L.transform([L.elems, L.when(x => x > 3), L.removeOp], [3,1,4,1,5])`,

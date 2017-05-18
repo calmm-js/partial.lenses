@@ -720,7 +720,7 @@ export function lazy(o2o) {
   return rec
 }
 
-// Transform ops
+// Transforming
 
 export const modifyOp = xi2y => (x, i, C, xi2yC) => {
   const y = xi2y(x, i)
