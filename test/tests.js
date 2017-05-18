@@ -218,6 +218,7 @@ describe("arities", () => {
     minimum: 2,
     minimumBy: 3,
     modify: 3,
+    none: 3,
     normalize: 1,
     optional: 4,
     or: 2,
@@ -881,6 +882,8 @@ describe("lazy folds", () => {
   testEq(`L.any((x, i) => x > i, L.elems, [0,1,2])`, false)
   testEq(`L.all((x, i) => x > i, L.elems, [1,2,3])`, true)
   testEq(`L.all((x, i) => x > i, L.elems, [1,2,2])`, false)
+  testEq(`L.none((x, i) => x > i, L.elems, [0,1,3])`, false)
+  testEq(`L.none((x, i) => x > i, L.elems, [0,1,2])`, true)
   testEq(`L.and(L.elems, [])`, true)
   testEq(`L.or(L.elems, [])`, false)
 })
