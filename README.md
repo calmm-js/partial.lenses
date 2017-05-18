@@ -35,6 +35,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s")
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s")
       * [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s")
+      * [`L.transform(optic, maybeDate) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s")
       * [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t")
     * [Nesting](#nesting)
       * [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]`
@@ -47,6 +48,10 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a")
     * [Recursing](#recursing)
       * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a")
+    * [Transforming](#transforming)
+      * [`L.modifyOp((maybeValue, index) => maybeValue) ~> optic`](#L-modifyOp "L.modifyOp: ((Maybe a, Index) -> Maybe a) -> POptic a a")
+      * [`L.removeOp ~> optic`](#L-removeOp "L.removeOp: POptic a a")
+      * [`L.setOp(maybeValue) ~> optic`](#L-setOp "L.setOp: Maybe a -> POptic a a")
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s")
     * [Internals](#internals)
@@ -806,6 +811,11 @@ of a data structure.
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
 
+##### <a id="L-transform"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-transform) [`L.transform(optic, maybeDate) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s")
+
+`L.transform(o, s)` is shorthand for `L.modify(o, x => x, s)` and can be
+convenient when using [transform ops](#transforming).
+
 ##### <a id="L-traverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-traverse) [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t")
 
 `L.traverse` maps each focus to an operation and returns an operation that runs
@@ -1071,6 +1081,36 @@ L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
+
+#### Transforming
+
+Transform ops along with query ops can, in particular, be used to create
+selective traversals and transforms over data structures such that different
+modification operations are performed in different parts of the data structure.
+
+##### <a id="L-modifyOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-modifyOp) [`L.modifyOp((maybeValue, index) => maybeValue) ~> optic`](#L-modifyOp "L.modifyOp: ((Maybe a, Index) -> Maybe a) -> POptic a a")
+
+`L.modifyOp` creates an optic that maps the focus with the given function.  When
+used as a traversal, `L.modifyOp` acts as a traversal of no elements.  When used
+as a partial lens, `L.modifyOp` acts as a read-only lens whose view is the
+mapped focus.
+
+For example:
+
+```js
+L.transform([L.elems,
+             L.modifyOp(x => x < 2 ? undefined : x+1)],
+            [3, 1, 4, 1, 5])
+// [ 4, 5, 6 ]
+```
+
+##### <a id="L-removeOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removeOp) [`L.removeOp ~> optic`](#L-removeOp "L.removeOp: POptic a a")
+
+`L.removeOp` is shorthand for [`L.setOp(undefined)`](#L-setOp).
+
+##### <a id="L-setOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-setOp) [`L.setOp(maybeValue) ~> optic`](#L-setOp "L.setOp: Maybe a -> POptic a a")
+
+`L.setOp(x)` is shorthand for [`L.modifyOp(R.always(x))`](#L-modifyOp).
 
 #### Debugging
 
