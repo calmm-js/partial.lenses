@@ -74,6 +74,7 @@ export const modify = T.fn([T_optic,
                            T_maybeDataO)
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
+export const transform = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
                               T.fn([T_maybeDataO, T_index], T.any),
                               T_optic,
@@ -96,6 +97,13 @@ export const zero = T_optic
 // Recursing
 
 export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
+
+// Transform ops
+
+export const modifyOp = T.fn([T.fn([T_maybeDataO, T_index], T_maybeDataI)],
+                             T_optic)
+export const removeOp = T_optic
+export const setOp = T.fn([T_maybeDataI], T_optic)
 
 // Debugging
 

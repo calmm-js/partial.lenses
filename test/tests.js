@@ -218,6 +218,7 @@ describe("arities", () => {
     minimum: 2,
     minimumBy: 3,
     modify: 3,
+    modifyOp: 1,
     none: 3,
     normalize: 1,
     optional: 4,
@@ -230,6 +231,7 @@ describe("arities", () => {
     props: 0,
     removable: 0,
     remove: 2,
+    removeOp: 4,
     replace: 2,
     required: 1,
     rewrite: 1,
@@ -238,11 +240,13 @@ describe("arities", () => {
     selectAs: 3,
     seq: 0,
     set: 3,
+    setOp: 1,
     setter: 1,
     slice: 2,
     sum: 2,
     sumAs: 3,
     toFunction: 1,
+    transform: 2,
     traverse: 4,
     uri: 4,
     uriComponent: 4,
@@ -945,6 +949,15 @@ describe("L.matches", () => {
 describe("L.foldTraversalLens", () => {
   testEq(`L.get(L.foldTraversalLens(L.maximum, L.elems), [3,1,4,1])`, 4)
   testEq(`L.set(L.foldTraversalLens(L.maximum, L.elems), 2, [3,1,4,1])`, [2, 2, 2, 2])
+})
+
+describe("transform ops", () => {
+  testEq(`L.transform([L.elems, L.modifyOp(x => x+1)], [1,2,3])`, [2,3,4])
+  testEq(`L.transform([L.elems, L.setOp(4)], [1,2,3])`, [4,4,4])
+  testEq(`L.transform([L.elems, L.when(x => x > 3), L.removeOp], [3,1,4,1,5])`,
+         [3,1,1])
+  testEq(`L.get(L.setOp(42), 101)`, 42)
+  testEq(`L.set(L.setOp(42), 96, 101)`, 42)
 })
 
 if (process.env.NODE_ENV !== "production") {
