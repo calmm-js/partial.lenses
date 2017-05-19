@@ -1205,8 +1205,9 @@ it is better to avoid depending on that.
 A transform operates over focuses that may overlap and may be visited multiple
 times.  This allows operations that are impossible to implement using other
 optics, but also potentially makes it much more difficult to reason about the
-results.  Transforms can only be [modified](#L-modify), [set](#L-set)
-and [removed](#L-remove).
+results.  Transforms can only
+be [modified](#L-modify), [set](#L-set), [removed](#L-remove), and, of
+course, [transformed](#L-transform).
 
 #### Sequencing
 

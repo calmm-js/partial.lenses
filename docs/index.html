@@ -1016,8 +1016,9 @@ it is better to avoid depending on that.</p>
 <p>A transform operates over focuses that may overlap and may be visited multiple
 times.  This allows operations that are impossible to implement using other
 optics, but also potentially makes it much more difficult to reason about the
-results.  Transforms can only be <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
-and <a href="#L-remove">removed</a>.</p>
+results.  Transforms can only
+be <a href="#L-modify">modified</a>, <a href="#L-set">set</a>, <a href="#L-remove">removed</a>, and, of
+course, <a href="#L-transform">transformed</a>.</p>
 <h4 id="sequencing">Sequencing</h4>
 <h5 id="-a-id-l-seq-a-contents-https-github-com-calmm-js-partial-lenses-l-seq-l-seq-optics-transform-l-seq-l-seq-poptic-s-a-ptransform-s-a-"><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...POptic s a) -&gt; PTransform s a"><code>L.seq(...optics) ~&gt; transform</code></a></h5>
 <p><code>L.seq</code> creates a transform that modifies the focus with each of the given
