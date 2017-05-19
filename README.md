@@ -703,7 +703,7 @@ behave.  Here is a table of the means of composition supported by this library:
 
 |                       | Operation(s)                                                        | Semantics
 | --------------------- | ------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
-| Nesting               | [`L.compose(...os)`](#L-compose)                                    | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
+| Nesting               | [`L.compose(...os)`](#L-compose) or `[...os]`                       | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
 | Recursing             | [`L.lazy(o => o)`](#L-lazy)                                         | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
 | Adapting              | [`L.orElse(lb, la)`](#L-orElse)                                     | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
 | [Querying](#querying) | [`L.choice(...ls)`](#L-choice) and [`L.chain(x => o, o)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [lenses](#lenses)
