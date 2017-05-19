@@ -171,10 +171,8 @@ produces and consumes JSON objects that include, among many other properties, a
 `titles` property:
 
 ```js
-const sampleTitles = {
-  titles: [{ language: "en", text: "Title" },
-           { language: "sv", text: "Rubrik" }]
-}
+const sampleTitles = {titles: [{language: "en", text: "Title"},
+                               {language: "sv", text: "Rubrik"}]}
 ```
 
 We ultimately want to present the user with a rich enough editor, with features

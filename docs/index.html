@@ -270,10 +270,8 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 the development of this library.  What we have is an external HTTP API that both
 produces and consumes JSON objects that include, among many other properties, a
 <code>titles</code> property:</p>
-<pre><code class="hljs lang-js">var sampleTitles = {
-  titles: [{ language: &quot;en&quot;, text: &quot;Title&quot; },
-           { language: &quot;sv&quot;, text: &quot;Rubrik&quot; }]
-}
+<pre><code class="hljs lang-js">var sampleTitles = {titles: [{language: &quot;en&quot;, text: &quot;Title&quot;},
+                               {language: &quot;sv&quot;, text: &quot;Rubrik&quot;}]}
 </code></pre>
 <p>We ultimately want to present the user with a rich enough editor, with features
 such as undo-redo and validation, for manipulating the content represented by
