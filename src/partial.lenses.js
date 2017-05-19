@@ -335,6 +335,23 @@ function setU(o, x, s) {
   }
 }
 
+function modifyU(o, xi2x, s) {
+  switch (typeof o) {
+    case "string":
+      return setProp(o, xi2x(getProp(o, s), o), s)
+    case "number":
+      return setIndex(o, xi2x(getIndex(o, s), o), s)
+    case "object":
+      return modifyComposed(o, xi2x, s)
+    default:
+      if (process.env.NODE_ENV !== "production")
+        reqFunction(o)
+      return o.length === 4
+        ? o(s, void 0, Ident, xi2x)
+        : (xi2x(o(s, void 0), void 0), s)
+  }
+}
+
 function makeIx(i) {
   const ix = (s, j) => (ix.v = j, s)
   ix.v = i
@@ -621,6 +638,12 @@ const matchesJoin = input => matches => {
   return result || void 0
 }
 
+//
+
+function zeroOp(y, i, C, xi2yC, x) {
+  const of = C.of
+  return of ? of(y) : (0,C.map)(I.always(y), xi2yC(x, i))
+}
 
 // Internals
 
@@ -645,26 +668,13 @@ export function toFunction(o) {
 
 // Operations on optics
 
-export const modify = /*#__PURE__*/I.curry((o, xi2x, s) => {
-  switch (typeof o) {
-    case "string":
-      return setProp(o, xi2x(getProp(o, s), o), s)
-    case "number":
-      return setIndex(o, xi2x(getIndex(o, s), o), s)
-    case "object":
-      return modifyComposed(o, xi2x, s)
-    default:
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(o)
-      return o.length === 4
-        ? o(s, void 0, Ident, xi2x)
-        : (xi2x(o(s, void 0), void 0), s)
-  }
-})
+export const modify = /*#__PURE__*/I.curry(modifyU)
 
 export const remove = /*#__PURE__*/I.curry((o, s) => setU(o, void 0, s))
 
 export const set = /*#__PURE__*/I.curry(setU)
+
+export const transform = /*#__PURE__*/I.curry((o, s) => modifyU(o, I.id, s))
 
 export const traverse = /*#__PURE__*/I.curry(traverseU)
 
@@ -696,14 +706,11 @@ export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
 export const when = p => (x, i, C, xi2yC) =>
-  p(x, i) ? xi2yC(x, i) : zero(x, i, C, xi2yC)
+  p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC)
 
 export const optional = /*#__PURE__*/when(I.isDefined)
 
-export function zero(x, i, C, xi2yC) {
-  const of = C.of
-  return of ? of(x) : (0,C.map)(I.always(x), xi2yC(void 0, i))
-}
+export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
 // Recursing
 
@@ -712,6 +719,17 @@ export function lazy(o2o) {
   function rec(x, i, C, xi2yC) {return memo(x, i, C, xi2yC)}
   return rec
 }
+
+// Transforming
+
+export const modifyOp = xi2y => (x, i, C, xi2yC) => {
+  const y = xi2y(x, i)
+  return zeroOp(y, i, C, xi2yC, y)
+}
+
+export const setOp = y => (_x, i, C, xi2yC) => zeroOp(y, i, C, xi2yC, y)
+
+export const removeOp = /*#__PURE__*/setOp()
 
 // Debugging
 
@@ -875,7 +893,7 @@ export function matches(re) {
                      xi2yC(m[0], m.index))
       }
     }
-    return zero(x, void 0, C, xi2yC)
+    return zeroOp(x, void 0, C, xi2yC)
   }
 }
 
