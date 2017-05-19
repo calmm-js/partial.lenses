@@ -427,12 +427,15 @@ the <a href="#L-removable"><code>L.removable(&quot;text&quot;)</code></a> part o
 makes it so that when the <code>text</code> property is set to <code>undefined</code>, the result will
 be <code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
 <p>If we remove all of the titles, we get the required value:</p>
-<pre><code class="hljs lang-js">R.pipe(L.set(textIn(&quot;sv&quot;), undefined),
-       L.set(textIn(&quot;en&quot;), undefined))(sampleTitles)
+<pre><code class="hljs lang-js">L.set(L.seq(textIn(&quot;sv&quot;),
+            textIn(&quot;en&quot;)),
+      undefined,
+      sampleTitles)
 </code></pre>
-<p>The <code>titles</code> property is not removed thanks to the <a href="#L-define"><code>L.define([])</code></a>
-part of our lens composition.  It makes it so that when reading or writing
-through the lens, <code>undefined</code> becomes the given value.</p>
+<p>Above we use <a href="#L-seq"><code>L.seq</code></a> to run the <a href="#L-set"><code>L.set</code></a> operation over both
+of the focused titles.  The <code>titles</code> property is not removed thanks to the
+<a href="#L-define"><code>L.define([])</code></a> part of our lens composition.  It makes it so that
+when reading or writing through the lens, <code>undefined</code> becomes the given value.</p>
 <h3 id="exercises">Exercises</h3>
 <p>Take out one (or
 more)

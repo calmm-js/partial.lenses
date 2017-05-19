@@ -405,14 +405,17 @@ be `undefined` rather than merely an object without the `text` property.
 If we remove all of the titles, we get the required value:
 
 ```js
-R.pipe(L.set(textIn("sv"), undefined),
-       L.set(textIn("en"), undefined))(sampleTitles)
+L.set(L.seq(textIn("sv"),
+            textIn("en")),
+      undefined,
+      sampleTitles)
 // { titles: [] }
 ```
 
-The `titles` property is not removed thanks to the [`L.define([])`](#L-define)
-part of our lens composition.  It makes it so that when reading or writing
-through the lens, `undefined` becomes the given value.
+Above we use [`L.seq`](#L-seq) to run the [`L.set`](#L-set) operation over both
+of the focused titles.  The `titles` property is not removed thanks to the
+[`L.define([])`](#L-define) part of our lens composition.  It makes it so that
+when reading or writing through the lens, `undefined` becomes the given value.
 
 ### Exercises
 
