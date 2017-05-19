@@ -1137,17 +1137,16 @@ non-<code>undefined</code> value.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collectAs(R.negate, [&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p><code>L.collectAs(toMaybe, traversal, maybeData)</code> is equivalent
-to
-<a href="#L-concatAs"><code>L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)</code></a> where
-<code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
+<p><code>L.collectAs(toMaybe, traversal, maybeData)</code> is equivalent to
+<a href="#L-concatAs"><code>L.concatAs(toCollect, Collect, [traversal, toMaybe], maybeData)</code></a>
+where <code>Collect</code> and <code>toCollect</code> are defined as follows:</p>
 <pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
 var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>So:</p>
-<pre><code class="hljs lang-js">L.concatAs(R.pipe(R.negate, toCollect),
+<pre><code class="hljs lang-js">L.concatAs(toCollect,
            Collect,
-           [&quot;xs&quot;, L.elems, &quot;x&quot;],
+           [&quot;xs&quot;, L.elems, &quot;x&quot;, R.negate],
            {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the

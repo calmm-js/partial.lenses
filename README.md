@@ -1399,10 +1399,9 @@ L.collectAs(R.negate, ["xs", L.elems, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
 
-`L.collectAs(toMaybe, traversal, maybeData)` is equivalent
-to
-[`L.concatAs(R.pipe(toMaybe, toCollect), Collect, traversal, maybeData)`](#L-concatAs) where
-`Collect` and `toCollect` are defined as follows:
+`L.collectAs(toMaybe, traversal, maybeData)` is equivalent to
+[`L.concatAs(toCollect, Collect, [traversal, toMaybe], maybeData)`](#L-concatAs)
+where `Collect` and `toCollect` are defined as follows:
 
 ```js
 const Collect = {empty: R.always([]), concat: R.concat}
@@ -1412,9 +1411,9 @@ const toCollect = x => x !== undefined ? [x] : []
 So:
 
 ```js
-L.concatAs(R.pipe(R.negate, toCollect),
+L.concatAs(toCollect,
            Collect,
-           ["xs", L.elems, "x"],
+           ["xs", L.elems, "x", R.negate],
            {xs: [{x: 1}, {x: 2}]})
 // [ -1, -2 ]
 ```
