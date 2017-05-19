@@ -1099,6 +1099,7 @@ For example:
 
 ```js
 L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
+                      z: [L.optional, L.modifyOp(R.negate)],
                       ys: [L.elems, L.modifyOp(R.dec)]}),
             {xs: [1, 2, 3],
              ys: [1, 2, 3]})
