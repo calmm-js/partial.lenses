@@ -1112,6 +1112,24 @@ L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
 
 `L.removeOp` is shorthand for [`L.setOp(undefined)`](#L-setOp).
 
+Here is an example based on a question from a user:
+
+```js
+const sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
+                                   {time: 2, subelements: [1, 2, 3, 4]},
+                                   {time: 3, subelements: [1, 2, 3, 4]}]}
+
+L.transform(['elements',
+             L.elems,
+             L.seq([L.when(elem => elem.time < 2), L.removeOp],
+                   ['subelements', L.elems, L.when(i => i < 3), L.removeOp])],
+            sampleToFilter)
+// { elements: [ { time: 2, subelements: [ 3, 4 ] },
+//               { time: 3, subelements: [ 3, 4 ] } ] }
+```
+
+The idea is to filter the data both by `time` and by `subelements`.
+
 ##### <a id="L-setOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-setOp) [`L.setOp(maybeValue) ~> optic`](#L-setOp "L.setOp: Maybe a -> POptic a a")
 
 `L.setOp(x)` is shorthand for [`L.modifyOp(R.always(x))`](#L-modifyOp).

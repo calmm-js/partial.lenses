@@ -958,6 +958,18 @@ mapped focus.</p>
 </code></pre>
 <h5 id="-a-id-l-removeop-a-contents-https-github-com-calmm-js-partial-lenses-l-removeop-l-removeop-optic-l-removeop-l-removeop-poptic-a-a-"><a id="L-removeOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removeOp">■</a> <a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a></h5>
 <p><code>L.removeOp</code> is shorthand for <a href="#L-setOp"><code>L.setOp(undefined)</code></a>.</p>
+<p>Here is an example based on a question from a user:</p>
+<pre><code class="hljs lang-js">var sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
+                                   {time: 2, subelements: [1, 2, 3, 4]},
+                                   {time: 3, subelements: [1, 2, 3, 4]}]}
+
+L.transform([&#39;elements&#39;,
+             L.elems,
+             L.seq([L.when(elem =&gt; elem.time &lt; 2), L.removeOp],
+                   [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
+            sampleToFilter)
+</code></pre>
+<p>The idea is to filter the data both by <code>time</code> and by <code>subelements</code>.</p>
 <h5 id="-a-id-l-setop-a-contents-https-github-com-calmm-js-partial-lenses-l-setop-l-setop-maybevalue-optic-l-setop-l-setop-maybe-a-poptic-a-a-"><a id="L-setOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-setOp">■</a> <a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a></h5>
 <p><code>L.setOp(x)</code> is shorthand for <a href="#L-modifyOp"><code>L.modifyOp(R.always(x))</code></a>.</p>
 <h4 id="debugging">Debugging</h4>
