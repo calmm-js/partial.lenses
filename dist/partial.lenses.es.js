@@ -384,6 +384,20 @@ function setU(o, x, s) {
   }
 }
 
+function modifyU(o, xi2x, s) {
+  switch (typeof o) {
+    case "string":
+      return setProp(o, xi2x(getProp(o, s), o), s);
+    case "number":
+      return setIndex(o, xi2x(getIndex(o, s), o), s);
+    case "object":
+      return modifyComposed(o, xi2x, s);
+    default:
+      if (process.env.NODE_ENV !== "production") reqFunction(o);
+      return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
+  }
+}
+
 function makeIx(i) {
   var ix = function ix(s, j) {
     return ix.v = j, s;
@@ -686,6 +700,13 @@ var matchesJoin = function matchesJoin(input) {
   };
 };
 
+//
+
+function zeroOp(y, i, C, xi2yC, x) {
+  var of = C.of;
+  return of ? of(y) : (0, C.map)(always(y), xi2yC(x, i));
+}
+
 // Internals
 
 function toFunction(o) {
@@ -706,25 +727,17 @@ function toFunction(o) {
 
 // Operations on optics
 
-var modify = /*#__PURE__*/curry(function (o, xi2x, s) {
-  switch (typeof o) {
-    case "string":
-      return setProp(o, xi2x(getProp(o, s), o), s);
-    case "number":
-      return setIndex(o, xi2x(getIndex(o, s), o), s);
-    case "object":
-      return modifyComposed(o, xi2x, s);
-    default:
-      if (process.env.NODE_ENV !== "production") reqFunction(o);
-      return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
-  }
-});
+var modify = /*#__PURE__*/curry(modifyU);
 
 var remove = /*#__PURE__*/curry(function (o, s) {
   return setU(o, void 0, s);
 });
 
 var set = /*#__PURE__*/curry(setU);
+
+var transform = /*#__PURE__*/curry(function (o, s) {
+  return modifyU(o, id, s);
+});
 
 var traverse = /*#__PURE__*/curry(traverseU);
 
@@ -771,16 +784,15 @@ var choose = function choose(xiM2o) {
 
 var when = function when(p) {
   return function (x, i, C, xi2yC) {
-    return p(x, i) ? xi2yC(x, i) : zero(x, i, C, xi2yC);
+    return p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC);
   };
 };
 
 var optional = /*#__PURE__*/when(isDefined);
 
-function zero(x, i, C, xi2yC) {
-  var of = C.of;
-  return of ? of(x) : (0, C.map)(always(x), xi2yC(void 0, i));
-}
+var zero = function zero(x, i, C, xi2yC) {
+  return zeroOp(x, i, C, xi2yC);
+};
 
 // Recursing
 
@@ -793,6 +805,23 @@ function lazy(o2o) {
   }
   return rec;
 }
+
+// Transforming
+
+var modifyOp = function modifyOp(xi2y) {
+  return function (x, i, C, xi2yC) {
+    var y = xi2y(x, i);
+    return zeroOp(y, i, C, xi2yC, y);
+  };
+};
+
+var setOp = function setOp(y) {
+  return function (_x, i, C, xi2yC) {
+    return zeroOp(y, i, C, xi2yC, y);
+  };
+};
+
+var removeOp = /*#__PURE__*/setOp();
 
 // Debugging
 
@@ -964,7 +993,7 @@ function matches(re) {
         }, xi2yC(m[0], m.index));
       }
     }
-    return zero(x, void 0, C, xi2yC);
+    return zeroOp(x, void 0, C, xi2yC);
   };
 }
 
@@ -1257,4 +1286,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, traverse, compose, chain, choice, choose, when, optional, zero, lazy, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, lazy, modifyOp, setOp, removeOp, log, seq, concatAs, concat, all, and, any, collectAs, collect, countIf, count, foldl, foldr, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, branch, elems, values, matches, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, orElse, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
