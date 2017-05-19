@@ -1084,9 +1084,10 @@ L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
 
 #### Transforming
 
-Transform ops along with query ops can, in particular, be used to create
-selective traversals and transforms over data structures such that different
-modification operations are performed in different parts of the data structure.
+Transform ops along with [query ops](#querying) can, in particular, be used to
+create selective [traversals](#traversals) and [transforms](#transforms) over
+data structures such that different modification operations are performed in
+different parts of the data structure.
 
 ##### <a id="L-modifyOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-modifyOp) [`L.modifyOp((maybeValue, index) => maybeValue) ~> optic`](#L-modifyOp "L.modifyOp: ((Maybe a, Index) -> Maybe a) -> POptic a a")
 
