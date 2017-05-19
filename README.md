@@ -850,7 +850,7 @@ const StateM = Monad({
 
 const countS = x => x2n => {
   const n = (x2n[x] || 0) + 1
-  return [n, R.assoc(x, n, x2n)]
+  return [n, L.set(x, n, x2n)]
 }
 
 L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
