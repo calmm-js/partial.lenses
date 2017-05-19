@@ -1098,10 +1098,12 @@ mapped focus.
 For example:
 
 ```js
-L.transform([L.elems,
-             L.modifyOp(x => x < 2 ? undefined : x+1)],
-            [3, 1, 4, 1, 5])
-// [ 4, 5, 6 ]
+L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
+                      ys: [L.elems, L.modifyOp(R.dec)]}),
+            {xs: [1, 2, 3],
+             ys: [1, 2, 3]})
+// { xs: [ 2, 3, 4],
+//   ys: [ 0, 1, 2] }
 ```
 
 ##### <a id="L-removeOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removeOp) [`L.removeOp ~> optic`](#L-removeOp "L.removeOp: POptic a a")
