@@ -3579,6 +3579,7 @@ links&mdash;feel free to suggest more!
 * [flunc/optics](https://github.com/flunc/optics)
 * [gcanti/monocle-ts](https://github.com/gcanti/monocle-ts)
 * [hallettj/safety-lens](https://github.com/hallettj/safety-lens)
+* [ochafik/es6-lenses](https://github.com/ochafik/es6-lenses)
 * [phadej/optika](https://github.com/phadej/optika)
 * [ramda/ramda-lens](https://github.com/ramda/ramda-lens)
 * [thisismN/lentil](https://github.com/thisismN/lentil)
