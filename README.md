@@ -1034,9 +1034,9 @@ For example:
 
 ```js
 L.collect([L.elems,
-           L.choose(x => R.is(Array, x)  ? L.elems
-                    :    R.is(Object, x) ? "x"
-                    :                      L.zero)],
+           L.choose(x => x instanceof Array  ? L.elems
+                    :    x instanceof Object ? "x"
+                    :                          L.zero)],
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
 ```

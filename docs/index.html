@@ -911,9 +911,9 @@ elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code><
 read-only lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.elems,
-           L.choose(x =&gt; R.is(Array, x)  ? L.elems
-                    :    R.is(Object, x) ? &quot;x&quot;
-                    :                      L.zero)],
+           L.choose(x =&gt; x instanceof Array  ? L.elems
+                    :    x instanceof Object ? &quot;x&quot;
+                    :                          L.zero)],
           [1, {x: 2}, [3,4]])
 </code></pre>
 <h4 id="recursing">Recursing</h4>
