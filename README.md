@@ -1352,7 +1352,7 @@ L.and(L.elems, [])
 // true
 ```
 
-Note that `L.and` is equivalent to [`L.all(R.identity)`](#L-all).  See
+Note that `L.and` is equivalent to [`L.all(x => x)`](#L-all).  See
 also: [`L.or`](#L-or).
 
 ##### <a id="L-any"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-any) [`L.any((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-any "L.any: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
@@ -1383,8 +1383,7 @@ L.collect(["xs", L.elems, "x"], {xs: [{x: 1}, {x: 2}]})
 // [ 1, 2 ]
 ```
 
-Note that `L.collect` is equivalent
-to [`L.collectAs(R.identity)`](#L-collectAs).
+Note that `L.collect` is equivalent to [`L.collectAs(x => x)`](#L-collectAs).
 
 ##### <a id="L-collectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-collectAs) [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
 
@@ -1588,7 +1587,7 @@ L.or(L.elems, [])
 // false
 ```
 
-Note that `L.or` is equivalent to [`L.any(R.identity)`](#L-any).  See
+Note that `L.or` is equivalent to [`L.any(x => x)`](#L-any).  See
 also: [`L.and`](#L-and).
 
 ##### <a id="L-product"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-product) [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number")
@@ -1625,7 +1624,7 @@ L.select([L.elems, "y"], [{x:1},{y:2},{z:3}])
 // 2
 ```
 
-Note that `L.select` is equivalent to [`L.selectAs(R.identity)`](#L-selectAs).
+Note that `L.select` is equivalent to [`L.selectAs(x => x)`](#L-selectAs).
 
 ##### <a id="L-selectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-selectAs) [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b")
 

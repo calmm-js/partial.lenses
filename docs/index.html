@@ -1111,7 +1111,7 @@ are truthy.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.and(L.elems, [])
 </code></pre>
-<p>Note that <code>L.and</code> is equivalent to <a href="#L-all"><code>L.all(R.identity)</code></a>.  See
+<p>Note that <code>L.and</code> is equivalent to <a href="#L-all"><code>L.all(x =&gt; x)</code></a>.  See
 also: <a href="#L-or"><code>L.or</code></a>.</p>
 <h5 id="-a-id-l-any-a-contents-https-github-com-calmm-js-partial-lenses-l-any-l-any-maybevalue-index-testable-traversal-maybedata-boolean-l-any-l-any-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-any"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-any">■</a> <a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.any</code> determines whether any of the elements focused on by the given traversal
@@ -1128,8 +1128,7 @@ given traversal or lens from a data structure.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([&quot;xs&quot;, L.elems, &quot;x&quot;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p>Note that <code>L.collect</code> is equivalent
-to <a href="#L-collectAs"><code>L.collectAs(R.identity)</code></a>.</p>
+<p>Note that <code>L.collect</code> is equivalent to <a href="#L-collectAs"><code>L.collectAs(x =&gt; x)</code></a>.</p>
 <h5 id="-a-id-l-collectas-a-contents-https-github-com-calmm-js-partial-lenses-l-collectas-l-collectas-maybevalue-index-maybevalue-traversal-maybedata-values-l-collectas-l-collectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-b-"><a id="L-collectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-collectAs">■</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></h5>
 <p><code>L.collectAs</code> returns an array of the elements focused on by the given traversal
 or lens from a data structure and mapped by the given function to a
@@ -1237,7 +1236,7 @@ is truthy.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.or(L.elems, [])
 </code></pre>
-<p>Note that <code>L.or</code> is equivalent to <a href="#L-any"><code>L.any(R.identity)</code></a>.  See
+<p>Note that <code>L.or</code> is equivalent to <a href="#L-any"><code>L.any(x =&gt; x)</code></a>.  See
 also: <a href="#L-and"><code>L.and</code></a>.</p>
 <h5 id="-a-id-l-product-a-contents-https-github-com-calmm-js-partial-lenses-product-l-product-traversal-maybedata-number-l-product-l-product-ptraversal-s-number-maybe-s-number-"><a id="L-product"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#-product">■</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
@@ -1256,7 +1255,7 @@ for the elements targeted by the traversal.</p>
 returns the first non-<code>undefined</code> element.</p>
 <pre><code class="hljs lang-js">L.select([L.elems, &quot;y&quot;], [{x:1},{y:2},{z:3}])
 </code></pre>
-<p>Note that <code>L.select</code> is equivalent to <a href="#L-selectAs"><code>L.selectAs(R.identity)</code></a>.</p>
+<p>Note that <code>L.select</code> is equivalent to <a href="#L-selectAs"><code>L.selectAs(x =&gt; x)</code></a>.</p>
 <h5 id="-a-id-l-selectas-a-contents-https-github-com-calmm-js-partial-lenses-l-selectas-l-selectas-maybevalue-index-maybevalue-traversal-maybedata-maybevalue-l-selectas-l-selectas-maybe-a-index-maybe-b-ptraversal-s-a-maybe-s-maybe-b-"><a id="L-selectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-selectAs">■</a> <a href="#L-selectAs" title="L.selectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.selectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></h5>
 <p><code>L.selectAs</code> goes lazily over the elements focused on by the given traversal,
 applying the given function to each element, and returns the first
