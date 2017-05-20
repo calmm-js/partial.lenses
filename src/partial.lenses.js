@@ -215,10 +215,8 @@ const mkSelect = toS => (xi2yM, t, s) =>
 
 const selectAny = mkSelect(x => x ? T : U)
 
-const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) => {
-  const C = toC(m)
-  return (t, s) => after(traverseU(C, xi2yC, t, s))
-})
+const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
+  (m = toC(m), (t, s) => after(traverseU(m, xi2yC, t, s))))
 
 //
 
@@ -731,10 +729,8 @@ export function lazy(o2o) {
 
 // Transforming
 
-export const modifyOp = xi2y => (x, i, C, xi2yC) => {
-  const y = xi2y(x, i)
-  return zeroOp(y, i, C, xi2yC, y)
-}
+export const modifyOp = xi2y => (x, i, C, xi2yC) =>
+  zeroOp(x = xi2y(x, i), i, C, xi2yC, x)
 
 export const setOp = y => (_x, i, C, xi2yC) => zeroOp(y, i, C, xi2yC, y)
 
@@ -757,9 +753,11 @@ export function seq() {
   const n = arguments.length, xMs = Array(n)
   for (let i=0; i<n; ++i)
     xMs[i] = toFunction(arguments[i])
-  const loop = (M, xi2xM, i, j) => j === n
-    ? M.of
-    : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
+  function loop(M, xi2xM, i, j) {
+    return j === n
+      ? M.of
+      : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
+  }
   return (x, i, M, xi2xM) => {
     if (process.env.NODE_ENV !== "production")
       if (!M.chain)
@@ -965,7 +963,7 @@ export function augment(template) {
 // Enforcing invariants
 
 export function defaults(out) {
-  const o2u = x => replaced(out, void 0, x)
+  function o2u(x) {return replaced(out, void 0, x)}
   return (x, i, F, xi2yF) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
@@ -1106,7 +1104,7 @@ export function pick(template) {
 }
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
-  const o2i = x => replaced(out, inn, x)
+  function o2i(x) {return replaced(out, inn, x)}
   return (x, i, F, xi2yF) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
 })
 
