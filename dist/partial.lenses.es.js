@@ -227,6 +227,14 @@ function force(x) {
   }return x;
 }
 
+function selectElems(xi2yA, xs) {
+  for (var i = 0, n = xs.length, x; i < n; ++i) {
+    x = force(xi2yA(xs[i], i));
+    if (U !== x) return x;
+  }
+  return U;
+}
+
 var Select = /*#__PURE__*/ConcatOf(function (l, r) {
   return void 0 !== (l = force(l)).v ? l : r;
 }, U, id);
@@ -954,7 +962,7 @@ function branch(template) {
 
 function elems(xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
-    return A === Ident ? mapPartialIndexU(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+    return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectElems(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
     if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
     return (0, A.of)(xs);
