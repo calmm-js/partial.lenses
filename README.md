@@ -3307,13 +3307,36 @@ a
 However, this library is not designed to be primarily used via that bundle.
 Rather, this library is bundled with [Rollup](https://rollupjs.org/), uses
 `/*#__PURE__*/` annotations to
-help [UglifyJS2](https://github.com/mishoo/UglifyJS2) do better dead code
+help [UglifyJS](https://github.com/mishoo/UglifyJS2) do better dead code
 elimination, and uses `process.env.NODE_ENV` to detect `"production"` mode to
 discard some warnings and error checks.  This means that when using Rollup
 with [replace](https://github.com/rollup/rollup-plugin-replace)
 and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
 browser bundles, the generated bundles will basically only include what you use
 from this library.
+
+For best results, increasing the number compression passes may allow UglifyJS to
+eliminate more dead code.  Here is a sample snippet from a Rollup config:
+
+```jsx
+import replace from "rollup-plugin-replace"
+import uglify  from "rollup-plugin-uglify"
+// ...
+
+export default {
+  plugins: [
+    replace({
+      "process.env.NODE_ENV": JSON.stringify("production")
+    }),
+    // ...
+    uglify({
+      compress: {
+        passes: 3
+      }
+    })
+  ]
+}
+```
 
 ### Benchmarks
 
