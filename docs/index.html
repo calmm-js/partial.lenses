@@ -2333,13 +2333,33 @@ a
 However, this library is not designed to be primarily used via that bundle.
 Rather, this library is bundled with <a href="https://rollupjs.org/">Rollup</a>, uses
 <code>/*#__PURE__*/</code> annotations to
-help <a href="https://github.com/mishoo/UglifyJS2">UglifyJS2</a> do better dead code
+help <a href="https://github.com/mishoo/UglifyJS2">UglifyJS</a> do better dead code
 elimination, and uses <code>process.env.NODE_ENV</code> to detect <code>&quot;production&quot;</code> mode to
 discard some warnings and error checks.  This means that when using Rollup
 with <a href="https://github.com/rollup/rollup-plugin-replace">replace</a>
 and <a href="https://github.com/TrySound/rollup-plugin-uglify">uglify</a> plugins to build
 browser bundles, the generated bundles will basically only include what you use
 from this library.</p>
+<p>For best results, increasing the number compression passes may allow UglifyJS to
+eliminate more dead code.  Here is a sample snippet from a Rollup config:</p>
+<pre><code class="hljs lang-jsx">import replace from &quot;rollup-plugin-replace&quot;
+import uglify  from &quot;rollup-plugin-uglify&quot;
+// ...
+
+export default {
+  plugins: [
+    replace({
+      &quot;process.env.NODE_ENV&quot;: JSON.stringify(&quot;production&quot;)
+    }),
+    // ...
+    uglify({
+      compress: {
+        passes: 3
+      }
+    })
+  ]
+}
+</code></pre>
 <h3 id="benchmarks">Benchmarks</h3>
 <p>Here are a few benchmark results on partial lenses (as <code>L</code> version 11.0.0) and
 some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
