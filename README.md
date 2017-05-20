@@ -317,10 +317,6 @@ can use it to query titles:
 L.get(textIn("sv"), sampleTitles)
 // 'Rubrik'
 ```
-```js
-L.get(textIn("en"), sampleTitles)
-// 'Title'
-```
 
 The [`L.find`](#L-find) lens is a given a predicate that it then uses to find an
 element from an array to focus on.  In this case the predicate is specified with
@@ -963,26 +959,18 @@ that maps the underlying view, which can be `undefined`, to an optic.  In other
 words, the `L.choose` combinator allows an optic to be constructed *after*
 examining the data structure being manipulated.
 
-For example, given:
+For example:
 
 ```js
 const majorAxis =
   L.choose(({x, y} = {}) => Math.abs(x) < Math.abs(y) ? "y" : "x")
-```
 
-we get:
-
-```js
-L.get(majorAxis, {x: 1, y: 2})
-// 2
-```
-```js
 L.get(majorAxis, {x: -3, y: 1})
 // -3
 ```
 ```js
-L.modify(majorAxis, R.negate, {x: 2, y: -3})
-// { x: 2, y: 3 }
+L.modify(majorAxis, R.negate, {x: -3, y: 1})
+// { x: 3, y: 1 }
 ```
 
 ##### <a id="L-optional"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-optional) [`L.optional ~> optic`](#L-optional "L.optional: POptic a a")
@@ -1151,11 +1139,6 @@ when data flows in either direction, `get` or `set`, through the lens.
 
 For example:
 
-```js
-L.get(["x", L.log()], {x: 10})
-// get 10
-// 10
-```
 ```js
 L.set(["x", L.log("x")], "11", {x: 10})
 // x get 10

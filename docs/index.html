@@ -380,8 +380,6 @@ part, <a href="#L-find"><code>L.find(R.whereEq({language}))</code></a>, of the l
 can use it to query titles:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;sv&quot;), sampleTitles)
 </code></pre>
-<pre><code class="hljs lang-js">L.get(textIn(&quot;en&quot;), sampleTitles)
-</code></pre>
 <p>The <a href="#L-find"><code>L.find</code></a> lens is a given a predicate that it then uses to find an
 element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
@@ -873,16 +871,13 @@ like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of
 that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
 words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
 examining the data structure being manipulated.</p>
-<p>For example, given:</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">var majorAxis =
   L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &quot;y&quot; : &quot;x&quot;)
+
+L.get(majorAxis, {x: -3, y: 1})
 </code></pre>
-<p>we get:</p>
-<pre><code class="hljs lang-js">L.get(majorAxis, {x: 1, y: 2})
-</code></pre>
-<pre><code class="hljs lang-js">L.get(majorAxis, {x: -3, y: 1})
-</code></pre>
-<pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: 2, y: -3})
+<pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: -3, y: 1})
 </code></pre>
 <h5 id="-a-id-l-optional-a-contents-https-github-com-calmm-js-partial-lenses-l-optional-l-optional-optic-l-optional-l-optional-poptic-a-a-"><a id="L-optional"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-optional">■</a> <a href="#L-optional" title="L.optional: POptic a a"><code>L.optional ~&gt; optic</code></a></h5>
 <p><code>L.optional</code> is an optic over an optional element.  When used as a traversal,
@@ -987,8 +982,6 @@ messages with the given labels
 <a href="https://nodejs.org/api/console.html#console_console_log_data">format in Node.js</a>)
 when data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.get([&quot;x&quot;, L.log()], {x: 10})
-</code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;x&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;%s x: %j&quot;)], &quot;11&quot;, {x: 10})
