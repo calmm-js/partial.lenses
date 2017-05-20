@@ -154,10 +154,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Collection toggle](#collection-toggle)
   * [BST as a lens](#bst-as-a-lens)
   * [Interfacing with Immutable.js](#interfacing)
+* [Advanced topics](#advanced-topics)
+  * [On bundle size and minification](#on-bundle-size-and-minification)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Design choices](#design-choices)
-  * [On bundle size and minification](#on-bundle-size-and-minification)
   * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
   * [Related work](#related-work)
@@ -3144,6 +3145,47 @@ L.joinAs(R.toUpper,
 // 'AI'
 ```
 
+## Advanced topics
+
+### On bundle size and minification
+
+The distribution of this library includes
+a
+[prebuilt and minified browser bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).
+However, this library is not designed to be primarily used via that bundle.
+Rather, this library is bundled with [Rollup](https://rollupjs.org/), uses
+`/*#__PURE__*/` annotations to
+help [UglifyJS](https://github.com/mishoo/UglifyJS2) do better dead code
+elimination, and uses `process.env.NODE_ENV` to detect `"production"` mode to
+discard some warnings and error checks.  This means that when using Rollup
+with [replace](https://github.com/rollup/rollup-plugin-replace)
+and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
+browser bundles, the generated bundles will basically only include what you use
+from this library.
+
+For best results, increasing the number compression passes may allow UglifyJS to
+eliminate more dead code.  Here is a sample snippet from a Rollup config:
+
+```jsx
+import replace from "rollup-plugin-replace"
+import uglify  from "rollup-plugin-uglify"
+// ...
+
+export default {
+  plugins: [
+    replace({
+      "process.env.NODE_ENV": JSON.stringify("production")
+    }),
+    // ...
+    uglify({
+      compress: {
+        passes: 3
+      }
+    })
+  ]
+}
+```
+
 ## Background
 
 ### Motivation
@@ -3297,45 +3339,6 @@ time.  The basic principles can be summarized in order of importance:
 * Avoid [quadratic algorithms](http://accidentallyquadratic.tumblr.com/)
 * Avoid optimizations that require large amounts of code
 * Run [benchmarks](#benchmarks) continuously to detect performance regressions
-
-### On bundle size and minification
-
-The distribution of this library includes
-a
-[prebuilt and minified browser bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).
-However, this library is not designed to be primarily used via that bundle.
-Rather, this library is bundled with [Rollup](https://rollupjs.org/), uses
-`/*#__PURE__*/` annotations to
-help [UglifyJS](https://github.com/mishoo/UglifyJS2) do better dead code
-elimination, and uses `process.env.NODE_ENV` to detect `"production"` mode to
-discard some warnings and error checks.  This means that when using Rollup
-with [replace](https://github.com/rollup/rollup-plugin-replace)
-and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
-browser bundles, the generated bundles will basically only include what you use
-from this library.
-
-For best results, increasing the number compression passes may allow UglifyJS to
-eliminate more dead code.  Here is a sample snippet from a Rollup config:
-
-```jsx
-import replace from "rollup-plugin-replace"
-import uglify  from "rollup-plugin-uglify"
-// ...
-
-export default {
-  plugins: [
-    replace({
-      "process.env.NODE_ENV": JSON.stringify("production")
-    }),
-    // ...
-    uglify({
-      compress: {
-        passes: 3
-      }
-    })
-  ]
-}
-```
 
 ### Benchmarks
 
