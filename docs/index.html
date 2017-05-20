@@ -110,9 +110,14 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#traversals">Traversals</a><ul>
-<li><a href="#operations-on-traversals">Operations on traversals</a><ul>
-<li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a></li>
-<li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#creating-new-traversals">Creating new traversals</a><ul>
+<li><a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></li>
+</ul>
+</li>
+<li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
+<li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></li>
+<li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></li>
+<li><a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></li>
 </ul>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
@@ -121,6 +126,8 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
+<li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
@@ -140,16 +147,6 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-selectAs" title="L.selectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.selectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a></li>
 <li><a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-sumAs" title="L.sumAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.sumAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a></li>
-</ul>
-</li>
-<li><a href="#creating-new-traversals">Creating new traversals</a><ul>
-<li><a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></li>
-</ul>
-</li>
-<li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
-<li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></li>
-<li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></li>
-<li><a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></li>
 </ul>
 </li>
 </ul>
@@ -1063,35 +1060,90 @@ be
 <a href="#L-concatAs">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
 and <a href="#L-remove">removed</a>.  Put in another way, a traversal specifies a set of
 paths to elements in a data structure.</p>
-<h4 id="operations-on-traversals">Operations on traversals</h4>
-<h5 id="-a-id-l-concat-a-contents-https-github-com-calmm-js-partial-lenses-l-concat-l-concat-monoid-traversal-maybedata-value-l-concat-l-concat-monoid-a-ptraversal-s-a-maybe-s-a-"><a id="L-concat"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-concat">■</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a></h5>
-<p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
-<code>empty</code> operations, over the elements focused on by the given traversal or lens
-<code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
-returned by <code>empty()</code> should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values focused on by <code>t</code>.</p>
+<h4 id="creating-new-traversals">Creating new traversals</h4>
+<h5 id="-a-id-l-branch-a-contents-https-github-com-calmm-js-partial-lenses-l-branch-l-branch-prop-traversal-props-traversal-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a id="L-branch"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-branch">■</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></h5>
+<p><code>L.branch</code> creates a new traversal from a given template object that specifies
+how the new traversal should visit the properties of an object.  If one thinks
+of traversals as specifying sets of paths, then the template can be seen as
+mapping each property to a set of paths to traverse.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
-L.concat(Sum, L.elems, [1, 2, 3])
+<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: L.identity}),
+          {first: [&quot;x&quot;], second: &quot;y&quot;})
 </code></pre>
-<p>Note that <code>L.concat</code> is staged so that after given the first argument,
-<code>L.concat(m)</code>, a computation step is performed.</p>
-<h5 id="-a-id-l-concatas-a-contents-https-github-com-calmm-js-partial-lenses-l-concatas-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-value-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a id="L-concatAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-concatAs">■</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a></h5>
-<p><code>L.concatAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
-<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
-elements focused on by the given traversal or lens <code>t</code> from the given data
-structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
-should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values returned by <code>xMi2r</code>.</p>
+<p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at
+first.  <a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So,
+when a property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given
+to <code>L.branch</code>, it means that the element is to be visited by the resulting
+traversal.</p>
+<p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
+can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
+elements of an array:</p>
+<pre><code class="hljs lang-js">L.modify([L.pick({x: 0, z: 2}),
+          L.branch({x: L.identity, z: L.identity})],
+         R.negate,
+         [1, 2, 3])
+</code></pre>
+<p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
+<h4 id="traversals-and-combinators">Traversals and combinators</h4>
+<h5 id="-a-id-l-elems-a-contents-https-github-com-calmm-js-partial-lenses-l-elems-l-elems-traversal-l-elems-l-elems-ptraversal-a-a-"><a id="L-elems"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-elems">■</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></h5>
+<p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
+object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.elems, [1, 2, 3])
+<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.elems, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
 </code></pre>
-<p>Note that <code>L.concatAs</code> is staged so that after given the first two arguments,
-<code>L.concatAs(f, m)</code>, a computation step is performed.</p>
+<p>Just like with other optics operating on <a href="#array-like">array-like</a> objects, when
+manipulating non-<code>Array</code> objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to
+convert the result to the desired type, if necessary:</p>
+<pre><code class="hljs lang-js">L.modify([L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
+         R.inc,
+         Int8Array.from([-1,4,0,2,4]))
+</code></pre>
+<h5 id="-a-id-l-values-a-contents-https-github-com-calmm-js-partial-lenses-l-values-l-values-traversal-l-values-l-values-ptraversal-p-a-ps-a-"><a id="L-values"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-values">■</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></h5>
+<p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
+written through, <code>L.values</code> always produces an <code>Object</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
+</code></pre>
+<p>When manipulating objects with a non-<code>Object</code> constructor</p>
+<pre><code class="hljs lang-js">function XYZ(x,y,z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+XYZ.prototype.norm = function () {
+  return (this.x * this.x +
+          this.y * this.y +
+          this.z * this.z)
+}
+</code></pre>
+<p><a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
+if necessary:</p>
+<pre><code class="hljs lang-js">var objectTo = C =&gt; o =&gt; Object.assign(Object.create(C.prototype), o)
+
+L.modify([L.rewrite(objectTo(XYZ)), L.values],
+         R.negate,
+         new XYZ(1,2,3))
+</code></pre>
+<h5 id="-a-id-l-matches-g-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-g-l-matches-g-traversal-l-matches-g-l-matches-regexp-ptraversal-string-string-"><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></h5>
+<p><code>L.matches</code>, when given a regular expression with
+the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flag,
+<code>/.../g</code>, is a partial traversal over the matches that the regular expression
+gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
+<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
+next major release.</strong></p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
+           L.pick({name: L.matches(/^[^=]+/),
+                   value: L.matches(/[^=]+$/)})],
+           &quot;?first=foo&amp;second=bar&quot;)
+</code></pre>
+<p>Note that when writing through <code>L.matches</code> and the result would be an empty
+string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
+<p>Note that an empty match terminates the traversal.  It is possible to make use
+of that feature, but it is also possible that an empty match is due to an
+incorrect regular expression that can match the empty string.</p>
 <h4 id="folds-over-traversals">Folds over traversals</h4>
 <h5 id="-a-id-l-all-a-contents-https-github-com-calmm-js-partial-lenses-l-all-l-all-maybevalue-index-testable-traversal-maybedata-boolean-l-all-l-all-maybe-a-index-boolean-ptraversal-s-a-boolean-"><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.all</code> determines whether all of the elements focused on by the given traversal
@@ -1147,6 +1199,34 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above naïve implementation.</p>
+<h5 id="-a-id-l-concat-a-contents-https-github-com-calmm-js-partial-lenses-l-concat-l-concat-monoid-traversal-maybedata-value-l-concat-l-concat-monoid-a-ptraversal-s-a-maybe-s-a-"><a id="L-concat"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-concat">■</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a></h5>
+<p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
+<code>empty</code> operations, over the elements focused on by the given traversal or lens
+<code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
+returned by <code>empty()</code> should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values focused on by <code>t</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
+L.concat(Sum, L.elems, [1, 2, 3])
+</code></pre>
+<p>Note that <code>L.concat</code> is staged so that after given the first argument,
+<code>L.concat(m)</code>, a computation step is performed.</p>
+<h5 id="-a-id-l-concatas-a-contents-https-github-com-calmm-js-partial-lenses-l-concatas-l-concatas-maybevalue-index-value-monoid-traversal-maybedata-value-l-concatas-l-concatas-maybe-a-index-r-monoid-r-ptraversal-s-a-maybe-s-r-"><a id="L-concatAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-concatAs">■</a> <a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a></h5>
+<p><code>L.concatAs(xMi2r, {empty, concat}, t, s)</code> performs a map, using given function
+<code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
+elements focused on by the given traversal or lens <code>t</code> from the given data
+structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
+should form
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
+the values returned by <code>xMi2r</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.elems, [1, 2, 3])
+</code></pre>
+<p>Note that <code>L.concatAs</code> is staged so that after given the first two arguments,
+<code>L.concatAs(f, m)</code>, a computation step is performed.</p>
 <h5 id="-a-id-l-count-a-contents-https-github-com-calmm-js-partial-lenses-l-count-l-count-traversal-maybedata-number-l-count-l-count-ptraversal-s-a-number-"><a id="L-count"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-count">■</a> <a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a></h5>
 <p><code>L.count</code> goes through all the elements focused on by the traversal and counts
 the number of non-<code>undefined</code> elements.</p>
@@ -1266,7 +1346,7 @@ elements until the first non-<code>undefined</code> value is returned and after 
 traversals such as finding an element matching a predicate and checking whether
 all/any elements match a predicate.  For example, here is how you could
 implement a for all predicate over traversals:</p>
-<pre><code class="hljs lang-js">var all = R.curry((p, t, s) =&gt; !L.selectAs(x =&gt; p(x) ? undefined : true, t, s))
+<pre><code class="hljs lang-js">var all = (p, t, s) =&gt; !L.selectAs(x =&gt; p(x) ? undefined : true, t, s)
 </code></pre>
 <p>Now:</p>
 <pre><code class="hljs lang-js">all(x =&gt; x &lt; 9,
@@ -1284,90 +1364,6 @@ elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.sumAs((x, i) =&gt; x + i, L.elems, [3,2,1])
 </code></pre>
-<h4 id="creating-new-traversals">Creating new traversals</h4>
-<h5 id="-a-id-l-branch-a-contents-https-github-com-calmm-js-partial-lenses-l-branch-l-branch-prop-traversal-props-traversal-l-branch-l-branch-p1-ptraversal-s-a-pts-ptraversal-s-a-"><a id="L-branch"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-branch">■</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></h5>
-<p><code>L.branch</code> creates a new traversal from a given template object that specifies
-how the new traversal should visit the properties of an object.  If one thinks
-of traversals as specifying sets of paths, then the template can be seen as
-mapping each property to a set of paths to traverse.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: L.identity}),
-          {first: [&quot;x&quot;], second: &quot;y&quot;})
-</code></pre>
-<p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at
-first.  <a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So,
-when a property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given
-to <code>L.branch</code>, it means that the element is to be visited by the resulting
-traversal.</p>
-<p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
-can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
-elements of an array:</p>
-<pre><code class="hljs lang-js">L.modify([L.pick({x: 0, z: 2}),
-          L.branch({x: L.identity, z: L.identity})],
-         R.negate,
-         [1, 2, 3])
-</code></pre>
-<p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
-<h4 id="traversals-and-combinators">Traversals and combinators</h4>
-<h5 id="-a-id-l-elems-a-contents-https-github-com-calmm-js-partial-lenses-l-elems-l-elems-traversal-l-elems-l-elems-ptraversal-a-a-"><a id="L-elems"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-elems">■</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a></h5>
-<p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
-object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([&quot;xs&quot;, L.elems, &quot;x&quot;], R.inc, {xs: [{x: 1}, {x: 2}]})
-</code></pre>
-<p>Just like with other optics operating on <a href="#array-like">array-like</a> objects, when
-manipulating non-<code>Array</code> objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to
-convert the result to the desired type, if necessary:</p>
-<pre><code class="hljs lang-js">L.modify([L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
-         R.inc,
-         Int8Array.from([-1,4,0,2,4]))
-</code></pre>
-<h5 id="-a-id-l-values-a-contents-https-github-com-calmm-js-partial-lenses-l-values-l-values-traversal-l-values-l-values-ptraversal-p-a-ps-a-"><a id="L-values"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-values">■</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a></h5>
-<p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
-written through, <code>L.values</code> always produces an <code>Object</code>.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
-</code></pre>
-<p>When manipulating objects with a non-<code>Object</code> constructor</p>
-<pre><code class="hljs lang-js">function XYZ(x,y,z) {
-  this.x = x
-  this.y = y
-  this.z = z
-}
-
-XYZ.prototype.norm = function () {
-  return (this.x * this.x +
-          this.y * this.y +
-          this.z * this.z)
-}
-</code></pre>
-<p><a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
-if necessary:</p>
-<pre><code class="hljs lang-js">var objectTo = R.curry((C, o) =&gt; Object.assign(Object.create(C.prototype), o))
-
-L.modify([L.rewrite(objectTo(XYZ)), L.values],
-         R.negate,
-         new XYZ(1,2,3))
-</code></pre>
-<h5 id="-a-id-l-matches-g-a-contents-https-github-com-calmm-js-partial-lenses-l-matches-g-l-matches-g-traversal-l-matches-g-l-matches-regexp-ptraversal-string-string-"><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a></h5>
-<p><code>L.matches</code>, when given a regular expression with
-the
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flag,
-<code>/.../g</code>, is a partial traversal over the matches that the regular expression
-gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
-<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
-next major release.</strong></p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
-           L.pick({name: L.matches(/^[^=]+/),
-                   value: L.matches(/[^=]+$/)})],
-           &quot;?first=foo&amp;second=bar&quot;)
-</code></pre>
-<p>Note that when writing through <code>L.matches</code> and the result would be an empty
-string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
-<p>Note that an empty match terminates the traversal.  It is possible to make use
-of that feature, but it is also possible that an empty match is due to an
-incorrect regular expression that can match the empty string.</p>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.  Put
 in another way, a lens specific a path to a single element in a data structure.</p>
