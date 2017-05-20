@@ -255,6 +255,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#advanced-topics">Advanced topics</a><ul>
+<li><a href="#performance-tips">Performance tips</a></li>
 <li><a href="#on-bundle-size-and-minification">On bundle size and minification</a></li>
 </ul>
 </li>
@@ -2217,6 +2218,17 @@ var isoList = L.iso(fromList, toList)
          sampleList)
 </code></pre>
 <h2 id="advanced-topics">Advanced topics</h2>
+<h3 id="performance-tips">Performance tips</h3>
+<h4 id="avoid-reallocating-optics-in-l-choose-l-choose-">Avoid reallocating optics in <a href="#L-choose"><code>L.choose</code></a></h4>
+<p>Consider the following example:</p>
+<pre><code class="hljs lang-jsx">L.choose(x =&gt; Array.isArray(x) ? [L.elems, &quot;data&quot;] : &quot;data&quot;)
+</code></pre>
+<p>A performance issue with the above is that each time it is used on an array, a
+new composition, <code>[L.elems, &quot;data&quot;]</code>, is allocated.  Performance may be improved
+by moving the allocation outside of <a href="#L-choose"><code>L.choose</code></a>:</p>
+<pre><code class="hljs lang-jsx">var onArray = [L.elems, &quot;data&quot;]
+L.choose(x =&gt; Array.isArray(x) ? onArray : &quot;data&quot;)
+</code></pre>
 <h3 id="on-bundle-size-and-minification">On bundle size and minification</h3>
 <p>The distribution of this library includes
 a

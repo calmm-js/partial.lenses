@@ -155,6 +155,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [BST as a lens](#bst-as-a-lens)
   * [Interfacing with Immutable.js](#interfacing)
 * [Advanced topics](#advanced-topics)
+  * [Performance tips](#performance-tips)
   * [On bundle size and minification](#on-bundle-size-and-minification)
 * [Background](#background)
   * [Motivation](#motivation)
@@ -3146,6 +3147,25 @@ L.joinAs(R.toUpper,
 ```
 
 ## Advanced topics
+
+### Performance tips
+
+#### Avoid reallocating optics in [`L.choose`](#L-choose)
+
+Consider the following example:
+
+```jsx
+L.choose(x => Array.isArray(x) ? [L.elems, "data"] : "data")
+```
+
+A performance issue with the above is that each time it is used on an array, a
+new composition, `[L.elems, "data"]`, is allocated.  Performance may be improved
+by moving the allocation outside of [`L.choose`](#L-choose):
+
+```jsx
+const onArray = [L.elems, "data"]
+L.choose(x => Array.isArray(x) ? onArray : "data")
+```
 
 ### On bundle size and minification
 
