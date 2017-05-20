@@ -863,14 +863,65 @@ function seq() {
   };
 }
 
-// Operations on traversals
+// Creating new traversals
 
-var concatAs =
-/*#__PURE__*/mkTraverse(I.id, function (m) {
-  return ConcatOf(m.concat, (0, m.empty)(), m.delay);
-});
+function branch(template) {
+  if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
+  var keys$$1 = [],
+      vals = [];
+  for (var k in template) {
+    keys$$1.push(k);
+    vals.push(toFunction(template[k]));
+  }
+  return branchOn(keys$$1, vals);
+}
 
-var concat = /*#__PURE__*/concatAs(I.id);
+// Traversals and combinators
+
+function elems(xs, _i, A, xi2yA) {
+  if (seemsArrayLike(xs)) {
+    return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectElems(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+  } else {
+    if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
+    return (0, A.of)(xs);
+  }
+}
+
+function values(xs, _i, A, xi2yA) {
+  if (xs instanceof Object) {
+    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA);
+  } else {
+    if (process.env.NODE_ENV !== "production") reqApplicative(A, "values");
+    return (0, A.of)(xs);
+  }
+}
+
+function matches(re) {
+  if (process.env.NODE_ENV !== "production") warn(matches, "`matches` is experimental and might be removed or changed before next major release.");
+  return function (x, _i, C, xi2yC) {
+    if (I.isString(x)) {
+      var map = C.map;
+
+      if (re.global) {
+        if (process.env.NODE_ENV !== "production") reqApplicative(C, "matches", re);
+        var ap = C.ap,
+            of = C.of,
+            delay = C.delay;
+
+        var m0 = [""];
+        m0.input = x;
+        m0.index = 0;
+        return map(matchesJoin(x), (delay ? iterLazy : iterEager)(map, ap, of, delay, xi2yC, re, m0));
+      } else {
+        var m = x.match(re);
+        if (m) return map(function (y) {
+          return x.replace(re, void 0 !== y ? y : "") || void 0;
+        }, xi2yC(m[0], m.index));
+      }
+    }
+    return zeroOp(x, void 0, C, xi2yC);
+  };
+}
 
 // Folds over traversals
 
@@ -887,6 +938,13 @@ var collectAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
 });
 
 var collect = /*#__PURE__*/collectAs(I.id);
+
+var concatAs =
+/*#__PURE__*/mkTraverse(I.id, function (m) {
+  return ConcatOf(m.concat, (0, m.empty)(), m.delay);
+});
+
+var concat = /*#__PURE__*/concatAs(I.id);
 
 var countIf = /*#__PURE__*/I.curry(function (p, t, s) {
   return traverseU(Sum, function (x) {
@@ -947,66 +1005,6 @@ var select = /*#__PURE__*/selectAs();
 var sumAs = /*#__PURE__*/traverse(Sum);
 
 var sum = /*#__PURE__*/sumAs(unto(0));
-
-// Creating new traversals
-
-function branch(template) {
-  if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
-  var keys$$1 = [],
-      vals = [];
-  for (var k in template) {
-    keys$$1.push(k);
-    vals.push(toFunction(template[k]));
-  }
-  return branchOn(keys$$1, vals);
-}
-
-// Traversals and combinators
-
-function elems(xs, _i, A, xi2yA) {
-  if (seemsArrayLike(xs)) {
-    return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectElems(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
-  } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
-    return (0, A.of)(xs);
-  }
-}
-
-function values(xs, _i, A, xi2yA) {
-  if (xs instanceof Object) {
-    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA);
-  } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A, "values");
-    return (0, A.of)(xs);
-  }
-}
-
-function matches(re) {
-  if (process.env.NODE_ENV !== "production") warn(matches, "`matches` is experimental and might be removed or changed before next major release.");
-  return function (x, _i, C, xi2yC) {
-    if (I.isString(x)) {
-      var map = C.map;
-
-      if (re.global) {
-        if (process.env.NODE_ENV !== "production") reqApplicative(C, "matches", re);
-        var ap = C.ap,
-            of = C.of,
-            delay = C.delay;
-
-        var m0 = [""];
-        m0.input = x;
-        m0.index = 0;
-        return map(matchesJoin(x), (delay ? iterLazy : iterEager)(map, ap, of, delay, xi2yC, re, m0));
-      } else {
-        var m = x.match(re);
-        if (m) return map(function (y) {
-          return x.replace(re, void 0 !== y ? y : "") || void 0;
-        }, xi2yC(m[0], m.index));
-      }
-    }
-    return zeroOp(x, void 0, C, xi2yC);
-  };
-}
 
 // Operations on lenses
 
@@ -1316,13 +1314,17 @@ exports.setOp = setOp;
 exports.removeOp = removeOp;
 exports.log = log;
 exports.seq = seq;
-exports.concatAs = concatAs;
-exports.concat = concat;
+exports.branch = branch;
+exports.elems = elems;
+exports.values = values;
+exports.matches = matches;
 exports.all = all;
 exports.and = and;
 exports.any = any;
 exports.collectAs = collectAs;
 exports.collect = collect;
+exports.concatAs = concatAs;
+exports.concat = concat;
 exports.countIf = countIf;
 exports.count = count;
 exports.foldl = foldl;
@@ -1342,10 +1344,6 @@ exports.selectAs = selectAs;
 exports.select = select;
 exports.sumAs = sumAs;
 exports.sum = sum;
-exports.branch = branch;
-exports.elems = elems;
-exports.values = values;
-exports.matches = matches;
 exports.get = get;
 exports.lens = lens;
 exports.setter = setter;

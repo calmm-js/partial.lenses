@@ -768,78 +768,6 @@ export function seq() {
   }
 }
 
-// Operations on traversals
-
-export const concatAs =
-  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, (0,m.empty)(), m.delay))
-
-export const concat = /*#__PURE__*/concatAs(I.id)
-
-// Folds over traversals
-
-export const all = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? U : T), not)
-
-export const and = /*#__PURE__*/all()
-
-export const any = /*#__PURE__*/I.pipe2U(selectAny, Boolean)
-
-export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
-  toArray(traverseU(Collect, xi2y, t, s)) || I.array0)
-
-export const collect = /*#__PURE__*/collectAs(I.id)
-
-export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
-  traverseU(Sum, x => p(x) ? 1 : 0, t, s))
-
-export const count = /*#__PURE__*/countIf(I.isDefined)
-
-export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
-  fold(f, r, traverseU(Collect, pair, t, s)))
-
-export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
-  const xs = collectAs(pair, t, s)
-  for (let i=xs.length-1; 0<=i; --i) {
-    const x = xs[i]
-    r = f(r, x[0], x[1])
-  }
-  return r
-})
-
-export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
-
-export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
-  if (process.env.NODE_ENV !== "production")
-    if (!I.isString(d))
-      errorGiven("`join` and `joinAs` expect a string delimiter", d)
-  return ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
-})
-
-export const join = /*#__PURE__*/joinAs(I.id)
-
-export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
-
-export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
-
-export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
-
-export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
-
-export const none = /*#__PURE__*/I.pipe2U(selectAny, not)
-
-export const or = /*#__PURE__*/any()
-
-export const productAs = /*#__PURE__*/traverse(ConcatOf((x, y) => x * y, 1))
-
-export const product = /*#__PURE__*/productAs(unto(1))
-
-export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
-
-export const select = /*#__PURE__*/selectAs()
-
-export const sumAs = /*#__PURE__*/traverse(Sum)
-
-export const sum = /*#__PURE__*/sumAs(unto(0))
-
 // Creating new traversals
 
 export function branch(template) {
@@ -905,6 +833,76 @@ export function matches(re) {
     return zeroOp(x, void 0, C, xi2yC)
   }
 }
+
+// Folds over traversals
+
+export const all = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? U : T), not)
+
+export const and = /*#__PURE__*/all()
+
+export const any = /*#__PURE__*/I.pipe2U(selectAny, Boolean)
+
+export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
+  toArray(traverseU(Collect, xi2y, t, s)) || I.array0)
+
+export const collect = /*#__PURE__*/collectAs(I.id)
+
+export const concatAs =
+  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, (0,m.empty)(), m.delay))
+
+export const concat = /*#__PURE__*/concatAs(I.id)
+
+export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
+  traverseU(Sum, x => p(x) ? 1 : 0, t, s))
+
+export const count = /*#__PURE__*/countIf(I.isDefined)
+
+export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
+  fold(f, r, traverseU(Collect, pair, t, s)))
+
+export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
+  const xs = collectAs(pair, t, s)
+  for (let i=xs.length-1; 0<=i; --i) {
+    const x = xs[i]
+    r = f(r, x[0], x[1])
+  }
+  return r
+})
+
+export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
+
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
+  if (process.env.NODE_ENV !== "production")
+    if (!I.isString(d))
+      errorGiven("`join` and `joinAs` expect a string delimiter", d)
+  return ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
+})
+
+export const join = /*#__PURE__*/joinAs(I.id)
+
+export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
+
+export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
+
+export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
+
+export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
+
+export const none = /*#__PURE__*/I.pipe2U(selectAny, not)
+
+export const or = /*#__PURE__*/any()
+
+export const productAs = /*#__PURE__*/traverse(ConcatOf((x, y) => x * y, 1))
+
+export const product = /*#__PURE__*/productAs(unto(1))
+
+export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
+
+export const select = /*#__PURE__*/selectAs()
+
+export const sumAs = /*#__PURE__*/traverse(Sum)
+
+export const sum = /*#__PURE__*/sumAs(unto(0))
 
 // Operations on lenses
 

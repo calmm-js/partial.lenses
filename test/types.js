@@ -113,14 +113,15 @@ export const log = T.fnVar(T.string, T_optic)
 
 export const seq = T.fnVar(T_optic, T_transform)
 
-// Operations on traversals
+// Creating new traversals
 
-export const concat = T.fn([T_monoid, T_traversal, T_maybeDataI], T.any)
-export const concatAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
-                              T_monoid,
-                              T_traversal,
-                              T_maybeDataI],
-                             T.any)
+export const branch = T.fn([T.props(T_traversal)], T_traversal)
+
+// Traversals and combinators
+
+export const elems = T_traversal
+export const values = T_traversal
+export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
 
 // Folds over traversals
 
@@ -137,6 +138,13 @@ export const collectAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
                                T_traversal,
                                T_maybeDataI],
                               T.array(T.def))
+
+export const concat = T.fn([T_monoid, T_traversal, T_maybeDataI], T.any)
+export const concatAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
+                              T_monoid,
+                              T_traversal,
+                              T_maybeDataI],
+                             T.any)
 
 export const countIf =
   T.fn([T.fn([T_maybeDataO, T_index], T.boolean),
@@ -194,16 +202,6 @@ export const selectAs =
         T_traversal,
         T_maybeDataI],
        T.any)
-
-// Creating new traversals
-
-export const branch = T.fn([T.props(T_traversal)], T_traversal)
-
-// Traversals and combinators
-
-export const elems = T_traversal
-export const values = T_traversal
-export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
 
 // Operations on lenses
 
