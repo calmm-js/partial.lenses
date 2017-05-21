@@ -88,11 +88,15 @@ export const compose = T.fnVar(T_optic, T_optic)
 // Querying
 
 export const chain = T.fn([T.fn([T_dataO, T_index], T_optic), T_lens], T_optic)
-export const choice = T.fnVar(T_lens, T_optic)
+export const choice = T.fnVar(T_optic, T_optic)
 export const choose = T.fn([T.fn([T_maybeDataO, T_index], T_optic)], T_optic)
 export const optional = T_optic
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const zero = T_optic
+
+// Adapting
+
+export const orElse = T.fn([T_optic, T_optic], T_optic)
 
 // Recursing
 
@@ -161,6 +165,7 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const isDefined = T.fn([T_traversal, T_maybeDataI], T.boolean)
 export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
 export const joinAs =
@@ -241,7 +246,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findHint = T.fn([T.fn([T_maybeDataO, hint], T.any), hint], T_lens)
-export const findWith = T.fnVar(T_lens, T_lens)
+export const findWith = T.fnVar(T_optic, T_optic)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
@@ -255,10 +260,6 @@ export const removable = T.fnVar(T.string, T_lens)
 // Providing defaults
 
 export const valueOr = T.fn([T.any], T_lens)
-
-// Adapting to data
-
-export const orElse = T.fn([T_lens, T_lens], T_lens)
 
 // Transforming data
 

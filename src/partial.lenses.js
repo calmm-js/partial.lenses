@@ -704,9 +704,9 @@ export function compose() {
 export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
-export const choice = (...ls) => choose(x => {
-  const l = ls[findIndex(l => void 0 !== getU(l, x), ls)]
-  return void 0 !== l ? l : zero
+export const choice = (...os) => choose(x => {
+  const o = os[findIndex(o => isDefined(o, x), os)]
+  return void 0 !== o ? o : zero
 })
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
@@ -718,6 +718,11 @@ export const when = p => (x, i, C, xi2yC) =>
 export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
+
+// Adapting
+
+export const orElse = /*#__PURE__*/I.curry((back, prim) =>
+  choose(x => isDefined(prim, x) ? prim : back))
 
 // Recursing
 
@@ -866,6 +871,8 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   }
   return r
 })
+
+export const isDefined = /*#__PURE__*/I.pipe2U(mkSelect(x => void 0 !== x ? T : U), Boolean)()
 
 export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
 
@@ -1024,9 +1031,9 @@ export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   }
 })
 
-export function findWith(...ls) {
-  const lls = compose(...ls)
-  return [find(x => void 0 !== getU(lls, x)), lls]
+export function findWith(...os) {
+  const oos = compose(...os)
+  return [find(x => isDefined(oos, x)), oos]
 }
 
 export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
@@ -1087,11 +1094,6 @@ export function removable(...ps) {
 // Providing defaults
 
 export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
-
-// Adapting to data
-
-export const orElse = /*#__PURE__*/I.curry((d, l) =>
-  choose(x => void 0 !== getU(l, x) ? l : d))
 
 // Transforming data
 
