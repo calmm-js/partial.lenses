@@ -451,6 +451,9 @@ describe("L.orElse", () => {
   testEq(`L.get(L.orElse("b", "a"), {b: 2})`, 2)
   testEq(`L.set(L.orElse("b", "a"), 3, {a: 2, b: 1})`, {a: 3, b: 1})
   testEq(`L.set(L.orElse("b", "a"), 3, {b: 2})`, {b: 3})
+  testEq(`L.modify(L.orElse(L.values, L.elems), R.inc, {x: 1, y: 2})`,
+         {x: 2, y: 3})
+  testEq(`L.modify(L.orElse(L.values, L.elems), R.inc, [2,0,3])`, [3,1,4])
 })
 
 describe("L.choice", () => {
@@ -460,6 +463,9 @@ describe("L.choice", () => {
   testEq(`L.set(L.choice("x", "y"), "A", {x: "a"})`, {x: "A"})
   testEq(`L.set(L.choice("x", "y"), "B", {y: "b"})`, {y: "B"})
   testEq(`L.set(L.choice("x", "y"), "C", {z: "c"})`, {z: "c"})
+  testEq(`L.modify(L.choice(L.elems, L.values), R.inc, {x: 1, y: 2})`,
+         {x: 2, y: 3})
+  testEq(`L.modify(L.choice(L.elems, L.values), R.inc, [2,0,3])`, [3,1,4])
 })
 
 describe("L.findWith", () => {
@@ -468,6 +474,7 @@ describe("L.findWith", () => {
          [{x: ["a"]},{x: ["b","d"]}])
   testEq(`L.remove(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`,
          [{x: ["a"]},{x: ["b"]}])
+  testEq(`L.collect(L.findWith(L.elems), [1,[2],3])`, [2])
 })
 
 describe("L.filter", () => {
