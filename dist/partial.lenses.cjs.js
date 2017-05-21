@@ -254,9 +254,8 @@ var selectAny = mkSelect(function (x) {
 
 var mkTraverse = function mkTraverse(after, toC) {
   return I.curryN(4, function (xi2yC, m) {
-    var C = toC(m);
-    return function (t, s) {
-      return after(traverseU(C, xi2yC, t, s));
+    return m = toC(m), function (t, s) {
+      return after(traverseU(m, xi2yC, t, s));
     };
   });
 };
@@ -775,15 +774,15 @@ var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
 });
 
 var choice = function choice() {
-  for (var _len = arguments.length, ls = Array(_len), _key = 0; _key < _len; _key++) {
-    ls[_key] = arguments[_key];
+  for (var _len = arguments.length, os = Array(_len), _key = 0; _key < _len; _key++) {
+    os[_key] = arguments[_key];
   }
 
   return choose(function (x) {
-    var l = ls[findIndex(function (l) {
-      return void 0 !== getU(l, x);
-    }, ls)];
-    return void 0 !== l ? l : zero;
+    var o = os[findIndex(function (o) {
+      return isDefined$1(o, x);
+    }, os)];
+    return void 0 !== o ? o : zero;
   });
 };
 
@@ -805,6 +804,14 @@ var zero = function zero(x, i, C, xi2yC) {
   return zeroOp(x, i, C, xi2yC);
 };
 
+// Adapting
+
+var orElse = /*#__PURE__*/I.curry(function (back, prim) {
+  return choose(function (x) {
+    return isDefined$1(prim, x) ? prim : back;
+  });
+});
+
 // Recursing
 
 function lazy(o2o) {
@@ -821,8 +828,7 @@ function lazy(o2o) {
 
 var modifyOp = function modifyOp(xi2y) {
   return function (x, i, C, xi2yC) {
-    var y = xi2y(x, i);
-    return zeroOp(y, i, C, xi2yC, y);
+    return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
   };
 };
 
@@ -852,11 +858,11 @@ function seq() {
       xMs = Array(n);
   for (var i = 0; i < n; ++i) {
     xMs[i] = toFunction(arguments[i]);
-  }var loop = function loop(M, xi2xM, i, j) {
+  }function loop(M, xi2xM, i, j) {
     return j === n ? M.of : function (x) {
       return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
     };
-  };
+  }
   return function (x, i, M, xi2xM) {
     if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
     return loop(M, xi2xM, i, 0)(x);
@@ -967,6 +973,10 @@ var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
   return r;
 });
 
+var isDefined$1 = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
+  return void 0 !== x ? T : U;
+}), Boolean)();
+
 var isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)();
 
 var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
@@ -1058,9 +1068,9 @@ function augment(template) {
 // Enforcing invariants
 
 function defaults(out) {
-  var o2u = function o2u(x) {
+  function o2u(x) {
     return replaced(out, void 0, x);
-  };
+  }
   return function (x, i, F, xi2yF) {
     return (0, F.map)(o2u, xi2yF(void 0 !== x ? x : out, i));
   };
@@ -1139,10 +1149,10 @@ var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
 });
 
 function findWith() {
-  var lls = compose.apply(undefined, arguments);
+  var oos = compose.apply(undefined, arguments);
   return [find(function (x) {
-    return void 0 !== getU(lls, x);
-  }), lls];
+    return isDefined$1(oos, x);
+  }), oos];
 }
 
 var index = process.env.NODE_ENV === "production" ? I.id : checkIndex;
@@ -1206,14 +1216,6 @@ var valueOr = function valueOr(v) {
   };
 };
 
-// Adapting to data
-
-var orElse = /*#__PURE__*/I.curry(function (d, l) {
-  return choose(function (x) {
-    return void 0 !== getU(l, x) ? l : d;
-  });
-});
-
 // Transforming data
 
 function pick(template) {
@@ -1224,9 +1226,9 @@ function pick(template) {
 }
 
 var replace = /*#__PURE__*/I.curry(function (inn, out) {
-  var o2i = function o2i(x) {
+  function o2i(x) {
     return replaced(out, inn, x);
-  };
+  }
   return function (x, i, F, xi2yF) {
     return (0, F.map)(o2i, xi2yF(replaced(inn, out, x), i));
   };
@@ -1308,6 +1310,7 @@ exports.choose = choose;
 exports.when = when;
 exports.optional = optional;
 exports.zero = zero;
+exports.orElse = orElse;
 exports.lazy = lazy;
 exports.modifyOp = modifyOp;
 exports.setOp = setOp;
@@ -1329,6 +1332,7 @@ exports.countIf = countIf;
 exports.count = count;
 exports.foldl = foldl;
 exports.foldr = foldr;
+exports.isDefined = isDefined$1;
 exports.isEmpty = isEmpty;
 exports.joinAs = joinAs;
 exports.join = join;
@@ -1366,7 +1370,6 @@ exports.prop = prop;
 exports.props = props;
 exports.removable = removable;
 exports.valueOr = valueOr;
-exports.orElse = orElse;
 exports.pick = pick;
 exports.replace = replace;
 exports.getInverse = getInverse;

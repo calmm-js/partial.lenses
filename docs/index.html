@@ -75,11 +75,15 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#querying">Querying</a><ul>
 <li><a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a></li>
-<li><a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses) ~&gt; optic</code></a></li>
+<li><a href="#L-choice" title="L.choice: (...POptic s a) -&gt; POptic s a"><code>L.choice(...optics) ~&gt; optic</code></a></li>
 <li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a></li>
 <li><a href="#L-optional" title="L.optional: POptic a a"><code>L.optional ~&gt; optic</code></a></li>
 <li><a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a></li>
 <li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a></li>
+</ul>
+</li>
+<li><a href="#adapting">Adapting</a><ul>
+<li><a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a></li>
 </ul>
 </li>
 <li><a href="#recursing">Recursing</a><ul>
@@ -132,6 +136,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></li>
+<li><a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a></li>
 <li><a href="#L-joinAs" title="L.joinAs: ((Maybe a, Index) -&gt; Maybe String) -&gt; String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.joinAs((maybeValue, index) =&gt; maybeString, string, traversal, maybeData) ~&gt; string</code></a></li>
@@ -179,7 +184,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-filter" title="L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-find" title="L.find: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((maybeValue, index) =&gt; testable) ~&gt; lens</code></a></li>
 <li><a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a></li>
-<li><a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></li>
+<li><a href="#L-findWith" title="L.findWith: (POptic s s1, ...POptic sN a) -&gt; POptic [s] a"><code>L.findWith(...optics) ~&gt; optic</code></a></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a></li>
 <li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a></li>
@@ -197,10 +202,6 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#providing-defaults">Providing defaults</a><ul>
 <li><a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a></li>
-</ul>
-</li>
-<li><a href="#adapting-to-data">Adapting to data</a><ul>
-<li><a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#transforming-data">Transforming data</a><ul>
@@ -855,10 +856,10 @@ combinator for querying with optics.  <code>L.chain(toOptic, optic)</code> is eq
 <p>Note that with the <a href="http://ramdajs.com/docs/#always"><code>R.always</code></a>,
 <code>L.chain</code>, <a href="#L-choice"><code>L.choice</code></a> and <a href="#L-zero"><code>L.zero</code></a> combinators, one can
 consider optics as subsuming the maybe monad.</p>
-<h5 id="-a-id-l-choice-a-contents-https-github-com-calmm-js-partial-lenses-l-choice-l-choice-lenses-optic-l-choice-l-choice-plens-s-a-poptic-s-a-"><a id="L-choice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choice">■</a> <a href="#L-choice" title="L.choice: (...PLens s a) -&gt; POptic s a"><code>L.choice(...lenses) ~&gt; optic</code></a></h5>
-<p><code>L.choice</code> returns a partial optic that acts like the first of the given lenses
+<h5 id="-a-id-l-choice-a-contents-https-github-com-calmm-js-partial-lenses-l-choice-l-choice-optics-optic-l-choice-l-choice-poptic-s-a-poptic-s-a-"><a id="L-choice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choice">■</a> <a href="#L-choice" title="L.choice: (...POptic s a) -&gt; POptic s a"><code>L.choice(...optics) ~&gt; optic</code></a></h5>
+<p><code>L.choice</code> returns a partial optic that acts like the first of the given optics
 whose view is not <code>undefined</code> on the given data structure.  When the views of
-all of the given lenses are <code>undefined</code>, the returned lens acts
+all of the given optics are <code>undefined</code>, the returned optics acts
 like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
@@ -908,6 +909,14 @@ read-only lens whose view is always <code>undefined</code>.</p>
                     :                          L.zero)],
           [1, {x: 2}, [3,4]])
 </code></pre>
+<h4 id="adapting">Adapting</h4>
+<h5 id="-a-id-l-orelse-a-contents-https-github-com-calmm-js-partial-lenses-l-orelse-l-orelse-backupoptic-primaryoptic-optic-l-orelse-l-orelse-poptic-s-a-poptic-s-a-poptic-s-a-"><a id="L-orElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-orElse">■</a> <a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a></h5>
+<p><code>L.orElse(backupOptic, primaryOptic)</code> acts like <code>primaryOptic</code> when its view is
+not <code>undefined</code> and otherwise like <code>backupOptic</code>.  You can use <code>L.orElse</code> on its
+own with <a href="http://ramdajs.com/docs/#reduceRight"><code>R.reduceRight</code></a>
+(and <a href="http://ramdajs.com/docs/#reduce"><code>R.reduce</code></a>) to create an associative
+choice over optics or use <code>L.orElse</code> to specify a default or backup optic
+for <a href="#L-choice"><code>L.choice</code></a>, for example.</p>
 <h4 id="recursing">Recursing</h4>
 <h5 id="-a-id-l-lazy-a-contents-https-github-com-calmm-js-partial-lenses-l-lazy-l-lazy-optic-optic-optic-l-lazy-l-lazy-poptic-s-a-poptic-s-a-poptic-s-a-"><a id="L-lazy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-lazy">■</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
@@ -1251,11 +1260,18 @@ traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
 </code></pre>
+<h5 id="-a-id-l-isdefined-a-contents-https-github-com-calmm-js-partial-lenses-l-isdefined-l-isdefined-traversal-maybedata-boolean-l-isdefined-l-isdefined-ptraversal-s-a-maybe-s-boolean-"><a id="L-isDefined"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isDefined">■</a> <a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a></h5>
+<p><code>L.isDefined</code> determines whether or not the given traversal focuses on any
+defined element on the given data structure.</p>
+<pre><code class="hljs lang-js">L.isDefined(&quot;x&quot;, {y: 1})
+</code></pre>
+<p>Note that <code>L.isDefined</code> is not the complement of <a href="#L-isEmpty"><code>L.isEmpty</code></a>.</p>
 <h5 id="-a-id-l-isempty-a-contents-https-github-com-calmm-js-partial-lenses-l-isempty-l-isempty-traversal-maybedata-boolean-l-isempty-l-isempty-ptraversal-s-a-maybe-s-boolean-"><a id="L-isEmpty"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isEmpty">■</a> <a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.isEmpty</code> determines whether or not the given traversal focuses on any
 elements, <code>undefined</code> or otherwise, on the given data structure.</p>
 <pre><code class="hljs lang-js">L.isEmpty(flatten, [[],[[[],[]],[]]])
 </code></pre>
+<p>Note that <code>L.isEmpty</code> is not the complement of <a href="#L-isDefined"><code>L.isDefined</code></a>.</p>
 <h5 id="-a-id-l-join-a-contents-https-github-com-calmm-js-partial-lenses-l-join-l-join-string-traversal-maybedata-string-l-join-l-join-string-ptraversal-s-a-maybe-s-string-"><a id="L-join"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-join">■</a> <a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a></h5>
 <p><code>L.join</code> creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.</p>
@@ -1585,10 +1601,10 @@ next major release.</strong></p>
           {id: 4, value: &quot;d&quot;},
           {id: 5, value: &quot;e&quot;}])
 </code></pre>
-<h5 id="-a-id-l-findwith-a-contents-https-github-com-calmm-js-partial-lenses-l-findwith-l-findwith-lenses-lens-l-findwith-l-findwith-plens-s-s1-plens-sn-a-plens-s-a-"><a id="L-findWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findWith">■</a> <a href="#L-findWith" title="L.findWith: (PLens s s1, ...PLens sN a) -&gt; PLens [s] a"><code>L.findWith(...lenses) ~&gt; lens</code></a></h5>
-<p><code>L.findWith(...lenses)</code> chooses an index from an <a href="#array-like">array-like</a>
-object through which the given lens, <a href="#L-compose"><code>[...lenses]</code></a>, focuses on a
-defined item and then returns a lens that focuses on that item.</p>
+<h5 id="-a-id-l-findwith-a-contents-https-github-com-calmm-js-partial-lenses-l-findwith-l-findwith-optics-optic-l-findwith-l-findwith-poptic-s-s1-poptic-sn-a-poptic-s-a-"><a id="L-findWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findWith">■</a> <a href="#L-findWith" title="L.findWith: (POptic s s1, ...POptic sN a) -&gt; POptic [s] a"><code>L.findWith(...optics) ~&gt; optic</code></a></h5>
+<p><code>L.findWith(...optics)</code> chooses an index from an <a href="#array-like">array-like</a>
+object through which the given optic, <a href="#L-compose"><code>[...optics]</code></a>, has a
+non-<code>undefined</code> view and then returns an optic that focuses on that.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.findWith(&quot;x&quot;), [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
@@ -1776,14 +1792,6 @@ lens.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove(L.valueOr(0), 1)
 </code></pre>
-<h4 id="adapting-to-data">Adapting to data</h4>
-<h5 id="-a-id-l-orelse-a-contents-https-github-com-calmm-js-partial-lenses-l-orelse-l-orelse-backuplens-primarylens-lens-l-orelse-l-orelse-plens-s-a-plens-s-a-plens-s-a-"><a id="L-orElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-orElse">■</a> <a href="#L-orElse" title="L.orElse: (PLens s a, PLens s a) -&gt; PLens s a"><code>L.orElse(backupLens, primaryLens) ~&gt; lens</code></a></h5>
-<p><code>L.orElse(backupLens, primaryLens)</code> acts like <code>primaryLens</code> when its view is not
-<code>undefined</code> and otherwise like <code>backupLens</code>.  You can use <code>L.orElse</code> on its own
-with <a href="http://ramdajs.com/docs/#reduceRight"><code>R.reduceRight</code></a>
-(and <a href="http://ramdajs.com/docs/#reduce"><code>R.reduce</code></a>) to create an associative
-choice over lenses or use <code>L.orElse</code> to specify a default or backup lens
-for <a href="#L-choice"><code>L.choice</code></a>, for example.</p>
 <h4 id="transforming-data">Transforming data</h4>
 <h5 id="-a-id-l-pick-a-contents-https-github-com-calmm-js-partial-lenses-l-pick-l-pick-prop-lens-props-lens-l-pick-l-pick-p1-plens-s-a1-pls-plens-s-p1-a1-pls-"><a id="L-pick"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pick">■</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a></h5>
 <p><code>L.pick</code> creates a lens out of the given object template of lenses and allows
