@@ -699,15 +699,15 @@ Now, optics are composable in several ways and in each of those ways there is a
 an operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:
 
-|                       | Operation(s)                                                        | Semantics
-| --------------------- | ------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
-| Nesting               | [`L.compose(...os)`](#L-compose) or `[...os]`                       | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) optics
-| Recursing             | [`L.lazy(o => o)`](#L-lazy)                                         | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-| Adapting              | [`L.orElse(lb, la)`](#L-orElse)                                     | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [lenses](#lenses)
-| [Querying](#querying) | [`L.choice(...ls)`](#L-choice) and [`L.chain(x => o, o)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [lenses](#lenses)
-| Picking               | [`L.pick({...p:l})`](#L-pick)                                       | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
-| Branching             | [`L.branch({...p:t})`](#L-branch)                                   | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
-| Sequencing            | [`L.seq(...ts)`](#L-seq)                                            | Sequential application of [transforms](#transforms)
+|                         | Operation(s)                                                                        | Semantics
+| ----------------------- | ----------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
+| [Nesting](#nesting)     | [`L.compose(...optics)`](#L-compose) or `[...optics]`                               | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) [optics](#optics)
+| [Recursing](#recursing) | [`L.lazy(optic => optic)`](#L-lazy)                                                 | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+| [Adapting](#adapting)   | [`L.orElse(backupOptic, primaryOptic)`](#L-orElse)                                  | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [optics](#optics)
+| [Querying](#querying)   | [`L.choice(...optics)`](#L-choice) and [`L.chain(value => optic, optic)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [optics](#optics)
+| Picking                 | [`L.pick({...prop:lens})`](#L-pick)                                                 | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
+| Branching               | [`L.branch({...prop:traversal})`](#L-branch)                                        | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
+| Sequencing              | [`L.seq(...transforms)`](#L-seq)                                                    | Sequential application of [transforms](#transforms)
 
 The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally

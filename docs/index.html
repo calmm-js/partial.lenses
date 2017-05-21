@@ -670,38 +670,38 @@ behave.  Here is a table of the means of composition supported by this library:<
 </thead>
 <tbody>
 <tr>
-<td>Nesting</td>
-<td><a href="#L-compose"><code>L.compose(...os)</code></a> or <code>[...os]</code></td>
-<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w">unityped</a> optics</td>
+<td><a href="#nesting">Nesting</a></td>
+<td><a href="#L-compose"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></td>
+<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w">unityped</a> <a href="#optics">optics</a></td>
 </tr>
 <tr>
-<td>Recursing</td>
-<td><a href="#L-lazy"><code>L.lazy(o =&gt; o)</code></a></td>
+<td><a href="#recursing">Recursing</a></td>
+<td><a href="#L-lazy"><code>L.lazy(optic =&gt; optic)</code></a></td>
 <td><a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">Fixed point</a></td>
 </tr>
 <tr>
-<td>Adapting</td>
-<td><a href="#L-orElse"><code>L.orElse(lb, la)</code></a></td>
-<td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#lenses">lenses</a></td>
+<td><a href="#adapting">Adapting</a></td>
+<td><a href="#L-orElse"><code>L.orElse(backupOptic, primaryOptic)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#optics">optics</a></td>
 </tr>
 <tr>
 <td><a href="#querying">Querying</a></td>
-<td><a href="#L-choice"><code>L.choice(...ls)</code></a> and <a href="#L-chain"><code>L.chain(x =&gt; o, o)</code></a></td>
-<td><a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a> over <a href="#lenses">lenses</a></td>
+<td><a href="#L-choice"><code>L.choice(...optics)</code></a> and <a href="#L-chain"><code>L.chain(value =&gt; optic, optic)</code></a></td>
+<td><a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a> over <a href="#optics">optics</a></td>
 </tr>
 <tr>
 <td>Picking</td>
-<td><a href="#L-pick"><code>L.pick({...p:l})</code></a></td>
+<td><a href="#L-pick"><code>L.pick({...prop:lens})</code></a></td>
 <td><a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of <a href="#lenses">lenses</a></td>
 </tr>
 <tr>
 <td>Branching</td>
-<td><a href="#L-branch"><code>L.branch({...p:t})</code></a></td>
+<td><a href="#L-branch"><code>L.branch({...prop:traversal})</code></a></td>
 <td><a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a></td>
 </tr>
 <tr>
 <td>Sequencing</td>
-<td><a href="#L-seq"><code>L.seq(...ts)</code></a></td>
+<td><a href="#L-seq"><code>L.seq(...transforms)</code></a></td>
 <td>Sequential application of <a href="#transforms">transforms</a></td>
 </tr>
 </tbody>
