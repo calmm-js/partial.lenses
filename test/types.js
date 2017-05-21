@@ -165,6 +165,7 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const isDefined = T.fn([T_traversal, T_maybeDataI], T.boolean)
 export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
 export const joinAs =

@@ -203,6 +203,7 @@ describe("arities", () => {
     index: 1,
     inverse: 1,
     is: 1,
+    isDefined: 2,
     isEmpty: 2,
     iso: 2,
     join: 3,
@@ -652,6 +653,11 @@ describe("L.traverse", () => {
 })
 
 describe("folds", () => {
+  testEq(`L.isDefined(L.elems, [])`, false)
+  testEq(`L.isDefined(L.elems, [1])`, true)
+  testEq(`L.isDefined("x", {y: 1})`, false)
+  testEq(`L.isDefined([L.elems, "x"], [{}])`, false)
+  testEq(`L.isDefined([L.elems, "x", L.optional], [{}])`, false)
   testEq(`L.isEmpty(L.elems, [])`, true)
   testEq(`L.isEmpty(L.elems, [1])`, false)
   testEq(`L.isEmpty([L.elems, "x"], [{}])`, false)

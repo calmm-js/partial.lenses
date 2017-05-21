@@ -705,7 +705,7 @@ export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
 export const choice = (...os) => choose(x => {
-  const o = os[findIndex(o => void 0 !== select(o, x), os)]
+  const o = os[findIndex(o => isDefined(o, x), os)]
   return void 0 !== o ? o : zero
 })
 
@@ -722,7 +722,7 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 // Adapting
 
 export const orElse = /*#__PURE__*/I.curry((back, prim) =>
-  choose(x => void 0 !== select(prim, x) ? prim : back))
+  choose(x => isDefined(prim, x) ? prim : back))
 
 // Recursing
 
@@ -871,6 +871,8 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   }
   return r
 })
+
+export const isDefined = /*#__PURE__*/I.pipe2U(mkSelect(x => void 0 !== x ? T : U), Boolean)()
 
 export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
 
@@ -1031,7 +1033,7 @@ export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
 
 export function findWith(...os) {
   const oos = compose(...os)
-  return [find(x => void 0 !== select(oos, x)), oos]
+  return [find(x => isDefined(oos, x)), oos]
 }
 
 export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
