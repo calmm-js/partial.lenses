@@ -1597,7 +1597,7 @@ L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 ##### <a id="L-isDefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-isDefined) [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean")
 
 `L.isDefined` determines whether or not the given traversal focuses on any
-defined element on the given data structure.
+non-`undefined` element on the given data structure.
 
 ```js
 L.isDefined("x", {y: 1})

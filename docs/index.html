@@ -1262,7 +1262,7 @@ traversal.</p>
 </code></pre>
 <h5 id="-a-id-l-isdefined-a-contents-https-github-com-calmm-js-partial-lenses-l-isdefined-l-isdefined-traversal-maybedata-boolean-l-isdefined-l-isdefined-ptraversal-s-a-maybe-s-boolean-"><a id="L-isDefined"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isDefined">■</a> <a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.isDefined</code> determines whether or not the given traversal focuses on any
-defined element on the given data structure.</p>
+non-<code>undefined</code> element on the given data structure.</p>
 <pre><code class="hljs lang-js">L.isDefined(&quot;x&quot;, {y: 1})
 </code></pre>
 <p>Note that <code>L.isDefined</code> is not the complement of <a href="#L-isEmpty"><code>L.isEmpty</code></a>.</p>
