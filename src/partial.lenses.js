@@ -719,6 +719,11 @@ export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
+// Adapting
+
+export const orElse = /*#__PURE__*/I.curry((back, prim) =>
+  choose(x => void 0 !== select(prim, x) ? prim : back))
+
 // Recursing
 
 export function lazy(o2o) {
@@ -1087,11 +1092,6 @@ export function removable(...ps) {
 // Providing defaults
 
 export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
-
-// Adapting to data
-
-export const orElse = /*#__PURE__*/I.curry((back, prim) =>
-  choose(x => void 0 !== select(prim, x) ? prim : back))
 
 // Transforming data
 
