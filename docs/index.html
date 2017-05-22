@@ -587,11 +587,11 @@ and <a href="#isomorphisms">isomorphisms</a>, provided by this library are colle
 known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an <a href="#L-inverse">inverse</a>.</p>
-<p>In addition to basic optics, this library also supports more
-arbitrary <a href="#transforms">transforms</a>.  Transforms allow operations, such as
-modifying a single focus multiple times or even in a loop, that are not possible
-with basic optics.  However, transforms can be considerably harder to reason
-about.</p>
+<p>In addition to basic bidirectional optics, this library also supports more
+arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a>.
+Transforms allow operations, such as modifying a single focus multiple times or
+even in a loop, that are not possible with basic optics.  However, transforms
+can be considerably harder to reason about.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
