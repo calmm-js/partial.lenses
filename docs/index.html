@@ -108,7 +108,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#transforms">Transforms</a><ul>
 <li><a href="#sequencing">Sequencing</a><ul>
-<li><a href="#L-seq" title="L.seq: (...POptic s a) -&gt; PTransform s a"><code>L.seq(...optics) ~&gt; transform</code></a></li>
+<li><a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a></li>
 </ul>
 </li>
 </ul>
@@ -586,29 +586,24 @@ make basic use of lenses created by client code using the dependent library.</p>
 and <a href="#isomorphisms">isomorphisms</a>, provided by this library are collectively
 known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
-restriction of lenses with an inverse.</p>
+restriction of lenses with an <a href="#L-inverse">inverse</a>.</p>
 <p>In addition to basic optics, this library also supports more
-general <a href="#transforms">transforms</a>.  Transforms allow operations, such as
+arbitrary <a href="#transforms">transforms</a>.  Transforms allow operations, such as
 modifying a single focus multiple times or even in a loop, that are not possible
-with basic optics.  However, transforms are considerably harder to reason about.</p>
+with basic optics.  However, transforms can be considerably harder to reason
+about.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
 required in a statically typed setting where data structures have precise
 constraints on their shapes, so to speak, and operations on data structures must
-respect those constraints at <em>all</em> times.  In partial lenses, however, the idea
-is to manage without explicitly providing such abstractions.</p>
-<p>In a dynamically typed language like JavaScript, the shapes of run-time objects
-are naturally <em>malleable</em>.  Nothing immediately breaks if a new object is
-created as a copy of another object by adding or removing a property, for
-example.  We can exploit this to our advantage by considering all optics as
-<em>partial</em>.  A partial optic, as manifested in this library, may be intended to
-operate on data structures of a specific type, such as arrays or objects, but
-also accepts the possibility that it may be given any valid JSON object or
-<code>undefined</code> as input.  When the input does not match the expectation of a
-partial lens, the input is treated as being <code>undefined</code>.  This allows specific
-partial optics, such as the simple <a href="#L-prop"><code>L.prop</code></a> lens, to be used in a
-wider range of situations than corresponding total optics.</p>
+respect those constraints at <em>all</em> times.</p>
+<p>On the other hand, in a dynamically typed language like JavaScript, the shapes
+of run-time objects are naturally <em>malleable</em>.  Nothing immediately breaks if a
+new object is created as a copy of another object by adding or removing a
+property, for example.  We can exploit this to our advantage by considering all
+optics as <em>partial</em> and manage with a smaller amount of distinct classes of
+optics.</p>
 <h4 id="on-partiality">On partiality</h4>
 <p>By <a href="https://en.wikipedia.org/wiki/Partial_function">definition</a>, a <em>total
 function</em>, or just a <em>function</em>, is defined for all possible inputs.  A <em>partial
@@ -623,7 +618,9 @@ the array.</p>
 expectation of an optic, then the input is treated as being <code>undefined</code>, which
 is the equivalent of non-existent: reading through the optic gives <code>undefined</code>
 and writing through the optic replaces the focus with the written value.  This
-makes the optics in this library partial.</p>
+makes the optics in this library partial and allows specific partial optics,
+such as the simple <a href="#L-prop"><code>L.prop</code></a> lens, to be used in a wider range of
+situations than corresponding total optics.</p>
 <p>Making all optics partial has a number of consequences.  For one thing, it can
 potentially hide bugs: an incorrectly specified optic treats the input as
 <code>undefined</code> and may seem to work without raising an error.  We have not found
@@ -1037,7 +1034,7 @@ results.  Transforms can only
 be <a href="#L-modify">modified</a>, <a href="#L-set">set</a>, <a href="#L-remove">removed</a>, and, of
 course, <a href="#L-transform">transformed</a>.</p>
 <h4 id="sequencing">Sequencing</h4>
-<h5 id="-a-id-l-seq-a-contents-https-github-com-calmm-js-partial-lenses-l-seq-l-seq-optics-transform-l-seq-l-seq-poptic-s-a-ptransform-s-a-"><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...POptic s a) -&gt; PTransform s a"><code>L.seq(...optics) ~&gt; transform</code></a></h5>
+<h5 id="-a-id-l-seq-a-contents-https-github-com-calmm-js-partial-lenses-l-seq-l-seq-transforms-transform-l-seq-l-seq-ptransform-s-a-ptransform-s-a-"><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a></h5>
 <p><code>L.seq</code> creates a transform that modifies the focus with each of the given
 optics in sequence.</p>
 <p>For example:</p>
