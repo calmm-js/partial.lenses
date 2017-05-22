@@ -1236,8 +1236,8 @@ L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
 
 `L.modifyOp` creates an optic that maps the focus with the given function.  When
 used as a traversal, `L.modifyOp` acts as a traversal of no elements.  When used
-as a partial lens, `L.modifyOp` acts as a read-only lens whose view is the
-mapped focus.
+as a lens, `L.modifyOp` acts as a read-only lens whose view is the mapped focus.
+Usually, however, `L.modifyOp` is used within [transforms](#transforms).
 
 For example:
 

@@ -1052,8 +1052,8 @@ elements of the data structure while <code>everywhere</code> also targets those.
 <h5 id="-a-id-l-modifyop-a-contents-https-github-com-calmm-js-partial-lenses-l-modifyop-l-modifyop-maybevalue-index-maybevalue-optic-l-modifyop-l-modifyop-maybe-a-index-maybe-a-poptic-a-a-"><a id="L-modifyOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modifyOp">■</a> <a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a></h5>
 <p><code>L.modifyOp</code> creates an optic that maps the focus with the given function.  When
 used as a traversal, <code>L.modifyOp</code> acts as a traversal of no elements.  When used
-as a partial lens, <code>L.modifyOp</code> acts as a read-only lens whose view is the
-mapped focus.</p>
+as a lens, <code>L.modifyOp</code> acts as a read-only lens whose view is the mapped focus.
+Usually, however, <code>L.modifyOp</code> is used within <a href="#transforms">transforms</a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
                       z: [L.optional, L.modifyOp(R.negate)],
