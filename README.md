@@ -1163,7 +1163,7 @@ can be both read and written through.  The underlying implementation of this
 library also allows one to implement active operations that don't quite provide
 the same kind of passive bidirectionality, but can be used to
 flexibly [modify](#L-modifyOp) data structures.  Such operations are called
-transforms in this library.
+*transforms* in this library.
 
 Unlike ordinary optics, transforms allow for monadic [sequencing](#L-seq), which
 makes it possible to operate on a part of data structure multiple times.  This
