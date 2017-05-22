@@ -1019,7 +1019,7 @@ that it is technically possible to use various <a href="#transforming">transform
 within an ordinary optic definition.  Furthermore, it is also possible to
 use <a href="#L-seq">sequencing</a> to create transforms that have focuses that can then be
 operated upon.  The results of such uses don&#39;t quite follow the laws of ordinary
-optics.</p>
+optics, but may sometimes be useful.</p>
 <h4 id="operations-on-transforms">Operations on transforms</h4>
 <h5 id="-a-id-l-transform-a-contents-https-github-com-calmm-js-partial-lenses-l-transform-l-transform-optic-maybedata-maybedata-l-transform-l-transform-poptic-s-a-maybe-s-maybe-s-"><a id="L-transform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-transform">■</a> <a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a></h5>
 <p><code>L.transform(o, s)</code> is shorthand for <code>L.modify(o, x =&gt; x, s)</code> and is intended

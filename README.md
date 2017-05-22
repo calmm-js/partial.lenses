@@ -1187,7 +1187,7 @@ that it is technically possible to use various [transform ops](#transforming)
 within an ordinary optic definition.  Furthermore, it is also possible to
 use [sequencing](#L-seq) to create transforms that have focuses that can then be
 operated upon.  The results of such uses don't quite follow the laws of ordinary
-optics.
+optics, but may sometimes be useful.
 
 #### Operations on transforms
 
