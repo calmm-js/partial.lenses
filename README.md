@@ -1610,26 +1610,31 @@ L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
 ##### <a id="L-isDefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-isDefined) [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean")
 
 `L.isDefined` determines whether or not the given traversal focuses on any
-non-`undefined` element on the given data structure.
+non-`undefined` element on the given data structure.  When used with a lens,
+`L.isDefined` basically allows you to check whether the target of the lens
+exists or, in other words, whether the data structure has the targeted element.
+See also [`L.isEmpty`](#L-isEmpty).
+
+For example:
 
 ```js
 L.isDefined("x", {y: 1})
 // false
 ```
 
-Note that `L.isDefined` is not the complement of [`L.isEmpty`](#L-isEmpty).
-
 ##### <a id="L-isEmpty"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-isEmpty) [`L.isEmpty(traversal, maybeData) ~> boolean`](#L-isEmpty "L.isEmpty: PTraversal s a -> Maybe s -> Boolean")
 
 `L.isEmpty` determines whether or not the given traversal focuses on any
-elements, `undefined` or otherwise, on the given data structure.
+elements, `undefined` or otherwise, on the given data structure.  Note that when
+used with a lens, `L.isEmpty` always returns `false`, because lenses always have
+a single focus.  See also [`L.isDefined`](#L-isDefined).
+
+For example:
 
 ```js
 L.isEmpty(flatten, [[],[[[],[]],[]]])
 // true
 ```
-
-Note that `L.isEmpty` is not the complement of [`L.isDefined`](#L-isDefined).
 
 ##### <a id="L-join"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-join) [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String")
 

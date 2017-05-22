@@ -1278,16 +1278,21 @@ traversal.</p>
 </code></pre>
 <h5 id="-a-id-l-isdefined-a-contents-https-github-com-calmm-js-partial-lenses-l-isdefined-l-isdefined-traversal-maybedata-boolean-l-isdefined-l-isdefined-ptraversal-s-a-maybe-s-boolean-"><a id="L-isDefined"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isDefined">■</a> <a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.isDefined</code> determines whether or not the given traversal focuses on any
-non-<code>undefined</code> element on the given data structure.</p>
+non-<code>undefined</code> element on the given data structure.  When used with a lens,
+<code>L.isDefined</code> basically allows you to check whether the target of the lens
+exists or, in other words, whether the data structure has the targeted element.
+See also <a href="#L-isEmpty"><code>L.isEmpty</code></a>.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.isDefined(&quot;x&quot;, {y: 1})
 </code></pre>
-<p>Note that <code>L.isDefined</code> is not the complement of <a href="#L-isEmpty"><code>L.isEmpty</code></a>.</p>
 <h5 id="-a-id-l-isempty-a-contents-https-github-com-calmm-js-partial-lenses-l-isempty-l-isempty-traversal-maybedata-boolean-l-isempty-l-isempty-ptraversal-s-a-maybe-s-boolean-"><a id="L-isEmpty"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isEmpty">■</a> <a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.isEmpty</code> determines whether or not the given traversal focuses on any
-elements, <code>undefined</code> or otherwise, on the given data structure.</p>
+elements, <code>undefined</code> or otherwise, on the given data structure.  Note that when
+used with a lens, <code>L.isEmpty</code> always returns <code>false</code>, because lenses always have
+a single focus.  See also <a href="#L-isDefined"><code>L.isDefined</code></a>.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.isEmpty(flatten, [[],[[[],[]],[]]])
 </code></pre>
-<p>Note that <code>L.isEmpty</code> is not the complement of <a href="#L-isDefined"><code>L.isDefined</code></a>.</p>
 <h5 id="-a-id-l-join-a-contents-https-github-com-calmm-js-partial-lenses-l-join-l-join-string-traversal-maybedata-string-l-join-l-join-string-ptraversal-s-a-maybe-s-string-"><a id="L-join"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-join">■</a> <a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a></h5>
 <p><code>L.join</code> creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.</p>
