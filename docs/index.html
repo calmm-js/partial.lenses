@@ -591,9 +591,10 @@ known as <em>optics</em>.  Traversals can target any number of elements.  Lenses
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an <a href="#L-inverse">inverse</a>.</p>
 <p>In addition to basic bidirectional optics, this library also supports more
-arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a>.
-Transforms allow operations, such as modifying a single focus multiple times or
-even in a loop, that are not possible with basic optics.</p>
+arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a>
+and <a href="#transforming">transform ops</a>.  Transforms allow operations, such as
+modifying a part of data structure multiple times or even in a loop, that are
+not possible with basic optics.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
@@ -993,10 +994,10 @@ use <a href="#L-traverse"><code>L.traverse</code></a>, because it is independent
 encoding, while <code>L.toFunction</code> essentially exposes the underlying encoding and
 it is better to avoid depending on that.</p>
 <h3 id="transforms">Transforms</h3>
-<p>Ordinary optics are passive and bidirectional in such a way that the same optic
-can be both read and written through.  The underlying implementation of this
-library also allows one to implement active operations that don&#39;t quite provide
-the same kind of passive bidirectionality, but can be used to
+<p>Ordinary <a href="#optics">optics</a> are passive and bidirectional in such a way that the
+same optic can be both read and written through.  The underlying implementation
+of this library also allows one to implement active operations that don&#39;t quite
+provide the same kind of passive bidirectionality, but can be used to
 flexibly <a href="#L-modifyOp">modify</a> data structures.  Such operations are called
 <em>transforms</em> in this library.</p>
 <p>Unlike ordinary optics, transforms allow for monadic <a href="#L-seq">sequencing</a>, which

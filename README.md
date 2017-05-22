@@ -613,9 +613,10 @@ restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an [inverse](#L-inverse).
 
 In addition to basic bidirectional optics, this library also supports more
-arbitrary [transforms](#transforms) using optics with [sequencing](#L-seq).
-Transforms allow operations, such as modifying a single focus multiple times or
-even in a loop, that are not possible with basic optics.
+arbitrary [transforms](#transforms) using optics with [sequencing](#L-seq)
+and [transform ops](#transforming).  Transforms allow operations, such as
+modifying a part of data structure multiple times or even in a loop, that are
+not possible with basic optics.
 
 Some optics libraries provide many more abstractions, such as "optionals",
 "prisms" and "folds", to name a few, forming a DAG.  Aside from being
@@ -1158,10 +1159,10 @@ it is better to avoid depending on that.
 
 ### Transforms
 
-Ordinary optics are passive and bidirectional in such a way that the same optic
-can be both read and written through.  The underlying implementation of this
-library also allows one to implement active operations that don't quite provide
-the same kind of passive bidirectionality, but can be used to
+Ordinary [optics](#optics) are passive and bidirectional in such a way that the
+same optic can be both read and written through.  The underlying implementation
+of this library also allows one to implement active operations that don't quite
+provide the same kind of passive bidirectionality, but can be used to
 flexibly [modify](#L-modifyOp) data structures.  Such operations are called
 *transforms* in this library.
 
