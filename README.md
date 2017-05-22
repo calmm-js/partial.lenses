@@ -1579,7 +1579,7 @@ the number of elements for which the given predicate returns a truthy value.
 For example:
 
 ```js
-L.countIf(R.has("x"), [L.elems], [{x: 11}, {y: 12}])
+L.countIf(L.isDefined("x"), [L.elems], [{x: 11}, {y: 12}])
 // 1
 ```
 

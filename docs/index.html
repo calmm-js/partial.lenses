@@ -1262,7 +1262,7 @@ the number of non-<code>undefined</code> elements.</p>
 <p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
 the number of elements for which the given predicate returns a truthy value.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.countIf(R.has(&quot;x&quot;), [L.elems], [{x: 11}, {y: 12}])
+<pre><code class="hljs lang-js">L.countIf(L.isDefined(&quot;x&quot;), [L.elems], [{x: 11}, {y: 12}])
 </code></pre>
 <h5 id="-a-id-l-foldl-a-contents-https-github-com-calmm-js-partial-lenses-l-foldl-l-foldl-value-maybevalue-index-value-value-traversal-maybedata-value-l-foldl-l-foldl-r-maybe-a-index-r-r-ptraversal-s-a-maybe-s-r-"><a id="L-foldl"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldl">■</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
