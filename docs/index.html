@@ -65,7 +65,6 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a></li>
 <li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a></li>
-<li><a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a></li>
 <li><a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a></li>
 </ul>
 </li>
@@ -90,12 +89,6 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a></li>
 </ul>
 </li>
-<li><a href="#transforming">Transforming</a><ul>
-<li><a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a></li>
-<li><a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a></li>
-<li><a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a></li>
-</ul>
-</li>
 <li><a href="#debugging">Debugging</a><ul>
 <li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a></li>
 </ul>
@@ -107,8 +100,18 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#transforms">Transforms</a><ul>
+<li><a href="#operations-on-transforms">Operations on transforms</a><ul>
+<li><a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a></li>
+</ul>
+</li>
 <li><a href="#sequencing">Sequencing</a><ul>
 <li><a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a></li>
+</ul>
+</li>
+<li><a href="#transforming">Transforming</a><ul>
+<li><a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a></li>
+<li><a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a></li>
+<li><a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a></li>
 </ul>
 </li>
 </ul>
@@ -590,8 +593,7 @@ restriction of lenses with an <a href="#L-inverse">inverse</a>.</p>
 <p>In addition to basic bidirectional optics, this library also supports more
 arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a>.
 Transforms allow operations, such as modifying a single focus multiple times or
-even in a loop, that are not possible with basic optics.  However, transforms
-can be considerably harder to reason about.</p>
+even in a loop, that are not possible with basic optics.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
@@ -697,7 +699,7 @@ behave.  Here is a table of the means of composition supported by this library:<
 <td><a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a></td>
 </tr>
 <tr>
-<td>Sequencing</td>
+<td><a href="#sequencing">Sequencing</a></td>
 <td><a href="#L-seq"><code>L.seq(...transforms)</code></a></td>
 <td>Sequential application of <a href="#transforms">transforms</a></td>
 </tr>
@@ -762,9 +764,6 @@ to <code>undefined</code> typically has the effect of removing the focused eleme
 <p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
-<h5 id="-a-id-l-transform-a-contents-https-github-com-calmm-js-partial-lenses-l-transform-l-transform-optic-maybedata-maybedata-l-transform-l-transform-poptic-s-a-maybe-s-maybe-s-"><a id="L-transform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-transform">■</a> <a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a></h5>
-<p><code>L.transform(o, s)</code> is shorthand for <code>L.modify(o, x =&gt; x, s)</code> and can be
-convenient when using <a href="#transforming">transform ops</a>.</p>
 <h5 id="-a-id-l-traverse-a-contents-https-github-com-calmm-js-partial-lenses-l-traverse-l-traverse-category-maybevalue-index-operation-optic-maybedata-operation-l-traverse-l-traverse-functor-applicative-monad-c-maybe-a-index-c-b-poptic-s-t-a-b-maybe-s-c-t-"><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a></h5>
 <p><code>L.traverse</code> maps each focus to an operation and returns an operation that runs
 those operations in-order and collects the results.  The <code>category</code> argument
@@ -942,39 +941,6 @@ data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">L.remove([flatten, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)],
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<h4 id="transforming">Transforming</h4>
-<p>Transform ops along with <a href="#querying">query ops</a> can, in particular, be used to
-create selective <a href="#traversals">traversals</a> and <a href="#transforms">transforms</a> over
-data structures such that different modification operations are performed in
-different parts of the data structure.</p>
-<h5 id="-a-id-l-modifyop-a-contents-https-github-com-calmm-js-partial-lenses-l-modifyop-l-modifyop-maybevalue-index-maybevalue-optic-l-modifyop-l-modifyop-maybe-a-index-maybe-a-poptic-a-a-"><a id="L-modifyOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modifyOp">■</a> <a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a></h5>
-<p><code>L.modifyOp</code> creates an optic that maps the focus with the given function.  When
-used as a traversal, <code>L.modifyOp</code> acts as a traversal of no elements.  When used
-as a partial lens, <code>L.modifyOp</code> acts as a read-only lens whose view is the
-mapped focus.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
-                      z: [L.optional, L.modifyOp(R.negate)],
-                      ys: [L.elems, L.modifyOp(R.dec)]}),
-            {xs: [1, 2, 3],
-             ys: [1, 2, 3]})
-</code></pre>
-<h5 id="-a-id-l-removeop-a-contents-https-github-com-calmm-js-partial-lenses-l-removeop-l-removeop-optic-l-removeop-l-removeop-poptic-a-a-"><a id="L-removeOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removeOp">■</a> <a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a></h5>
-<p><code>L.removeOp</code> is shorthand for <a href="#L-setOp"><code>L.setOp(undefined)</code></a>.</p>
-<p>Here is an example based on a question from a user:</p>
-<pre><code class="hljs lang-js">var sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
-                                   {time: 2, subelements: [1, 2, 3, 4]},
-                                   {time: 3, subelements: [1, 2, 3, 4]}]}
-
-L.transform([&#39;elements&#39;,
-             L.elems,
-             L.seq([L.when(elem =&gt; elem.time &lt; 2), L.removeOp],
-                   [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
-            sampleToFilter)
-</code></pre>
-<p>The idea is to filter the data both by <code>time</code> and by <code>subelements</code>.</p>
-<h5 id="-a-id-l-setop-a-contents-https-github-com-calmm-js-partial-lenses-l-setop-l-setop-maybevalue-optic-l-setop-l-setop-maybe-a-poptic-a-a-"><a id="L-setOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-setOp">■</a> <a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a></h5>
-<p><code>L.setOp(x)</code> is shorthand for <a href="#L-modifyOp"><code>L.modifyOp(R.always(x))</code></a>.</p>
 <h4 id="debugging">Debugging</h4>
 <h5 id="-a-id-l-log-a-contents-https-github-com-calmm-js-partial-lenses-l-log-l-log-labels-optic-l-log-l-log-any-poptic-s-s-"><a id="L-log"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-log">■</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a></h5>
 <p><code>L.log(...labels)</code> is an identity optic that
@@ -1027,19 +993,42 @@ use <a href="#L-traverse"><code>L.traverse</code></a>, because it is independent
 encoding, while <code>L.toFunction</code> essentially exposes the underlying encoding and
 it is better to avoid depending on that.</p>
 <h3 id="transforms">Transforms</h3>
-<p>A transform operates over focuses that may overlap and may be visited multiple
-times.  This allows operations that are impossible to implement using other
-optics, but also potentially makes it much more difficult to reason about the
-results.  Transforms can only
-be <a href="#L-modify">modified</a>, <a href="#L-set">set</a>, <a href="#L-remove">removed</a>, and, of
-course, <a href="#L-transform">transformed</a>.</p>
+<p>Ordinary optics are passive and bidirectional in such a way that the same optic
+can be both read and written through.  The underlying implementation of this
+library also allows one to implement active operations that don&#39;t quite provide
+the same kind of passive bidirectionality, but can be used to
+flexibly <a href="#L-modifyOp">modify</a> data structures.  Such operations are called
+transforms in this library.</p>
+<p>Unlike ordinary optics, transforms allow for monadic <a href="#L-seq">sequencing</a>, which
+makes it possible to operate on a part of data structure multiple times.  This
+allows operations that are impossible to implement using ordinary optics, but
+also potentially makes it more difficult to reason about the results.  This
+ability also makes it impossible to read through transforms in the same sense as
+with ordinary optics.</p>
+<p>Recall that <a href="#lenses">lenses</a> have a single focus and <a href="#traversals">traversals</a>
+have multiple focuses that can then be operated upon using various operations
+such as <a href="#L-modify"><code>L.modify</code></a>.  Although it is not strictly enforced by this
+library, it is perhaps clearest to think that transforms have no focuses.  A
+transform using <a href="#transforming">transform ops</a>, that act as traversals of no
+elements, can, and perhaps preferably should, be <a href="#L-isEmpty">empty</a> and should
+be executed using <a href="#L-transform"><code>L.transform</code></a>, which,
+unlike <a href="#L-modify"><code>L.modify</code></a>, takes no user defined operation to apply to
+focuses.</p>
+<p>The line between transforms and optics is not entirely clear cut in the sense
+that it is technically possible to use various <a href="#transforming">transform ops</a>
+within an ordinary optic definition.  Furthermore, it is also possible to
+use <a href="#L-seq">sequencing</a> to create transforms that have focuses that can then be
+operated upon.  The results of such uses don&#39;t quite follow the laws of ordinary
+optics.</p>
+<h4 id="operations-on-transforms">Operations on transforms</h4>
+<h5 id="-a-id-l-transform-a-contents-https-github-com-calmm-js-partial-lenses-l-transform-l-transform-optic-maybedata-maybedata-l-transform-l-transform-poptic-s-a-maybe-s-maybe-s-"><a id="L-transform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-transform">■</a> <a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a></h5>
+<p><code>L.transform(o, s)</code> is shorthand for <code>L.modify(o, x =&gt; x, s)</code> and is intended
+for running <a href="#transforms">transforms</a> defined
+using <a href="#transforming">transform ops</a>.</p>
 <h4 id="sequencing">Sequencing</h4>
 <h5 id="-a-id-l-seq-a-contents-https-github-com-calmm-js-partial-lenses-l-seq-l-seq-transforms-transform-l-seq-l-seq-ptransform-s-a-ptransform-s-a-"><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a></h5>
 <p><code>L.seq</code> creates a transform that modifies the focus with each of the given
-optics in sequence.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.modify(L.seq(L.identity, L.identity, L.identity), x =&gt; [x], 1)
-</code></pre>
+transforms in sequence.</p>
 <p>Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:</p>
 <pre><code class="hljs lang-js">var everywhere = [L.optional, L.lazy(rec =&gt; {
@@ -1058,6 +1047,35 @@ example differ in that <code>flatten</code> only targets the non-object and non-
 elements of the data structure while <code>everywhere</code> also targets those.</p>
 <pre><code class="hljs lang-js">L.modify(everywhere, x =&gt; [x], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
+<h4 id="transforming">Transforming</h4>
+<h5 id="-a-id-l-modifyop-a-contents-https-github-com-calmm-js-partial-lenses-l-modifyop-l-modifyop-maybevalue-index-maybevalue-optic-l-modifyop-l-modifyop-maybe-a-index-maybe-a-poptic-a-a-"><a id="L-modifyOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modifyOp">■</a> <a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a></h5>
+<p><code>L.modifyOp</code> creates an optic that maps the focus with the given function.  When
+used as a traversal, <code>L.modifyOp</code> acts as a traversal of no elements.  When used
+as a partial lens, <code>L.modifyOp</code> acts as a read-only lens whose view is the
+mapped focus.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
+                      z: [L.optional, L.modifyOp(R.negate)],
+                      ys: [L.elems, L.modifyOp(R.dec)]}),
+            {xs: [1, 2, 3],
+             ys: [1, 2, 3]})
+</code></pre>
+<h5 id="-a-id-l-removeop-a-contents-https-github-com-calmm-js-partial-lenses-l-removeop-l-removeop-optic-l-removeop-l-removeop-poptic-a-a-"><a id="L-removeOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removeOp">■</a> <a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a></h5>
+<p><code>L.removeOp</code> is shorthand for <a href="#L-setOp"><code>L.setOp(undefined)</code></a>.</p>
+<p>Here is an example based on a question from a user:</p>
+<pre><code class="hljs lang-js">var sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
+                                   {time: 2, subelements: [1, 2, 3, 4]},
+                                   {time: 3, subelements: [1, 2, 3, 4]}]}
+
+L.transform([&#39;elements&#39;,
+             L.elems,
+             L.seq([L.when(elem =&gt; elem.time &lt; 2), L.removeOp],
+                   [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
+            sampleToFilter)
+</code></pre>
+<p>The idea is to filter the data both by <code>time</code> and by <code>subelements</code>.</p>
+<h5 id="-a-id-l-setop-a-contents-https-github-com-calmm-js-partial-lenses-l-setop-l-setop-maybevalue-optic-l-setop-l-setop-maybe-a-poptic-a-a-"><a id="L-setOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-setOp">■</a> <a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a></h5>
+<p><code>L.setOp(x)</code> is shorthand for <a href="#L-modifyOp"><code>L.modifyOp(R.always(x))</code></a>.</p>
 <h3 id="traversals">Traversals</h3>
 <p>A traversal operates over a collection of non-overlapping focuses that are
 visited only once and can, for example,
