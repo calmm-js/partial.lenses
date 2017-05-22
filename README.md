@@ -2439,7 +2439,7 @@ L.remove([L.removable("x"), "x"], {x: 1, y: 2})
 
 Note that `L.removable(...ps)` is roughly equivalent
 to
-[`rewrite(y => y instanceof Object && !R.any(p => R.has(p, y), ps) ? undefined : y)`](#L-rewrite).
+[`rewrite(y => y instanceof Object && !L.get(L.props(...ps), y) ? undefined : y)`](#L-rewrite).
 
 Also note that, in a composition, `L.removable` is likely preceded
 by [`L.valueOr`](#L-valueOr) (or [`L.defaults`](#L-defaults)) like in

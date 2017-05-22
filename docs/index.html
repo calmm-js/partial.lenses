@@ -1770,7 +1770,7 @@ objects.</p>
 </code></pre>
 <p>Note that <code>L.removable(...ps)</code> is roughly equivalent
 to
-<a href="#L-rewrite"><code>rewrite(y =&gt; y instanceof Object &amp;&amp; !R.any(p =&gt; R.has(p, y), ps) ? undefined : y)</code></a>.</p>
+<a href="#L-rewrite"><code>rewrite(y =&gt; y instanceof Object &amp;&amp; !L.get(L.props(...ps), y) ? undefined : y)</code></a>.</p>
 <p>Also note that, in a composition, <code>L.removable</code> is likely preceded
 by <a href="#L-valueOr"><code>L.valueOr</code></a> (or <a href="#L-defaults"><code>L.defaults</code></a>) like in
 the <a href="#tutorial">tutorial</a> example.  In such a pair, the preceding lens gives a
