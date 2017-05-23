@@ -693,8 +693,8 @@ Conversely, if there is no operation to perform composition or there are no
 useful simplifying laws on how compositions behave, then one should not call
 such a thing composable.
 
-Now, optics are composable in several ways and in each of those ways there is a
-an operation to perform the composition and laws on how such composed optics
+Now, optics are composable in several ways and in each of those ways there is an
+operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:
 
 |                           | Operation(s)                                                                        | Semantics
