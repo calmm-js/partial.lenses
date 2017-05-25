@@ -71,7 +71,7 @@ const Collect = {
 
 const CollectM = MapConcatOf(Collect)
 
-const collectM = R.curry((o, s) =>
+const collectM = I.curry((o, s) =>
   L.toFunction(o)(Object.freeze(s), undefined, CollectM, x => [x, [x]])[1])
 
 //
@@ -86,7 +86,7 @@ const StateM = Monad({
 
 const countS = x => x2n => {
   const n = (x2n[x] || 0) + 1
-  return [n, R.assoc(x, n, x2n)]
+  return [n, L.set(`${x}`, n, x2n)]
 }
 
 //
@@ -371,19 +371,19 @@ describe("L.valueOr", () => {
 })
 
 describe("L.normalize", () => {
-  testEq(`L.get(L.normalize(R.sortBy(R.identity)), [1,3,2,5])`, [1,2,3,5])
-  testEq(`L.set([L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))],
+  testEq(`L.get(L.normalize(R.sortBy(I.id)), [1,3,2,5])`, [1,2,3,5])
+  testEq(`L.set([L.normalize(R.sortBy(I.id)), L.find(R.equals(2))],
                 4,
                 [1,3,2,5])`,
          [1,3,4,5])
-  testEq(`L.set([L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))],
+  testEq(`L.set([L.normalize(R.sortBy(I.id)), L.find(R.equals(2))],
                 4,
                 undefined)`,
          [4])
-  testEq(`L.remove([L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))],
+  testEq(`L.remove([L.normalize(R.sortBy(I.id)), L.find(R.equals(2))],
                    [2])`,
          undefined)
-  testEq(`L.set([L.normalize(R.sortBy(R.identity)), L.find(R.equals(2))],
+  testEq(`L.set([L.normalize(R.sortBy(I.id)), L.find(R.equals(2))],
                 undefined,
                 [1,3,2,5])`,
          [1,3,5])
@@ -425,22 +425,22 @@ describe("composing with plain functions", () => {
   testEq(`L.get([0, (x,i) => [x, i]], [-1])`, [-1, 0])
   testEq(`L.get([0, "x", R.negate], [{x:-1}])`, 1)
   testEq(`L.set([0, "x", R.negate], 2, [{x:-1}])`, [{x:-1}])
-  testEq(`L.get(R.always("always"), "anything")`, "always")
-  testEq(`L.set(R.always("always"), "anything", "original")`, "original")
+  testEq(`L.get(I.always("always"), "anything")`, "always")
+  testEq(`L.set(I.always("always"), "anything", "original")`, "original")
 })
 
 describe("L.chain", () => {
-  testEq(`L.get(L.chain(elems => R.is(Array, elems) ? 0 : L.identity, "elems"),
+  testEq(`L.get(L.chain(elems => I.isArray(elems) ? 0 : L.identity, "elems"),
                 {elems: ["x"]})`,
          "x")
-  testEq(`L.set(L.chain(elems => R.is(Array, elems) ? 0 : L.identity, "elems"),
+  testEq(`L.set(L.chain(elems => I.isArray(elems) ? 0 : L.identity, "elems"),
                 "y",
                 {elems: ["x"]})`,
          {elems: ["y"]})
-  testEq(`L.get(L.chain(elems => R.is(Array, elems) ? 0 : L.identity, "elems"),
+  testEq(`L.get(L.chain(elems => I.isArray(elems) ? 0 : L.identity, "elems"),
                 {notit: true})`,
          undefined)
-  testEq(`L.set(L.chain(elems => R.is(Array, elems) ? 0 : L.identity, "elems"),
+  testEq(`L.set(L.chain(elems => I.isArray(elems) ? 0 : L.identity, "elems"),
                 false,
                 {notit: true})`,
          {notit: true})
@@ -485,13 +485,11 @@ describe("L.filter", () => {
   testEq(`L.set(L.filter(R.lt(0)), [], [3,1,4,1,5,9,2])`, undefined)
   testEq(`L.remove(L.filter(R.lt(0)), [3,1,4,1,5,9,2])`, undefined)
   testEq(`L.remove(L.filter(R.lt(2)), [3,1,4,1,5,9,2])`, [1,1,2])
-  I.seq(empties,
-        R.filter(x => !(x instanceof Array || typeof x === "string")),
-        R.forEach(invalid => {
-          testEq(`L.get(L.filter(R.always(true)), ${show(invalid)})`, undefined)
-          testEq(`L.set(L.filter(R.always(true)), [1,"2",3], ${show(invalid)})`,
-                 [1,"2",3])
-        }))
+  empties.filter(x => !I.isArray(x) && !I.isString(x)).forEach(invalid => {
+    testEq(`L.get(L.filter(I.always(true)), ${show(invalid)})`, undefined)
+    testEq(`L.set(L.filter(I.always(true)), [1,"2",3], ${show(invalid)})`,
+           [1,"2",3])
+  })
   testEq(`L.remove(L.filter(c => "a" <= c), "JavaScript")`, ["J", "S"])
 })
 
@@ -610,7 +608,7 @@ describe("L.optional", () => {
 
 describe("L.when", () => {
   testEq(`L.get(L.when(x => x > 2), 1)`, undefined)
-  testEq(`L.get([L.when(x => x > 2), R.always(2)], 1)`, 2)
+  testEq(`L.get([L.when(x => x > 2), I.always(2)], 1)`, 2)
   testEq(`L.get(L.when(x => x > 2), 3)`, 3)
   testEq(`L.collect([L.elems, L.when(x => x > 2)], [1,3,2,4])`, [3,4])
   testEq(`L.modify([L.elems, L.when(x => x > 2)], R.negate, [1,3,2,4])`,
@@ -815,7 +813,7 @@ describe("indexing", () => {
 describe("L.toFunction", () => {
   testEq("typeof L.toFunction(1)", "function")
   testEq("typeof L.toFunction(`x`)", "function")
-  testEq("typeof L.toFunction(L.find(R.identity))", "function")
+  testEq("typeof L.toFunction(L.find(I.id))", "function")
 })
 
 describe("BST", () => {
