@@ -541,8 +541,6 @@ describe("L.augment", () => {
   testEq(`L.set(L.augment({x: () => 1}), {x: 2}, undefined)`, undefined)
   empties.forEach(invalid => {
     testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined)
-  })
-  empties.forEach(invalid => {
     testEq(`L.set(L.augment({x: () => 1}), {y: 2}, ${show(invalid)})`, {y: 2})
   })
 })
