@@ -2,15 +2,23 @@
 
 const title = "Partial Lenses"
 const icon = "https://avatars1.githubusercontent.com/u/17234211"
-const github = "https://github.com/calmm-js/partial.lenses"
-const site = "https://calmm-js.github.io/partial.lenses/"
+const user = "calmm-js"
+const project = "partial.lenses"
+
+const ga = "UA-52808982-2"
+const menu = true
+const tooltips = true
+const klipseHeader = true
+const loadingMessage = true
+
+//
+
+const github = `https://github.com/${user}/${project}`
+const site = `https://${user}.github.io/${project}/`
 const blob = `${github}/blob/master/`
 const hljsStyle = "googlecode"
 
-const I = require("infestines")
-const R = require("ramda")
 const fs = require("fs")
-
 const marked = require("marked")
 
 marked.setOptions({
@@ -24,42 +32,41 @@ marked.setOptions({
   smartypants: false
 })
 
-const esc = R.replace(/[-\[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
+String.prototype.marked = function () { return marked(this) }
 
-const body = I.seq(
-  fs.readFileSync("README.md"),
-  R.toString,
-  R.replace(/([^ ])\bconst\b/g, "$1var"),
-  R.replace(/\/\/ [^.].*/g, ""),
-  R.replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`),
-  R.replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z-]*)" + esc(")"), "g"),
-            `[■](${github}#$1)`),
-  R.replace(new RegExp(esc(site), "g"), ""),
-  marked,
-  R.replace(/<code class="lang-([a-z]*)">/g,
-            '<code class="hljs lang-$1\">'))
+const esc = s => s.replace(/[-\[\]{}()*+?.,\\^$|#\s]/g, "\\$&")
 
-fs.writeFileSync("docs/index.html",
-`<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>${title}</title>
-    ${icon &&
-      `<link rel="icon" href="${icon}">`}
-    <link rel="stylesheet" type="text/css" href="github.css">
-    ${hljsStyle &&
-      `<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/${hljsStyle}.min.css">`}
-    <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script type="text/javascript">startTime = Date.now()</script>
-    <script type="text/javascript" src="start.js" async></script>
-  </head>
-  <body class="markdown-body">
-    <div class="loading-message">
+const body =
+  fs.readFileSync("README.md")
+  .toString()
+  .replace(/([^ ])\bconst\b/g, "$1var")
+  .replace(/\/\/ [^.].*/g, "")
+  .replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`)
+  .replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z-]*)" + esc(")"), "g"),
+           `[■](${github}#$1)`)
+  .replace(new RegExp(esc(site), "g"), "")
+  .marked()
+  .replace(/ id="-[^"]*"/g, "")
+  .replace(/<code class="lang-([a-z]*)">/g,
+           '<code class="hljs lang-$1\">')
+
+const headElems = [
+  `<meta charset="utf-8">`,
+  `<title>${title}</title>`,
+  icon && `<link rel="icon" href="${icon}">`,
+  `<link rel="stylesheet" type="text/css" href="github.css">`,
+  hljsStyle && `<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/${hljsStyle}.min.css">`,
+  `<link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">`,
+  `<link rel="stylesheet" type="text/css" href="styles.css">`,
+  ga && `<script type="text/javascript">startTime = Date.now()</script>`,
+  ga && `<script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','${ga}','auto');ga('send','pageview');</script>`
+].filter(x => x)
+
+const preBodyElems = [
+  loadingMessage && `<div class="loading-message">
       Please wait... The interactive code snippets on this page take a moment to render.
-    </div>
-    <div class="menu">
+    </div>`,
+  menu && `<div class="menu">
       <div class="menu-overlay"></div>
       <div class="menu-body">
         <div class="menu-side">
@@ -68,18 +75,53 @@ fs.writeFileSync("docs/index.html",
         </div>
         <div class="menu-contents"></div>
       </div>
-    </div>
-    <p>
+    </div>`,
+  klipseHeader && `<p>
       All the code snippets on this page are <b>live</b> and <b>interactive</b>
       powered by the <a href="https://github.com/viebel/klipse">klipse
       plugin</a>.
-    <p>
-    <hr>
-    ${body}
-    <div class="loading-hidden">
-      <pre><code class="hljs lang-js">document.querySelector('.loading-message').className = "loading-hidden"
-ga && ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000))
+    </p>
+    <hr>`
+].filter(x => x)
+
+const afterLoadStmts = [
+  loadingMessage && `document.querySelector('.loading-message').className = "loading-hidden";`,
+  ga && `ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000));`
+].filter(x => x)
+
+const postBodyElems = [
+  afterLoadStmts.length && `<div class="loading-hidden">
+      <pre><code class="hljs lang-js">
+        ${afterLoadStmts.join("\n        ")}
       </code></pre>
-    </div>
+    </div>`
+].filter(x => x)
+
+const scripts = [
+  "bundle.js",
+  "init-bundle.js",
+  "klipse-settings.js",
+  "https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js",
+  "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/languages/javascript.min.js",
+  "init-hljs.js",
+  menu && "menu.js",
+  tooltips && "tooltips.js",
+  ga && "clicks-to-ga.js"
+].filter(x => x)
+
+fs.writeFileSync("docs/index.html",
+`<!doctype html>
+<html>
+  <head>
+    ${headElems.join("\n    ")}
+  </head>
+  <body class="markdown-body">
+    ${preBodyElems.join("\n    ")}
+    ${body}
+    ${postBodyElems.join("\n    ")}
+    ${scripts
+      .map(src => `<script type="text/javascript" src="${src}"></script>`)
+      .join("\n    ")}
   </body>
 </html>`)
