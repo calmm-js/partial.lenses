@@ -1,7 +1,7 @@
 import * as I from "infestines"
 import * as R from "ramda"
 
-export const lazy = ty2ty => {
+export function lazy(ty2ty) {
   let memo = x => {
     memo = ty2ty(rec)
     return memo(x)
@@ -10,7 +10,7 @@ export const lazy = ty2ty => {
   return rec
 }
 
-export const any = x => x
+export const any = I.id
 
 export const and = R.pipe
 
@@ -76,18 +76,16 @@ export const object = template => object => {
   return result
 }
 
-export const fn = (argTys, resultTy) => {
+export function fn(argTys, resultTy) {
   if (!(argTys instanceof Array))
     throw Error(`fn arg types must be an array, given ${argTys}`)
   return fn => {
     if (typeof fn !== "function" || argTys.length < fn.length)
       throw Error(`fn(${argTys}, ${resultTy}): ${fn}`)
-    return R.curryN(argTys.length, function (...argIns) {
-      if (argIns.length < argTys.length)
-        throw Error(`fn(${argTys}, ${resultTy}): got ${argIns.length} args`)
+    return I.arityN(argTys.length, function (...argIns) {
       const n=argIns.length, args=Array(n)
       for (let i=0; i<n; ++i)
-        args[i] = i < argTys.length ? argTys[i](argIns[i]) : argIns[i]
+        args[i] = argTys[i](argIns[i])
       return resultTy(fn.apply(this, args))
     })
   }
