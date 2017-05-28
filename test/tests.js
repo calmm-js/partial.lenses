@@ -696,6 +696,7 @@ describe("folds", () => {
   testEq(`L.maximumBy(R.negate, L.elems, [1,2,3])`, 1)
   testEq(`L.maximumBy(R.length, L.elems, ["x", "xx", "y", "yy"])`, "xx")
   testEq(`L.minimumBy(R.length, L.elems, ["x", "xx", "y", "yy"])`, "x")
+  testEq(`L.maximumBy(I.id, flatten, [[1,2], [], [2]])`, 2)
   testEq(`L.maximum(L.elems, [1,2,3])`, 3)
   testEq(`L.minimumBy(R.negate, L.elems, [1,2,3])`, 3)
   testEq(`L.minimum(L.elems, [1,2,3])`, 1)
