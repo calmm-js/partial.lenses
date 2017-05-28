@@ -1022,5 +1022,7 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.branch(new XYZ(L.identity, L.identity, L.identity))`)
 
     testThrows(`L.toFunction(-1)`)
+
+    testThrows(`L.joinAs(I.id, 0)`)
   })
 }
