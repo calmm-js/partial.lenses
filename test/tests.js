@@ -973,6 +973,7 @@ describe("L.matches", () => {
          {not_a_string: true})
   testEq(`L.set(L.matches(/\\w+/g), "", "Hello")`, undefined)
   testEq(`L.remove(L.matches(/\\w+/g), "Hello")`, undefined)
+  testEq(`L.remove(L.matches(/^/), "")`, undefined)
 })
 
 describe("L.foldTraversalLens", () => {
