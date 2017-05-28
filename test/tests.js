@@ -794,6 +794,7 @@ describe("L.branch", () => {
   testEq(`L.set(L.branch({a: ["x",0], b: []}), 0, null)`, {a:{x:[0]},b:0})
   testEq(`L.modify(L.branch({y: L.identity}), R.inc, new XYZ(3,1,4))`,
          {x: 3, y: 2, z: 4})
+  testEq(`L.or(L.branch({x: [], y: []}), {x: false, y: false})`, false)
 })
 
 describe("L.removable", () => {
