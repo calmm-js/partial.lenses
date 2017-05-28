@@ -373,6 +373,7 @@ describe("L.defaults", () => {
 })
 
 describe("L.define", () => {
+  testEq(`L.get(L.define([]), [1])`, [1])
   testEq(`L.get(["related", L.define([])], {})`, [])
   testEq(`L.set(L.define([]), undefined, undefined)`, [])
 })
