@@ -3711,14 +3711,6 @@ file locally:
 open docs/index.html
 ```
 
-After adding something to the library, you need to run
-
-```bash
-npm run docs-bundle
-```
-
-to update the bundle used by the docs.
-
 To actually build the docs (translate the markdown to html), you can run
 
 ```bash
