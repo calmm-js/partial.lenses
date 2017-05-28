@@ -718,7 +718,7 @@ describe("folds", () => {
          [[[0,3],2],1])
   testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,
          [[[0,1],2],3])
-  testEq(`L.count([L.elems, L.choice("x","y")], [{x:11}, {z:33}, {y:22}])`, 2)
+  testEq(`L.count([L.elems, L.orElse("x","y")], [{x:11}, {z:33}, {y:22}])`, 2)
   testEq(`L.count(flatten, [[],{},[[[],[{x:[],y:[]}],{}]]])`, 0)
   ;[`foldl`, `foldr`].forEach(fold => {
     testEq(`X.${fold}((x,y) => x+y, 0, X.elems, a100000)`,
