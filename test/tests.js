@@ -292,6 +292,9 @@ describe(`L.find`, () => {
 })
 
 describe(`L.findHint`, () => {
+  testEq(`L.get(L.findHint(R.equals(1), {hint: 2}), [2,2,2,1,2])`, 1)
+  testEq(`L.get(L.findHint(R.equals(1), {hint: 0}), [2,2,2,1,2])`, 1)
+  testEq(`L.get(L.findHint(R.equals(1), {hint: 4}), [2,1,2,2,2])`, 1)
   testEq(`L.get(L.findHint(R.equals(1), {hint: 5}), 0)`, undefined)
   testEq(`L.get(L.findHint(R.pipe(Math.abs, R.equals(2)),
                            {hint: 2}),
