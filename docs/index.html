@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="utf-8">
@@ -2704,8 +2704,12 @@ browser).</p>
         ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000));
       </code></pre>
     </div>
-    <script type="text/javascript" src="bundle.js"></script>
-    <script type="text/javascript" src="init-bundle.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/babel-polyfill/dist/polyfill.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/infestines/dist/infestines.min.js"></script>
+    <script type="text/javascript" src="partial.lenses.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/moment/min/moment.min.js"></script>
     <script type="text/javascript" src="klipse-settings.js"></script>
     <script type="text/javascript" src="https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
