@@ -556,6 +556,7 @@ describe("L.augment", () => {
          {x: 3, y: 2})
   testEq(`L.set(L.augment({x: () => 1}), {constructor: 1}, {})`,
          {constructor: 1})
+  testEq(`L.set(L.augment({x: () => 2}), {x: 3}, {x: 1})`, {x: 1})
   testEq(`L.set([L.augment({constructor: () => 1}), "x"], 2, {x: 1})`, {x: 2})
   testEq(`L.set(L.augment({x: () => 1}), {x: 2}, undefined)`, undefined)
   empties.forEach(invalid => {
