@@ -120,12 +120,27 @@ const equals = (x, y) =>
   (x && Object.getPrototypeOf(x)) === (y && Object.getPrototypeOf(y)) &&
   R.equals(x, y)
 
+function toggleEnv() {
+  process.env.NODE_ENV = process.env.NODE_ENV === "production"
+    ? "development"
+    : "production"
+}
+
 function testEq(exprIn, expect) {
   const expr = exprIn.replace(/[ \n]+/g, " ")
   it(`${expr} => ${show(expect)}`, () => {
     const actual = run(expr)
     if (!equals(actual, expect))
       throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+
+    toggleEnv()
+    try {
+      const actual = run(expr)
+      if (!equals(actual, expect))
+        throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+    } finally {
+      toggleEnv()
+    }
 
     const exprTy = expr.replace(/\bL\.([a-zA-Z0-9]*)/g, "T.$1(L.$1)")
     const typed = run(exprTy)
