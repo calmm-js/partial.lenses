@@ -4,7 +4,7 @@
     var hash = window.location.hash.slice(1)
     function updateTitle(text) {
       document.title =
-        "Partial Lenses Playground: " + text.replace(/\s+/g, " ").trim()
+        document.title.replace(/(:.*)?$/, ": " + text.replace(/\s+/g, " ").trim())
     }
     if (hash) {
       var text = window.LZString.decompressFromEncodedURIComponent(hash)
