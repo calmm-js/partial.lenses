@@ -242,6 +242,7 @@ describe("arities", () => {
     or: 2,
     orElse: 2,
     pick: 1,
+    pickIn: 1,
     product: 2,
     productAs: 3,
     prop: 1,

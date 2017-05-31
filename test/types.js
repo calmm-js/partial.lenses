@@ -267,6 +267,7 @@ export const valueOr = T.fn([T.any], T_lens)
 // Transforming data
 
 export const pick = T.fn([template(T_lens)], T_lens)
+export const pickIn = T.fn([template(T_lens)], T_lens)
 export const replace = T.fn([T_maybeDataI, T_maybeDataI], T_lens)
 
 // Operations on isomorphisms

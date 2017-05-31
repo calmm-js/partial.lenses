@@ -1070,6 +1070,9 @@ export const pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
     (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 })
 
+export const pickIn = t =>
+  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)])) : t
+
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   function o2i(x) {return replaced(out, inn, x)}
   return (x, i, F, xi2yF) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
