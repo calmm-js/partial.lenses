@@ -2508,12 +2508,13 @@ L.remove(L.valueOr(0), 1)
 
 ##### <a id="L-pick"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pick) [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
 
-`L.pick` creates a lens out of the given object template of lenses and allows
-one to pick apart a data structure and then put it back together.  When viewed,
-an object is created, whose properties are obtained by viewing through the
-lenses of the template.  When set with an object, the properties of the object
-are set to the context via the lenses of the template.  `undefined` is treated
-as the equivalent of empty or non-existent in both directions.
+`L.pick` creates a lens out of the given possibly nested object template of
+lenses and allows one to pick apart a data structure and then put it back
+together.  When viewed, an object is created, whose properties are obtained by
+viewing through the lenses of the template.  When set with an object, the
+properties of the object are set to the context via the lenses of the template.
+`undefined` is treated as the equivalent of empty or non-existent in both
+directions.
 
 For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
@@ -2526,8 +2527,8 @@ We can use `L.pick` to create lenses to pick apart the data and put it back
 together into a more meaningful structure:
 
 ```js
-const asVec = prefix => L.pick({x: prefix + "x", y: prefix + "y"})
-const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
+const sanitize = L.pick({pos: {x: "px", y: "py"},
+                         vel: {x: "vx", y: "vy"}})
 ```
 
 We now have a better structured view of the data:
