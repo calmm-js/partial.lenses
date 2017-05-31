@@ -1087,13 +1087,13 @@ and <a href="#L-remove">removed</a>.  Put in another way, a traversal specifies 
 paths to elements in a data structure.</p>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5><a id="L-branch"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-branch">■</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a></h5>
-<p><code>L.branch</code> creates a new traversal from a given template object that specifies
-how the new traversal should visit the properties of an object.  If one thinks
-of traversals as specifying sets of paths, then the template can be seen as
-mapping each property to a set of paths to traverse.</p>
+<p><code>L.branch</code> creates a new traversal from a given possibly nested template object
+that specifies how the new traversal should visit the properties of an object.
+If one thinks of traversals as specifying sets of paths, then the template can
+be seen as mapping each property to a set of paths to traverse.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: L.identity}),
-          {first: [&quot;x&quot;], second: &quot;y&quot;})
+<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
+          {first: [&quot;x&quot;], second: {value: &quot;y&quot;}})
 </code></pre>
 <p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at
 first.  <a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So,
@@ -1815,21 +1815,24 @@ lens.</p>
 </code></pre>
 <h4 id="transforming-data">Transforming data</h4>
 <h5><a id="L-pick"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pick">■</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a></h5>
-<p><code>L.pick</code> creates a lens out of the given object template of lenses and allows
-one to pick apart a data structure and then put it back together.  When viewed,
-an object is created, whose properties are obtained by viewing through the
-lenses of the template.  When set with an object, the properties of the object
-are set to the context via the lenses of the template.  <code>undefined</code> is treated
-as the equivalent of empty or non-existent in both directions.</p>
+<p><code>L.pick</code> creates a lens out of the given possibly nested object template of
+lenses and allows one to pick apart a data structure and then put it back
+together.  When viewed, an object is created, whose properties are obtained by
+viewing through the lenses of the template.  When set with an object, the
+properties of the object are set to the context via the lenses of the template.
+<code>undefined</code> is treated as the equivalent of empty or non-existent in both
+directions.</p>
 <p>For example, let&#39;s say we need to deal with data and schema in need of some
 semantic restructuring:</p>
 <pre><code class="hljs lang-js">var sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
 </code></pre>
-<p>We can use <code>L.pick</code> to create lenses to pick apart the data and put it back
+<p>We can use <code>L.pick</code> to create a lens to pick apart the data and put it back
 together into a more meaningful structure:</p>
-<pre><code class="hljs lang-js">var asVec = prefix =&gt; L.pick({x: prefix + &quot;x&quot;, y: prefix + &quot;y&quot;})
-var sanitize = L.pick({pos: asVec(&quot;p&quot;), vel: asVec(&quot;v&quot;)})
+<pre><code class="hljs lang-js">var sanitize = L.pick({pos: {x: &quot;px&quot;, y: &quot;py&quot;},
+                         vel: {x: &quot;vx&quot;, y: &quot;vy&quot;}})
 </code></pre>
+<p>Note that in the template object the lenses are relative to the root focus of
+<code>L.pick</code>.</p>
 <p>We now have a better structured view of the data:</p>
 <pre><code class="hljs lang-js">L.get(sanitize, sampleFlat)
 </code></pre>

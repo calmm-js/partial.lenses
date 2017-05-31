@@ -503,7 +503,8 @@ var isoU = function isoU(bwd, fwd) {
 function getPick(template, x) {
   var r = void 0;
   for (var k in template) {
-    var v = getU(template[k], x);
+    var t = template[k];
+    var v = isObject(t) ? getPick(t, x) : getU(t, x);
     if (void 0 !== v) {
       if (!r) r = {};
       r[k] = v;
@@ -513,14 +514,15 @@ function getPick(template, x) {
   return r;
 }
 
-var setPick = function setPick(template, x) {
-  return function (value) {
-    if (process.env.NODE_ENV !== "production") if (!(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
-    for (var k in template) {
-      x = setU(template[k], value && value[k], x);
-    }return x;
-  };
-};
+function setPick(template, value, x) {
+  if (process.env.NODE_ENV !== "production") if (!(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
+  for (var k in template) {
+    var v = value && value[k];
+    var t = template[k];
+    x = isObject(t) ? setPick(t, v, x) : setU(t, v, x);
+  }
+  return x;
+}
 
 //
 
@@ -874,7 +876,8 @@ function branch(template) {
       vals = [];
   for (var k in template) {
     keys$$1.push(k);
-    vals.push(toFunction(template[k]));
+    var t = template[k];
+    vals.push(isObject(t) ? branch(t) : toFunction(t));
   }
   return branchOn(keys$$1, vals);
 }
@@ -1218,7 +1221,9 @@ var valueOr = function valueOr(v) {
 function pick(template) {
   if (process.env.NODE_ENV !== "production") if (!isObject(template)) errorGiven("`pick` expects a plain Object template", template);
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(setPick(template, x), xi2yF(getPick(template, x), i));
+    return (0, F.map)(function (v) {
+      return setPick(template, v, x);
+    }, xi2yF(getPick(template, x), i));
   };
 }
 
