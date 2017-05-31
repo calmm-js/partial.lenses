@@ -2523,13 +2523,16 @@ semantic restructuring:
 const sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
 ```
 
-We can use `L.pick` to create lenses to pick apart the data and put it back
+We can use `L.pick` to create a lens to pick apart the data and put it back
 together into a more meaningful structure:
 
 ```js
 const sanitize = L.pick({pos: {x: "px", y: "py"},
                          vel: {x: "vx", y: "vy"}})
 ```
+
+Note that in the template object the lenses are relative to the root focus of
+`L.pick`.
 
 We now have a better structured view of the data:
 
