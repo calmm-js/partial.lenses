@@ -464,20 +464,16 @@ function getPick(template, x) {
   return r
 }
 
-function setPickU(template, x, value) {
-  for (const k in template) {
-    const v = value && value[k]
-    const t = template[k]
-    x = I.isObject(t) ? setPickU(t, x, v) : setU(t, v, x)
-  }
-  return x
-}
-
-const setPick = (template, x) => value => {
+function setPick(template, value, x) {
   if (process.env.NODE_ENV !== "production")
     if (!(void 0 === value || value instanceof Object))
       errorGiven("`pick` must be set with undefined or an object", value)
-  return setPickU(template, x, value)
+  for (const k in template) {
+    const v = value && value[k]
+    const t = template[k]
+    x = I.isObject(t) ? setPick(t, v, x) : setU(t, v, x)
+  }
+  return x
 }
 
 //
@@ -1111,7 +1107,7 @@ export function pick(template) {
     if (!I.isObject(template))
       errorGiven("`pick` expects a plain Object template", template)
   return (x, i, F, xi2yF) =>
-    (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
+    (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 }
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
