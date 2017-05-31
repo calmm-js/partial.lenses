@@ -451,7 +451,8 @@ const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 function getPick(template, x) {
   let r
   for (const k in template) {
-    const v = getU(template[k], x)
+    const t = template[k]
+    const v = I.isObject(t) ? getPick(t, x) : getU(t, x)
     if (void 0 !== v) {
       if (!r)
         r = {}
@@ -463,13 +464,20 @@ function getPick(template, x) {
   return r
 }
 
+function setPickU(template, x, value) {
+  for (const k in template) {
+    const v = value && value[k]
+    const t = template[k]
+    x = I.isObject(t) ? setPickU(t, x, v) : setU(t, v, x)
+  }
+  return x
+}
+
 const setPick = (template, x) => value => {
   if (process.env.NODE_ENV !== "production")
     if (!(void 0 === value || value instanceof Object))
       errorGiven("`pick` must be set with undefined or an object", value)
-  for (const k in template)
-    x = setU(template[k], value && value[k], x)
-  return x
+  return setPickU(template, x, value)
 }
 
 //
@@ -780,7 +788,8 @@ export function branch(template) {
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
-    vals.push(toFunction(template[k]))
+    const t = template[k]
+    vals.push(I.isObject(t) ? branch(t) : toFunction(t))
   }
   return branchOn(keys, vals)
 }
