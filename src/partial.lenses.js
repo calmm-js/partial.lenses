@@ -309,11 +309,10 @@ const close = (o, F, xi2yF) => (x, i) => o(x, i, F, xi2yF)
 
 function composed(oi0, os) {
   const n = os.length - oi0
-  let fs
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity
   } else {
-    fs = Array(n)
+    const fs = Array(n)
     for (let i=0;i<n;++i)
       fs[i] = toFunction(os[i+oi0])
     return (x, i, F, xi2yF) => {
