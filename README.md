@@ -1292,16 +1292,16 @@ paths to elements in a data structure.
 
 ##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
 
-`L.branch` creates a new traversal from a given template object that specifies
-how the new traversal should visit the properties of an object.  If one thinks
-of traversals as specifying sets of paths, then the template can be seen as
-mapping each property to a set of paths to traverse.
+`L.branch` creates a new traversal from a given possibly nested template object
+that specifies how the new traversal should visit the properties of an object.
+If one thinks of traversals as specifying sets of paths, then the template can
+be seen as mapping each property to a set of paths to traverse.
 
 For example:
 
 ```js
-L.collect(L.branch({first: L.elems, second: L.identity}),
-          {first: ["x"], second: "y"})
+L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
+          {first: ["x"], second: {value: "y"}})
 // [ 'x', 'y' ]
 ```
 
@@ -2508,12 +2508,13 @@ L.remove(L.valueOr(0), 1)
 
 ##### <a id="L-pick"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pick) [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
 
-`L.pick` creates a lens out of the given object template of lenses and allows
-one to pick apart a data structure and then put it back together.  When viewed,
-an object is created, whose properties are obtained by viewing through the
-lenses of the template.  When set with an object, the properties of the object
-are set to the context via the lenses of the template.  `undefined` is treated
-as the equivalent of empty or non-existent in both directions.
+`L.pick` creates a lens out of the given possibly nested object template of
+lenses and allows one to pick apart a data structure and then put it back
+together.  When viewed, an object is created, whose properties are obtained by
+viewing through the lenses of the template.  When set with an object, the
+properties of the object are set to the context via the lenses of the template.
+`undefined` is treated as the equivalent of empty or non-existent in both
+directions.
 
 For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
@@ -2522,13 +2523,16 @@ semantic restructuring:
 const sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
 ```
 
-We can use `L.pick` to create lenses to pick apart the data and put it back
+We can use `L.pick` to create a lens to pick apart the data and put it back
 together into a more meaningful structure:
 
 ```js
-const asVec = prefix => L.pick({x: prefix + "x", y: prefix + "y"})
-const sanitize = L.pick({pos: asVec("p"), vel: asVec("v")})
+const sanitize = L.pick({pos: {x: "px", y: "py"},
+                         vel: {x: "vx", y: "vy"}})
 ```
+
+Note that in the template object the lenses are relative to the root focus of
+`L.pick`.
 
 We now have a better structured view of the data:
 

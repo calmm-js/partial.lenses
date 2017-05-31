@@ -61,6 +61,8 @@ const T_monoid = T.object({empty: T.fn([], T.any),
 
 const hint = T.object({hint: T.number})
 
+const template = c => T.lazy(rec => T.props(T.or(c, rec)))
+
 // Internals
 
 export const toFunction = T.fn([T_optic],
@@ -119,7 +121,7 @@ export const seq = T.fnVar(T_optic, T_transform)
 
 // Creating new traversals
 
-export const branch = T.fn([T.props(T_traversal)], T_traversal)
+export const branch = T.fn([template(T_traversal)], T_traversal)
 
 // Traversals and combinators
 
@@ -263,7 +265,7 @@ export const valueOr = T.fn([T.any], T_lens)
 
 // Transforming data
 
-export const pick = T.fn([T.props(T_lens)], T_lens)
+export const pick = T.fn([template(T_lens)], T_lens)
 export const replace = T.fn([T_maybeDataI, T_maybeDataI], T_lens)
 
 // Operations on isomorphisms

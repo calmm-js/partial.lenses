@@ -451,7 +451,8 @@ const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 function getPick(template, x) {
   let r
   for (const k in template) {
-    const v = getU(template[k], x)
+    const t = template[k]
+    const v = I.isObject(t) ? getPick(t, x) : getU(t, x)
     if (void 0 !== v) {
       if (!r)
         r = {}
@@ -463,12 +464,15 @@ function getPick(template, x) {
   return r
 }
 
-const setPick = (template, x) => value => {
+function setPick(template, value, x) {
   if (process.env.NODE_ENV !== "production")
     if (!(void 0 === value || value instanceof Object))
       errorGiven("`pick` must be set with undefined or an object", value)
-  for (const k in template)
-    x = setU(template[k], value && value[k], x)
+  for (const k in template) {
+    const v = value && value[k]
+    const t = template[k]
+    x = I.isObject(t) ? setPick(t, v, x) : setU(t, v, x)
+  }
   return x
 }
 
@@ -780,7 +784,8 @@ export function branch(template) {
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
-    vals.push(toFunction(template[k]))
+    const t = template[k]
+    vals.push(I.isObject(t) ? branch(t) : toFunction(t))
   }
   return branchOn(keys, vals)
 }
@@ -1102,7 +1107,7 @@ export function pick(template) {
     if (!I.isObject(template))
       errorGiven("`pick` expects a plain Object template", template)
   return (x, i, F, xi2yF) =>
-    (0,F.map)(setPick(template, x), xi2yF(getPick(template, x), i))
+    (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 }
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {

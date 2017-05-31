@@ -740,6 +740,14 @@ describe("L.pick", () => {
   testEq(`L.remove([L.pick({x: "b", y: "a"}), "y"], {a: [2], b: 1})`, {b: 1})
   testEq(`L.remove([L.pick({x: "b"}), "x"], {a: [2], b: 1})`, {a: [2]})
   testEq(`L.get(L.pick({x: 0, y: 1}), ["a", "b"])`, {x: "a", y: "b"})
+
+  testEq(`L.get(L.pick({x: {y: "a", z: "b"}, b: ["c", 0]}),
+                {a: 1, b: 2, c: [3]})`,
+         {x: {y: 1, z: 2}, b: 3})
+  testEq(`L.set(L.pick({x: {y: "a", z: "b"}, b: ["c", 0]}),
+                {x: {y: 4}, b: 5, z: 2},
+                {a: 1, b: 2, c: [3]})`,
+         {a: 4, c: [5]})
 })
 
 describe("L.props", () => {
@@ -796,6 +804,11 @@ describe("L.branch", () => {
   testEq(`L.modify(L.branch({y: L.identity}), R.inc, new XYZ(3,1,4))`,
          {x: 3, y: 2, z: 4})
   testEq(`L.or(L.branch({x: [], y: []}), {x: false, y: false})`, false)
+
+  testEq(`L.modify(L.branch({x: {a: []}, y: []}),
+                   R.negate,
+                   {x: {a: 1}, y: 2})`,
+         {x: {a: -1}, y: -2})
 })
 
 describe("L.removable", () => {
