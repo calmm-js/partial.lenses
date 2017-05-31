@@ -1292,16 +1292,16 @@ paths to elements in a data structure.
 
 ##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a")
 
-`L.branch` creates a new traversal from a given template object that specifies
-how the new traversal should visit the properties of an object.  If one thinks
-of traversals as specifying sets of paths, then the template can be seen as
-mapping each property to a set of paths to traverse.
+`L.branch` creates a new traversal from a given possibly nested template object
+that specifies how the new traversal should visit the properties of an object.
+If one thinks of traversals as specifying sets of paths, then the template can
+be seen as mapping each property to a set of paths to traverse.
 
 For example:
 
 ```js
-L.collect(L.branch({first: L.elems, second: L.identity}),
-          {first: ["x"], second: "y"})
+L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
+          {first: ["x"], second: {value: "y"}})
 // [ 'x', 'y' ]
 ```
 
