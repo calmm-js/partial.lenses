@@ -80,9 +80,11 @@ export function fn(argTys, resultTy) {
   if (!(argTys instanceof Array))
     throw Error(`fn arg types must be an array, given ${argTys}`)
   return fn => {
-    if (typeof fn !== "function" || argTys.length < fn.length)
-      throw Error(`fn(${argTys}, ${resultTy}): ${fn}`)
-    return I.arityN(argTys.length, function (...argIns) {
+    if (!I.isFunction(fn))
+      throw Error(`Expected function, got ${fn}`)
+    if (argTys.length < fn.length)
+      throw Error(`Expected arity ${argTys.length}, but got ${fn.length}`)
+    return I.arityN(argTys.length, (...argIns) => {
       const n=argIns.length, args=Array(n)
       for (let i=0; i<n; ++i)
         args[i] = argTys[i](argIns[i])
