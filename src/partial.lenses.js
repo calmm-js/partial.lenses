@@ -695,10 +695,10 @@ export function compose() {
   if (n < 2) {
     return n ? arguments[0] : identity
   } else {
-    const lenses = Array(n)
+    const os = Array(n)
     while (n--)
-      lenses[n] = arguments[n]
-    return lenses
+      os[n] = arguments[n]
+    return os
   }
 }
 
