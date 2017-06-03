@@ -658,6 +658,10 @@ const matchesJoin = input => matches => {
 
 //
 
+const orElseU = (back, prim) =>
+  (prim = toFunction(prim), back = toFunction(back),
+   (x, i, C, xi2yC) => (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC))
+
 function zeroOp(y, i, C, xi2yC, x) {
   const of = C.of
   return of ? of(y) : (0,C.map)(I.always(y), xi2yC(x, i))
@@ -709,13 +713,7 @@ export function compose() {
 export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
-export function choice() {
-  let n = arguments.length, os = Array(n)
-  while (n--)
-    os[n] = toFunction(arguments[n])
-  return (x, i, C, xi2yC) =>
-    (os[findIndex(o => isDefined(o, x), os)] || zero)(x, i, C, xi2yC)
-}
+export const choice = (...os) => os.reduceRight(orElseU, zero)
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
@@ -729,9 +727,10 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
 // Adapting
 
-export const orElse = /*#__PURE__*/I.curry((back, prim) =>
-  (prim = toFunction(prim), back = toFunction(back),
-   (x, i, C, xi2yC) => (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC)))
+export const choices = (o, ...os) =>
+  os.length ? orElseU(os.reduceRight(orElseU), o) : o
+
+export const orElse = /*#__PURE__*/I.curry(orElseU)
 
 // Recursing
 

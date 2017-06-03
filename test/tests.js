@@ -193,6 +193,7 @@ describe("arities", () => {
     branch: 1,
     chain: 2,
     choice: 0,
+    choices: 1,
     choose: 1,
     collect: 2,
     collectAs: 3,
@@ -476,6 +477,12 @@ describe("L.orElse", () => {
   testEq(`L.modify(L.orElse(L.values, L.elems), R.inc, {x: 1, y: 2})`,
          {x: 2, y: 3})
   testEq(`L.modify(L.orElse(L.values, L.elems), R.inc, [2,0,3])`, [3,1,4])
+})
+
+describe("L.choices", () => {
+  testEq(`L.get(L.choices("a"), {a: 2, b: 1})`, 2)
+  testEq(`L.get(L.choices("a", "b"), {a: 2, b: 1})`, 2)
+  testEq(`L.get(L.choices("a", "b"), {b: 2})`, 2)
 })
 
 describe("L.choice", () => {

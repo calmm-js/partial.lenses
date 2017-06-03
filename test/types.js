@@ -98,6 +98,7 @@ export const zero = T_optic
 
 // Adapting
 
+export const choices = T.fnVarN(1, T_optic, T_optic)
 export const orElse = T.fn([T_optic, T_optic], T_optic)
 
 // Recursing
