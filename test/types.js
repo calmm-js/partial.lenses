@@ -85,12 +85,12 @@ export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
 
 // Nesting
 
-export const compose = T.fnVar(T_optic, T_optic)
+export const compose = T.fnVarN(0, T_optic, T_optic)
 
 // Querying
 
 export const chain = T.fn([T.fn([T_dataO, T_index], T_optic), T_lens], T_optic)
-export const choice = T.fnVar(T_optic, T_optic)
+export const choice = T.fnVarN(0, T_optic, T_optic)
 export const choose = T.fn([T.fn([T_maybeDataO, T_index], T_optic)], T_optic)
 export const optional = T_optic
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
@@ -113,11 +113,11 @@ export const setOp = T.fn([T_maybeDataI], T_optic)
 
 // Debugging
 
-export const log = T.fnVar(T.string, T_optic)
+export const log = T.fnVarN(0, T.string, T_optic)
 
 // Sequencing
 
-export const seq = T.fnVar(T_optic, T_transform)
+export const seq = T.fnVarN(0, T_optic, T_transform)
 
 // Creating new traversals
 
@@ -248,7 +248,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findHint = T.fn([T.fn([T_maybeDataO, hint], T.any), hint], T_lens)
-export const findWith = T.fnVar(T_optic, T_optic)
+export const findWith = T.fnVarN(0, T_optic, T_optic)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
@@ -256,8 +256,8 @@ export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 // Lensing objects
 
 export const prop = T.fn([T.string], T_lens)
-export const props = T.fnVar(T.string, T_lens)
-export const removable = T.fnVar(T.string, T_lens)
+export const props = T.fnVarN(0, T.string, T_lens)
+export const removable = T.fnVarN(0, T.string, T_lens)
 
 // Providing defaults
 

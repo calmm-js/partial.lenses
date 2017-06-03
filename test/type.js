@@ -93,13 +93,13 @@ export function fn(argTys, resultTy) {
   }
 }
 
-export const fnVar = (argsTy, resultTy) => fn => {
-  if (typeof fn !== "function")
-    throw Error(`fnVar(${argsTy}, ${resultTy}): ${fn}`)
-  return function (...argIns) {
+export const fnVarN = (minArity, argsTy, resultTy) => fn => {
+  if (!I.isFunction(fn))
+    throw Error(`Expected function, got ${fn}`)
+  return R.curryN(minArity, (...argIns) => {
     const n=argIns.length, args=Array(n)
     for (let i=0; i<n; ++i)
       args[i] = argsTy(argIns[i])
     return resultTy(fn.apply(this, args))
-  }
+  })
 }
