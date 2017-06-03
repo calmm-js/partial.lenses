@@ -707,10 +707,13 @@ export function compose() {
 export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
   [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
 
-export const choice = (...os) => choose(x => {
-  const o = os[findIndex(o => isDefined(o, x), os)]
-  return void 0 !== o ? o : zero
-})
+export function choice() {
+  let n = arguments.length, os = Array(n)
+  while (n--)
+    os[n] = toFunction(arguments[n])
+  return (x, i, C, xi2yC) =>
+    (os[findIndex(o => isDefined(o, x), os)] || zero)(x, i, C, xi2yC)
+}
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
@@ -725,7 +728,8 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 // Adapting
 
 export const orElse = /*#__PURE__*/I.curry((back, prim) =>
-  choose(x => isDefined(prim, x) ? prim : back))
+  (prim = toFunction(prim), back = toFunction(back),
+   (x, i, C, xi2yC) => (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC)))
 
 // Recursing
 
@@ -1036,8 +1040,8 @@ export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
 })
 
 export function findWith(...os) {
-  const oos = compose(...os)
-  return [find(x => isDefined(oos, x)), oos]
+  const oos = toFunction(compose(...os))
+  return [find(isDefined(oos)), oos]
 }
 
 export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
