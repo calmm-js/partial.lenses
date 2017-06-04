@@ -136,6 +136,13 @@ const xyzs = L.seq("x","y","z")
 
 const pi = [3,1,4,1,5]
 
+const aEb = L.orElse("b", "a")
+const aEbEc = L.orElse(L.orElse("c", "b"), "a")
+const abM = L.choice("a", "b")
+const abS = L.choices("a", "b")
+const abcM = L.choice("a", "b", "c")
+const abcS = L.choices("a", "b", "c")
+
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
@@ -419,6 +426,18 @@ R.forEach(bs => {
     `L.set(valueOr0x0y, 1, undefined)`,
   ], [
     `L.set(L.findWith("x"), 2, axay)`,
+  ], [
+    `L.get(L.orElse("a", "b"), {x: 1})`,
+    `L.get(L.choices("a", "b"), {x: 1})`,
+    `L.get(abS, {x: 1})`,
+    `L.get(abM, {x: 1})`,
+    `L.get(aEb, {x: 1})`,
+  ], [
+    `L.get(L.choice("a", "b", "c"), {x: 1})`,
+    `L.get(L.choices("a", "b", "c"), {x: 1})`,
+    `L.get(aEbEc, {x: 1})`,
+    `L.get(abcM, {x: 1})`,
+    `L.get(abcS, {x: 1})`,
   ], [
     `L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})`,
   ]
