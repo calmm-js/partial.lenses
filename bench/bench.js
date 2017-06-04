@@ -139,17 +139,21 @@ const pi = [3,1,4,1,5]
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
+const pattern = new RegExp(process.argv[3] || "")
+
 R.forEach(bs => {
-  global.gc()
-  const s = new Benchmark.Suite()
-  bs.reverse().forEach(b => {
-    b = b instanceof Array ? b : [b]
-    const code = b[0].replace(/[ \n]+/g, " ")
-    const note = b[1] || ""
-    s.add(code, eval("() => " + code), {note})
-  })
-  s.on('complete', complete)
-  s.run()
+  if (bs.find(s => pattern.test(s))) {
+    global.gc()
+    const s = new Benchmark.Suite()
+    bs.reverse().forEach(b => {
+      b = b instanceof Array ? b : [b]
+      const code = b[0].replace(/[ \n]+/g, " ")
+      const note = b[1] || ""
+      s.add(code, eval("() => " + code), {note})
+    })
+    s.on('complete', complete)
+    s.run()
+  }
 }, [
   [
     `L.get(L_findHint_id_5000, ids)`,
