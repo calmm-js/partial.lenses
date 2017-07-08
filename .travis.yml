@@ -3,8 +3,8 @@ notifications:
   email: false
 before_install: npm install npm@latest -g
 node_js:
-  - "6"
   - "8"
+  - "6"
   - "4"
 script:
   - npm run report-coverage
