@@ -4,6 +4,71 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var I = require('infestines');
 
+var dep = function dep(xs2xsyC) {
+  return function (xsy) {
+    return I.arityN(xsy.length, function () {
+      for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
+        xs[_key] = arguments[_key];
+      }
+
+      return xs2xsyC(xs)(xsy).apply(undefined, xs);
+    });
+  };
+};
+
+var fn = function fn(xsC, yC) {
+  return function (xsy) {
+    return I.arityN(xsy.length, function () {
+      for (var _len2 = arguments.length, xs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        xs[_key2] = arguments[_key2];
+      }
+
+      return yC(xsy.apply(null, xsC(xs)));
+    });
+  };
+};
+
+var res = function res(yC) {
+  return fn(I.id, yC);
+};
+
+var args = function args(xsC) {
+  return fn(xsC, I.id);
+};
+
+var nth = function nth(i, xC) {
+  return function (xs) {
+    var ys = xs.slice(0);
+    ys[i] = xC(ys[i]);
+    return ys;
+  };
+};
+
+var par = function par(i, xC) {
+  return args(nth(i, xC));
+};
+
+var and$1 = function and() {
+  for (var _len3 = arguments.length, xCs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    xCs[_key3] = arguments[_key3];
+  }
+
+  return function (x) {
+    for (var i = 0, n = xCs.length; i < n; ++i) {
+      x = xCs[i](x);
+    }return x;
+  };
+};
+
+var ef = function ef(xE) {
+  return function (x) {
+    xE(x);
+    return x;
+  };
+};
+
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 //
 
 var toStringPartial = function toStringPartial(x) {
@@ -49,20 +114,36 @@ var expect = function expect(p, f) {
   };
 };
 
+var freeze = function freeze(x) {
+  return x && Object.freeze(x);
+};
+
 function deepFreeze(x) {
   if (Array.isArray(x)) {
     x.forEach(deepFreeze);
-    Object.freeze(x);
+    freeze(x);
   } else if (I.isObject(x)) {
     for (var k in x) {
       deepFreeze(x[k]);
-    }Object.freeze(x);
+    }freeze(x);
   }
+  return x;
 }
 
 //
 
-function mapPartialIndexU(xi2y, xs) {
+var warnUse = function warnUse(msg) {
+  return function (fn$$1) {
+    return I.pipe2U(fn$$1, function (x) {
+      warn(fn$$1, msg);
+      return x;
+    });
+  };
+};
+
+//
+
+var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xi2y, xs) {
   var n = xs.length,
       ys = Array(n);
   var j = 0;
@@ -70,17 +151,19 @@ function mapPartialIndexU(xi2y, xs) {
     if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y;
   }if (j) {
     if (j < n) ys.length = j;
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
-}
+});
 
-function copyToFrom(ys, k, xs, i, j) {
+var copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function (ys, k, xs, i, j) {
+    return ys.length === k + j - i ? freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
+  };
+})(function (ys, k, xs, i, j) {
   while (i < j) {
     ys[k++] = xs[i++];
-  }if (process.env.NODE_ENV !== "production") if (ys.length === k) Object.freeze(ys);
-  return ys;
-}
+  }return ys;
+});
 
 //
 
@@ -142,9 +225,8 @@ function errorGiven(m, o, e) {
   throw Error(m + e);
 }
 
-function checkIndex(x) {
+function reqIndex(x) {
   if (!Number.isInteger(x) || x < 0) errorGiven("`index` expects a non-negative integer", x);
-  return x;
 }
 
 function reqFunction(o) {
@@ -155,11 +237,49 @@ function reqArray(o) {
   if (!Array.isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
 }
 
+function reqOptic(o) {
+  switch (typeof o) {
+    case "string":
+      break;
+    case "number":
+      reqIndex(o);break;
+    case "object":
+      reqArray(o);
+      for (var i = 0, n = o.length; i < n; ++i) {
+        reqOptic(o[i]);
+      }break;
+    default:
+      reqFunction(o);break;
+  }
+}
+
 //
 
-function reqApplicative(C, name, arg) {
-  if (!C.of) errorGiven("`" + name + (arg ? "(" + arg + ")" : "") + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
-}
+var reqString = function reqString(msg) {
+  return function (x) {
+    if (!I.isString(x)) errorGiven(msg, x);
+  };
+};
+
+var reqMaybeArray = function reqMaybeArray(msg) {
+  return function (zs) {
+    if (!(void 0 === zs || seemsArrayLike(zs))) errorGiven(msg, zs);
+  };
+};
+
+//
+
+var reqApplicative = function reqApplicative(name, arg) {
+  return function (C) {
+    if (!C.of) errorGiven("`" + name + (arg ? "(" + arg + ")" : "") + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
+  };
+};
+
+var reqMonad = function reqMonad(name) {
+  return function (C) {
+    if (!C.chain) errorGiven("`" + name + "` requires a monad", C, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
+  };
+};
 
 //
 
@@ -195,14 +315,13 @@ function pushTo(n, ys) {
   ys.push(n);
 }
 
-function toArray(n) {
+var toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (n) {
   if (void 0 !== n) {
     var ys = [];
     pushTo(n, ys);
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   }
-}
+});
 
 function foldRec(f, r, n) {
   while (isBoth(n)) {
@@ -268,8 +387,7 @@ var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, del
   })) : z;
 };
 
-function traversePartialIndex(A, xi2yA, xs) {
-  if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
+var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqApplicative("elems"))))(function (A, xi2yA, xs) {
   var map = A.map,
       ap = A.ap,
       of = A.of,
@@ -280,7 +398,7 @@ function traversePartialIndex(A, xi2yA, xs) {
   if (delay) xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i);else while (i--) {
     xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA);
   }return map(toArray, xsA);
-}
+});
 
 //
 
@@ -309,11 +427,9 @@ var getProp = function getProp(k, o) {
   return o instanceof Object ? o[k] : void 0;
 };
 
-function setProp(k, v, o) {
-  var r = void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o);
-  if (process.env.NODE_ENV !== "production") if (r) Object.freeze(r);
-  return r;
-}
+var setProp = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (k, v, o) {
+  return void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o);
+});
 
 var funProp = /*#__PURE__*/lensFrom(getProp, setProp);
 
@@ -323,8 +439,7 @@ var getIndex = function getIndex(i, xs) {
   return seemsArrayLike(xs) ? xs[i] : void 0;
 };
 
-function setIndex(i, x, xs) {
-  if (process.env.NODE_ENV !== "production") checkIndex(i);
+var setIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn(nth(0, ef(reqIndex)), freeze))(function (i, x, xs) {
   if (!seemsArrayLike(xs)) xs = "";
   var n = xs.length;
   if (void 0 !== x) {
@@ -333,7 +448,6 @@ function setIndex(i, x, xs) {
     for (var j = 0; j < m; ++j) {
       ys[j] = xs[j];
     }ys[i] = x;
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys);
     return ys;
   } else {
     if (0 < n) {
@@ -344,12 +458,11 @@ function setIndex(i, x, xs) {
           _ys[_j] = xs[_j];
         }for (var _j2 = i + 1; _j2 < n; ++_j2) {
           _ys[_j2 - 1] = xs[_j2];
-        }if (process.env.NODE_ENV !== "production") Object.freeze(_ys);
-        return _ys;
+        }return _ys;
       }
     }
   }
-}
+});
 
 var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
@@ -363,11 +476,10 @@ var close = function close(o, F, xi2yF) {
 
 function composed(oi0, os) {
   var n = os.length - oi0;
-  var fs = void 0;
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity;
   } else {
-    fs = Array(n);
+    var fs = Array(n);
     for (var i = 0; i < n; ++i) {
       fs[i] = toFunction(os[i + oi0]);
     }return function (x, i, F, xi2yF) {
@@ -379,22 +491,20 @@ function composed(oi0, os) {
   }
 }
 
-function setU(o, x, s) {
+var setU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqOptic)))(function (o, x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, x, s);
     case "number":
       return setIndex(o, x, s);
     case "object":
-      if (process.env.NODE_ENV !== "production") reqArray(o);
       return modifyComposed(o, 0, s, x);
     default:
-      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s;
   }
-}
+});
 
-function modifyU(o, xi2x, s) {
+var modifyU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqOptic)))(function (o, xi2x, s) {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s);
@@ -403,10 +513,9 @@ function modifyU(o, xi2x, s) {
     case "object":
       return modifyComposed(o, xi2x, s);
     default:
-      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
-}
+});
 
 function makeIx(i) {
   var ix = function ix(s, j) {
@@ -426,24 +535,21 @@ function getNestedU(l, s, j, ix) {
         s = getIndex(ix.v = o, s);
         break;
       case "object":
-        if (process.env.NODE_ENV !== "production") reqArray(o);
         s = getNestedU(o, s, 0, ix);
         break;
       default:
-        if (process.env.NODE_ENV !== "production") reqFunction(o);
         s = o(s, ix.v, Const, ix);
     }
   }return s;
 }
 
-function getU(l, s) {
+var getU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqOptic)))(function (l, s) {
   switch (typeof l) {
     case "string":
       return getProp(l, s);
     case "number":
       return getIndex(l, s);
     case "object":
-      if (process.env.NODE_ENV !== "production") reqArray(l);
       for (var i = 0, n = l.length, o; i < n; ++i) {
         switch (typeof (o = l[i])) {
           case "string":
@@ -455,13 +561,11 @@ function getU(l, s) {
         }
       }return s;
     default:
-      if (process.env.NODE_ENV !== "production") reqFunction(l);
       return l(s, void 0, Const, I.id);
   }
-}
+});
 
 function modifyComposed(os, xi2y, x, y) {
-  if (process.env.NODE_ENV !== "production") reqArray(os);
   var n = os.length;
   var xs = Array(n);
   for (var i = 0, o; i < n; ++i) {
@@ -503,7 +607,7 @@ var isoU = function isoU(bwd, fwd) {
 
 //
 
-function getPick(template, x) {
+var getPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (template, x) {
   var r = void 0;
   for (var k in template) {
     var t = template[k];
@@ -513,19 +617,29 @@ function getPick(template, x) {
       r[k] = v;
     }
   }
-  if (process.env.NODE_ENV !== "production") if (r) Object.freeze(r);
   return r;
-}
+});
 
-function setPick(template, value, x) {
-  if (process.env.NODE_ENV !== "production") if (!(void 0 === value || value instanceof Object)) errorGiven("`pick` must be set with undefined or an object", value);
+var reqTemplate = function reqTemplate(name) {
+  return function (template) {
+    if (!I.isObject(template)) errorGiven("`" + name + "` expects a plain Object template", template);
+  };
+};
+
+var reqObject = function reqObject(msg) {
+  return function (value) {
+    if (!(void 0 === value || value instanceof Object)) errorGiven(msg, value);
+  };
+};
+
+var setPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(1, ef(reqObject("`pick` must be set with undefined or an object"))))(function (template, value, x) {
   for (var k in template) {
     var v = value && value[k];
     var t = template[k];
     x = I.isObject(t) ? setPick(t, v, x) : setU(t, v, x);
   }
   return x;
-}
+});
 
 //
 
@@ -535,7 +649,7 @@ var toObject = function toObject(x) {
 
 //
 
-var branchOnMerge = function branchOnMerge(x, keys$$1) {
+var branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
     var o = {},
         n = keys$$1.length;
@@ -561,10 +675,9 @@ var branchOnMerge = function branchOnMerge(x, keys$$1) {
         r[_k] = _v2;
       }
     }
-    if (process.env.NODE_ENV !== "production") if (r) Object.freeze(r);
     return r;
   };
-};
+});
 
 function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys$$1.length) {
@@ -578,9 +691,14 @@ function branchOnLazy(keys$$1, vals, map, ap, z, delay, A, xi2yA, x, i) {
   }
 }
 
-var branchOn = function branchOn(keys$$1, vals) {
+var branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref) {
+  var _ref2 = _slicedToArray(_ref, 2),
+      _keys = _ref2[0],
+      vals = _ref2[1];
+
+  return res(par(2, ef(reqApplicative(vals ? "branch" : "values"))));
+}))(function (keys$$1, vals) {
   return function (x, _i, A, xi2yA) {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A, vals ? "branch" : "values");
     var map = A.map,
         ap = A.ap,
         of = A.of,
@@ -601,7 +719,7 @@ var branchOn = function branchOn(keys$$1, vals) {
     }
     return map(branchOnMerge(x, keys$$1), xsA);
   };
-};
+});
 
 var replaced = function replaced(inn, out, x) {
   return I.acyclicEqualsU(x, inn) ? out : x;
@@ -631,14 +749,21 @@ function findIndexHint(hint, xi2b, xs) {
   }return n;
 }
 
-function partitionIntoIndex(xi2b, xs, ts, fs) {
+var partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref3) {
+  var _ref4 = _slicedToArray(_ref3, 4),
+      _xi2b = _ref4[0],
+      _xs = _ref4[1],
+      ts = _ref4[2],
+      fs = _ref4[3];
+
+  return res(ef(function () {
+    freeze(ts);freeze(fs);
+  }));
+}))(function (xi2b, xs, ts, fs) {
   for (var i = 0, n = xs.length, x; i < n; ++i) {
     (xi2b(x = xs[i], i) ? ts : fs).push(x);
-  }if (process.env.NODE_ENV !== "production") {
-    Object.freeze(ts);
-    Object.freeze(fs);
   }
-}
+});
 
 var fromReader = function fromReader(wi2x) {
   return function (w, i, F, xi2yF) {
@@ -653,8 +778,10 @@ function reNext(m, re) {
   re.lastIndex = m.index + m[0].length;
   var n = re.exec(m.input);
   re.lastIndex = lastIndex;
-  if (process.env.NODE_ENV !== "production") if (n && !n[0]) warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
-  if (n && n[0]) return n;
+  if (n) {
+    if (n[0]) return n;
+    if (process.env.NODE_ENV !== "production") warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
+  }
 }
 
 var reValue = function reValue(m) {
@@ -721,21 +848,18 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 // Internals
 
-function toFunction(o) {
+var toFunction = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqOptic)))(function (o) {
   switch (typeof o) {
     case "string":
       return funProp(o);
     case "number":
-      if (process.env.NODE_ENV !== "production") checkIndex(o);
       return funIndex(o);
     case "object":
-      if (process.env.NODE_ENV !== "production") reqArray(o);
       return composed(0, o);
     default:
-      if (process.env.NODE_ENV !== "production") reqFunction(o);
       return o.length === 4 ? o : fromReader(o);
   }
-}
+});
 
 // Operations on optics
 
@@ -760,10 +884,10 @@ function compose() {
   if (n < 2) {
     return n ? arguments[0] : identity;
   } else {
-    var lenses = Array(n);
+    var os = Array(n);
     while (n--) {
-      lenses[n] = arguments[n];
-    }return lenses;
+      os[n] = arguments[n];
+    }return os;
   }
 }
 
@@ -775,18 +899,17 @@ var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
   })];
 });
 
-var choice = function choice() {
-  for (var _len = arguments.length, os = Array(_len), _key = 0; _key < _len; _key++) {
-    os[_key] = arguments[_key];
-  }
-
-  return choose(function (x) {
-    var o = os[findIndex(function (o) {
+function choice() {
+  var n = arguments.length,
+      os = Array(n);
+  while (n--) {
+    os[n] = toFunction(arguments[n]);
+  }return function (x, i, C, xi2yC) {
+    return (os[findIndex(function (o) {
       return isDefined$1(o, x);
-    }, os)];
-    return void 0 !== o ? o : zero;
-  });
-};
+    }, os)] || zero)(x, i, C, xi2yC);
+  };
+}
 
 var choose = function choose(xiM2o) {
   return function (x, i, C, xi2yC) {
@@ -809,9 +932,9 @@ var zero = function zero(x, i, C, xi2yC) {
 // Adapting
 
 var orElse = /*#__PURE__*/I.curry(function (back, prim) {
-  return choose(function (x) {
-    return isDefined$1(prim, x) ? prim : back;
-  });
+  return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
+    return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
+  };
 });
 
 // Recursing
@@ -855,7 +978,11 @@ function log() {
 
 // Sequencing
 
-function seq() {
+var seq = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function () {
+    return par(2, ef(reqMonad("seq")))(fn$$1.apply(undefined, arguments));
+  };
+})(function () {
   var n = arguments.length,
       xMs = Array(n);
   for (var i = 0; i < n; ++i) {
@@ -866,15 +993,13 @@ function seq() {
     };
   }
   return function (x, i, M, xi2xM) {
-    if (process.env.NODE_ENV !== "production") if (!M.chain) errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
     return loop(M, xi2xM, i, 0)(x);
   };
-}
+});
 
 // Creating new traversals
 
-function branch(template) {
-  if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`branch` expects a plain Object template", template);
+var branch = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqTemplate("branch"))))(function (template) {
   var keys$$1 = [],
       vals = [];
   for (var k in template) {
@@ -883,36 +1008,37 @@ function branch(template) {
     vals.push(I.isObject(t) ? branch(t) : toFunction(t));
   }
   return branchOn(keys$$1, vals);
-}
+});
 
 // Traversals and combinators
 
-function elems(xs, _i, A, xi2yA) {
+var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, ef(reqApplicative("elems"))))(function (xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectElems(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A, "elems");
     return (0, A.of)(xs);
   }
-}
+});
 
-function values(xs, _i, A, xi2yA) {
+var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA);
+    return branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
-    if (process.env.NODE_ENV !== "production") reqApplicative(A, "values");
     return (0, A.of)(xs);
   }
-}
+});
 
-function matches(re) {
-  if (process.env.NODE_ENV !== "production") warn(matches, "`matches` is experimental and might be removed or changed before next major release.");
+var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : and$1(warnUse("`matches` is experimental and might be removed or changed before next major release."), dep(function (_ref5) {
+  var _ref6 = _slicedToArray(_ref5, 1),
+      re = _ref6[0];
+
+  return re.global ? res(par(2, ef(reqApplicative("matches", re)))) : I.id;
+})))(function (re) {
   return function (x, _i, C, xi2yC) {
     if (I.isString(x)) {
       var map = C.map;
 
       if (re.global) {
-        if (process.env.NODE_ENV !== "production") reqApplicative(C, "matches", re);
         var ap = C.ap,
             of = C.of,
             delay = C.delay;
@@ -930,7 +1056,7 @@ function matches(re) {
     }
     return zeroOp(x, void 0, C, xi2yC);
   };
-}
+});
 
 // Folds over traversals
 
@@ -982,12 +1108,11 @@ var isDefined$1 = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
 
 var isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)();
 
-var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, function (d) {
-  if (process.env.NODE_ENV !== "production") if (!I.isString(d)) errorGiven("`join` and `joinAs` expect a string delimiter", d);
+var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqString("`join` and `joinAs` expect a string delimiter"))))(function (d) {
   return ConcatOf(function (x, y) {
     return void 0 !== x ? void 0 !== y ? x + d + y : x : y;
   });
-});
+}));
 
 var join = /*#__PURE__*/joinAs(I.id);
 
@@ -1039,16 +1164,15 @@ var foldTraversalLens = /*#__PURE__*/I.curry(function (fold, traversal) {
 
 // Computing derived props
 
-function augment(template) {
-  if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`augment` expects a plain Object template", template);
+var augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn(nth(0, ef(reqTemplate("augment"))), function (lens) {
+  return toFunction([isoU(I.id, freeze), lens, isoU(freeze, ef(reqObject("`augment` must be set with undefined or an object")))]);
+}))(function (template) {
   return lensU(function (x) {
     x = I.dissocPartialU(0, x);
     if (x) for (var k in template) {
       x[k] = template[k](x);
-    }if (process.env.NODE_ENV !== "production") if (x) Object.freeze(x);
-    return x;
+    }return x;
   }, function (y, x) {
-    if (process.env.NODE_ENV !== "production") if (!(void 0 === y || y instanceof Object)) errorGiven("`augment` must be set with undefined or an object", y);
     y = toObject(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
@@ -1063,10 +1187,9 @@ function augment(template) {
         }
       }
     }
-    if (process.env.NODE_ENV !== "production") if (z) Object.freeze(z);
     return z;
   });
-}
+});
 
 // Enforcing invariants
 
@@ -1115,20 +1238,21 @@ function append(xs, _, F, xi2yF) {
   }, xi2yF(void 0, i));
 }
 
-var filter = function filter(xi2b) {
+var filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(function (lens) {
+  return toFunction([lens, isoU(I.id, ef(reqMaybeArray("`filter` must be set with undefined or an array-like object")))]);
+}))(function (xi2b) {
   return function (xs, i, F, xi2yF) {
     var ts = void 0,
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
     return (0, F.map)(function (ts) {
-      if (process.env.NODE_ENV !== "production") if (!(void 0 === ts || seemsArrayLike(ts))) errorGiven("`filter` must be set with undefined or an array-like object", ts);
       var tsN = ts ? ts.length : 0,
           fsN = fs ? fs.length : 0,
           n = tsN + fsN;
       if (n) return n === fsN ? fs : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN);
     }, xi2yF(ts, i));
   };
-};
+});
 
 var find = function find(xi2b) {
   return function (xs, _i, F, xi2yF) {
@@ -1140,8 +1264,7 @@ var find = function find(xi2b) {
   };
 };
 
-var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
-  if (process.env.NODE_ENV !== "production") warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.");
+var findHint = /*#__PURE__*/(process.env.NODE_ENV !== "production" ? warnUse("`findHint` is experimental and might be removed or changed before next major release.") : I.curry)(function (xh2b, hint) {
   return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
@@ -1152,26 +1275,25 @@ var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
 });
 
 function findWith() {
-  var oos = compose.apply(undefined, arguments);
-  return [find(function (x) {
-    return isDefined$1(oos, x);
-  }), oos];
+  var oos = toFunction(compose.apply(undefined, arguments));
+  return [find(isDefined$1(oos)), oos];
 }
 
-var index = process.env.NODE_ENV === "production" ? I.id : checkIndex;
+var index = process.env.NODE_ENV !== "production" ? ef(reqIndex) : I.id;
 
 var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
 });
 
-var slice = /*#__PURE__*/I.curry(function (begin, end) {
+var slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : res(function (lens) {
+  return toFunction([lens, isoU(I.id, ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))]);
+}))(function (begin, end) {
   return function (xs, i, F, xsi2yF) {
     var seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end);
     return (0, F.map)(function (zs) {
-      if (process.env.NODE_ENV !== "production") if (!(void 0 === zs || seemsArrayLike(zs))) errorGiven("`slice` must be set with undefined or an array-like object", zs);
       var zsN = zs ? zs.length : 0,
           bPzsN = b + zsN,
           n = xsN - e + bPzsN;
@@ -1196,8 +1318,8 @@ function props() {
 }
 
 function removable() {
-  for (var _len2 = arguments.length, ps = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    ps[_key2] = arguments[_key2];
+  for (var _len = arguments.length, ps = Array(_len), _key = 0; _key < _len; _key++) {
+    ps[_key] = arguments[_key];
   }
 
   function drop(y) {
@@ -1221,14 +1343,13 @@ var valueOr = function valueOr(v) {
 
 // Transforming data
 
-function pick(template) {
-  if (process.env.NODE_ENV !== "production") if (!I.isObject(template)) errorGiven("`pick` expects a plain Object template", template);
+var pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqTemplate("pick"))))(function (template) {
   return function (x, i, F, xi2yF) {
     return (0, F.map)(function (v) {
       return setPick(template, v, x);
     }, xi2yF(getPick(template, x), i));
   };
-}
+});
 
 var replace = /*#__PURE__*/I.curry(function (inn, out) {
   function o2i(x) {
@@ -1241,7 +1362,9 @@ var replace = /*#__PURE__*/I.curry(function (inn, out) {
 
 // Operations on isomorphisms
 
-var getInverse = /*#__PURE__*/I.arityN(2, setU);
+var getInverse = /*#__PURE__*/I.curry(function (o, s) {
+  return setU(o, s, void 0);
+});
 
 // Creating new isomorphisms
 
@@ -1253,7 +1376,7 @@ var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
     return (0, F.map)(function (x) {
       return getU(iso, x);
-    }, xi2yF(setU(iso, x), i));
+    }, xi2yF(setU(iso, x, void 0), i));
   };
 };
 
@@ -1281,20 +1404,20 @@ var uri =
 var uriComponent =
 /*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
 
-function json(options) {
-  var _ref = options || I.object0,
-      reviver = _ref.reviver,
-      replacer = _ref.replacer,
-      space = _ref.space;
+var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(function (iso) {
+  return toFunction([iso, isoU(deepFreeze, I.id)]);
+}))(function (options) {
+  var _ref7 = options || I.object0,
+      reviver = _ref7.reviver,
+      replacer = _ref7.replacer,
+      space = _ref7.space;
 
   return isoU(expect(I.isString, function (text) {
-    var json = JSON.parse(text, reviver);
-    if (process.env.NODE_ENV !== "production") deepFreeze(json);
-    return json;
+    return JSON.parse(text, reviver);
   }), expect(I.isDefined, function (value) {
     return JSON.stringify(value, replacer, space);
   }));
-}
+});
 
 // Auxiliary
 
