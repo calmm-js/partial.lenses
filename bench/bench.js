@@ -9,7 +9,7 @@ function tryRequire(name) {
 }
 
 const I = require("infestines")
-const L = require("../dist/partial.lenses.min")
+const L = require("../dist/partial.lenses.cjs")
 const P = tryRequire("ramda-lens")
 const R = require("ramda")
 const O = tryRequire("flunc-optics")
