@@ -4,7 +4,7 @@ export const dep = xs2xsyC => xsy => I.arityN(xsy.length, (...xs) =>
   xs2xsyC(xs)(xsy)(...xs))
 
 export const fn = (xsC, yC) => xsy => I.arityN(xsy.length, (...xs) =>
-  yC(xsy(...xsC(xs))))
+  yC(xsy.apply(null, xsC(xs))))
 
 export const res = yC => fn(I.id, yC)
 
