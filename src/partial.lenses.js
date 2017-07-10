@@ -1,5 +1,7 @@
 import * as I from "infestines"
 
+import * as C from "./contract"
+
 //
 
 const toStringPartial = x => void 0 !== x ? String(x) : ""
@@ -20,20 +22,30 @@ const notPartial = x => void 0 !== x ? !x : x
 
 const expect = (p, f) => x => p(x) ? f(x) : undefined
 
+const freeze = x => x && Object.freeze(x)
+
 function deepFreeze(x) {
   if (Array.isArray(x)) {
     x.forEach(deepFreeze)
-    Object.freeze(x)
+    freeze(x)
   } else if (I.isObject(x)) {
     for (const k in x)
       deepFreeze(x[k])
-    Object.freeze(x)
+    freeze(x)
   }
+  return x
 }
 
 //
 
-function mapPartialIndexU(xi2y, xs) {
+const warnUse = msg => fn => I.pipe2U(fn, x => {
+  warn(fn, msg)
+  return x
+})
+
+//
+
+const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
   const n = xs.length, ys = Array(n)
   let j = 0
   for (let i=0, y; i<n; ++i)
@@ -42,19 +54,15 @@ function mapPartialIndexU(xi2y, xs) {
   if (j) {
     if (j < n)
       ys.length = j
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   }
-}
+})
 
-function copyToFrom(ys, k, xs, i, j) {
+const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (ys, k, xs, i, j) => (ys.length === k + j - i ? freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j)))((ys, k, xs, i, j) => {
   while (i < j)
     ys[k++] = xs[i++]
-  if (process.env.NODE_ENV !== "production")
-    if (ys.length === k)
-      Object.freeze(ys)
   return ys
-}
+})
 
 //
 
@@ -114,10 +122,9 @@ function errorGiven(m, o, e) {
   throw Error(m + e)
 }
 
-function checkIndex(x) {
+function reqIndex(x) {
   if (!Number.isInteger(x) || x < 0)
     errorGiven("`index` expects a non-negative integer", x)
-  return x
 }
 
 function reqFunction(o) {
@@ -130,11 +137,41 @@ function reqArray(o) {
     errorGiven(expectedOptic, o, opticIsEither)
 }
 
+function reqOptic(o) {
+  switch (typeof o) {
+    case "string": break
+    case "number": reqIndex(o); break
+    case "object":
+      reqArray(o)
+      for (let i=0,n=o.length; i<n; ++i)
+        reqOptic(o[i])
+      break
+    default: reqFunction(o); break
+  }
+}
+
 //
 
-function reqApplicative(C, name, arg) {
+const reqString = msg => x => {
+  if (!I.isString(x))
+    errorGiven(msg, x)
+}
+
+const reqMaybeArray = msg => zs => {
+  if (!(void 0 === zs || seemsArrayLike(zs)))
+    errorGiven(msg, zs)
+}
+
+//
+
+const reqApplicative = (name, arg) => C => {
   if (!C.of)
     errorGiven(`\`${name}${arg ? `(${arg})` : ""}\` requires an applicative`, C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?")
+}
+
+const reqMonad = name => C => {
+  if (!C.chain)
+    errorGiven(`\`${name}\` requires a monad`, C, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
 }
 
 //
@@ -161,14 +198,13 @@ function pushTo(n, ys) {
   ys.push(n)
 }
 
-function toArray(n) {
+const toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(n => {
   if (void 0 !== n) {
     const ys = []
     pushTo(n, ys)
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   }
-}
+})
 
 function foldRec(f, r, n) {
   while (isBoth(n)) {
@@ -226,9 +262,7 @@ const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
        traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
   : z
 
-function traversePartialIndex(A, xi2yA, xs) {
-  if (process.env.NODE_ENV !== "production")
-    reqApplicative(A, "elems")
+const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
   const {map, ap, of, delay} = A
   let xsA = of(void 0),
       i = xs.length
@@ -238,7 +272,7 @@ function traversePartialIndex(A, xi2yA, xs) {
     while (i--)
       xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA)
   return map(toArray, xsA)
-}
+})
 
 //
 
@@ -258,12 +292,8 @@ const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
 
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
-function setProp(k, v, o) {
-  const r = void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o)
-  if (process.env.NODE_ENV !== "production")
-    if (r) Object.freeze(r)
-  return r
-}
+const setProp = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((k, v, o) =>
+  void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o))
 
 const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
 
@@ -271,9 +301,7 @@ const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
 
 const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
-function setIndex(i, x, xs) {
-  if (process.env.NODE_ENV !== "production")
-    checkIndex(i)
+const setIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqIndex)), freeze))((i, x, xs) => {
   if (!seemsArrayLike(xs))
     xs = ""
   const n = xs.length
@@ -282,7 +310,6 @@ function setIndex(i, x, xs) {
     for (let j=0; j<m; ++j)
       ys[j] = xs[j]
     ys[i] = x
-    if (process.env.NODE_ENV !== "production") Object.freeze(ys)
     return ys
   } else {
     if (0 < n) {
@@ -294,12 +321,11 @@ function setIndex(i, x, xs) {
           ys[j] = xs[j]
         for (let j=i+1; j<n; ++j)
           ys[j-1] = xs[j]
-        if (process.env.NODE_ENV !== "production") Object.freeze(ys)
         return ys
       }
     }
   }
-}
+})
 
 const funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex)
 
@@ -324,24 +350,20 @@ function composed(oi0, os) {
   }
 }
 
-function setU(o, x, s) {
+const setU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqOptic)))((o, x, s) => {
   switch (typeof o) {
     case "string":
       return setProp(o, x, s)
     case "number":
       return setIndex(o, x, s)
     case "object":
-      if (process.env.NODE_ENV !== "production")
-        reqArray(o)
       return modifyComposed(o, 0, s, x)
     default:
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(o)
       return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s
   }
-}
+})
 
-function modifyU(o, xi2x, s) {
+const modifyU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqOptic)))((o, xi2x, s) => {
   switch (typeof o) {
     case "string":
       return setProp(o, xi2x(getProp(o, s), o), s)
@@ -350,13 +372,11 @@ function modifyU(o, xi2x, s) {
     case "object":
       return modifyComposed(o, xi2x, s)
     default:
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(o)
       return o.length === 4
         ? o(s, void 0, Ident, xi2x)
         : (xi2x(o(s, void 0), void 0), s)
   }
-}
+})
 
 function makeIx(i) {
   const ix = (s, j) => (ix.v = j, s)
@@ -374,27 +394,21 @@ function getNestedU(l, s, j, ix) {
         s = getIndex(ix.v = o, s)
         break
       case "object":
-        if (process.env.NODE_ENV !== "production")
-          reqArray(o)
         s = getNestedU(o, s, 0, ix)
         break
       default:
-        if (process.env.NODE_ENV !== "production")
-          reqFunction(o)
         s = o(s, ix.v, Const, ix)
     }
   return s
 }
 
-function getU(l, s) {
+const getU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqOptic)))((l, s) => {
   switch (typeof l) {
     case "string":
       return getProp(l, s)
     case "number":
       return getIndex(l, s)
     case "object":
-      if (process.env.NODE_ENV !== "production")
-        reqArray(l)
       for (let i=0, n=l.length, o; i<n; ++i)
         switch (typeof (o = l[i])) {
           case "string": s = getProp(o, s); break
@@ -403,15 +417,11 @@ function getU(l, s) {
         }
       return s
     default:
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(l)
       return l(s, void 0, Const, I.id)
   }
-}
+})
 
 function modifyComposed(os, xi2y, x, y) {
-  if (process.env.NODE_ENV !== "production")
-    reqArray(os)
   let n = os.length
   const xs = Array(n)
   for (let i=0, o; i<n; ++i) {
@@ -447,7 +457,7 @@ const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
 
 //
 
-function getPick(template, x) {
+const getPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((template, x) => {
   let r
   for (const k in template) {
     const t = template[k]
@@ -458,22 +468,27 @@ function getPick(template, x) {
       r[k] = v
     }
   }
-  if (process.env.NODE_ENV !== "production")
-    if (r) Object.freeze(r)
   return r
+})
+
+const reqTemplate = name => template => {
+  if (!I.isObject(template))
+    errorGiven(`\`${name}\` expects a plain Object template`, template)
 }
 
-function setPick(template, value, x) {
-  if (process.env.NODE_ENV !== "production")
-    if (!(void 0 === value || value instanceof Object))
-      errorGiven("`pick` must be set with undefined or an object", value)
+const reqObject = msg => value => {
+  if (!(void 0 === value || value instanceof Object))
+    errorGiven(msg, value)
+}
+
+const setPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(1, C.ef(reqObject("`pick` must be set with undefined or an object"))))((template, value, x) => {
   for (const k in template) {
     const v = value && value[k]
     const t = template[k]
     x = I.isObject(t) ? setPick(t, v, x) : setU(t, v, x)
   }
   return x
-}
+})
 
 //
 
@@ -481,7 +496,7 @@ const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
 
 //
 
-const branchOnMerge = (x, keys) => xs => {
+const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(freeze)))((x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
     const v = xs[0]
@@ -507,10 +522,8 @@ const branchOnMerge = (x, keys) => xs => {
       r[k] = v
     }
   }
-  if (process.env.NODE_ENV !== "production")
-    if (r) Object.freeze(r)
   return r
-}
+})
 
 function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
   if (i < keys.length) {
@@ -523,9 +536,7 @@ function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
   }
 }
 
-const branchOn = (keys, vals) => (x, _i, A, xi2yA) => {
-  if (process.env.NODE_ENV !== "production")
-    reqApplicative(A, vals ? "branch" : "values")
+const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.ef(reqApplicative(vals ? "branch" : "values"))))))((keys, vals) => (x, _i, A, xi2yA) => {
   const {map, ap, of, delay} = A
   let i = keys.length
   if (!i)
@@ -542,7 +553,7 @@ const branchOn = (keys, vals) => (x, _i, A, xi2yA) => {
     }
   }
   return map(branchOnMerge(x, keys), xsA)
-}
+})
 
 const replaced = (inn, out, x) => I.acyclicEqualsU(x, inn) ? out : x
 
@@ -575,14 +586,10 @@ function findIndexHint(hint, xi2b, xs) {
   return n
 }
 
-function partitionIntoIndex(xi2b, xs, ts, fs) {
+const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_xi2b, _xs, ts, fs]) => C.res(C.ef(() => {freeze(ts); freeze(fs)}))))((xi2b, xs, ts, fs) => {
   for (let i=0, n=xs.length, x; i<n; ++i)
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
-  if (process.env.NODE_ENV !== "production") {
-    Object.freeze(ts)
-    Object.freeze(fs)
-  }
-}
+})
 
 const fromReader = wi2x => (w, i, F, xi2yF) =>
   (0,F.map)(I.always(w), xi2yF(wi2x(w, i), i))
@@ -594,11 +601,12 @@ function reNext(m, re) {
   re.lastIndex = m.index + m[0].length
   const n = re.exec(m.input)
   re.lastIndex = lastIndex
-  if (process.env.NODE_ENV !== "production")
-    if (n && !n[0])
+  if (n) {
+    if (n[0])
+      return n
+    if (process.env.NODE_ENV !== "production")
       warn(reNext, `\`matches(${re})\` traversal terminated at index ${n.index} in ${JSON.stringify(n.input)} due to empty match.`)
-  if (n && n[0])
-    return n
+  }
 }
 
 const reValue = m => m[0]
@@ -657,24 +665,18 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 // Internals
 
-export function toFunction(o) {
+export const toFunction = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqOptic)))(o => {
   switch (typeof o) {
     case "string":
       return funProp(o)
     case "number":
-      if (process.env.NODE_ENV !== "production")
-        checkIndex(o)
       return funIndex(o)
     case "object":
-      if (process.env.NODE_ENV !== "production")
-        reqArray(o)
       return composed(0, o)
     default:
-      if (process.env.NODE_ENV !== "production")
-        reqFunction(o)
       return o.length === 4 ? o : fromReader(o)
   }
-}
+})
 
 // Operations on optics
 
@@ -761,7 +763,7 @@ export function log() {
 
 // Sequencing
 
-export function seq() {
+export const seq = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (...xMs) => C.par(2, C.ef(reqMonad("seq")))(fn(...xMs)))(function () {
   const n = arguments.length, xMs = Array(n)
   for (let i=0; i<n; ++i)
     xMs[i] = toFunction(arguments[i])
@@ -770,20 +772,12 @@ export function seq() {
       ? M.of
       : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
   }
-  return (x, i, M, xi2xM) => {
-    if (process.env.NODE_ENV !== "production")
-      if (!M.chain)
-        errorGiven("`seq` requires a monad", M, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.")
-    return loop(M, xi2xM, i, 0)(x)
-  }
-}
+  return (x, i, M, xi2xM) => loop(M, xi2xM, i, 0)(x)
+})
 
 // Creating new traversals
 
-export function branch(template) {
-  if (process.env.NODE_ENV !== "production")
-    if (!I.isObject(template))
-      errorGiven("`branch` expects a plain Object template", template)
+export const branch = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqTemplate("branch"))))(template => {
   const keys = [], vals = []
   for (const k in template) {
     keys.push(k)
@@ -791,41 +785,33 @@ export function branch(template) {
     vals.push(I.isObject(t) ? branch(t) : toFunction(t))
   }
   return branchOn(keys, vals)
-}
+})
 
 // Traversals and combinators
 
-export function elems(xs, _i, A, xi2yA) {
+export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("elems"))))((xs, _i, A, xi2yA) => {
   if (seemsArrayLike(xs)) {
     return A === Ident  ? mapPartialIndexU(xi2yA, xs)
       :    A === Select ? selectElems(xi2yA, xs)
       :                   traversePartialIndex(A, xi2yA, xs)
   } else {
-    if (process.env.NODE_ENV !== "production")
-      reqApplicative(A, "elems")
     return (0,A.of)(xs)
   }
-}
+})
 
-export function values(xs, _i, A, xi2yA) {
+export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("values"))))((xs, _i, A, xi2yA) => {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs))(xs, void 0, A, xi2yA)
+    return branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
   } else {
-    if (process.env.NODE_ENV !== "production")
-      reqApplicative(A, "values")
     return (0,A.of)(xs)
   }
-}
+})
 
-export function matches(re) {
-  if (process.env.NODE_ENV !== "production")
-    warn(matches, "`matches` is experimental and might be removed or changed before next major release.")
+export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.and(warnUse("`matches` is experimental and might be removed or changed before next major release."), C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id)))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
       if (re.global) {
-        if (process.env.NODE_ENV !== "production")
-          reqApplicative(C, "matches", re)
         const {ap, of, delay} = C
         const m0 = [""]
         m0.input = x
@@ -843,7 +829,7 @@ export function matches(re) {
     }
     return zeroOp(x, void 0, C, xi2yC)
   }
-}
+})
 
 // Folds over traversals
 
@@ -884,12 +870,9 @@ export const isDefined = /*#__PURE__*/I.pipe2U(mkSelect(x => void 0 !== x ? T : 
 
 export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
 
-export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, d => {
-  if (process.env.NODE_ENV !== "production")
-    if (!I.isString(d))
-      errorGiven("`join` and `joinAs` expect a string delimiter", d)
+export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqString("`join` and `joinAs` expect a string delimiter"))))(d => {
   return ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
-})
+}))
 
 export const join = /*#__PURE__*/joinAs(I.id)
 
@@ -934,46 +917,32 @@ export const foldTraversalLens = /*#__PURE__*/I.curry((fold, traversal) =>
 
 // Computing derived props
 
-export function augment(template) {
-  if (process.env.NODE_ENV !== "production")
-    if (!I.isObject(template))
-      errorGiven("`augment` expects a plain Object template", template)
-  return lensU(
-    x => {
-      x = I.dissocPartialU(0, x)
-      if (x)
-        for (const k in template)
-          x[k] = template[k](x)
-      if (process.env.NODE_ENV !== "production")
-        if (x) Object.freeze(x)
-      return x
-    },
-    (y, x) => {
-      if (process.env.NODE_ENV !== "production")
-        if (!(void 0 === y || y instanceof Object))
-          errorGiven("`augment` must be set with undefined or an object", y)
-      y = toObject(y)
-      if (!(x instanceof Object))
-        x = void 0
-      let z
-      for (const k in y) {
-        if (!I.hasU(k, template)) {
-          if (!z)
-            z = {}
-          z[k] = y[k]
-        } else {
-          if (x && I.hasU(k, x)) {
-            if (!z)
-              z = {}
-            z[k] = x[k]
-          }
-        }
+export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), lens => toFunction([isoU(I.id, freeze), lens, isoU(freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))])))(template => lensU(x => {
+  x = I.dissocPartialU(0, x)
+  if (x)
+    for (const k in template)
+      x[k] = template[k](x)
+  return x
+}, (y, x) => {
+  y = toObject(y)
+  if (!(x instanceof Object))
+    x = void 0
+  let z
+  for (const k in y) {
+    if (!I.hasU(k, template)) {
+      if (!z)
+        z = {}
+      z[k] = y[k]
+    } else {
+      if (x && I.hasU(k, x)) {
+        if (!z)
+          z = {}
+        z[k] = x[k]
       }
-      if (process.env.NODE_ENV !== "production")
-        if (z) Object.freeze(z)
-      return z
-    })
-}
+    }
+  }
+  return z
+}))
 
 // Enforcing invariants
 
@@ -1003,15 +972,12 @@ export function append(xs, _, F, xi2yF) {
   return (0,F.map)(x => setIndex(i, x, xs), xi2yF(void 0, i))
 }
 
-export const filter = xi2b => (xs, i, F, xi2yF) => {
+export const filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(lens => toFunction([lens, isoU(I.id, C.ef(reqMaybeArray("`filter` must be set with undefined or an array-like object")))])))(xi2b => (xs, i, F, xi2yF) => {
   let ts, fs
   if (seemsArrayLike(xs))
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
   return (0,F.map)(
     ts => {
-      if (process.env.NODE_ENV !== "production")
-        if (!(void 0 === ts || seemsArrayLike(ts)))
-          errorGiven("`filter` must be set with undefined or an array-like object", ts)
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
             n = tsN + fsN
@@ -1021,7 +987,7 @@ export const filter = xi2b => (xs, i, F, xi2yF) => {
         : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
     },
     xi2yF(ts, i))
-}
+})
 
 export const find = xi2b => (xs, _i, F, xi2yF) => {
   const ys = seemsArrayLike(xs) ? xs : "",
@@ -1029,9 +995,7 @@ export const find = xi2b => (xs, _i, F, xi2yF) => {
   return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
 
-export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
-  if (process.env.NODE_ENV !== "production")
-    warn(findHint, "`findHint` is experimental and might be removed or changed before next major release.")
+export const findHint = /*#__PURE__*/(process.env.NODE_ENV !== "production" ? warnUse("`findHint` is experimental and might be removed or changed before next major release.") : I.curry)((xh2b, hint) => {
   return (xs, _i, F, xi2yF) => {
     const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
@@ -1044,21 +1008,18 @@ export function findWith(...os) {
   return [find(isDefined(oos)), oos]
 }
 
-export const index = process.env.NODE_ENV === "production" ? I.id : checkIndex
+export const index = process.env.NODE_ENV !== "production" ? C.ef(reqIndex) : I.id
 
 export const last = /*#__PURE__*/choose(maybeArray =>
   seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : 0)
 
-export const slice = /*#__PURE__*/I.curry((begin, end) => (xs, i, F, xsi2yF) => {
+export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(lens => toFunction([lens, isoU(I.id, C.ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))])))((begin, end) => (xs, i, F, xsi2yF) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end)
   return (0,F.map)(
     zs => {
-      if (process.env.NODE_ENV !== "production")
-        if (!(void 0 === zs || seemsArrayLike(zs)))
-          errorGiven("`slice` must be set with undefined or an array-like object", zs)
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
       return n
         ? copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
@@ -1105,13 +1066,10 @@ export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
 
 // Transforming data
 
-export function pick(template) {
-  if (process.env.NODE_ENV !== "production")
-    if (!I.isObject(template))
-      errorGiven("`pick` expects a plain Object template", template)
+export const pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqTemplate("pick"))))(template => {
   return (x, i, F, xi2yF) =>
     (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
-}
+})
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   function o2i(x) {return replaced(out, inn, x)}
@@ -1120,7 +1078,7 @@ export const replace = /*#__PURE__*/I.curry((inn, out) => {
 
 // Operations on isomorphisms
 
-export const getInverse = /*#__PURE__*/I.arityN(2, setU)
+export const getInverse = /*#__PURE__*/I.curry((o, s) => setU(o, s, void 0))
 
 // Creating new isomorphisms
 
@@ -1129,7 +1087,7 @@ export const iso = /*#__PURE__*/I.curry(isoU)
 // Isomorphism combinators
 
 export const inverse = iso => (x, i, F, xi2yF) =>
-  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x), i))
+  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x, void 0), i))
 
 // Basic isomorphisms
 
@@ -1151,15 +1109,11 @@ export const uriComponent =
   /*#__PURE__*/isoU(expect(I.isString, decodeURIComponent),
                     expect(I.isString, encodeURIComponent))
 
-export function json(options) {
+export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(iso => toFunction([iso, isoU(deepFreeze, I.id)])))(options => {
   const {reviver, replacer, space} = options || I.object0
-  return isoU(expect(I.isString, text => {
-    const json = JSON.parse(text, reviver)
-    if (process.env.NODE_ENV !== "production")
-      deepFreeze(json)
-    return json
-  }), expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
-}
+  return isoU(expect(I.isString, text => JSON.parse(text, reviver)),
+              expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
+})
 
 // Auxiliary
 
