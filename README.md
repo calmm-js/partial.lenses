@@ -1032,7 +1032,7 @@ L.collect([L.elems,
 `L.choices` returns a partial optic that acts like the first of the given optics
 whose view is not `undefined` on the given data structure.  When the views of
 all of the given optics are `undefined`, the returned optic acts like the last
-of given optics.  See also [`L.choice`](#L-choice).
+of the given optics.  See also [`L.choice`](#L-choice).
 
 For example:
 
