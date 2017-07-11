@@ -132,6 +132,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
+      * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
   * [Isomorphisms](#isomorphisms)
     * [Operations on isomorphisms](#operations-on-isomorphisms)
@@ -2438,7 +2439,7 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 ```
 
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
-kN})`](#L-pick).
+kN})`](#L-pick) and [`L.pickIn({[k1]: [], ..., [kN]: []})`](#L-pickIn).
 
 ##### <a id="L-removable"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removable) [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
 
@@ -2574,6 +2575,22 @@ underlying object, so writing through the lens will give unpredictable results.
 Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Also note that the underlying data structure need not
 be an object.
+
+##### <a id="L-pickIn"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pickIn) [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
+
+`L.pickIn` creates a lens from the given possibly nested object template of
+lenses similar to `L.pick` except that the lenses in the template are relative
+to their path in the template.  This means that using `L.pickIn` you can
+effectively create a kind of filter for a nested object structure.  See
+also [`L.props`](#L-props).
+
+For example:
+
+```js
+L.get(L.pickIn({meta: {file: [], ext: []}}),
+      {meta: {file: "./foo.txt", base: "foo", ext: "txt"}})
+// { meta: { file: './foo.txt', ext: 'txt' } }
+```
 
 ##### <a id="L-replace"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-replace) [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
 
