@@ -364,7 +364,7 @@ var mkSelect = function mkSelect(toS) {
   };
 };
 
-var selectAny = mkSelect(function (x) {
+var selectAny = /*#__PURE__*/mkSelect(function (x) {
   return x ? T : U;
 });
 
@@ -838,6 +838,12 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
+var orElseU = function orElseU(back, prim) {
+  return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
+    return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
+  };
+};
+
 function zeroOp(y, i, C, xi2yC, x) {
   var of = C.of;
   return of ? of(y) : (0, C.map)(always(y), xi2yC(x, i));
@@ -896,17 +902,13 @@ var chain = /*#__PURE__*/curry(function (xi2yO, xO) {
   })];
 });
 
-function choice() {
-  var n = arguments.length,
-      os = Array(n);
-  while (n--) {
-    os[n] = toFunction(arguments[n]);
-  }return function (x, i, C, xi2yC) {
-    return (os[findIndex(function (o) {
-      return isDefined$1(o, x);
-    }, os)] || zero)(x, i, C, xi2yC);
-  };
-}
+var choice = function choice() {
+  for (var _len = arguments.length, os = Array(_len), _key = 0; _key < _len; _key++) {
+    os[_key] = arguments[_key];
+  }
+
+  return os.reduceRight(orElseU, zero);
+};
 
 var choose = function choose(xiM2o) {
   return function (x, i, C, xi2yC) {
@@ -928,11 +930,15 @@ var zero = function zero(x, i, C, xi2yC) {
 
 // Adapting
 
-var orElse = /*#__PURE__*/curry(function (back, prim) {
-  return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
-    return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
-  };
-});
+var choices = function choices(o) {
+  for (var _len2 = arguments.length, os = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+    os[_key2 - 1] = arguments[_key2];
+  }
+
+  return os.length ? orElseU(os.reduceRight(orElseU), o) : o;
+};
+
+var orElse = /*#__PURE__*/curry(orElseU);
 
 // Recursing
 
@@ -1315,8 +1321,8 @@ function props() {
 }
 
 function removable() {
-  for (var _len = arguments.length, ps = Array(_len), _key = 0; _key < _len; _key++) {
-    ps[_key] = arguments[_key];
+  for (var _len3 = arguments.length, ps = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    ps[_key3] = arguments[_key3];
   }
 
   function drop(y) {
@@ -1422,4 +1428,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

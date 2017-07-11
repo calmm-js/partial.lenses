@@ -82,6 +82,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#adapting">Adapting</a><ul>
+<li><a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a></li>
 <li><a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a></li>
 </ul>
 </li>
@@ -858,7 +859,8 @@ consider optics as subsuming the maybe monad.</p>
 <p><code>L.choice</code> returns a partial optic that acts like the first of the given optics
 whose view is not <code>undefined</code> on the given data structure.  When the views of
 all of the given optics are <code>undefined</code>, the returned optic acts
-like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.</p>
+like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.  See
+also <a href="#L-choices"><code>L.choices</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
@@ -908,6 +910,14 @@ read-only lens whose view is always <code>undefined</code>.</p>
           [1, {x: 2}, [3,4]])
 </code></pre>
 <h4 id="adapting">Adapting</h4>
+<h5><a id="L-choices"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choices">■</a> <a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a></h5>
+<p><code>L.choices</code> returns a partial optic that acts like the first of the given optics
+whose view is not <code>undefined</code> on the given data structure.  When the views of
+all of the given optics are <code>undefined</code>, the returned optic acts like the last
+of the given optics.  See also <a href="#L-choice"><code>L.choice</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set([L.elems, L.choices(&quot;a&quot;, &quot;d&quot;)], 3, [{R: 1}, {a: 1}, {d: 2}])
+</code></pre>
 <h5><a id="L-orElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-orElse">■</a> <a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a></h5>
 <p><code>L.orElse(backupOptic, primaryOptic)</code> acts like <code>primaryOptic</code> when its view is
 not <code>undefined</code> and otherwise like <code>backupOptic</code>.  You can use <code>L.orElse</code> on its
