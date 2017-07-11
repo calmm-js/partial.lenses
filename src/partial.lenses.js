@@ -249,7 +249,7 @@ const Select = /*#__PURE__*/ConcatOf(
 const mkSelect = toS => (xi2yM, t, s) =>
   force(traverseU(Select, xi2yM ? I.pipe2U(xi2yM, toS) : toS, t, s)).v
 
-const selectAny = mkSelect(x => x ? T : U)
+const selectAny = /*#__PURE__*/mkSelect(x => x ? T : U)
 
 const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
   (m = toC(m), (t, s) => after(traverseU(m, xi2yC, t, s))))
