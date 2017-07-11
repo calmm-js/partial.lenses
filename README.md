@@ -46,6 +46,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a")
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a")
     * [Adapting](#adapting)
+      * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a")
       * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a")
     * [Recursing](#recursing)
       * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a")
@@ -937,7 +938,8 @@ consider optics as subsuming the maybe monad.
 `L.choice` returns a partial optic that acts like the first of the given optics
 whose view is not `undefined` on the given data structure.  When the views of
 all of the given optics are `undefined`, the returned optic acts
-like [`L.zero`](#L-zero), which is the identity element of `L.choice`.
+like [`L.zero`](#L-zero), which is the identity element of `L.choice`.  See
+also [`L.choices`](#L-choices).
 
 For example:
 
@@ -1024,6 +1026,20 @@ L.collect([L.elems,
 ```
 
 #### Adapting
+
+##### <a id="L-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choices) [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a")
+
+`L.choices` returns a partial optic that acts like the first of the given optics
+whose view is not `undefined` on the given data structure.  When the views of
+all of the given optics are `undefined`, the returned optic acts like the last
+of given optics.  See also [`L.choice`](#L-choice).
+
+For example:
+
+```js
+L.set([L.elems, L.choices("a", "d")], 3, [{R: 1}, {a: 1}, {d: 2}])
+// [ { R: 1, d: 3 }, { a: 3 }, { d: 3 } ]
+```
 
 ##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a")
 
