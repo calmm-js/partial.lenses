@@ -758,6 +758,12 @@ describe("L.pick", () => {
          {a: 4, c: [5]})
 })
 
+describe("L.pickIn", () => {
+  testEq(`L.get(L.pickIn({meta: {file: [], ext: []}}),
+                {meta: {file: "./foo.txt", base: "foo", ext: "txt"}})`,
+         {meta: {file: "./foo.txt", ext: "txt"}})
+})
+
 describe("L.props", () => {
   testEq(`L.get(L.props("x", "y"), {x: 1, y: 2, z: 3})`, {x: 1, y: 2})
   testEq(`L.get(L.props("x", "y"), {z: 3})`, undefined)
