@@ -1071,7 +1071,7 @@ export const pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
 })
 
 export const pickIn = t =>
-  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)])) : t
+  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)], t)) : t
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   function o2i(x) {return replaced(out, inn, x)}
