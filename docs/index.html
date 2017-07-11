@@ -857,7 +857,7 @@ consider optics as subsuming the maybe monad.</p>
 <h5><a id="L-choice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choice">■</a> <a href="#L-choice" title="L.choice: (...POptic s a) -&gt; POptic s a"><code>L.choice(...optics) ~&gt; optic</code></a></h5>
 <p><code>L.choice</code> returns a partial optic that acts like the first of the given optics
 whose view is not <code>undefined</code> on the given data structure.  When the views of
-all of the given optics are <code>undefined</code>, the returned optics acts
+all of the given optics are <code>undefined</code>, the returned optic acts
 like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])

@@ -936,7 +936,7 @@ consider optics as subsuming the maybe monad.
 
 `L.choice` returns a partial optic that acts like the first of the given optics
 whose view is not `undefined` on the given data structure.  When the views of
-all of the given optics are `undefined`, the returned optics acts
+all of the given optics are `undefined`, the returned optic acts
 like [`L.zero`](#L-zero), which is the identity element of `L.choice`.
 
 For example:
