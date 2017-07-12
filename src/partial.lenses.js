@@ -667,6 +667,10 @@ function zeroOp(y, i, C, xi2yC, x) {
   return of ? of(y) : (0,C.map)(I.always(y), xi2yC(x, i))
 }
 
+//
+
+const pickInAux = (t, k) => [k, pickIn(t)]
+
 // Internals
 
 export const toFunction = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqOptic)))(o => {
@@ -1035,8 +1039,7 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
 
 // Lensing objects
 
-export const pickIn = t =>
-  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)], t)) : t
+export const pickIn = t => I.isObject(t) ? pick(modify(values, pickInAux, t)) : t
 
 export const prop = process.env.NODE_ENV === "production" ? I.id : x => {
   if (!I.isString(x))
