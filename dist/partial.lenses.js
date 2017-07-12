@@ -305,22 +305,14 @@ function pushTo(n, ys) {
   while (n && isBoth(n)) {
     var l = n.l;
     n = n.r;
-    if (l && isBoth(l)) {
-      pushTo(l.l, ys);
-      pushTo(l.r, ys);
-    } else {
-      ys.push(l);
-    }
+    if (l && isBoth(l)) pushTo(l.r, pushTo(l.l, ys));else ys.push(l);
   }
   ys.push(n);
+  return ys;
 }
 
 var toArray = /*#__PURE__*/(res(freeze))(function (n) {
-  if (void 0 !== n) {
-    var ys = [];
-    pushTo(n, ys);
-    return ys;
-  }
+  if (void 0 !== n) return pushTo(n, []);
 });
 
 function foldRec(f, r, n) {
@@ -649,6 +641,17 @@ var toObject = function toObject(x) {
 
 //
 
+function mapPartialObjectU(xi2y, o, r) {
+  for (var k in o) {
+    var v = xi2y(o[k], k);
+    if (void 0 !== v) {
+      if (!r) r = {};
+      r[k] = v;
+    }
+  }
+  return r;
+}
+
 var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
     var o = {},
@@ -773,23 +776,23 @@ var fromReader = function fromReader(wi2x) {
 
 //
 
-function reNext(m, re) {
-  var lastIndex = re.lastIndex;
-  re.lastIndex = m.index + m[0].length;
-  var n = re.exec(m.input);
-  re.lastIndex = lastIndex;
-  if (n) {
-    if (n[0]) return n;
-    warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
-  }
-}
-
 var reValue = function reValue(m) {
   return m[0];
 };
 var reIndex = function reIndex(m) {
   return m.index;
 };
+
+function reNext(m, re) {
+  var lastIndex = re.lastIndex;
+  re.lastIndex = reIndex(m) + m[0].length;
+  var n = re.exec(m.input);
+  re.lastIndex = lastIndex;
+  if (n) {
+    if (n[0]) return n;
+    warn(reNext, "`matches(" + re + ")` traversal terminated at index " + reIndex(n) + " in " + JSON.stringify(n.input) + " due to empty match.");
+  }
+}
 
 //
 
@@ -827,11 +830,12 @@ var matchesJoin = function matchesJoin(input) {
     var result = "";
     var lastIndex = 0;
     while (matches) {
-      var m = matches[0];
-      result += input.slice(lastIndex, m.index);
+      var m = matches[0],
+          i = reIndex(m);
+      result += input.slice(lastIndex, i);
       var s = matches[1];
       if (void 0 !== s) result += s;
-      lastIndex = m[0].length + m.index;
+      lastIndex = i + m[0].length;
       matches = matches[2];
     }
     result += input.slice(lastIndex);
@@ -851,6 +855,12 @@ function zeroOp(y, i, C, xi2yC, x) {
   var of = C.of;
   return of ? of(y) : (0, C.map)(I.always(y), xi2yC(x, i));
 }
+
+//
+
+var pickInAux = function pickInAux(t, k) {
+  return [k, pickIn(t)];
+};
 
 // Internals
 
@@ -1028,7 +1038,7 @@ var elems = /*#__PURE__*/(par(2, ef(reqApplicative("elems"))))(function (xs, _i,
 
 var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
     return (0, A.of)(xs);
   }
@@ -1057,7 +1067,7 @@ var matches = /*#__PURE__*/(and$1(warnUse("`matches` is experimental and might b
         var m = x.match(re);
         if (m) return map(function (y) {
           return x.replace(re, void 0 !== y ? y : "") || void 0;
-        }, xi2yC(m[0], m.index));
+        }, xi2yC(m[0], reIndex(m)));
       }
     }
     return zeroOp(x, void 0, C, xi2yC);
@@ -1310,6 +1320,10 @@ var slice = /*#__PURE__*/(res(function (lens) {
 
 // Lensing objects
 
+var pickIn = function pickIn(t) {
+  return I.isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t;
+};
+
 var prop = function (x) {
   if (!I.isString(x)) errorGiven("`prop` expects a string", x);
   return x;
@@ -1501,6 +1515,7 @@ exports.findWith = findWith;
 exports.index = index;
 exports.last = last;
 exports.slice = slice;
+exports.pickIn = pickIn;
 exports.prop = prop;
 exports.props = props;
 exports.removable = removable;

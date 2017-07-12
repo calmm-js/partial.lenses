@@ -305,22 +305,14 @@ function pushTo(n, ys) {
   while (n && isBoth(n)) {
     var l = n.l;
     n = n.r;
-    if (l && isBoth(l)) {
-      pushTo(l.l, ys);
-      pushTo(l.r, ys);
-    } else {
-      ys.push(l);
-    }
+    if (l && isBoth(l)) pushTo(l.r, pushTo(l.l, ys));else ys.push(l);
   }
   ys.push(n);
+  return ys;
 }
 
 var toArray = /*#__PURE__*/(res(freeze))(function (n) {
-  if (void 0 !== n) {
-    var ys = [];
-    pushTo(n, ys);
-    return ys;
-  }
+  if (void 0 !== n) return pushTo(n, []);
 });
 
 function foldRec(f, r, n) {
@@ -784,23 +776,23 @@ var fromReader = function fromReader(wi2x) {
 
 //
 
-function reNext(m, re) {
-  var lastIndex = re.lastIndex;
-  re.lastIndex = m.index + m[0].length;
-  var n = re.exec(m.input);
-  re.lastIndex = lastIndex;
-  if (n) {
-    if (n[0]) return n;
-    warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
-  }
-}
-
 var reValue = function reValue(m) {
   return m[0];
 };
 var reIndex = function reIndex(m) {
   return m.index;
 };
+
+function reNext(m, re) {
+  var lastIndex = re.lastIndex;
+  re.lastIndex = reIndex(m) + m[0].length;
+  var n = re.exec(m.input);
+  re.lastIndex = lastIndex;
+  if (n) {
+    if (n[0]) return n;
+    warn(reNext, "`matches(" + re + ")` traversal terminated at index " + reIndex(n) + " in " + JSON.stringify(n.input) + " due to empty match.");
+  }
+}
 
 //
 
@@ -838,11 +830,12 @@ var matchesJoin = function matchesJoin(input) {
     var result = "";
     var lastIndex = 0;
     while (matches) {
-      var m = matches[0];
-      result += input.slice(lastIndex, m.index);
+      var m = matches[0],
+          i = reIndex(m);
+      result += input.slice(lastIndex, i);
       var s = matches[1];
       if (void 0 !== s) result += s;
-      lastIndex = m[0].length + m.index;
+      lastIndex = i + m[0].length;
       matches = matches[2];
     }
     result += input.slice(lastIndex);
@@ -1074,7 +1067,7 @@ var matches = /*#__PURE__*/(and$1(warnUse("`matches` is experimental and might b
         var m = x.match(re);
         if (m) return map(function (y) {
           return x.replace(re, void 0 !== y ? y : "") || void 0;
-        }, xi2yC(m[0], m.index));
+        }, xi2yC(m[0], reIndex(m)));
       }
     }
     return zeroOp(x, void 0, C, xi2yC);

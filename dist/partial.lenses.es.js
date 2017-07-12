@@ -302,22 +302,14 @@ function pushTo(n, ys) {
   while (n && isBoth(n)) {
     var l = n.l;
     n = n.r;
-    if (l && isBoth(l)) {
-      pushTo(l.l, ys);
-      pushTo(l.r, ys);
-    } else {
-      ys.push(l);
-    }
+    if (l && isBoth(l)) pushTo(l.r, pushTo(l.l, ys));else ys.push(l);
   }
   ys.push(n);
+  return ys;
 }
 
 var toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(freeze))(function (n) {
-  if (void 0 !== n) {
-    var ys = [];
-    pushTo(n, ys);
-    return ys;
-  }
+  if (void 0 !== n) return pushTo(n, []);
 });
 
 function foldRec(f, r, n) {
@@ -646,6 +638,17 @@ var toObject = function toObject(x) {
 
 //
 
+function mapPartialObjectU(xi2y, o, r) {
+  for (var k in o) {
+    var v = xi2y(o[k], k);
+    if (void 0 !== v) {
+      if (!r) r = {};
+      r[k] = v;
+    }
+  }
+  return r;
+}
+
 var branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
     var o = {},
@@ -770,23 +773,23 @@ var fromReader = function fromReader(wi2x) {
 
 //
 
-function reNext(m, re) {
-  var lastIndex = re.lastIndex;
-  re.lastIndex = m.index + m[0].length;
-  var n = re.exec(m.input);
-  re.lastIndex = lastIndex;
-  if (n) {
-    if (n[0]) return n;
-    if (process.env.NODE_ENV !== "production") warn(reNext, "`matches(" + re + ")` traversal terminated at index " + n.index + " in " + JSON.stringify(n.input) + " due to empty match.");
-  }
-}
-
 var reValue = function reValue(m) {
   return m[0];
 };
 var reIndex = function reIndex(m) {
   return m.index;
 };
+
+function reNext(m, re) {
+  var lastIndex = re.lastIndex;
+  re.lastIndex = reIndex(m) + m[0].length;
+  var n = re.exec(m.input);
+  re.lastIndex = lastIndex;
+  if (n) {
+    if (n[0]) return n;
+    if (process.env.NODE_ENV !== "production") warn(reNext, "`matches(" + re + ")` traversal terminated at index " + reIndex(n) + " in " + JSON.stringify(n.input) + " due to empty match.");
+  }
+}
 
 //
 
@@ -824,11 +827,12 @@ var matchesJoin = function matchesJoin(input) {
     var result = "";
     var lastIndex = 0;
     while (matches) {
-      var m = matches[0];
-      result += input.slice(lastIndex, m.index);
+      var m = matches[0],
+          i = reIndex(m);
+      result += input.slice(lastIndex, i);
       var s = matches[1];
       if (void 0 !== s) result += s;
-      lastIndex = m[0].length + m.index;
+      lastIndex = i + m[0].length;
       matches = matches[2];
     }
     result += input.slice(lastIndex);
@@ -848,6 +852,12 @@ function zeroOp(y, i, C, xi2yC, x) {
   var of = C.of;
   return of ? of(y) : (0, C.map)(always(y), xi2yC(x, i));
 }
+
+//
+
+var pickInAux = function pickInAux(t, k) {
+  return [k, pickIn(t)];
+};
 
 // Internals
 
@@ -1025,7 +1035,7 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(2, ef
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(keys(xs), void 0)(xs, void 0, A, xi2yA);
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
     return (0, A.of)(xs);
   }
@@ -1054,7 +1064,7 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : and$1(w
         var m = x.match(re);
         if (m) return map(function (y) {
           return x.replace(re, void 0 !== y ? y : "") || void 0;
-        }, xi2yC(m[0], m.index));
+        }, xi2yC(m[0], reIndex(m)));
       }
     }
     return zeroOp(x, void 0, C, xi2yC);
@@ -1307,6 +1317,10 @@ var slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? curry : res(fu
 
 // Lensing objects
 
+var pickIn = function pickIn(t) {
+  return isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t;
+};
+
 var prop = process.env.NODE_ENV === "production" ? id : function (x) {
   if (!isString(x)) errorGiven("`prop` expects a string", x);
   return x;
@@ -1428,4 +1442,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, pickIn, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
