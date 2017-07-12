@@ -682,7 +682,7 @@ behave.  Here is a table of the means of composition supported by this library:<
 </tr>
 <tr>
 <td><a href="#adapting">Adapting</a></td>
-<td><a href="#L-orElse"><code>L.orElse(backupOptic, primaryOptic)</code></a></td>
+<td><a href="#L-choices"><code>L.choices(optic, ...optics)</code></a></td>
 <td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#optics">optics</a></td>
 </tr>
 <tr>
@@ -920,11 +920,10 @@ of the given optics.  See also <a href="#L-choice"><code>L.choice</code></a>.</p
 </code></pre>
 <h5><a id="L-orElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-orElse">■</a> <a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a></h5>
 <p><code>L.orElse(backupOptic, primaryOptic)</code> acts like <code>primaryOptic</code> when its view is
-not <code>undefined</code> and otherwise like <code>backupOptic</code>.  You can use <code>L.orElse</code> on its
-own with <a href="http://ramdajs.com/docs/#reduceRight"><code>R.reduceRight</code></a>
-(and <a href="http://ramdajs.com/docs/#reduce"><code>R.reduce</code></a>) to create an associative
-choice over optics or use <code>L.orElse</code> to specify a default or backup optic
-for <a href="#L-choice"><code>L.choice</code></a>, for example.</p>
+not <code>undefined</code> and otherwise like <code>backupOptic</code>.</p>
+<p>Note that <a href="#L-choice"><code>L.choice(...optics)</code></a> is equivalent to
+<code>optics.reduceRight(L.orElse, L.zero)</code> and <a href="#L-choices"><code>L.choices(...optics)</code></a>
+is equivalent to <code>optics.reduce(L.orElse)</code>.</p>
 <h4 id="recursing">Recursing</h4>
 <h5><a id="L-lazy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-lazy">■</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
