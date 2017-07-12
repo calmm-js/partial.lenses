@@ -649,6 +649,17 @@ var toObject = function toObject(x) {
 
 //
 
+function mapPartialObjectU(xi2y, o, r) {
+  for (var k in o) {
+    var v = xi2y(o[k], k);
+    if (void 0 !== v) {
+      if (!r) r = {};
+      r[k] = v;
+    }
+  }
+  return r;
+}
+
 var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
     var o = {},
@@ -852,6 +863,12 @@ function zeroOp(y, i, C, xi2yC, x) {
   return of ? of(y) : (0, C.map)(I.always(y), xi2yC(x, i));
 }
 
+//
+
+var pickInAux = function pickInAux(t, k) {
+  return [k, pickIn(t)];
+};
+
 // Internals
 
 var toFunction = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o) {
@@ -1028,7 +1045,7 @@ var elems = /*#__PURE__*/(par(2, ef(reqApplicative("elems"))))(function (xs, _i,
 
 var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
     return (0, A.of)(xs);
   }
@@ -1310,6 +1327,10 @@ var slice = /*#__PURE__*/(res(function (lens) {
 
 // Lensing objects
 
+var pickIn = function pickIn(t) {
+  return I.isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t;
+};
+
 var prop = function (x) {
   if (!I.isString(x)) errorGiven("`prop` expects a string", x);
   return x;
@@ -1501,6 +1522,7 @@ exports.findWith = findWith;
 exports.index = index;
 exports.last = last;
 exports.slice = slice;
+exports.pickIn = pickIn;
 exports.prop = prop;
 exports.props = props;
 exports.removable = removable;

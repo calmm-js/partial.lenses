@@ -195,6 +195,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
+<li><a href="#L-pickIn" title="L.pickIn: {p1: PLens s1 a1, ...pls} -&gt; PLens {p1: s1, ...pls} {p1: a1, ...pls}"><code>L.pickIn({prop: lens, ...props}) ~&gt; lens</code></a></li>
 <li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a></li>
 <li><a href="#L-removable" title="L.removable (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></li>
@@ -1743,6 +1744,16 @@ code snippets might not preserve the creation order).  For example:</p>
 <p>When creating new objects, partial lenses generally ignore everything but own
 string keys.  In particular, properties from the prototype chain are not copied
 and neither are properties with symbol keys.</p>
+<h5><a id="L-pickIn"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pickIn">■</a> <a href="#L-pickIn" title="L.pickIn: {p1: PLens s1 a1, ...pls} -&gt; PLens {p1: s1, ...pls} {p1: a1, ...pls}"><code>L.pickIn({prop: lens, ...props}) ~&gt; lens</code></a></h5>
+<p><code>L.pickIn</code> creates a lens from the given possibly nested object template of
+lenses similar to <a href="#L-pick"><code>L.pick</code></a> except that the lenses in the template are
+relative to their path in the template.  This means that using <code>L.pickIn</code> you
+can effectively create a kind of filter for a nested object structure.  See
+also <a href="#L-props"><code>L.props</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.pickIn({meta: {file: [], ext: []}}),
+      {meta: {file: &quot;./foo.txt&quot;, base: &quot;foo&quot;, ext: &quot;txt&quot;}})
+</code></pre>
 <h5><a id="L-prop"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-prop">■</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></h5>
 <p><code>L.prop(propName)</code> or just <code>propName</code> focuses on the specified object property.</p>
 <ul>
@@ -1772,7 +1783,7 @@ exists previously.  When set, any extra properties are ignored.</p>
 <pre><code class="hljs lang-js">L.set(L.props(&quot;x&quot;, &quot;y&quot;), {x: 4}, {x: 1, y: 2, z: 3})
 </code></pre>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#L-pick"><code>L.pick({[k1]: k1, ..., [kN]:
-kN})</code></a>.</p>
+kN})</code></a> and <a href="#L-pickIn"><code>L.pickIn({[k1]: [], ..., [kN]: []})</code></a>.</p>
 <h5><a id="L-removable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removable">■</a> <a href="#L-removable" title="L.removable (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></h5>
 <p><code>L.removable</code> creates a lens that, when written through, replaces the whole
 result with <code>undefined</code> if none of the given properties is defined in the
