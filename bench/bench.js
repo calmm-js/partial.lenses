@@ -148,6 +148,13 @@ Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
 const pattern = new RegExp(process.argv[3] || "")
 
+const dropped = [
+  P    ? "" : "P.",
+  O    ? "" : "O.",
+  K    ? "" : "K.",
+  _get ? "" : "_get"
+].filter(I.id)
+
 R.forEach(bs => {
   if (bs.find(s => pattern.test(s))) {
     global.gc()
@@ -156,7 +163,8 @@ R.forEach(bs => {
       b = b instanceof Array ? b : [b]
       const code = b[0].replace(/[ \n]+/g, " ")
       const note = b[1] || ""
-      s.add(code, eval("() => " + code), {note})
+      if (-1 === dropped.findIndex(p => code.indexOf(p) === 0))
+        s.add(code, eval("() => " + code), {note})
     })
     s.on('complete', complete)
     s.run()
