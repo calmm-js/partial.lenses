@@ -496,6 +496,19 @@ const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
 
 //
 
+function mapPartialObjectU(xi2y, o, r) {
+  o = toObject(o)
+  for (const k in o) {
+    const v = xi2y(o[k], k)
+    if (void 0 !== v) {
+      if (!r)
+        r = {}
+      r[k] = v
+    }
+  }
+  return r
+}
+
 const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(freeze)))((x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
@@ -804,7 +817,8 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
 
 export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("values"))))((xs, _i, A, xi2yA) => {
   if (xs instanceof Object) {
-    return branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
+    return A === Ident ? mapPartialObjectU(xi2yA, xs)
+      :                  branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
   } else {
     return (0,A.of)(xs)
   }
