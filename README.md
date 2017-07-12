@@ -123,6 +123,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.last ~> lens`](#L-last "L.last: PLens [a] a")
       * [`L.slice(maybeBegin, maybeEnd) ~> lens`](#L-slice "L.slice: Maybe Integer -> Maybe Integer -> PLens [a] [a]")
     * [Lensing objects](#lensing-objects)
+      * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
       * [`L.props(...propNames) ~> lens`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
       * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
@@ -132,7 +133,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s")
     * [Transforming data](#transforming-data)
       * [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}")
-      * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
       * [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
   * [Isomorphisms](#isomorphisms)
     * [Operations on isomorphisms](#operations-on-isomorphisms)
@@ -2393,6 +2393,22 @@ When creating new objects, partial lenses generally ignore everything but own
 string keys.  In particular, properties from the prototype chain are not copied
 and neither are properties with symbol keys.
 
+##### <a id="L-pickIn"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pickIn) [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
+
+`L.pickIn` creates a lens from the given possibly nested object template of
+lenses similar to [`L.pick`](#L-pick) except that the lenses in the template are
+relative to their path in the template.  This means that using `L.pickIn` you
+can effectively create a kind of filter for a nested object structure.  See
+also [`L.props`](#L-props).
+
+For example:
+
+```js
+L.get(L.pickIn({meta: {file: [], ext: []}}),
+      {meta: {file: "./foo.txt", base: "foo", ext: "txt"}})
+// { meta: { file: './foo.txt', ext: 'txt' } }
+```
+
 ##### <a id="L-prop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-prop) [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
 
 `L.prop(propName)` or just `propName` focuses on the specified object property.
@@ -2575,22 +2591,6 @@ underlying object, so writing through the lens will give unpredictable results.
 Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Also note that the underlying data structure need not
 be an object.
-
-##### <a id="L-pickIn"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pickIn) [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
-
-`L.pickIn` creates a lens from the given possibly nested object template of
-lenses similar to `L.pick` except that the lenses in the template are relative
-to their path in the template.  This means that using `L.pickIn` you can
-effectively create a kind of filter for a nested object structure.  See
-also [`L.props`](#L-props).
-
-For example:
-
-```js
-L.get(L.pickIn({meta: {file: [], ext: []}}),
-      {meta: {file: "./foo.txt", base: "foo", ext: "txt"}})
-// { meta: { file: './foo.txt', ext: 'txt' } }
-```
 
 ##### <a id="L-replace"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-replace) [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s")
 

@@ -1035,6 +1035,9 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
 
 // Lensing objects
 
+export const pickIn = t =>
+  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)], t)) : t
+
 export const prop = process.env.NODE_ENV === "production" ? I.id : x => {
   if (!I.isString(x))
     errorGiven("`prop` expects a string", x)
@@ -1069,9 +1072,6 @@ export const pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
   return (x, i, F, xi2yF) =>
     (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 })
-
-export const pickIn = t =>
-  I.isObject(t) ? pick(modify(values, (t, k) => [k, pickIn(t)], t)) : t
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   function o2i(x) {return replaced(out, inn, x)}
