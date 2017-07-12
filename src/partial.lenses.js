@@ -188,22 +188,18 @@ function pushTo(n, ys) {
   while (n && isBoth(n)) {
     const l = n.l
     n = n.r
-    if (l && isBoth(l)) {
-      pushTo(l.l, ys)
-      pushTo(l.r, ys)
-    } else {
+    if (l && isBoth(l))
+      pushTo(l.r, pushTo(l.l, ys))
+    else
       ys.push(l)
-    }
   }
   ys.push(n)
+  return ys
 }
 
 const toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(n => {
-  if (void 0 !== n) {
-    const ys = []
-    pushTo(n, ys)
-    return ys
-  }
+  if (void 0 !== n)
+    return pushTo(n, [])
 })
 
 function foldRec(f, r, n) {
