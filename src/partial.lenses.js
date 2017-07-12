@@ -608,21 +608,21 @@ const fromReader = wi2x => (w, i, F, xi2yF) =>
 
 //
 
+const reValue = m => m[0]
+const reIndex = m => m.index
+
 function reNext(m, re) {
   const lastIndex = re.lastIndex
-  re.lastIndex = m.index + m[0].length
+  re.lastIndex = reIndex(m) + m[0].length
   const n = re.exec(m.input)
   re.lastIndex = lastIndex
   if (n) {
     if (n[0])
       return n
     if (process.env.NODE_ENV !== "production")
-      warn(reNext, `\`matches(${re})\` traversal terminated at index ${n.index} in ${JSON.stringify(n.input)} due to empty match.`)
+      warn(reNext, `\`matches(${re})\` traversal terminated at index ${reIndex(n)} in ${JSON.stringify(n.input)} due to empty match.`)
   }
 }
-
-const reValue = m => m[0]
-const reIndex = m => m.index
 
 //
 
@@ -656,12 +656,12 @@ const matchesJoin = input => matches => {
   let result = ""
   let lastIndex = 0
   while (matches) {
-    const m = matches[0]
-    result += input.slice(lastIndex, m.index)
+    const m = matches[0], i = reIndex(m)
+    result += input.slice(lastIndex, i)
     const s = matches[1]
     if (void 0 !== s)
       result += s
-    lastIndex = m[0].length + m.index
+    lastIndex = i + m[0].length
     matches = matches[2]
   }
   result += input.slice(lastIndex)
@@ -840,7 +840,7 @@ export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.i
         const m = x.match(re)
         if (m)
           return map(y => x.replace(re, void 0 !== y ? y : "") || void 0,
-                     xi2yC(m[0], m.index))
+                     xi2yC(m[0], reIndex(m)))
       }
     }
     return zeroOp(x, void 0, C, xi2yC)
