@@ -242,6 +242,7 @@ describe("arities", () => {
     or: 2,
     orElse: 2,
     pick: 1,
+    pickIn: 1,
     product: 2,
     productAs: 3,
     prop: 1,
@@ -755,6 +756,12 @@ describe("L.pick", () => {
                 {x: {y: 4}, b: 5, z: 2},
                 {a: 1, b: 2, c: [3]})`,
          {a: 4, c: [5]})
+})
+
+describe("L.pickIn", () => {
+  testEq(`L.get(L.pickIn({meta: {file: [], ext: []}}),
+                {meta: {file: "./foo.txt", base: "foo", ext: "txt"}})`,
+         {meta: {file: "./foo.txt", ext: "txt"}})
 })
 
 describe("L.props", () => {

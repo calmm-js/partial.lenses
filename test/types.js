@@ -256,6 +256,7 @@ export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
 
 // Lensing objects
 
+export const pickIn = T.fn([template(T_lens)], T_lens)
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVarN(0, T.string, T_lens)
 export const removable = T.fnVarN(0, T.string, T_lens)
