@@ -1044,11 +1044,11 @@ L.set([L.elems, L.choices("a", "d")], 3, [{R: 1}, {a: 1}, {d: 2}])
 ##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a")
 
 `L.orElse(backupOptic, primaryOptic)` acts like `primaryOptic` when its view is
-not `undefined` and otherwise like `backupOptic`.  You can use `L.orElse` on its
-own with [`R.reduceRight`](http://ramdajs.com/docs/#reduceRight)
-(and [`R.reduce`](http://ramdajs.com/docs/#reduce)) to create an associative
-choice over optics or use `L.orElse` to specify a default or backup optic
-for [`L.choice`](#L-choice), for example.
+not `undefined` and otherwise like `backupOptic`.
+
+Note that [`L.choice(...optics)`](#L-choice) is equivalent to
+`optics.reduceRight(L.orElse, L.zero)` and [`L.choices(...optics)`](#L-choices)
+is equivalent to `optics.reduce(L.orElse)`.
 
 #### Recursing
 
