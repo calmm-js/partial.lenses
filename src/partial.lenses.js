@@ -497,7 +497,6 @@ const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
 //
 
 function mapPartialObjectU(xi2y, o, r) {
-  o = toObject(o)
   for (const k in o) {
     const v = xi2y(o[k], k)
     if (void 0 !== v) {
@@ -817,7 +816,7 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
 
 export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("values"))))((xs, _i, A, xi2yA) => {
   if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, xs)
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs))
       :                  branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
   } else {
     return (0,A.of)(xs)
@@ -1053,7 +1052,8 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
 
 // Lensing objects
 
-export const pickIn = t => I.isObject(t) ? pick(modify(values, pickInAux, t)) : t
+export const pickIn = t =>
+  I.isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t
 
 export const prop = process.env.NODE_ENV === "production" ? I.id : x => {
   if (!I.isString(x))
