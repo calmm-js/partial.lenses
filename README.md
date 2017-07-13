@@ -1455,7 +1455,7 @@ L.all(x => 1 <= x && x <= 6,
 
 See also: [`L.any`](#L-any), [`L.none`](#L-none), and [`L.selectAs`](#L-selectAs).
 
-##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.orand: PTraversal s Boolean -> Boolean")
+##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.and: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
 
 `L.and` determines whether all of the elements focused on by the given traversal
 are truthy.
