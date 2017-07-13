@@ -198,7 +198,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-pickIn" title="L.pickIn: {p1: PLens s1 a1, ...pls} -&gt; PLens {p1: s1, ...pls} {p1: a1, ...pls}"><code>L.pickIn({prop: lens, ...props}) ~&gt; lens</code></a></li>
 <li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a></li>
-<li><a href="#L-removable" title="L.removable (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></li>
+<li><a href="#L-removable" title="L.removable: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></li>
 </ul>
 </li>
 <li><a href="#lensing-strings">Lensing strings</a><ul>
@@ -1784,7 +1784,7 @@ exists previously.  When set, any extra properties are ignored.</p>
 </code></pre>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#L-pick"><code>L.pick({[k1]: k1, ..., [kN]:
 kN})</code></a> and <a href="#L-pickIn"><code>L.pickIn({[k1]: [], ..., [kN]: []})</code></a>.</p>
-<h5><a id="L-removable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removable">■</a> <a href="#L-removable" title="L.removable (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></h5>
+<h5><a id="L-removable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removable">■</a> <a href="#L-removable" title="L.removable: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a></h5>
 <p><code>L.removable</code> creates a lens that, when written through, replaces the whole
 result with <code>undefined</code> if none of the given properties is defined in the
 written object.  <code>L.removable</code> is designed for making removal propagate through

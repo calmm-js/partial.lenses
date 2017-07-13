@@ -126,7 +126,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}")
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName`
       * [`L.props(...propNames) ~> lens`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}")
-      * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
+      * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
     * [Lensing strings](#lensing-strings)
       * [`L.matches(/.../) ~> lens`](#L-matches "L.matches: RegExp -> PLens String String")
     * [Providing defaults](#providing-defaults)
@@ -2457,7 +2457,7 @@ L.set(L.props("x", "y"), {x: 4}, {x: 1, y: 2, z: 3})
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
 kN})`](#L-pick) and [`L.pickIn({[k1]: [], ..., [kN]: []})`](#L-pickIn).
 
-##### <a id="L-removable"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removable) [`L.removable(...propNames) ~> lens`](#L-removable "L.removable (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
+##### <a id="L-removable"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-removable) [`L.removable(...propNames) ~> lens`](#L-removable "L.removable: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}")
 
 `L.removable` creates a lens that, when written through, replaces the whole
 result with `undefined` if none of the given properties is defined in the
