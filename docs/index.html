@@ -130,7 +130,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#folds-over-traversals">Folds over traversals</a><ul>
 <li><a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
-<li><a href="#L-and" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></li>
+<li><a href="#L-and" title="L.and: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a></li>
@@ -1190,7 +1190,7 @@ satisfy the given predicate.</p>
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <p>See also: <a href="#L-any"><code>L.any</code></a>, <a href="#L-none"><code>L.none</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
-<h5><a id="L-and"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-and">■</a> <a href="#L-and" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></h5>
+<h5><a id="L-and"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-and">■</a> <a href="#L-and" title="L.orand: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a></h5>
 <p><code>L.and</code> determines whether all of the elements focused on by the given traversal
 are truthy.</p>
 <p>For example:</p>

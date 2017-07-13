@@ -72,7 +72,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String")
     * [Folds over traversals](#folds-over-traversals)
       * [`L.all((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-all "L.all: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
-      * [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
+      * [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.and: PTraversal s Boolean -> Boolean")
       * [`L.any((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-any "L.any: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean")
       * [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]")
       * [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]")
@@ -1455,7 +1455,7 @@ L.all(x => 1 <= x && x <= 6,
 
 See also: [`L.any`](#L-any), [`L.none`](#L-none), and [`L.selectAs`](#L-selectAs).
 
-##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.or: PTraversal s Boolean -> Boolean")
+##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.orand: PTraversal s Boolean -> Boolean")
 
 `L.and` determines whether all of the elements focused on by the given traversal
 are truthy.
