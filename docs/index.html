@@ -551,21 +551,20 @@ be expressed as a composition of optics and used with many different operations.
 <p>Consider how one might approach the <a href="#tutorial">tutorial</a> problem without
 optics.  One could, for example, write a collection of operations like
 <code>getText</code>, <code>setText</code>, <code>addText</code>, and <code>remText</code>:</p>
-<pre><code class="hljs lang-js">var inLanguage = language =&gt; R.whereEq({language})
-var getEntry = R.curry((language, data) =&gt;
-                         data.titles.find(inLanguage(language)))
+<pre><code class="hljs lang-js">var getEntry = R.curry((language, data) =&gt;
+                         data.titles.find(R.whereEq({language})))
 var hasText = R.pipe(getEntry, Boolean)
 var getText = R.pipe(getEntry, R.defaultTo({}), R.prop(&quot;text&quot;))
 var mapProp = R.curry((fn, prop, obj) =&gt;
                         R.assoc(prop, fn(R.prop(prop, obj)), obj))
 var mapText = R.curry((language, fn, data) =&gt;
-                        mapProp(R.map(R.ifElse(inLanguage(language),
+                        mapProp(R.map(R.ifElse(R.whereEq({language}),
                                                mapProp(fn, &quot;text&quot;),
                                                R.identity)),
                                 &quot;titles&quot;,
                                 data))
 var remText = R.curry((language, data) =&gt;
-                        mapProp(R.filter(R.complement(inLanguage(language))),
+                        mapProp(R.filter(R.complement(R.whereEq({language}))),
                                 &quot;titles&quot;))
 var addText = R.curry((language, text, data) =&gt;
                         mapProp(R.append({language, text}), &quot;titles&quot;, data))

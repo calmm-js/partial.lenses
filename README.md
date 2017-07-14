@@ -568,21 +568,20 @@ optics.  One could, for example, write a collection of operations like
 `getText`, `setText`, `addText`, and `remText`:
 
 ```js
-const inLanguage = language => R.whereEq({language})
 const getEntry = R.curry((language, data) =>
-                         data.titles.find(inLanguage(language)))
+                         data.titles.find(R.whereEq({language})))
 const hasText = R.pipe(getEntry, Boolean)
 const getText = R.pipe(getEntry, R.defaultTo({}), R.prop("text"))
 const mapProp = R.curry((fn, prop, obj) =>
                         R.assoc(prop, fn(R.prop(prop, obj)), obj))
 const mapText = R.curry((language, fn, data) =>
-                        mapProp(R.map(R.ifElse(inLanguage(language),
+                        mapProp(R.map(R.ifElse(R.whereEq({language}),
                                                mapProp(fn, "text"),
                                                R.identity)),
                                 "titles",
                                 data))
 const remText = R.curry((language, data) =>
-                        mapProp(R.filter(R.complement(inLanguage(language))),
+                        mapProp(R.filter(R.complement(R.whereEq({language}))),
                                 "titles"))
 const addText = R.curry((language, text, data) =>
                         mapProp(R.append({language, text}), "titles", data))
