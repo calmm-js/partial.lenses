@@ -589,11 +589,13 @@ const setText = R.curry((language, text, data) =>
                         mapText(language, R.always(text), data))
 ```
 
-You can definitely make the above operations both cleaner and more robust.  With
-partial optics, however, you separate the selection and data structure invariant
-maintenance from the operations as illustrated in the [tutorial](#tutorial) and
-due to the separation of concerns that that tends to give you a lot of robust
-functionality
+You can definitely make the above operations both cleaner and more robust.  For
+example, consider maintaining the ordering of texts and the handling of cases
+such as using `addText` when there already is a text in the specified language
+and `setText` when there isn't.  With partial optics, however, you separate the
+selection and data structure invariant maintenance from the operations as
+illustrated in the [tutorial](#tutorial) and due to the separation of concerns
+that that tends to give you a lot of robust functionality
 in [a small amount of code](#a-partial-lens-to-access-title-texts).
 
 ## Reference
