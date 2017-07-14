@@ -535,8 +535,8 @@ titles:
 
 ```js
 L.modify(texts, R.toUpper, sampleTitles)
-// { contents: [ { language: 'en', text: 'TITLE' },
-//               { language: 'sv', text: 'RUBRIK' } ] }
+// { titles: [ { language: 'en', text: 'TITLE' },
+//             { language: 'sv', text: 'RUBRIK' } ] }
 ```
 
 We can also manipulate texts selectively.  For example, we could remove all
@@ -545,7 +545,7 @@ the texts that are longer than 5 characters:
 ```js
 L.remove([texts, L.when(t => t.length > 5)],
          sampleTitles)
-// { contents: [ { language: 'en', text: 'Title' } ] }
+// { titles: [ { language: 'en', text: 'Title' } ] }
 ```
 
 This concludes the tutorial.  The reference documentation contains lots of tiny
