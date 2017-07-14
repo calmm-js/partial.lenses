@@ -55,6 +55,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <h2 id="contents">Contents</h2>
 <ul>
 <li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#the-why-of-optics">The why of optics</a></li>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#stable-subset">Stable subset</a></li>
 <li><a href="#optics">Optics</a><ul>
@@ -541,6 +542,42 @@ examples and a few <a href="#L-lazy">more involved examples</a>.  The <a href="#
 section describes a couple of lens compositions we&#39;ve found practical as well as
 examples that may help to
 see <a href="#bst-as-a-lens">possibilities beyond the immediately obvious</a>.</p>
+<h2 id="the-why-of-optics">The why of optics</h2>
+<p>Optics provide a way to decouple the operation to perform on an element or
+elements of a data structure from the details of selecting the element or
+elements and the details of maintaining the integrity of the data structure.  In
+other words, a selection algorithm and data structure invariant maintenance can
+be expressed as a composition of optics and used with many different operations.</p>
+<p>Consider how one might approach the <a href="#tutorial">tutorial</a> problem without
+optics.  One could, for example, write a collection of operations like
+<code>getText</code>, <code>setText</code>, <code>addText</code>, and <code>remText</code>:</p>
+<pre><code class="hljs lang-js">var inLanguage = language =&gt; R.whereEq({language})
+var getEntry = R.curry((language, data) =&gt;
+                         data.titles.find(inLanguage(language)))
+var hasText = R.pipe(getEntry, Boolean)
+var getText = R.pipe(getEntry, R.defaultTo({}), R.prop(&quot;text&quot;))
+var mapProp = R.curry((fn, prop, obj) =&gt;
+                        R.assoc(prop, fn(R.prop(prop, obj)), obj))
+var mapText = R.curry((language, fn, data) =&gt;
+                        mapProp(R.map(R.ifElse(inLanguage(language),
+                                               mapProp(fn, &quot;text&quot;),
+                                               R.identity)),
+                                &quot;titles&quot;,
+                                data))
+var remText = R.curry((language, data) =&gt;
+                        mapProp(R.filter(R.complement(inLanguage(language))),
+                                &quot;titles&quot;))
+var addText = R.curry((language, text, data) =&gt;
+                        mapProp(R.append({language, text}), &quot;titles&quot;, data))
+var setText = R.curry((language, text, data) =&gt;
+                        mapText(language, R.always(text), data))
+</code></pre>
+<p>You can definitely make the above operations both cleaner and more robust.  With
+partial optics, however, you separate the selection and data structure
+invariants maintenance from the operations as illustrated in
+the <a href="#tutorial">tutorial</a> and due to the separation of concents that that tends
+to give you a lot functionality
+in <a href="#a-partial-lens-to-access-title-texts">a small amount of code</a>.</p>
 <h2 id="reference">Reference</h2>
 <p>The <a href="https://wiki.haskell.org/Combinator">combinators</a> provided by this library
 are available as named imports.  Typically one just imports the library as:</p>

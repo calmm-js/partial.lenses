@@ -25,6 +25,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 ## Contents
 
 * [Tutorial](#tutorial)
+* [The why of optics](#the-why-of-optics)
 * [Reference](#reference)
   * [Stable subset](#stable-subset)
   * [Optics](#optics)
@@ -553,6 +554,48 @@ examples and a few [more involved examples](#L-lazy).  The [examples](#examples)
 section describes a couple of lens compositions we've found practical as well as
 examples that may help to
 see [possibilities beyond the immediately obvious](#bst-as-a-lens).
+
+## The why of optics
+
+Optics provide a way to decouple the operation to perform on an element or
+elements of a data structure from the details of selecting the element or
+elements and the details of maintaining the integrity of the data structure.  In
+other words, a selection algorithm and data structure invariant maintenance can
+be expressed as a composition of optics and used with many different operations.
+
+Consider how one might approach the [tutorial](#tutorial) problem without
+optics.  One could, for example, write a collection of operations like
+`getText`, `setText`, `addText`, and `remText`:
+
+```js
+const inLanguage = language => R.whereEq({language})
+const getEntry = R.curry((language, data) =>
+                         data.titles.find(inLanguage(language)))
+const hasText = R.pipe(getEntry, Boolean)
+const getText = R.pipe(getEntry, R.defaultTo({}), R.prop("text"))
+const mapProp = R.curry((fn, prop, obj) =>
+                        R.assoc(prop, fn(R.prop(prop, obj)), obj))
+const mapText = R.curry((language, fn, data) =>
+                        mapProp(R.map(R.ifElse(inLanguage(language),
+                                               mapProp(fn, "text"),
+                                               R.identity)),
+                                "titles",
+                                data))
+const remText = R.curry((language, data) =>
+                        mapProp(R.filter(R.complement(inLanguage(language))),
+                                "titles"))
+const addText = R.curry((language, text, data) =>
+                        mapProp(R.append({language, text}), "titles", data))
+const setText = R.curry((language, text, data) =>
+                        mapText(language, R.always(text), data))
+```
+
+You can definitely make the above operations both cleaner and more robust.  With
+partial optics, however, you separate the selection and data structure
+invariants maintenance from the operations as illustrated in
+the [tutorial](#tutorial) and due to the separation of concents that that tends
+to give you a lot functionality
+in [a small amount of code](#a-partial-lens-to-access-title-texts).
 
 ## Reference
 
