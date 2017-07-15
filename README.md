@@ -3080,7 +3080,7 @@ rather than `undefined`.
 
 #### BST traversal
 
-What about [traversals](#traverals) over BSTs?  We can use
+What about [traversals](#traversals) over BSTs?  We can use
 the [`L.branch`](#L-branch) combinator to define an in-order traversal over the
 values of a BST:
 
