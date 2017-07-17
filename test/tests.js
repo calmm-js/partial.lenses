@@ -243,6 +243,7 @@ describe("arities", () => {
     orElse: 2,
     pick: 1,
     pickIn: 1,
+    prefix: 1,
     product: 2,
     productAs: 3,
     prop: 1,
@@ -261,6 +262,7 @@ describe("arities", () => {
     setOp: 1,
     setter: 1,
     slice: 2,
+    suffix: 1,
     sum: 2,
     sumAs: 3,
     toFunction: 1,
@@ -538,6 +540,20 @@ describe("L.slice", () => {
          "Hello, world!")
   testEq(`L.modify([L.slice(1,-1), L.elems], R.negate, [1,-2,-3,4])`, [1,2,3,4])
   testEq(`L.modify([L.slice(-3,3), L.elems], R.negate, [1,-2,-3,4])`, [1,2,3,4])
+})
+
+describe("L.prefix", () => {
+  testEq(`L.set(L.prefix(0), [1,2], [3,4])`, [1,2,3,4])
+  testEq(`L.set(L.prefix(), [1,2], [3,4])`, [1,2])
+  testEq(`L.set(L.prefix(Infinity), [], [3,4])`, undefined)
+  testEq(`L.set(L.prefix(-1), [], [2,3,4])`, [4])
+})
+
+describe("L.suffix", () => {
+  testEq(`L.set(L.suffix(0), [1,2], [3,4])`, [3,4,1,2])
+  testEq(`L.set(L.suffix(-1), [1,2], [3,4,5])`, [3,1,2])
+  testEq(`L.set(L.suffix(Infinity), [], [3,4,5])`, undefined)
+  testEq(`L.set(L.suffix(), [1,2], [3,4,5])`, [1,2])
 })
 
 describe("L.append", () => {
