@@ -189,6 +189,7 @@ describe("arities", () => {
     and: 2,
     any: 3,
     append: 4,
+    assign: 3,
     augment: 1,
     branch: 1,
     chain: 2,
@@ -248,6 +249,7 @@ describe("arities", () => {
     productAs: 3,
     prop: 1,
     props: 0,
+    propsOf: 1,
     removable: 0,
     remove: 2,
     removeOp: 4,
@@ -791,6 +793,10 @@ describe("L.props", () => {
   testEq(`L.set(L.props("a", "b"), {a: 2}, {a: 1, b: 3})`, {a: 2})
   testEq(`I.keys(L.get(L.props("x", "b", "y"), {b: 1, y: 1, x: 1}))`,
          ["x", "b", "y"])
+})
+
+describe("L.assign", () => {
+  testEq(`L.assign([], {x:2, z:2}, {x:1, y:1, z:1})`, {x:2, y:1, z:2})
 })
 
 describe("L.getInverse", () => {

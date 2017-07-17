@@ -70,6 +70,8 @@ export const toFunction = T.fn([T_optic],
 
 // Operations on optics
 
+export const assign = T.fn([T_optic, T.instanceOf(Object), T_maybeDataI],
+                           T_maybeDataO)
 export const modify = T.fn([T_optic,
                             T.fn([T_maybeDataO, T_index], T_maybeDataI),
                             T_maybeDataI],
@@ -261,6 +263,7 @@ export const suffix = T.fn([T_sliceIndex], T_lens)
 export const pickIn = T.fn([template(T_lens)], T_lens)
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVarN(0, T.string, T_lens)
+export const propsOf = T.fn([T.instanceOf(Object)], T_lens)
 export const removable = T.fnVarN(0, T.string, T_lens)
 
 // Providing defaults

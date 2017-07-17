@@ -696,6 +696,9 @@ export const toFunction = /*#__PURE__*/(process.env.NODE_ENV === "production" ? 
 
 // Operations on optics
 
+export const assign = /*#__PURE__*/I.curry((o, x, s) =>
+  setU([o, propsOf(x)], x, s))
+
 export const modify = /*#__PURE__*/I.curry(modifyU)
 
 export const remove = /*#__PURE__*/I.curry((o, s) => setU(o, void 0, s))
@@ -1067,6 +1070,8 @@ export function props() {
     template[k = arguments[i]] = k
   return pick(template)
 }
+
+export const propsOf = o => props.apply(null, I.keys(o))
 
 export function removable(...ps) {
   function drop(y) {
