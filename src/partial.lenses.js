@@ -757,6 +757,8 @@ export function lazy(o2o) {
 
 // Transforming
 
+export const assignOp = x => [propsOf(x), setOp(x)]
+
 export const modifyOp = xi2y => (x, i, C, xi2yC) =>
   zeroOp(x = xi2y(x, i), i, C, xi2yC, x)
 

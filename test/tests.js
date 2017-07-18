@@ -190,6 +190,7 @@ describe("arities", () => {
     any: 3,
     append: 4,
     assign: 3,
+    assignOp: 1,
     augment: 1,
     branch: 1,
     chain: 2,
@@ -1038,6 +1039,7 @@ describe("L.foldTraversalLens", () => {
 })
 
 describe("transforming", () => {
+  testEq(`L.transform(L.assignOp({y: 2}), {x: 1, y: 1, z: 1})`, {x:1, y:2, z:1})
   testEq(`L.transform([L.elems, L.modifyOp(x => x+1)], [1,2,3])`, [2,3,4])
   testEq(`L.transform([L.elems, L.setOp(4)], [1,2,3])`, [4,4,4])
   testEq(`L.transform([L.elems, L.when(x => x > 3), L.removeOp], [3,1,4,1,5])`,

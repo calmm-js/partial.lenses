@@ -109,6 +109,7 @@ export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 
 // Transforming
 
+export const assignOp = T.fn([T.instanceOf(Object)], T_optic)
 export const modifyOp = T.fn([T.fn([T_maybeDataO, T_index], T_maybeDataI)],
                              T_optic)
 export const removeOp = T_optic
