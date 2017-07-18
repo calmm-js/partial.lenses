@@ -2436,7 +2436,7 @@ The beginning of the range is determined as follows:
 - `undefined` is the beginning of the array-like object.
 
 Note that the rules above are different from the rules for determining the
-beginning [`L.slice`](#L-slice).
+beginning of [`L.slice`](#L-slice).
 
 For example:
 
