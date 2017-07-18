@@ -2435,6 +2435,9 @@ The beginning of the range is determined as follows:
 - `-Infinity` is the end of the array-like object, and
 - `undefined` is the beginning of the array-like object.
 
+Note that the rules above are different from the rules for determining the
+beginning [`L.slice`](#L-slice).
+
 For example:
 
 ```js
