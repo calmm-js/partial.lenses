@@ -1258,9 +1258,18 @@ optics, but may sometimes be useful.
 
 ##### <a id="L-transform"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-transform) [`L.transform(optic, maybeData) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s") <small><sup>v11.7.0</sup></small>
 
-`L.transform(o, s)` is shorthand for `L.modify(o, x => x, s)` and is intended
-for running [transforms](#transforms) defined
+`L.transform(o, s)` is shorthand for [`L.modify(o, x => x, s)`](#L-modify) and
+is intended for running [transforms](#transforms) defined
 using [transform ops](#transforming).
+
+Note that
+
+* [`L.modify(o, f, s)`](#L-modify) is equivalent to [`L.transform([o,
+  L.modifyOp(f)], s)`](#L-modifyOp),
+* [`L.set(o, x, s)`](#L-set) is equivalent to [`L.transform([o, L.setOp(x)],
+  s)`](#L-setOp), and
+* [`L.remove(o, s)`](#L-remove) is equivalent to [`L.transform([o, L.removeOp],
+  s)`](#L-removeOp).
 
 #### Sequencing
 

@@ -1074,9 +1074,18 @@ operated upon.  The results of such uses don&#39;t quite follow the laws of ordi
 optics, but may sometimes be useful.</p>
 <h4 id="operations-on-transforms">Operations on transforms</h4>
 <h5><a id="L-transform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-transform">■</a> <a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.7.0</sup></small></h5>
-<p><code>L.transform(o, s)</code> is shorthand for <code>L.modify(o, x =&gt; x, s)</code> and is intended
-for running <a href="#transforms">transforms</a> defined
+<p><code>L.transform(o, s)</code> is shorthand for <a href="#L-modify"><code>L.modify(o, x =&gt; x, s)</code></a> and
+is intended for running <a href="#transforms">transforms</a> defined
 using <a href="#transforming">transform ops</a>.</p>
+<p>Note that</p>
+<ul>
+<li><a href="#L-modify"><code>L.modify(o, f, s)</code></a> is equivalent to <a href="#L-modifyOp"><code>L.transform([o,
+L.modifyOp(f)], s)</code></a>,</li>
+<li><a href="#L-set"><code>L.set(o, x, s)</code></a> is equivalent to <a href="#L-setOp"><code>L.transform([o, L.setOp(x)],
+s)</code></a>, and</li>
+<li><a href="#L-remove"><code>L.remove(o, s)</code></a> is equivalent to <a href="#L-removeOp"><code>L.transform([o, L.removeOp],
+s)</code></a>.</li>
+</ul>
 <h4 id="sequencing">Sequencing</h4>
 <h5><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a> <small><sup>v9.4.0</sup></small></h5>
 <p><code>L.seq</code> creates a transform that modifies the focus with each of the given
