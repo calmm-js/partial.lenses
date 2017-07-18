@@ -192,7 +192,9 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-findWith" title="L.findWith: (POptic s s1, ...POptic sN a) -&gt; POptic [s] a"><code>L.findWith(...optics) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></li>
-<li><a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></li>
+<li><a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
+<li><a href="#L-slice" title="L.slice: Maybe Number -&gt; Maybe Number -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></li>
+<li><a href="#L-suffix" title="L.suffix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
@@ -1738,21 +1740,55 @@ value if the focused object is empty or <code>undefined</code>.  For example:</p
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.last, 1, [])
 </code></pre>
-<h5><a id="L-slice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-slice">■</a> <a href="#L-slice" title="L.slice: Maybe Integer -&gt; Maybe Integer -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></h5>
-<p><code>L.slice</code> focuses on a specified range of elements of
-an <a href="#array-like">array-like</a> object.  The range is determined like with the
-standard
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"><code>slice</code></a> method
-of arrays, basically</p>
+<h5><a id="L-prefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-prefix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
+<p><code>L.prefix</code> focuses on a range of elements of an <a href="#array-like">array-like</a> object
+starting from the beginning of the object.  <code>L.prefix</code> is a special case of
+<a href="#L-slice"><code>L.slice</code></a>.</p>
+<p>The end of the range is determined as follows:</p>
 <ul>
 <li>non-negative values are relative to the beginning of the array-like object,</li>
-<li>negative values are relative to the end of the array-like object, and</li>
+<li><code>Infinity</code> is the end of the array-like object,</li>
+<li>negative values are relative to the end of the array-like object,</li>
+<li><code>-Infinity</code> is the beginning of the array-like object, and</li>
+<li><code>undefined</code> is the end of the array-like object.</li>
+</ul>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set(L.prefix(0), [1], [2, 3])
+</code></pre>
+<h5><a id="L-slice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-slice">■</a> <a href="#L-slice" title="L.slice: Maybe Number -&gt; Maybe Number -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></h5>
+<p><code>L.slice</code> focuses on a specified range of elements of
+an <a href="#array-like">array-like</a> object.  See also <a href="#L-prefix"><code>L.prefix</code></a>
+and <a href="#L-suffix"><code>L.suffix</code></a>.</p>
+<p>The range is determined like with the
+standard
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"><code>slice</code></a> method
+of arrays:</p>
+<ul>
+<li>non-negative values are relative to the beginning of the array-like object,</li>
+<li><code>Infinity</code> is the end of the array-like object,</li>
+<li>negative values are relative to the end of the array-like object,</li>
+<li><code>-Infinity</code> is the beginning of the array-like object, and</li>
 <li><code>undefined</code> gives the defaults: 0 for the begin and length for the end.</li>
 </ul>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.slice(1, -1), [1,2,3,4])
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
+</code></pre>
+<h5><a id="L-suffix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-suffix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
+<p><code>L.suffix</code> focuses on a range of elements of an <a href="#array-like">array-like</a> object
+starting from the end of the object.  <code>L.suffix</code> is a special case
+of <a href="#L-slice"><code>L.slice</code></a>.</p>
+<p>The beginning of the range is determined as follows:</p>
+<ul>
+<li>non-negative values are relative to the end of the array-like object,</li>
+<li><code>Infinity</code> is the beginning of the array-like object,</li>
+<li>negative values are relative to the beginning of the array-like object,</li>
+<li><code>-Infinity</code> is the end of the array-like object, and</li>
+<li><code>undefined</code> is the beginning of the array-like object.</li>
+</ul>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set(L.suffix(1), [4, 1], [3, 1, 3])
 </code></pre>
 <h4 id="lensing-objects">Lensing objects</h4>
 <p>Anything that is an <code>instanceof Object</code> is considered an object by partial

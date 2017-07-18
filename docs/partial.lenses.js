@@ -1301,6 +1301,10 @@ var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
 });
 
+var prefix = function prefix(n) {
+  return slice(0, n);
+};
+
 var slice = /*#__PURE__*/(res(function (lens) {
   return toFunction([lens, isoU(I.id, ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))]);
 }))(function (begin, end) {
@@ -1317,6 +1321,10 @@ var slice = /*#__PURE__*/(res(function (lens) {
     }, xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) : void 0, i));
   };
 });
+
+var suffix = function suffix(n) {
+  return slice(0 === n ? Infinity : !n ? 0 : -n, void 0);
+};
 
 // Lensing objects
 
@@ -1514,7 +1522,9 @@ exports.findHint = findHint;
 exports.findWith = findWith;
 exports.index = index;
 exports.last = last;
+exports.prefix = prefix;
 exports.slice = slice;
+exports.suffix = suffix;
 exports.pickIn = pickIn;
 exports.prop = prop;
 exports.props = props;

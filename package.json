@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "11.11.0",
+  "version": "11.12.0",
   "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "module": "dist/partial.lenses.es.js",
   "main": "dist/partial.lenses.cjs.js",
@@ -71,13 +71,13 @@
     "mocha": "^3.4.2",
     "nyc": "^11.0.3",
     "ramda": "^0.24.1",
-    "rollup": "^0.45.1",
+    "rollup": "^0.45.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^2.0.1",
     "sprintf-js": "^1.1.1",
-    "uglify-js": "^3.0.24",
+    "uglify-js": "^3.0.25",
     "watch-run": "^1.2.5"
   }
 }

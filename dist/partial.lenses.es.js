@@ -1298,6 +1298,10 @@ var last = /*#__PURE__*/choose(function (maybeArray) {
   return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
 });
 
+var prefix = function prefix(n) {
+  return slice(0, n);
+};
+
 var slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? curry : res(function (lens) {
   return toFunction([lens, isoU(id, ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))]);
 }))(function (begin, end) {
@@ -1314,6 +1318,10 @@ var slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? curry : res(fu
     }, xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) : void 0, i));
   };
 });
+
+var suffix = function suffix(n) {
+  return slice(0 === n ? Infinity : !n ? 0 : -n, void 0);
+};
 
 // Lensing objects
 
@@ -1442,4 +1450,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, slice, pickIn, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
