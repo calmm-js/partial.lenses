@@ -10,7 +10,7 @@ const T_dataI = T.and(T.def, T.deepFreeze)
 const T_dataO = T.and(T.def, T_deepFrozenOnDev)
 
 const T_index = T.or(T.nonNegative, T.string, T.undef)
-const T_sliceIndex = T.or(T.integer, T.undef)
+const T_sliceIndex = T.or(T.number, T.undef)
 
 const T_functor = T.object({
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
@@ -252,7 +252,9 @@ export const findHint = T.fn([T.fn([T_maybeDataO, hint], T.any), hint], T_lens)
 export const findWith = T.fnVarN(0, T_optic, T_optic)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
+export const prefix = T.fn([T_sliceIndex], T_lens)
 export const slice = T.fn([T_sliceIndex, T_sliceIndex], T_lens)
+export const suffix = T.fn([T_sliceIndex], T_lens)
 
 // Lensing objects
 

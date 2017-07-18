@@ -1025,6 +1025,8 @@ export const index = process.env.NODE_ENV !== "production" ? C.ef(reqIndex) : I.
 export const last = /*#__PURE__*/choose(maybeArray =>
   seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length-1 : 0)
 
+export const prefix = n => slice(0, n)
+
 export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(lens => toFunction([lens, isoU(I.id, C.ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))])))((begin, end) => (xs, i, F, xsi2yF) => {
   const seems = seemsArrayLike(xs),
         xsN = seems && xs.length,
@@ -1045,6 +1047,8 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
            void 0,
            i))
 })
+
+export const suffix = n => slice(0 === n ? Infinity : !n ? 0 : -n, void 0)
 
 // Lensing objects
 
