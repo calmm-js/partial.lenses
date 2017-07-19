@@ -29,13 +29,11 @@ const Sum = {empty: () => 0, concat: (x, y) => x + y}
 const numeric = f => x => x !== undefined ? f(x) : undefined
 const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
 
-const flatten = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.choose(x => x instanceof Array  ? elems
-                  :    x instanceof Object ? values
-                  :                          L.identity)
-})]
+const flatten = [
+  L.optional,
+  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
+                        R.is(Object), [L.values, rec],
+                        L.identity))]
 
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)

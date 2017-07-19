@@ -1080,9 +1080,9 @@ For example:
 
 ```js
 L.collect([L.elems,
-           L.choose(x => x instanceof Array  ? L.elems
-                    :    x instanceof Object ? "x"
-                    :                          L.zero)],
+           L.iftes(R.is(Array),  L.elems,
+                   R.is(Object), "x",
+                   L.zero)],
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
 ```
@@ -1129,13 +1129,11 @@ For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
 
 ```js
-const flatten = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.choose(x => x instanceof Array  ? elems
-                  :    x instanceof Object ? values
-                  :                          L.identity)
-})]
+var flatten = [
+  L.optional,
+  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
+                        R.is(Object), [L.values, rec],
+                        L.identity))]
 ```
 
 Note that the above creates a cyclic representation of the traversal.
@@ -1299,13 +1297,10 @@ Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:
 
 ```js
-const everywhere = [L.optional, L.lazy(rec => {
-  const elems = L.seq([L.elems, rec], L.identity)
-  const values = L.seq([L.values, rec], L.identity)
-  return L.choose(x => x instanceof Array  ? elems
-                  :    x instanceof Object ? values
-                  :                          L.identity)
-})]
+const everywhere = [L.optional, L.lazy(rec =>
+  L.choose(R.is(Array),  L.seq([L.elems, rec], L.identity),
+           R.is(Object), L.seq([L.values, rec], L.identity),
+           L.identity))]
 ```
 
 The above `everywhere` transform is similar to
