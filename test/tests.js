@@ -218,6 +218,7 @@ describe("arities", () => {
     get: 2,
     getInverse: 2,
     identity: 4,
+    iftes: 0,
     index: 1,
     inverse: 1,
     is: 1,
@@ -1046,6 +1047,13 @@ describe("transforming", () => {
          [3,1,1])
   testEq(`L.get(L.setOp(42), 101)`, 42)
   testEq(`L.set(L.setOp(42), 96, 101)`, 42)
+})
+
+describe("L.iftes", () => {
+  testEq(`L.set(L.iftes(R.not, L.setOp(1)), 3, 2)`, 2)
+  testEq(`L.set(L.iftes(R.not, L.setOp(1)), 3, 0)`, 1)
+  testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), null)`, 1)
+  testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), 2)`, 0)
 })
 
 if (process.env.NODE_ENV !== "production") {
