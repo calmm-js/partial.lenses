@@ -876,6 +876,10 @@ var toFunction = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(
 
 // Operations on optics
 
+var assign = /*#__PURE__*/curry(function (o, x, s) {
+  return setU([o, propsOf(x)], x, s);
+});
+
 var modify = /*#__PURE__*/curry(modifyU);
 
 var remove = /*#__PURE__*/curry(function (o, s) {
@@ -963,6 +967,10 @@ function lazy(o2o) {
 }
 
 // Transforming
+
+var assignOp = function assignOp(x) {
+  return [propsOf(x), setOp(x)];
+};
 
 var modifyOp = function modifyOp(xi2y) {
   return function (x, i, C, xi2yC) {
@@ -1342,6 +1350,10 @@ function props() {
   }return pick(template);
 }
 
+var propsOf = function propsOf(o) {
+  return props.apply(null, keys(o));
+};
+
 function removable() {
   for (var _len3 = arguments.length, ps = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
     ps[_key3] = arguments[_key3];
@@ -1450,4 +1462,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, chain, choice, choose, when, optional, zero, choices, orElse, lazy, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

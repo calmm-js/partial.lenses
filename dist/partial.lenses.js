@@ -879,6 +879,10 @@ var toFunction = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o) {
 
 // Operations on optics
 
+var assign = /*#__PURE__*/I.curry(function (o, x, s) {
+  return setU([o, propsOf(x)], x, s);
+});
+
 var modify = /*#__PURE__*/I.curry(modifyU);
 
 var remove = /*#__PURE__*/I.curry(function (o, s) {
@@ -966,6 +970,10 @@ function lazy(o2o) {
 }
 
 // Transforming
+
+var assignOp = function assignOp(x) {
+  return [propsOf(x), setOp(x)];
+};
 
 var modifyOp = function modifyOp(xi2y) {
   return function (x, i, C, xi2yC) {
@@ -1345,6 +1353,10 @@ function props() {
   }return pick(template);
 }
 
+var propsOf = function propsOf(o) {
+  return props.apply(null, I.keys(o));
+};
+
 function removable() {
   for (var _len3 = arguments.length, ps = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
     ps[_key3] = arguments[_key3];
@@ -1454,6 +1466,7 @@ var seemsArrayLike = function seemsArrayLike(x) {
 };
 
 exports.toFunction = toFunction;
+exports.assign = assign;
 exports.modify = modify;
 exports.remove = remove;
 exports.set = set;
@@ -1469,6 +1482,7 @@ exports.zero = zero;
 exports.choices = choices;
 exports.orElse = orElse;
 exports.lazy = lazy;
+exports.assignOp = assignOp;
 exports.modifyOp = modifyOp;
 exports.setOp = setOp;
 exports.removeOp = removeOp;
@@ -1528,6 +1542,7 @@ exports.suffix = suffix;
 exports.pickIn = pickIn;
 exports.prop = prop;
 exports.props = props;
+exports.propsOf = propsOf;
 exports.removable = removable;
 exports.valueOr = valueOr;
 exports.pick = pick;

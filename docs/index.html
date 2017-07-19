@@ -63,6 +63,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#on-immutability">On immutability</a></li>
 <li><a href="#on-composability">On composability</a></li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
+<li><a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></li>
 <li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v1.0.0</sup></small></li>
@@ -111,6 +112,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#transforming">Transforming</a><ul>
+<li><a href="#L-assignOp" title="L.assignOp: {p1: a1, ...ps} -&gt; POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.assignOp(object) ~&gt; optic</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></li>
 <li><a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></li>
 <li><a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></li>
@@ -201,6 +203,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-pickIn" title="L.pickIn: {p1: PLens s1 a1, ...pls} -&gt; PLens {p1: s1, ...pls} {p1: a1, ...pls}"><code>L.pickIn({prop: lens, ...props}) ~&gt; lens</code></a> <small><sup>v11.11.0</sup></small></li>
 <li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a> <small><sup>v1.4.0</sup></small></li>
+<li><a href="#L-propsOf" title="L.propsOf: {p1: a1, ...ps} -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.propsOf(object) ~&gt; lens</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-removable" title="L.removable: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a> <small><sup>v9.2.0</sup></small></li>
 </ul>
 </li>
@@ -776,6 +779,12 @@ R.identity({
 to <a href="#on-lens-laws">▶ play</a> with the
 laws in your browser.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
+<h5><a id="L-assign"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assign">■</a> <a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></h5>
+<p><code>L.assign</code> allows one to merge the given object into the object or objects
+focused on by the given optic.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.assign(L.elems, {y: 1}, [{x: 3, y: 2}, {x: 4}])
+</code></pre>
 <h5><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></h5>
 <p><code>L.modify</code> allows one to map over the focused element</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
@@ -1079,6 +1088,8 @@ is intended for running <a href="#transforms">transforms</a> defined
 using <a href="#transforming">transform ops</a>.</p>
 <p>Note that</p>
 <ul>
+<li><a href="#L-assign"><code>L.assign(o, x, s)</code></a> is equivalent to <a href="#L-assignOp"><code>L.transform([o,
+L.assignOp(x)], s)</code></a>,</li>
 <li><a href="#L-modify"><code>L.modify(o, f, s)</code></a> is equivalent to <a href="#L-modifyOp"><code>L.transform([o,
 L.modifyOp(f)], s)</code></a>,</li>
 <li><a href="#L-set"><code>L.set(o, x, s)</code></a> is equivalent to <a href="#L-setOp"><code>L.transform([o, L.setOp(x)],
@@ -1109,6 +1120,12 @@ elements of the data structure while <code>everywhere</code> also targets those.
 <pre><code class="hljs lang-js">L.modify(everywhere, x =&gt; [x], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <h4 id="transforming">Transforming</h4>
+<h5><a id="L-assignOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assignOp">■</a> <a href="#L-assignOp" title="L.assignOp: {p1: a1, ...ps} -&gt; POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.assignOp(object) ~&gt; optic</code></a> <small><sup>v11.13.0</sup></small></h5>
+<p><code>L.assignOp</code> creates an optic that merges the given object into the object in
+focus.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transform([L.elems, L.assignOp({y: 1})], [{x: 3}, {x: 4, y: 5}])
+</code></pre>
 <h5><a id="L-modifyOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modifyOp">■</a> <a href="#L-modifyOp" title="L.modifyOp: ((Maybe a, Index) -&gt; Maybe a) -&gt; POptic a a"><code>L.modifyOp((maybeValue, index) =&gt; maybeValue) ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></h5>
 <p><code>L.modifyOp</code> creates an optic that maps the focus with the given function.  When
 used as a traversal, <code>L.modifyOp</code> acts as a traversal of no elements.  When used
@@ -1869,6 +1886,9 @@ exists previously.  When set, any extra properties are ignored.</p>
 </code></pre>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#L-pick"><code>L.pick({[k1]: k1, ..., [kN]:
 kN})</code></a> and <a href="#L-pickIn"><code>L.pickIn({[k1]: [], ..., [kN]: []})</code></a>.</p>
+<h5><a id="L-propsOf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-propsOf">■</a> <a href="#L-propsOf" title="L.propsOf: {p1: a1, ...ps} -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.propsOf(object) ~&gt; lens</code></a> <small><sup>v11.13.0</sup></small></h5>
+<p><code>L.propsOf(o)</code> is shorthand for <a href="#L-props"><code>L.props(...Object.keys(o))</code></a>
+allowing one to focus on the properties specified via the given sample object.</p>
 <h5><a id="L-removable"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-removable">■</a> <a href="#L-removable" title="L.removable: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a> <small><sup>v9.2.0</sup></small></h5>
 <p><code>L.removable</code> creates a lens that, when written through, replaces the whole
 result with <code>undefined</code> if none of the given properties is defined in the
