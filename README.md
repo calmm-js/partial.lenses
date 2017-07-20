@@ -44,6 +44,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
       * [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
       * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
+      * [`L.iftes((maybeValue, index) => testable, optic, ...[, optic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
@@ -1031,6 +1032,42 @@ L.modify(majorAxis, R.negate, {x: -3, y: 1})
 // { x: 3, y: 1 }
 ```
 
+##### <a id="L-iftes"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-iftes) [`L.iftes((maybeValue, index) => testable, optic, ...[, optic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
+
+`L.iftes` creates an optic whose operation is selected from the given optics and
+conditions on the underlying view.
+
+**WARNING: `L.iftes` is experimental and might be removed or changed before
+next major release.**
+
+```jsx
+L.iftes( condition, consequent
+     [ , ... ]
+     [ , alternative ] )
+```
+
+`L.iftes` is not curried like most functions in this library.  `L.iftes`
+requires at least two arguments and successive arguments form *condition* -
+*consequent* pairs.  The conditions are called sequentially.  `L.iftes` acts
+like the consequent corresponding to the first true condition.  If `L.iftes` is
+given an odd number of arguments, the last argument is the *alternative* taken
+in case none of the conditions was true.  If all conditions are false and there
+is no alternative, `L.iftes` acts like [`L.zero`](#L-zero).
+
+For example:
+
+```js
+const minorAxis =
+  L.iftes(({x, y} = {}) => Math.abs(y) < Math.abs(x), "y", "x")
+
+L.get(minorAxis, {x: -3, y: 1})
+// 1
+```
+```js
+L.modify(minorAxis, R.negate, {x: -3, y: 1})
+// { x: -3, y: -1 }
+```
+
 ##### <a id="L-optional"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-optional) [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
 
 `L.optional` is an optic over an optional element.  When used as a traversal,
@@ -1297,10 +1334,11 @@ Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:
 
 ```js
-const everywhere = [L.optional, L.lazy(rec =>
-  L.choose(R.is(Array),  L.seq([L.elems, rec], L.identity),
-           R.is(Object), L.seq([L.values, rec], L.identity),
-           L.identity))]
+const everywhere = [
+  L.optional,
+  L.lazy(rec => L.iftes(R.is(Array),  L.seq([L.elems, rec], L.identity),
+                        R.is(Object), L.seq([L.values, rec], L.identity),
+                        L.identity))]
 ```
 
 The above `everywhere` transform is similar to
@@ -3067,23 +3105,17 @@ lenses.  However, given basic BST operations, one could easily wrap them as a
 primitive partial lens.  But could we leverage lens combinators to build a BST
 lens more compositionally?
 
-We can.  The [`L.choose`](#L-choose) combinator allows for dynamic construction
-of lenses based on examining the data structure being manipulated.
-Inside [`L.choose`](#L-choose) we can write the ordinary BST logic to pick the
+We can.  The [`L.iftes`](#L-iftes) combinator allows for dynamic selection of
+lenses based on examining the data structure being manipulated.
+Using [`L.iftes`](#L-iftes) we can write the ordinary BST logic to pick the
 correct branch based on the key in the currently examined node and the key that
 we are looking for.  So, here is our first attempt at a BST lens:
 
 ```js
-const searchAttempt = key => L.lazy(rec => {
-  const smaller = ["smaller", rec]
-  const greater = ["greater", rec]
-  const found = L.defaults({key})
-  return L.choose(n => {
-    if (!n || key === n.key)
-      return found
-    return key < n.key ? smaller : greater
-  })
-})
+const searchAttempt = key => L.lazy(rec => [
+  L.iftes(n => !n || key === n.key, L.defaults({key}),
+          n => key < n.key,         ["smaller", rec],
+          ["greater", rec])])
 
 const valueOfAttempt = key => [searchAttempt(key), "value"]
 ```
@@ -3138,16 +3170,11 @@ const naiveBST = L.rewrite(n => {
 Here is a working `search` lens and a `valueOf` lens constructor:
 
 ```js
-const search = key => L.lazy(rec => {
-  const smaller = ["smaller", rec]
-  const greater = ["greater", rec]
-  const found = L.defaults({key})
-  return [naiveBST, L.choose(n => {
-    if (!n || key === n.key)
-      return found
-    return key < n.key ? smaller : greater
-  })]
-})
+const search = key => L.lazy(rec => [
+  naiveBST,
+  L.iftes(n => !n || key === n.key, L.defaults({key}),
+          n => key < n.key,         ["smaller", rec],
+          ["greater", rec])])
 
 const valueOf = key => [search(key), "value"]
 ```
@@ -3353,6 +3380,15 @@ by moving the allocation outside of [`L.choose`](#L-choose):
 const onArray = [L.elems, "data"]
 L.choose(x => Array.isArray(x) ? onArray : "data")
 ```
+
+In cases like above you can also use the more restricted [`L.iftes`](#L-iftes)
+combinator:
+
+```jsx
+L.iftes(Array.isArray, [L.elems, "data"], "data")
+```
+
+This has the advantage that the optics are constructed only once.
 
 ### On bundle size and minification
 
