@@ -666,6 +666,8 @@ const matchesJoin = input => matches => {
 
 //
 
+const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
+
 const orElseU = (back, prim) =>
   (prim = toFunction(prim), back = toFunction(back),
    (x, i, C, xi2yC) => (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC))
@@ -732,6 +734,18 @@ export const choice = (...os) => os.reduceRight(orElseU, zero)
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
+
+export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (c, t, ...ctse) => {
+  warn(iftes, "`iftes` is experimental and might be removed or changed before next major release.")
+  return fn(c, t, ...ctse)
+})(
+ function (_c, _t) {
+  let n = arguments.length
+  let r = toFunction(n & 1 ? arguments[--n] : zero)
+  while (0 <= (n -= 2))
+    r = ifteU(arguments[n], toFunction(arguments[n+1]), r)
+  return r
+})
 
 export const when = p => (x, i, C, xi2yC) =>
   p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC)

@@ -29,13 +29,11 @@ const Sum = {empty: () => 0, concat: (x, y) => x + y}
 const numeric = f => x => x !== undefined ? f(x) : undefined
 const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
 
-const flatten = [L.optional, L.lazy(rec => {
-  const elems = [L.elems, rec]
-  const values = [L.values, rec]
-  return L.choose(x => x instanceof Array  ? elems
-                  :    x instanceof Object ? values
-                  :                          L.identity)
-})]
+const flatten = [
+  L.optional,
+  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
+                        R.is(Object), [L.values, rec],
+                        L.identity))]
 
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)
@@ -218,6 +216,7 @@ describe("arities", () => {
     get: 2,
     getInverse: 2,
     identity: 4,
+    iftes: 2,
     index: 1,
     inverse: 1,
     is: 1,
@@ -1046,6 +1045,23 @@ describe("transforming", () => {
          [3,1,1])
   testEq(`L.get(L.setOp(42), 101)`, 42)
   testEq(`L.set(L.setOp(42), 96, 101)`, 42)
+})
+
+describe("L.iftes", () => {
+  testEq(`L.set(L.iftes(R.not, L.setOp(1)), 3, 2)`, 2)
+  testEq(`L.set(L.iftes(R.not, L.setOp(1)), 3, 0)`, 1)
+  testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), null)`, 1)
+  testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), 2)`, 0)
+  testEq(`L.transform(L.iftes(R.equals(1), L.setOp(-1),
+                              R.equals(2), L.setOp(1),
+                              L.setOp(2)),
+                      -1)`,
+         2)
+  testEq(`L.transform(L.iftes(R.equals(1), L.setOp(-1),
+                              R.equals(2), L.setOp(1),
+                              L.setOp(2)),
+                      2)`,
+         1)
 })
 
 if (process.env.NODE_ENV !== "production") {
