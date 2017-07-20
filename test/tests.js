@@ -216,7 +216,7 @@ describe("arities", () => {
     get: 2,
     getInverse: 2,
     identity: 4,
-    iftes: 0,
+    iftes: 2,
     index: 1,
     inverse: 1,
     is: 1,

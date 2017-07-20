@@ -735,7 +735,7 @@ export const choice = (...os) => os.reduceRight(orElseU, zero)
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
-export function iftes() {
+export function iftes(_c, _t) {
   let n = arguments.length
   let r = toFunction(n & 1 ? arguments[--n] : zero)
   while (0 <= (n -= 2))
