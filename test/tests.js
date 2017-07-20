@@ -1052,6 +1052,16 @@ describe("L.iftes", () => {
   testEq(`L.set(L.iftes(R.not, L.setOp(1)), 3, 0)`, 1)
   testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), null)`, 1)
   testEq(`L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), 2)`, 0)
+  testEq(`L.transform(L.iftes(R.equals(1), L.setOp(-1),
+                              R.equals(2), L.setOp(1),
+                              L.setOp(2)),
+                      -1)`,
+         2)
+  testEq(`L.transform(L.iftes(R.equals(1), L.setOp(-1),
+                              R.equals(2), L.setOp(1),
+                              L.setOp(2)),
+                      2)`,
+         1)
 })
 
 if (process.env.NODE_ENV !== "production") {
