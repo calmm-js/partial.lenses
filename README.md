@@ -44,7 +44,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
       * [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
       * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
-      * [`L.iftes((maybeValue, index) => testable, optic, ...[, optic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
+      * [`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
@@ -1032,28 +1032,28 @@ L.modify(majorAxis, R.negate, {x: -3, y: 1})
 // { x: 3, y: 1 }
 ```
 
-##### <a id="L-iftes"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-iftes) [`L.iftes((maybeValue, index) => testable, optic, ...[, optic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
+##### <a id="L-iftes"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-iftes) [`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
 
 `L.iftes` creates an optic whose operation is selected from the given optics and
-conditions on the underlying view.
+predicates on the underlying view.
 
 **WARNING: `L.iftes` is experimental and might be removed or changed before
 next major release.**
 
 ```jsx
-L.iftes( condition, consequent
+L.iftes( predicate, consequent
      [ , ... ]
      [ , alternative ] )
 ```
 
 `L.iftes` is not curried unlike most functions in this library.  `L.iftes`
-requires at least two arguments and successive arguments form *condition* -
-*consequent* pairs.  The conditions are functions on the underlying view and are
+requires at least two arguments and successive arguments form *predicate* -
+*consequent* pairs.  The predicates are functions on the underlying view and are
 tested sequentially.  The consequences are optics and `L.iftes` acts like the
-consequent corresponding to the first true condition.  If `L.iftes` is given an
-odd number of arguments, the last argument is the *alternative* taken in case
-none of the conditions was true.  If all conditions are false and there is no
-alternative, `L.iftes` acts like [`L.zero`](#L-zero).
+consequent corresponding to the first predicate that returns true.  If `L.iftes`
+is given an odd number of arguments, the last argument is the *alternative*
+taken in case none of the predicates returns true.  If all predicates return
+false and there is no alternative, `L.iftes` acts like [`L.zero`](#L-zero).
 
 For example:
 
