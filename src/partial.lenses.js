@@ -666,7 +666,7 @@ const matchesJoin = input => matches => {
 
 //
 
-const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x) ? t : e)(x, i, C, xi2yC)
+const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
 
 const orElseU = (back, prim) =>
   (prim = toFunction(prim), back = toFunction(back),
