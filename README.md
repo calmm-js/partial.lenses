@@ -1129,7 +1129,7 @@ For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
 
 ```js
-var flatten = [
+const flatten = [
   L.optional,
   L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
                         R.is(Object), [L.values, rec],
