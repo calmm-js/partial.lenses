@@ -1016,7 +1016,7 @@ L.modify([L.elems, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 `L.choose` creates an optic whose operation is determined by the given function
 that maps the underlying view, which can be `undefined`, to an optic.  In other
 words, the `L.choose` combinator allows an optic to be constructed *after*
-examining the data structure being manipulated.
+examining the data structure being manipulated.  See also [`L.iftes`](#L-iftes).
 
 For example:
 
@@ -1068,6 +1068,8 @@ L.get(minorAxis, {x: -3, y: 1})
 L.modify(minorAxis, R.negate, {x: -3, y: 1})
 // { x: -3, y: -1 }
 ```
+
+Note that `L.iftes` can be implemented using [`L.choose`](#L-choose).
 
 ##### <a id="L-optional"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-optional) [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
 
