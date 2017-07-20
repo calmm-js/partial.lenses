@@ -1046,13 +1046,14 @@ L.iftes( condition, consequent
      [ , alternative ] )
 ```
 
-`L.iftes` is not curried like most functions in this library.  `L.iftes`
+`L.iftes` is not curried unlike most functions in this library.  `L.iftes`
 requires at least two arguments and successive arguments form *condition* -
-*consequent* pairs.  The conditions are called sequentially.  `L.iftes` acts
-like the consequent corresponding to the first true condition.  If `L.iftes` is
-given an odd number of arguments, the last argument is the *alternative* taken
-in case none of the conditions was true.  If all conditions are false and there
-is no alternative, `L.iftes` acts like [`L.zero`](#L-zero).
+*consequent* pairs.  The conditions are functions on the underlying view and are
+tested sequentially.  The consequences are optics and `L.iftes` acts like the
+consequent corresponding to the first true condition.  If `L.iftes` is given an
+odd number of arguments, the last argument is the *alternative* taken in case
+none of the conditions was true.  If all conditions are false and there is no
+alternative, `L.iftes` acts like [`L.zero`](#L-zero).
 
 For example:
 
