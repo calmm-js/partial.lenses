@@ -735,9 +735,9 @@ export const choice = (...os) => os.reduceRight(orElseU, zero)
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
-export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (c, t, ...ctse) => {
+export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function (_c, _t) {
   warn(iftes, "`iftes` is experimental and might be removed or changed before next major release.")
-  return fn(c, t, ...ctse)
+  return fn.apply(null, arguments)
 })(
  function (_c, _t) {
   let n = arguments.length
