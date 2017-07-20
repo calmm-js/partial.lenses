@@ -845,6 +845,12 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
+var ifteU = function ifteU(c, t, e) {
+  return function (x, i, C, xi2yC) {
+    return (c(x, i) ? t : e)(x, i, C, xi2yC);
+  };
+};
+
 var orElseU = function orElseU(back, prim) {
   return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
     return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
@@ -932,6 +938,19 @@ var choose = function choose(xiM2o) {
     return toFunction(xiM2o(x, i))(x, i, C, xi2yC);
   };
 };
+
+var iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function (_c, _t) {
+    warn(iftes, "`iftes` is experimental and might be removed or changed before next major release.");
+    return fn$$1.apply(null, arguments);
+  };
+})(function (_c, _t) {
+  var n = arguments.length;
+  var r = toFunction(n & 1 ? arguments[--n] : zero);
+  while (0 <= (n -= 2)) {
+    r = ifteU(arguments[n], toFunction(arguments[n + 1]), r);
+  }return r;
+});
 
 var when = function when(p) {
   return function (x, i, C, xi2yC) {
@@ -1476,6 +1495,7 @@ exports.compose = compose;
 exports.chain = chain;
 exports.choice = choice;
 exports.choose = choose;
+exports.iftes = iftes;
 exports.when = when;
 exports.optional = optional;
 exports.zero = zero;
