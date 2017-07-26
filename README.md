@@ -3409,8 +3409,8 @@ and [uglify](https://github.com/TrySound/rollup-plugin-uglify) plugins to build
 browser bundles, the generated bundles will basically only include what you use
 from this library.
 
-For best results, increasing the number compression passes may allow UglifyJS to
-eliminate more dead code.  Here is a sample snippet from a Rollup config:
+For best results, increasing the number of compression passes may allow UglifyJS
+to eliminate more dead code.  Here is a sample snippet from a Rollup config:
 
 ```jsx
 import replace from "rollup-plugin-replace"
