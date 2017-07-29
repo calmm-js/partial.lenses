@@ -854,6 +854,8 @@ var countS = x =&gt; x2n =&gt; {
 L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
 </code></pre>
 <h4 id="nesting">Nesting</h4>
+<p>The <a href="#L-compose"><code>L.compose</code></a> combinator allows one to build optics that deal
+with nested data structures.</p>
 <h5><a id="L-compose"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-compose">■</a> <a href="#L-compose" title="L.compose: (POptic s s1, ...POptic sN a) -&gt; POptic s a"><code>L.compose(...optics) ~&gt; optic</code></a> or <code>[...optics]</code> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.compose</code> creates a nested composition of the given optics and ordinary
 functions such that in <code>L.compose(bigger, smaller)</code> the <code>smaller</code> optic can only
@@ -893,6 +895,9 @@ arguments being passed nor on any arguments beyond the first two.</p>
 <p>Note that <a href="http://ramdajs.com/docs/#compose"><code>R.compose</code></a> is not the same as
 <code>L.compose</code>.</p>
 <h4 id="recursing">Recursing</h4>
+<p>The <a href="#L-lazy"><code>L.lazy</code></a> combinator allows one to build optics that deal with
+nested or recursive data structures of arbitrary depth.  It also allows one to
+build <a href="#transforms">transforms</a> with loops.</p>
 <h5><a id="L-lazy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-lazy">■</a> <a href="#L-lazy" title="L.lazy: (POptic s a -&gt; POptic s a) -&gt; POptic s a"><code>L.lazy(optic =&gt; optic) ~&gt; optic</code></a> <small><sup>v5.1.0</sup></small></h5>
 <p><code>L.lazy</code> can be used to construct optics lazily.  The function given to <code>L.lazy</code>
 is passed a forwarding proxy to its return value and can also make forward
@@ -919,6 +924,7 @@ data structure of nested arrays and objects:</p>
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <h4 id="adapting">Adapting</h4>
+<p>Adapting combinators allow one to build optics that adapt to their input.</p>
 <h5><a id="L-choices"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choices">■</a> <a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a> <small><sup>v11.10.0</sup></small></h5>
 <p><code>L.choices</code> returns a partial optic that acts like the first of the given optics
 whose view is not <code>undefined</code> on the given data structure.  When the views of
@@ -973,6 +979,9 @@ not <code>undefined</code> and otherwise like <code>backupOptic</code>.</p>
 <code>optics.reduceRight(L.orElse, L.zero)</code> and <a href="#L-choices"><code>L.choices(...optics)</code></a>
 is equivalent to <code>optics.reduce(L.orElse)</code>.</p>
 <h4 id="querying">Querying</h4>
+<p>Querying combinators allow one to use optics to query data structures.  Querying
+is distinguished from <a href="#adapting">adapting</a> in that querying defaults to an
+empty or read-only <a href="#L-zero">zero</a>.</p>
 <h5><a id="L-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-chain">■</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a> <small><sup>v3.1.0</sup></small></h5>
 <p><code>L.chain</code> provides a
 monadic
@@ -1123,6 +1132,8 @@ s)</code></a>, and</li>
 s)</code></a>.</li>
 </ul>
 <h4 id="sequencing">Sequencing</h4>
+<p>The <a href="#L-seq"><code>L.seq</code></a> combinator allows one to build <a href="#transforms">transforms</a>
+that modify their focus more than once.</p>
 <h5><a id="L-seq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seq">■</a> <a href="#L-seq" title="L.seq: (...PTransform s a) -&gt; PTransform s a"><code>L.seq(...transforms) ~&gt; transform</code></a> <small><sup>v9.4.0</sup></small></h5>
 <p><code>L.seq</code> creates a transform that modifies the focus with each of the given
 transforms in sequence.</p>

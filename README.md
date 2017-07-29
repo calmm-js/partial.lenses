@@ -916,6 +916,9 @@ L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
 
 #### Nesting
 
+The [`L.compose`](#L-compose) combinator allows one to build optics that deal
+with nested data structures.
+
 ##### <a id="L-compose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-compose) [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]` <small><sup>v1.0.0</sup></small>
 
 `L.compose` creates a nested composition of the given optics and ordinary
@@ -978,6 +981,10 @@ Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 
 #### Recursing
 
+The [`L.lazy`](#L-lazy) combinator allows one to build optics that deal with
+nested or recursive data structures of arbitrary depth.  It also allows one to
+build [transforms](#transforms) with loops.
+
 ##### <a id="L-lazy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-lazy) [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
 
 `L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
@@ -1019,6 +1026,8 @@ L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
 ```
 
 #### Adapting
+
+Adapting combinators allow one to build optics that adapt to their input.
 
 ##### <a id="L-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choices) [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
 
@@ -1104,6 +1113,10 @@ Note that [`L.choice(...optics)`](#L-choice) is equivalent to
 is equivalent to `optics.reduce(L.orElse)`.
 
 #### Querying
+
+Querying combinators allow one to use optics to query data structures.  Querying
+is distinguished from [adapting](#adapting) in that querying defaults to an
+empty or read-only [zero](#L-zero).
 
 ##### <a id="L-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-chain) [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
 
@@ -1327,6 +1340,9 @@ Note that
   s)`](#L-removeOp).
 
 #### Sequencing
+
+The [`L.seq`](#L-seq) combinator allows one to build [transforms](#transforms)
+that modify their focus more than once.
 
 ##### <a id="L-seq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seq) [`L.seq(...transforms) ~> transform`](#L-seq "L.seq: (...PTransform s a) -> PTransform s a") <small><sup>v9.4.0</sup></small>
 
