@@ -725,12 +725,18 @@ export function compose() {
   }
 }
 
-// Querying
+// Recursing
 
-export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
-  [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
+export function lazy(o2o) {
+  let memo = (x, i, C, xi2yC) => (memo = toFunction(o2o(rec)))(x, i, C, xi2yC)
+  function rec(x, i, C, xi2yC) {return memo(x, i, C, xi2yC)}
+  return rec
+}
 
-export const choice = (...os) => os.reduceRight(orElseU, zero)
+// Adapting
+
+export const choices = (o, ...os) =>
+  os.length ? orElseU(os.reduceRight(orElseU), o) : o
 
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
@@ -747,27 +753,21 @@ export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
   return r
 })
 
+export const orElse = /*#__PURE__*/I.curry(orElseU)
+
+// Querying
+
+export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
+  [xO, choose((xM, i) => void 0 !== xM ? xi2yO(xM, i) : zero)])
+
+export const choice = (...os) => os.reduceRight(orElseU, zero)
+
 export const when = p => (x, i, C, xi2yC) =>
   p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC)
 
 export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
-
-// Adapting
-
-export const choices = (o, ...os) =>
-  os.length ? orElseU(os.reduceRight(orElseU), o) : o
-
-export const orElse = /*#__PURE__*/I.curry(orElseU)
-
-// Recursing
-
-export function lazy(o2o) {
-  let memo = (x, i, C, xi2yC) => (memo = toFunction(o2o(rec)))(x, i, C, xi2yC)
-  function rec(x, i, C, xi2yC) {return memo(x, i, C, xi2yC)}
-  return rec
-}
 
 // Transforming
 

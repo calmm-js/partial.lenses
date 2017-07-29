@@ -40,19 +40,19 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
     * [Nesting](#nesting)
       * [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]` <small><sup>v1.0.0</sup></small>
+    * [Recursing](#recursing)
+      * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
+    * [Adapting](#adapting)
+      * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
+      * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
+      * [`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
+      * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
     * [Querying](#querying)
       * [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
       * [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
-      * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
-      * [`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
-    * [Adapting](#adapting)
-      * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
-      * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
-    * [Recursing](#recursing)
-      * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
@@ -976,39 +976,62 @@ arguments being passed nor on any arguments beyond the first two.
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
 
-#### Querying
+#### Recursing
 
-##### <a id="L-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-chain) [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
+##### <a id="L-lazy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-lazy) [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
 
-`L.chain` provides a
-monadic
-[chain](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
-combinator for querying with optics.  `L.chain(toOptic, optic)` is equivalent to
+`L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
+is passed a forwarding proxy to its return value and can also make forward
+references to other optics and possibly construct a recursive optic.
 
-```jsx
-L.compose(optic, L.choose((maybeValue, index) =>
-  maybeValue === undefined
-  ? L.zero
-  : toOptic(maybeValue, index)))
+Note that when using `L.lazy` to construct a recursive optic, it will only work
+in a meaningful way when the recursive uses are either [precomposed](#L-compose)
+or [presequenced](#L-seq) with some other optic in a way that neither causes
+immediate nor unconditional recursion.
+
+For example, here is a traversal that targets all the primitive elements in a
+data structure of nested arrays and objects:
+
+```js
+const flatten = [
+  L.optional,
+  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
+                        R.is(Object), [L.values, rec],
+                        L.identity))]
 ```
 
-Note that with the [`R.always`](http://ramdajs.com/docs/#always),
-`L.chain`, [`L.choice`](#L-choice) and [`L.zero`](#L-zero) combinators, one can
-consider optics as subsuming the maybe monad.
+Note that the above creates a cyclic representation of the traversal.
 
-##### <a id="L-choice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choice) [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
+Now, for example:
 
-`L.choice` returns a partial optic that acts like the first of the given optics
+```js
+L.collect(flatten, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// [ 1, 2, 3, 4, 5, 6 ]
+```
+```js
+L.modify(flatten, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
+```
+```js
+L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
+         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
+```
+
+#### Adapting
+
+##### <a id="L-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choices) [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
+
+`L.choices` returns a partial optic that acts like the first of the given optics
 whose view is not `undefined` on the given data structure.  When the views of
-all of the given optics are `undefined`, the returned optic acts
-like [`L.zero`](#L-zero), which is the identity element of `L.choice`.  See
-also [`L.choices`](#L-choices).
+all of the given optics are `undefined`, the returned optic acts like the last
+of the given optics.  See also [`L.choice`](#L-choice).
 
 For example:
 
 ```js
-L.modify([L.elems, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
-// [ { R: 1 }, { a: 2 }, { d: 3 } ]
+L.set([L.elems, L.choices("a", "d")], 3, [{R: 1}, {a: 1}, {d: 2}])
+// [ { R: 1, d: 3 }, { a: 3 }, { d: 3 } ]
 ```
 
 ##### <a id="L-choose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choose) [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
@@ -1071,6 +1094,50 @@ L.modify(minorAxis, R.negate, {x: -3, y: 1})
 
 Note that `L.iftes` can be implemented using [`L.choose`](#L-choose).
 
+##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
+
+`L.orElse(backupOptic, primaryOptic)` acts like `primaryOptic` when its view is
+not `undefined` and otherwise like `backupOptic`.
+
+Note that [`L.choice(...optics)`](#L-choice) is equivalent to
+`optics.reduceRight(L.orElse, L.zero)` and [`L.choices(...optics)`](#L-choices)
+is equivalent to `optics.reduce(L.orElse)`.
+
+#### Querying
+
+##### <a id="L-chain"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-chain) [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
+
+`L.chain` provides a
+monadic
+[chain](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
+combinator for querying with optics.  `L.chain(toOptic, optic)` is equivalent to
+
+```jsx
+L.compose(optic, L.choose((maybeValue, index) =>
+  maybeValue === undefined
+  ? L.zero
+  : toOptic(maybeValue, index)))
+```
+
+Note that with the [`R.always`](http://ramdajs.com/docs/#always),
+`L.chain`, [`L.choice`](#L-choice) and [`L.zero`](#L-zero) combinators, one can
+consider optics as subsuming the maybe monad.
+
+##### <a id="L-choice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choice) [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
+
+`L.choice` returns a partial optic that acts like the first of the given optics
+whose view is not `undefined` on the given data structure.  When the views of
+all of the given optics are `undefined`, the returned optic acts
+like [`L.zero`](#L-zero), which is the identity element of `L.choice`.  See
+also [`L.choices`](#L-choices).
+
+For example:
+
+```js
+L.modify([L.elems, L.choice("a", "d")], R.inc, [{R: 1}, {a: 1}, {d: 2}])
+// [ { R: 1 }, { a: 2 }, { d: 3 } ]
+```
+
 ##### <a id="L-optional"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-optional) [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
 
 `L.optional` is an optic over an optional element.  When used as a traversal,
@@ -1125,73 +1192,6 @@ L.collect([L.elems,
                    L.zero)],
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
-```
-
-#### Adapting
-
-##### <a id="L-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-choices) [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
-
-`L.choices` returns a partial optic that acts like the first of the given optics
-whose view is not `undefined` on the given data structure.  When the views of
-all of the given optics are `undefined`, the returned optic acts like the last
-of the given optics.  See also [`L.choice`](#L-choice).
-
-For example:
-
-```js
-L.set([L.elems, L.choices("a", "d")], 3, [{R: 1}, {a: 1}, {d: 2}])
-// [ { R: 1, d: 3 }, { a: 3 }, { d: 3 } ]
-```
-
-##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
-
-`L.orElse(backupOptic, primaryOptic)` acts like `primaryOptic` when its view is
-not `undefined` and otherwise like `backupOptic`.
-
-Note that [`L.choice(...optics)`](#L-choice) is equivalent to
-`optics.reduceRight(L.orElse, L.zero)` and [`L.choices(...optics)`](#L-choices)
-is equivalent to `optics.reduce(L.orElse)`.
-
-#### Recursing
-
-##### <a id="L-lazy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-lazy) [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
-
-`L.lazy` can be used to construct optics lazily.  The function given to `L.lazy`
-is passed a forwarding proxy to its return value and can also make forward
-references to other optics and possibly construct a recursive optic.
-
-Note that when using `L.lazy` to construct a recursive optic, it will only work
-in a meaningful way when the recursive uses are either [precomposed](#L-compose)
-or [presequenced](#L-seq) with some other optic in a way that neither causes
-immediate nor unconditional recursion.
-
-For example, here is a traversal that targets all the primitive elements in a
-data structure of nested arrays and objects:
-
-```js
-const flatten = [
-  L.optional,
-  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
-                        R.is(Object), [L.values, rec],
-                        L.identity))]
-```
-
-Note that the above creates a cyclic representation of the traversal.
-
-Now, for example:
-
-```js
-L.collect(flatten, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
-// [ 1, 2, 3, 4, 5, 6 ]
-```
-```js
-L.modify(flatten, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
-// [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
-```
-```js
-L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
-         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
-// [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
 #### Debugging

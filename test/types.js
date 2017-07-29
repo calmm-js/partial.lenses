@@ -89,24 +89,24 @@ export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
 
 export const compose = T.fnVarN(0, T_optic, T_optic)
 
-// Querying
+// Recursing
 
-export const chain = T.fn([T.fn([T_dataO, T_index], T_optic), T_lens], T_optic)
-export const choice = T.fnVarN(0, T_optic, T_optic)
-export const choose = T.fn([T.fn([T_maybeDataO, T_index], T_optic)], T_optic)
-export const iftes = T.fnVarN(2, T.any, T_optic)
-export const optional = T_optic
-export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
-export const zero = T_optic
+export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 
 // Adapting
 
 export const choices = T.fnVarN(1, T_optic, T_optic)
+export const choose = T.fn([T.fn([T_maybeDataO, T_index], T_optic)], T_optic)
+export const iftes = T.fnVarN(2, T.any, T_optic)
 export const orElse = T.fn([T_optic, T_optic], T_optic)
 
-// Recursing
+// Querying
 
-export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
+export const chain = T.fn([T.fn([T_dataO, T_index], T_optic), T_lens], T_optic)
+export const choice = T.fnVarN(0, T_optic, T_optic)
+export const optional = T_optic
+export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
+export const zero = T_optic
 
 // Transforming
 
