@@ -1356,6 +1356,18 @@ L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
 // [ {xs: [ [ [ { x: [ 1 ] } ], [ { x: [ 2 ] } ] ] ] } ]
 ```
 
+Note that `L.seq`, [`L.choose`](#L-choose), and [`L.setOp`](#L-setOp) can be
+combined together as
+a
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
+
+```jsx
+chain(x2t, t) = L.seq(t, L.choose(x2t))
+        of(x) = L.setOp(x)
+```
+
+which is not the same as the [querying monad](#L-chain).
+
 #### Transforming
 
 ##### <a id="L-assignOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-assignOp) [`L.assignOp(object) ~> optic`](#L-assignOp "L.assignOp: {p1: a1, ...ps} -> POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v11.13.0</sup></small>

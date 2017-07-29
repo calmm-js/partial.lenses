@@ -1142,6 +1142,14 @@ example differ in that <code>flatten</code> only targets the non-object and non-
 elements of the data structure while <code>everywhere</code> also targets those.</p>
 <pre><code class="hljs lang-js">L.modify(everywhere, x =&gt; [x], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
+<p>Note that <code>L.seq</code>, <a href="#L-choose"><code>L.choose</code></a>, and <a href="#L-setOp"><code>L.setOp</code></a> can be
+combined together as
+a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a></p>
+<pre><code class="hljs lang-jsx">chain(x2t, t) = L.seq(t, L.choose(x2t))
+        of(x) = L.setOp(x)
+</code></pre>
+<p>which is not the same as the <a href="#L-chain">querying monad</a>.</p>
 <h4 id="transforming">Transforming</h4>
 <h5><a id="L-assignOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assignOp">■</a> <a href="#L-assignOp" title="L.assignOp: {p1: a1, ...ps} -&gt; POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.assignOp(object) ~&gt; optic</code></a> <small><sup>v11.13.0</sup></small></h5>
 <p><code>L.assignOp</code> creates an optic that merges the given object into the object in
