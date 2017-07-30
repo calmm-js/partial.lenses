@@ -1068,9 +1068,6 @@ L.modify(majorAxis, R.negate, {x: -3, y: 1})
 `L.iftes` creates an optic whose operation is selected from the given optics and
 predicates on the underlying view.
 
-**WARNING: `L.iftes` is experimental and might be removed or changed before
-next major release.**
-
 ```jsx
 L.iftes( predicate, consequent
      [ , ... ]
@@ -1562,9 +1559,6 @@ the
 [`global`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global) flag,
 `/.../g`, is a partial traversal over the matches that the regular expression
 gives over the focused string.  See also [`L.matches`](#L-matches).
-
-**WARNING: `L.matches` is experimental and might be removed or changed before
-next major release.**
 
 For example:
 
@@ -2336,9 +2330,6 @@ after each search and the `hint` can also be mutated from the outside.  The
 makes it possible to both practically eliminate the linear search and to
 implement the predicate without allocating extra memory for it.
 
-**WARNING: `L.findHint` is experimental and might be removed or changed before
-next major release.**
-
 For example:
 
 ```js
@@ -2702,9 +2693,6 @@ the
 `/.../`, is a partial lens over the match.  When there is no match, or the
 target is not a string, then `L.matches` will be read-only.  See
 also [`L.matches`](#L-matches-g).
-
-**WARNING: `L.matches` is experimental and might be removed or changed before
-next major release.**
 
 For example:
 

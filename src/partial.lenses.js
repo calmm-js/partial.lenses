@@ -38,13 +38,6 @@ function deepFreeze(x) {
 
 //
 
-const warnUse = msg => fn => I.pipe2U(fn, x => {
-  warn(fn, msg)
-  return x
-})
-
-//
-
 const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
   const n = xs.length, ys = Array(n)
   let j = 0
@@ -741,17 +734,13 @@ export const choices = (o, ...os) =>
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
-export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function (_c, _t) {
-  warn(iftes, "`iftes` is experimental and might be removed or changed before next major release.")
-  return fn.apply(null, arguments)
-})(
- function (_c, _t) {
+export function iftes(_c, _t) {
   let n = arguments.length
   let r = toFunction(n & 1 ? arguments[--n] : zero)
   while (0 <= (n -= 2))
     r = ifteU(arguments[n], toFunction(arguments[n+1]), r)
   return r
-})
+}
 
 export const orElse = /*#__PURE__*/I.curry(orElseU)
 
@@ -838,7 +827,7 @@ export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
   }
 })
 
-export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.and(warnUse("`matches` is experimental and might be removed or changed before next major release."), C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id)))(re => {
+export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
@@ -1026,7 +1015,7 @@ export const find = xi2b => (xs, _i, F, xi2yF) => {
   return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
 
-export const findHint = /*#__PURE__*/(process.env.NODE_ENV !== "production" ? warnUse("`findHint` is experimental and might be removed or changed before next major release.") : I.curry)((xh2b, hint) => {
+export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   return (xs, _i, F, xi2yF) => {
     const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
