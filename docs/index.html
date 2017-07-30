@@ -949,8 +949,6 @@ L.get(majorAxis, {x: -3, y: 1})
 <h5><a id="L-iftes"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-iftes">■</a> <a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></h5>
 <p><code>L.iftes</code> creates an optic whose operation is selected from the given optics and
 predicates on the underlying view.</p>
-<p><strong>WARNING: <code>L.iftes</code> is experimental and might be removed or changed before
-next major release.</strong></p>
 <pre><code class="hljs lang-jsx">L.iftes( predicate, consequent
      [ , ... ]
      [ , alternative ] )
@@ -1275,8 +1273,6 @@ the
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flag,
 <code>/.../g</code>, is a partial traversal over the matches that the regular expression
 gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
-<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
-next major release.</strong></p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
            L.pick({name: L.matches(/^[^=]+/),
@@ -1730,8 +1726,6 @@ after each search and the <code>hint</code> can also be mutated from the outside
 <code>hint</code> object is also passed to the predicate as the second argument.  This
 makes it possible to both practically eliminate the linear search and to
 implement the predicate without allocating extra memory for it.</p>
-<p><strong>WARNING: <code>L.findHint</code> is experimental and might be removed or changed before
-next major release.</strong></p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), &quot;value&quot;],
          R.toUpper,
@@ -1960,8 +1954,6 @@ the
 <code>/.../</code>, is a partial lens over the match.  When there is no match, or the
 target is not a string, then <code>L.matches</code> will be read-only.  See
 also <a href="#L-matches-g"><code>L.matches</code></a>.</p>
-<p><strong>WARNING: <code>L.matches</code> is experimental and might be removed or changed before
-next major release.</strong></p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(L.matches(/\.[^./]+$/),
       &quot;.txt&quot;,
