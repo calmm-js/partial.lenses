@@ -835,7 +835,6 @@ of a data structure.
 ```js
 L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
 // [ { x: 2 }, { x: 3 } ]
-
 ```
 
 or, when using a [traversal](#traversals), elements
