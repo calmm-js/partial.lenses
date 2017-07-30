@@ -1220,7 +1220,7 @@ traversal.</p>
 <p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
 can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
 elements of an array:</p>
-<pre><code class="hljs lang-js">L.modify([L.pick({x: 0, z: 2}),
+<pre><code class="hljs lang-js">L.modify([L.pick({z: 2, x: 0}),
           L.branch({x: L.identity, z: L.identity})],
          R.negate,
          [1, 2, 3])

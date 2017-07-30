@@ -1478,7 +1478,7 @@ can compose with [`L.pick`](#L-pick) to create a traversal over specific
 elements of an array:
 
 ```js
-L.modify([L.pick({x: 0, z: 2}),
+L.modify([L.pick({z: 2, x: 0}),
           L.branch({x: L.identity, z: L.identity})],
          R.negate,
          [1, 2, 3])
