@@ -48,17 +48,7 @@ var par = function par(i, xC) {
   return args(nth(i, xC));
 };
 
-var and$1 = function and() {
-  for (var _len3 = arguments.length, xCs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-    xCs[_key3] = arguments[_key3];
-  }
 
-  return function (x) {
-    for (var i = 0, n = xCs.length; i < n; ++i) {
-      x = xCs[i](x);
-    }return x;
-  };
-};
 
 var ef = function ef(xE) {
   return function (x) {
@@ -129,17 +119,6 @@ function deepFreeze(x) {
   }
   return x;
 }
-
-//
-
-var warnUse = function warnUse(msg) {
-  return function (fn$$1) {
-    return I.pipe2U(fn$$1, function (x) {
-      warn(fn$$1, msg);
-      return x;
-    });
-  };
-};
 
 //
 
@@ -917,6 +896,44 @@ function compose() {
   }
 }
 
+// Recursing
+
+function lazy(o2o) {
+  var _memo = function memo(x, i, C, xi2yC) {
+    return (_memo = toFunction(o2o(rec)))(x, i, C, xi2yC);
+  };
+  function rec(x, i, C, xi2yC) {
+    return _memo(x, i, C, xi2yC);
+  }
+  return rec;
+}
+
+// Adapting
+
+var choices = function choices(o) {
+  for (var _len = arguments.length, os = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    os[_key - 1] = arguments[_key];
+  }
+
+  return os.length ? orElseU(os.reduceRight(orElseU), o) : o;
+};
+
+var choose = function choose(xiM2o) {
+  return function (x, i, C, xi2yC) {
+    return toFunction(xiM2o(x, i))(x, i, C, xi2yC);
+  };
+};
+
+function iftes(_c, _t) {
+  var n = arguments.length;
+  var r = toFunction(n & 1 ? arguments[--n] : zero);
+  while (0 <= (n -= 2)) {
+    r = ifteU(arguments[n], toFunction(arguments[n + 1]), r);
+  }return r;
+}
+
+var orElse = /*#__PURE__*/I.curry(orElseU);
+
 // Querying
 
 var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
@@ -926,31 +943,12 @@ var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
 });
 
 var choice = function choice() {
-  for (var _len = arguments.length, os = Array(_len), _key = 0; _key < _len; _key++) {
-    os[_key] = arguments[_key];
+  for (var _len2 = arguments.length, os = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    os[_key2] = arguments[_key2];
   }
 
   return os.reduceRight(orElseU, zero);
 };
-
-var choose = function choose(xiM2o) {
-  return function (x, i, C, xi2yC) {
-    return toFunction(xiM2o(x, i))(x, i, C, xi2yC);
-  };
-};
-
-var iftes = /*#__PURE__*/(function (fn$$1) {
-  return function (_c, _t) {
-    warn(iftes, "`iftes` is experimental and might be removed or changed before next major release.");
-    return fn$$1.apply(null, arguments);
-  };
-})(function (_c, _t) {
-  var n = arguments.length;
-  var r = toFunction(n & 1 ? arguments[--n] : zero);
-  while (0 <= (n -= 2)) {
-    r = ifteU(arguments[n], toFunction(arguments[n + 1]), r);
-  }return r;
-});
 
 var when = function when(p) {
   return function (x, i, C, xi2yC) {
@@ -963,30 +961,6 @@ var optional = /*#__PURE__*/when(I.isDefined);
 var zero = function zero(x, i, C, xi2yC) {
   return zeroOp(x, i, C, xi2yC);
 };
-
-// Adapting
-
-var choices = function choices(o) {
-  for (var _len2 = arguments.length, os = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-    os[_key2 - 1] = arguments[_key2];
-  }
-
-  return os.length ? orElseU(os.reduceRight(orElseU), o) : o;
-};
-
-var orElse = /*#__PURE__*/I.curry(orElseU);
-
-// Recursing
-
-function lazy(o2o) {
-  var _memo = function memo(x, i, C, xi2yC) {
-    return (_memo = toFunction(o2o(rec)))(x, i, C, xi2yC);
-  };
-  function rec(x, i, C, xi2yC) {
-    return _memo(x, i, C, xi2yC);
-  }
-  return rec;
-}
 
 // Transforming
 
@@ -1071,12 +1045,12 @@ var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _
   }
 });
 
-var matches = /*#__PURE__*/(and$1(warnUse("`matches` is experimental and might be removed or changed before next major release."), dep(function (_ref5) {
+var matches = /*#__PURE__*/(dep(function (_ref5) {
   var _ref6 = _slicedToArray(_ref5, 1),
       re = _ref6[0];
 
   return re.global ? res(par(2, ef(reqApplicative("matches", re)))) : I.id;
-})))(function (re) {
+}))(function (re) {
   return function (x, _i, C, xi2yC) {
     if (I.isString(x)) {
       var map = C.map;
@@ -1307,7 +1281,7 @@ var find = function find(xi2b) {
   };
 };
 
-var findHint = /*#__PURE__*/(warnUse("`findHint` is experimental and might be removed or changed before next major release."))(function (xh2b, hint) {
+var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
   return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
@@ -1492,16 +1466,16 @@ exports.set = set;
 exports.transform = transform;
 exports.traverse = traverse;
 exports.compose = compose;
-exports.chain = chain;
-exports.choice = choice;
+exports.lazy = lazy;
+exports.choices = choices;
 exports.choose = choose;
 exports.iftes = iftes;
+exports.orElse = orElse;
+exports.chain = chain;
+exports.choice = choice;
 exports.when = when;
 exports.optional = optional;
 exports.zero = zero;
-exports.choices = choices;
-exports.orElse = orElse;
-exports.lazy = lazy;
 exports.assignOp = assignOp;
 exports.modifyOp = modifyOp;
 exports.setOp = setOp;
