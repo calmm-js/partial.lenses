@@ -53,6 +53,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
+    * [Caching](#caching)
+      * [`L.cache(optic) ~> optic`](#L-cache "L.cache: POptic s a -> POptic s a") <small><sup>v11.15.0</sup></small>
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
@@ -1201,6 +1203,15 @@ L.collect([L.elems,
                    L.zero)],
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
+```
+
+#### Caching
+
+#### <a id="L-cache"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-cache) [`L.cache(optic) ~> optic`](#L-cache "L.cache: POptic s a -> POptic s a") <small><sup>v11.15.0</sup></small>
+
+For example:
+
+```js
 ```
 
 #### Debugging
