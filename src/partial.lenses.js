@@ -758,6 +758,17 @@ export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
+// Caching
+
+export const cache = o => {
+  o = toFunction(o)
+  let x_, i_, C_, xi2yC_, yC_
+  return (x, i, C, xi2yC) =>
+    I.identicalU(x, x_) && xi2yC === xi2yC_ && C === C_ && i === i_
+    ? yC_
+    : yC_ = o(x_ = x, i_ = i, C_ = C, xi2yC_ = xi2yC)
+}
+
 // Transforming
 
 export const assignOp = x => [propsOf(x), setOp(x)]

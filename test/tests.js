@@ -191,6 +191,7 @@ describe("arities", () => {
     assignOp: 1,
     augment: 1,
     branch: 1,
+    cache: 1,
     chain: 2,
     choice: 0,
     choices: 1,
