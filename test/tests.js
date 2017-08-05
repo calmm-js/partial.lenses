@@ -1065,6 +1065,16 @@ describe("L.iftes", () => {
          1)
 })
 
+describe("L.cache", () => {
+  testEq(`{ let n = 0
+          ; const inc =
+              X.cache(X.choose(x => {n += 1; return X.modifyOp(R.inc)}))
+          ; return [X.transform([X.elems, inc], [1, 2, 3]),
+                    X.transform([X.elems, inc], [3, 2, 1]),
+                    n] }`,
+         [[2,3,4], [4,3,2], 5])
+})
+
 if (process.env.NODE_ENV !== "production") {
   describe("debug", () => {
     testThrows(`X.set(-1, 0, 0)`)
