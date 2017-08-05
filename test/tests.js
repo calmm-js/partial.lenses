@@ -191,6 +191,7 @@ describe("arities", () => {
     assignOp: 1,
     augment: 1,
     branch: 1,
+    cache: 1,
     chain: 2,
     choice: 0,
     choices: 1,
@@ -1061,6 +1062,22 @@ describe("L.iftes", () => {
                               R.equals(2), L.setOp(1),
                               L.setOp(2)),
                       2)`,
+         1)
+})
+
+describe("L.cache", () => {
+  testEq(`{ let n = 0
+          ; const inc =
+              X.cache(X.choose(x => {n += 1; return X.modifyOp(R.inc)}))
+          ; return [X.transform([X.elems, inc], [1, 2, 3]),
+                    X.transform([X.elems, inc], [3, 2, 1]),
+                    n] }`,
+         [[2,3,4], [4,3,2], 5])
+  testEq(`{ const c = new Map()
+          ; const x = X.cache("x", c)
+          ; X.get(x, {x: 1})
+          ; X.get(x, {x: 1})
+          ; return c.size}`,
          1)
 })
 

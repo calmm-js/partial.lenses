@@ -758,6 +758,23 @@ export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
+// Caching
+
+export function cache(o) {
+  if (process.env.NODE_ENV !== "production")
+    warn(cache, `\`L.cache\` is experimental and might be removed or changed before next major release.`)
+  const map = arguments[1] || new Map()
+  let C_, xi2yC_
+  o = toFunction(o)
+  return (x, i, C, xi2yC) => {
+    let entry = map.get(i)
+    entry || map.set(i, entry = [zeroOp])
+    return I.identicalU(entry[0], x) && xi2yC_ === xi2yC && C_ === C
+      ? entry[1]
+      : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC)
+  }
+}
+
 // Transforming
 
 export const assignOp = x => [propsOf(x), setOp(x)]

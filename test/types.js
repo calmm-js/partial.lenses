@@ -108,6 +108,10 @@ export const optional = T_optic
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const zero = T_optic
 
+// Caching
+
+export const cache = T.fn([T_optic], T_optic)
+
 // Transforming
 
 export const assignOp = T.fn([T.instanceOf(Object)], T_optic)

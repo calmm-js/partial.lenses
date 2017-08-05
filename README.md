@@ -53,6 +53,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
+    * [Caching](#caching)
+      * [`L.cache(optic[, map]) ~> optic`](#L-cache "L.cache: (POptic s a[, Map]) -> POptic s a") <small><sup>v11.15.0</sup></small>
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
@@ -1202,6 +1204,47 @@ L.collect([L.elems,
           [1, {x: 2}, [3,4]])
 // [ 2, 3, 4 ]
 ```
+
+#### Caching
+
+#### <a id="L-cache"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-cache) [`L.cache(optic[, map]) ~> optic`](#L-cache "L.cache: (POptic s a[, Map]) -> POptic s a") <small><sup>v11.15.0</sup></small>
+
+`L.cache` wraps a given optic so that the last operation, inputs, and the result
+are cached and when used repeatedly with the same operation and inputs, the
+cached result is used without recomputing it.  `L.cache` stores the cached
+results by index and also works with indexed traversals such as
+[`L.elems`](#L-elems) and [`L.values`](#L-values).  The second argument to
+`L.cache` is optional and can be used to give the
+[`Map`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map)
+to use for caching results explicitly.  When not given, a `Map` is created
+internally by `L.cache`.
+
+**WARNING: `L.cache` is experimental and might be removed or changed before next
+major release.**
+
+Here is a contrived example
+
+```js
+const incOp = L.cache(L.choose(_ => console.log("incOp") || L.modifyOp(R.inc)))
+
+R.identity({
+  fst: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2}),
+  snd: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2})
+})
+// incOp
+// incOp
+// { fst: { x: 2, y: 3 }, snd: { x: 2, y: 3 } }
+```
+
+that demonstrates that the cached `incOp` is only performed twice instead of
+four times.
+
+Note that simply wrapping optics with `L.cache` does not generally improve
+performance and may even cause memory usage issues.  When used on an optic that
+appears after `L.elems`, for example, a cache entry is recorded for each element
+in the operated array, which may take a significant amount of memory.  However,
+when used strategically, `L.cache` can be used to make complex transforms
+operate [incrementally](https://en.wikipedia.org/wiki/Incremental_computing).
 
 #### Debugging
 
