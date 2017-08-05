@@ -1073,6 +1073,12 @@ describe("L.cache", () => {
                     X.transform([X.elems, inc], [3, 2, 1]),
                     n] }`,
          [[2,3,4], [4,3,2], 5])
+  testEq(`{ const c = new Map()
+          ; const x = X.cache("x", c)
+          ; X.get(x, {x: 1})
+          ; X.get(x, {x: 1})
+          ; return c.size}`,
+         1)
 })
 
 if (process.env.NODE_ENV !== "production") {
