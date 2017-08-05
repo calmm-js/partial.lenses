@@ -962,6 +962,21 @@ var zero = function zero(x, i, C, xi2yC) {
   return zeroOp(x, i, C, xi2yC);
 };
 
+// Caching
+
+function cache(o) {
+  warn(cache, "`L.cache` is experimental and might be removed or changed before next major release.");
+  var map = arguments[1] || new Map();
+  var C_ = void 0,
+      xi2yC_ = void 0;
+  o = toFunction(o);
+  return function (x, i, C, xi2yC) {
+    var entry = map.get(i);
+    entry || map.set(i, entry = [zeroOp]);
+    return I.identicalU(entry[0], x) && xi2yC_ === xi2yC && C_ === C ? entry[1] : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC);
+  };
+}
+
 // Transforming
 
 var assignOp = function assignOp(x) {
@@ -1476,6 +1491,7 @@ exports.choice = choice;
 exports.when = when;
 exports.optional = optional;
 exports.zero = zero;
+exports.cache = cache;
 exports.assignOp = assignOp;
 exports.modifyOp = modifyOp;
 exports.setOp = setOp;

@@ -1,4 +1,4 @@
-import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
+import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, identicalU, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
 import * as I from 'infestines';
 
 var dep = function dep(xs2xsyC) {
@@ -959,6 +959,21 @@ var zero = function zero(x, i, C, xi2yC) {
   return zeroOp(x, i, C, xi2yC);
 };
 
+// Caching
+
+function cache(o) {
+  if (process.env.NODE_ENV !== "production") warn(cache, "`L.cache` is experimental and might be removed or changed before next major release.");
+  var map = arguments[1] || new Map();
+  var C_ = void 0,
+      xi2yC_ = void 0;
+  o = toFunction(o);
+  return function (x, i, C, xi2yC) {
+    var entry = map.get(i);
+    entry || map.set(i, entry = [zeroOp]);
+    return identicalU(entry[0], x) && xi2yC_ === xi2yC && C_ === C ? entry[1] : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC);
+  };
+}
+
 // Transforming
 
 var assignOp = function assignOp(x) {
@@ -1455,4 +1470,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

@@ -93,6 +93,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a> <small><sup>v6.0.0</sup></small></li>
 </ul>
 </li>
+<li><a href="#caching">Caching</a><ul>
+<li><a href="#L-cache" title="L.cache: (POptic s a[, Map]) -&gt; POptic s a"><code>L.cache(optic[, map]) ~&gt; optic</code></a> <small><sup>v11.15.0</sup></small></li>
+</ul>
+</li>
 <li><a href="#debugging">Debugging</a><ul>
 <li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></li>
 </ul>
@@ -1034,6 +1038,35 @@ read-only lens whose view is always <code>undefined</code>.</p>
                    L.zero)],
           [1, {x: 2}, [3,4]])
 </code></pre>
+<h4 id="caching">Caching</h4>
+<h4><a id="L-cache"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-cache">■</a> <a href="#L-cache" title="L.cache: (POptic s a[, Map]) -&gt; POptic s a"><code>L.cache(optic[, map]) ~&gt; optic</code></a> <small><sup>v11.15.0</sup></small></h4>
+<p><code>L.cache</code> wraps a given optic so that the last operation, inputs, and the result
+are cached and when used repeatedly with the same operation and inputs, the
+cached result is used without recomputing it.  <code>L.cache</code> stores the cached
+results by index and also works with indexed traversals such as
+<a href="#L-elems"><code>L.elems</code></a> and <a href="#L-values"><code>L.values</code></a>.  The second argument to
+<code>L.cache</code> is optional and can be used to give the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map"><code>Map</code></a>
+to use for caching results explicitly.  When not given, a <code>Map</code> is created
+internally by <code>L.cache</code>.</p>
+<p><strong>WARNING: <code>L.cache</code> is experimental and might be removed or changed before next
+major release.</strong></p>
+<p>Here is a contrived example</p>
+<pre><code class="hljs lang-js">var incOp = L.cache(L.choose(_ =&gt; console.log(&quot;incOp&quot;) || L.modifyOp(R.inc)))
+
+R.identity({
+  fst: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2}),
+  snd: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2})
+})
+</code></pre>
+<p>that demonstrates that the cached <code>incOp</code> is only performed twice instead of
+four times.</p>
+<p>Note that simply wrapping optics with <code>L.cache</code> does not generally improve
+performance and may even cause memory usage issues.  When used on an optic that
+appears after <code>L.elems</code>, for example, a cache entry is recorded for each element
+in the operated array, which may take a significant amount of memory.  However,
+when used strategically, <code>L.cache</code> can be used to make complex transforms
+operate <a href="https://en.wikipedia.org/wiki/Incremental_computing">incrementally</a>.</p>
 <h4 id="debugging">Debugging</h4>
 <h5><a id="L-log"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-log">■</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></h5>
 <p><code>L.log(...labels)</code> is an identity optic that
