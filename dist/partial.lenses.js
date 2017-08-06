@@ -274,12 +274,6 @@ var both = function both(l, r) {
   return void 0 !== l ? void 0 !== r ? new Both(l, r) : l : r;
 };
 
-var cboth = function cboth(h) {
-  return function (t) {
-    return both(h, t);
-  };
-};
-
 function pushTo(n, ys) {
   while (n && isBoth(n)) {
     var l = n.l;
@@ -352,8 +346,24 @@ var mkTraverse = function mkTraverse(after, toC) {
 
 //
 
+var cons = function cons(h) {
+  return function (t) {
+    return void 0 !== h ? [h, t] : t;
+  };
+};
+var consTo = /*#__PURE__*/(res(freeze))(function (n) {
+  if (cons !== n) {
+    var xs = [];
+    do {
+      xs.push(n[0]);
+      n = n[1];
+    } while (cons !== n);
+    return xs;
+  }
+});
+
 var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i, n) {
-  return i < n ? ap(map(cboth, xi2yA(xs[i], i)), delay(function () {
+  return i < n ? ap(map(cons, xi2yA(xs[i], i)), delay(function () {
     return traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i + 1, n);
   })) : z;
 };
@@ -364,11 +374,11 @@ var traversePartialIndex = /*#__PURE__*/(par(0, ef(reqApplicative("elems"))))(fu
       of = A.of,
       delay = A.delay;
 
-  var xsA = of(void 0),
+  var xsA = of(cons),
       i = xs.length;
   if (delay) xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i);else while (i--) {
-    xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA);
-  }return map(toArray, xsA);
+    xsA = ap(map(cons, xi2yA(xs[i], i)), xsA);
+  }return map(consTo, xsA);
 });
 
 //
@@ -689,7 +699,7 @@ var branchOn = /*#__PURE__*/(dep(function (_ref) {
     var i = keys$$1.length;
     if (!i) return of(object0ToUndefined(x));
     if (!(x instanceof Object)) x = I.object0;
-    var xsA = of(0);
+    var xsA = of(cpair);
     if (delay) {
       xsA = branchOnLazy(keys$$1, vals, map, ap, xsA, delay, A, xi2yA, x, 0);
     } else {
@@ -786,7 +796,7 @@ var iterCollect = function iterCollect(s) {
 var iterLazy = function iterLazy(map, ap, of, delay, xi2yA, t, s) {
   return (s = reNext(s, t)) ? ap(ap(map(iterCollect, of(s)), xi2yA(reValue(s), reIndex(s))), delay(function () {
     return iterLazy(map, ap, of, delay, xi2yA, t, s);
-  })) : of(void 0);
+  })) : of(iterCollect);
 };
 
 function iterEager(map, ap, of, _, xi2yA, t, s) {
@@ -794,7 +804,7 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
   while (s = reNext(s, t)) {
     ss.push(s);
   }var i = ss.length;
-  var r = of(void 0);
+  var r = of(iterCollect);
   while (i--) {
     s = ss[i];
     r = ap(ap(map(iterCollect, of(s)), xi2yA(reValue(s), reIndex(s))), r);
@@ -808,7 +818,7 @@ var matchesJoin = function matchesJoin(input) {
   return function (matches) {
     var result = "";
     var lastIndex = 0;
-    while (matches) {
+    while (iterCollect !== matches) {
       var m = matches[0],
           i = reIndex(m);
       result += input.slice(lastIndex, i);
