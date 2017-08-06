@@ -1052,6 +1052,11 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, 
   }
 });
 
+var flatten =
+/*#__PURE__*/lazy(function (rec) {
+  return iftes(Array.isArray, [elems, rec], identity);
+});
+
 var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
     return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
@@ -1500,6 +1505,7 @@ exports.log = log;
 exports.seq = seq;
 exports.branch = branch;
 exports.elems = elems;
+exports.flatten = flatten;
 exports.values = values;
 exports.matches = matches;
 exports.all = all;

@@ -1049,6 +1049,11 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(2, ef
   }
 });
 
+var flatten =
+/*#__PURE__*/lazy(function (rec) {
+  return iftes(Array.isArray, [elems, rec], identity);
+});
+
 var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
     return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(keys(xs), void 0)(xs, void 0, A, xi2yA);
@@ -1470,4 +1475,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
