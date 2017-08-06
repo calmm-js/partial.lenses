@@ -1002,7 +1002,7 @@ For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
 
 ```js
-const flatten = [
+const primitives = [
   L.optional,
   L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
                         R.is(Object), [L.values, rec],
@@ -1014,15 +1014,15 @@ Note that the above creates a cyclic representation of the traversal.
 Now, for example:
 
 ```js
-L.collect(flatten, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.collect(primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ 1, 2, 3, 4, 5, 6 ]
 ```
 ```js
-L.modify(flatten, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.modify(primitives, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
 ```
 ```js
-L.remove([flatten, L.when(x => 3 <= x && x <= 4)],
+L.remove([primitives, L.when(x => 3 <= x && x <= 4)],
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
@@ -1400,12 +1400,12 @@ const everywhere = [
                         L.identity))]
 ```
 
-The above `everywhere` transform is similar to
-the [`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere)
-transform of the [`fastener`](https://github.com/polytypic/fastener)
-zipper-library.  Note that the above `everywhere` and the [`flatten`](#L-lazy)
-example differ in that `flatten` only targets the non-object and non-array
-elements of the data structure while `everywhere` also targets those.
+The above `everywhere` transform is similar to the
+[`F.everywhere`](https://github.com/polytypic/fastener#F-everywhere) transform
+of the [`fastener`](https://github.com/polytypic/fastener) zipper-library.  Note
+that the above `everywhere` and the [`primitives`](#L-lazy) example differ in
+that `primitives` only targets the non-object and non-array elements of the data
+structure while `everywhere` also targets those.
 
 ```js
 L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
@@ -1646,7 +1646,7 @@ For example:
 
 ```js
 L.all(x => 1 <= x && x <= 6,
-      flatten,
+      primitives,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
@@ -1677,7 +1677,7 @@ For example:
 
 ```js
 L.any(x => x > 5,
-      flatten,
+      primitives,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
@@ -1848,7 +1848,7 @@ a single focus.  See also [`L.isDefined`](#L-isDefined).
 For example:
 
 ```js
-L.isEmpty(flatten, [[],[[[],[]],[]]])
+L.isEmpty(L.flatten, [[],[[[],[]],[]]])
 // true
 ```
 
@@ -1942,7 +1942,7 @@ For example:
 
 ```js
 L.none(x => x > 5,
-       flatten,
+       primitives,
        [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // false
 ```
@@ -2028,7 +2028,7 @@ Now:
 
 ```js
 all(x => x < 9,
-    flatten,
+    primitives,
     [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
