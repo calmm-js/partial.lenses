@@ -2059,7 +2059,7 @@ L.sumAs((x, i) => x + i, L.elems, [3,2,1])
 ### Lenses
 
 Lenses always have a single focus which can be [viewed](#L-get) directly.  Put
-in another way, a lens specific a path to a single element in a data structure.
+in another way, a lens specifies a path to a single element in a data structure.
 
 #### Operations on lenses
 
