@@ -1,5 +1,14 @@
 # Changelog
 
+## 11.16.1
+
+It is now guaranteed that when traversals in this library build intermediate
+lists of results and use `of` to create the initial empty list, the value used
+for the empty list is a unique value not otherwise exported outside of this
+library.  In particular, the values `0`, `null`, `undefined`, `false`, `NaN`,
+and `""` are not used as an empty list.  This has the benefit that it is then
+possible for client code to give such values special meaning in algebras.
+
 ## 11.0.0
 
 Switched the order of arguments to optics so that the first two arguments are

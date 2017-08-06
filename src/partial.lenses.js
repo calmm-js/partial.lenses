@@ -175,8 +175,6 @@ const isBoth = n => n.constructor === Both
 
 const both = (l, r) => void 0 !== l ? void 0 !== r ? new Both(l, r) : l : r
 
-const cboth = h => t => both(h, t)
-
 function pushTo(n, ys) {
   while (n && isBoth(n)) {
     const l = n.l
@@ -245,22 +243,34 @@ const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
 
 //
 
+const cons = h => t => void 0 !== h ? [h, t] : t
+const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(n => {
+  if (cons !== n) {
+    const xs = []
+    do {
+      xs.push(n[0])
+      n=n[1]
+    } while (cons !== n)
+    return xs
+  }
+})
+
 const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
   i < n
-  ? ap(map(cboth, xi2yA(xs[i], i)), delay(() =>
+  ? ap(map(cons, xi2yA(xs[i], i)), delay(() =>
        traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
   : z
 
 const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
   const {map, ap, of, delay} = A
-  let xsA = of(void 0),
+  let xsA = of(cons),
       i = xs.length
   if (delay)
     xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i)
   else
     while (i--)
-      xsA = ap(map(cboth, xi2yA(xs[i], i)), xsA)
-  return map(toArray, xsA)
+      xsA = ap(map(cons, xi2yA(xs[i], i)), xsA)
+  return map(consTo, xsA)
 })
 
 //
@@ -544,7 +554,7 @@ const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
     x = I.object0
-  let xsA = of(0)
+  let xsA = of(cpair)
   if (delay) {
     xsA = branchOnLazy(keys, vals, map, ap, xsA, delay, A, xi2yA, x, 0)
   } else {
@@ -622,14 +632,14 @@ const iterLazy = (map, ap, of, delay, xi2yA, t, s) =>
   ? ap(ap(map(iterCollect, of(s)),
           xi2yA(reValue(s), reIndex(s))),
        delay(() => iterLazy(map, ap, of, delay, xi2yA, t, s)))
-  : of(void 0)
+  : of(iterCollect)
 
 function iterEager(map, ap, of, _, xi2yA, t, s) {
   const ss = []
   while ((s = reNext(s, t)))
     ss.push(s)
   let i = ss.length
-  let r = of(void 0)
+  let r = of(iterCollect)
   while (i--) {
     s = ss[i]
     r = ap(ap(map(iterCollect, of(s)),
@@ -644,7 +654,7 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 const matchesJoin = input => matches => {
   let result = ""
   let lastIndex = 0
-  while (matches) {
+  while (iterCollect !== matches) {
     const m = matches[0], i = reIndex(m)
     result += input.slice(lastIndex, i)
     const s = matches[1]
