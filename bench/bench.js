@@ -218,7 +218,7 @@ R.forEach(bs => {
     `K.traversed().traversed().traversed().arrayOf(xsss100)`,
     `(() => { let acc = []; xsss100.forEach(x0 => { x0.forEach(x1 => { acc = acc.concat(x1); })}); return acc; })()`,
   ], [
-    `L.collect(flatten, xsss100)`,
+    `L.collect(L.flatten, xsss100)`,
     `R.flatten(xsss100)`,
   ], [
     `xs.map(inc)`,
@@ -407,7 +407,7 @@ R.forEach(bs => {
   ], [
     `L.concatAs(toList, List, L.elems, xs100)`,
   ], [
-    `L.modify(flatten, inc, xsss100)`,
+    `L.modify(L.flatten, inc, xsss100)`,
   ], [
     `L.selectAs(x => x > 3 ? x : undefined, L.elems, pi)`,
     `R.find(x => x > 3, pi)`,

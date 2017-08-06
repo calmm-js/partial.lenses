@@ -211,6 +211,7 @@ describe("arities", () => {
     find: 1,
     findHint: 2,
     findWith: 0,
+    flatten: 4,
     foldTraversalLens: 2,
     foldl: 4,
     foldr: 4,
@@ -1079,6 +1080,11 @@ describe("L.cache", () => {
           ; X.get(x, {x: 1})
           ; return c.size}`,
          1)
+})
+
+describe("L.flatten", () => {
+  testEq(`L.collect(L.flatten, 101)`, [101])
+  testEq(`L.collect(L.flatten, [["x"], [1, []], [[false]]])`, ["x", 1, false])
 })
 
 if (process.env.NODE_ENV !== "production") {

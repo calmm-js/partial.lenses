@@ -135,6 +135,7 @@ export const branch = T.fn([template(T_traversal)], T_traversal)
 // Traversals and combinators
 
 export const elems = T_traversal
+export const flatten = T_traversal
 export const values = T_traversal
 export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
 
