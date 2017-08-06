@@ -74,6 +74,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
+      * [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
       * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
     * [Folds over traversals](#folds-over-traversals)
@@ -1553,6 +1554,19 @@ L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
          R.inc,
          Int8Array.from([-1,4,0,2,4]))
 // Int8Array [ 0, 5, 1, 3, 5 ]
+```
+
+##### <a id="L-flatten"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-flatten) [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
+
+`L.flatten` is a traversal over the elements of arbitrarily nested arrays.
+Other [array-like](#array-like) objects are treated as elements by `L.flatten`.
+In case the immediate target of `L.flatten` is not an array, it is traversed.
+
+For example:
+
+```js
+L.join(" ", L.flatten, [[[1]], ["2"], 3])
+// "1 2 3"
 ```
 
 ##### <a id="L-values"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-values) [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
