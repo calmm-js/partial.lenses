@@ -1,5 +1,10 @@
 # Changelog
 
+## 11.17.0
+
+Fixed a bug in `L.countIf`.  Previously it didn't pass the index to the
+predicate as specified in the documentation.
+
 ## 11.16.1
 
 It is now guaranteed that when traversals in this library build intermediate

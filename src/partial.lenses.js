@@ -10,6 +10,8 @@ const not = x => !x
 const lt = (x, y) => x < y
 const gt = (x, y) => x > y
 
+const toBit = x => x ? 1 : 0
+
 const sliceIndex = (m, l, d, i) =>
   void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d
 
@@ -900,7 +902,7 @@ export const concatAs =
 export const concat = /*#__PURE__*/concatAs(I.id)
 
 export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
-  traverseU(Sum, x => p(x) ? 1 : 0, t, s))
+  traverseU(Sum, I.pipe2U(p, toBit), t, s))
 
 export const count = /*#__PURE__*/countIf(I.isDefined)
 
