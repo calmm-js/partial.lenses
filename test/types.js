@@ -163,7 +163,7 @@ export const concatAs = T.fn([T.fn([T_maybeDataO, T_index], T.any),
                              T.any)
 
 export const countIf =
-  T.fn([T.fn([T_maybeDataO, T_index], T.boolean),
+  T.fn([T.fn([T_maybeDataO, T_index], T.any),
         T_traversal,
         T_maybeDataI],
        T.number)
