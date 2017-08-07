@@ -735,6 +735,7 @@ describe("folds", () => {
   testEq(`L.mean(L.elems, [])`, NaN)
   testEq(`L.meanAs(x => x + 1, L.elems, [])`, NaN)
   testEq(`L.meanAs((x, i) => x+i, L.elems, [1,1,1])`, 2)
+  testEq(`L.meanAs(x => x < 0 ? undefined : x, L.elems, [-1,0,1])`, 0.5)
   testEq(`L.sum([L.elems, "x"], undefined)`, 0)
   testEq(`L.product([L.elems, "x"], undefined)`, 1)
   testEq(`L.sumAs(x => x === undefined ? 0 : R.negate(x),

@@ -198,7 +198,7 @@ export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
 
 
 export const mean = T.fn([T_traversal, T_maybeDataI], T.number)
-export const meanAs = T.fn([T.fn([T_maybeDataO, T_index], T.number),
+export const meanAs = T.fn([T.fn([T_maybeDataO, T_index], T.or(T.number, T.undef)),
                             T_traversal,
                             T_maybeDataI],
                            T.number)
