@@ -38,6 +38,8 @@ function deepFreeze(x) {
   return x
 }
 
+const always1 = /*#__PURE__*/I.always(1)
+
 //
 
 const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
@@ -931,6 +933,11 @@ export const join = /*#__PURE__*/joinAs(I.id)
 export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
 
 export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
+
+export const meanAs =
+  /*#__PURE__*/I.curry((xi2y, t, s) => sumAs(xi2y, t, s) / sumAs(always1, t, s))
+
+export const mean = /*#__PURE__*/I.curry((t, s) => sum(t, s) / count(t, s))
 
 export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
 

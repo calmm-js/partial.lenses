@@ -235,6 +235,8 @@ describe("arities", () => {
     matches: 1,
     maximum: 2,
     maximumBy: 3,
+    mean: 2,
+    meanAs: 3,
     minimum: 2,
     minimumBy: 3,
     modify: 3,
@@ -728,6 +730,11 @@ describe("folds", () => {
   testEq(`L.maximum(L.elems, [1,2,3])`, 3)
   testEq(`L.minimumBy(R.negate, L.elems, [1,2,3])`, 3)
   testEq(`L.minimum(L.elems, [1,2,3])`, 1)
+  testEq(`L.mean(L.elems, [3,4,2])`, 3)
+  testEq(`L.mean([L.elems, "x"], [{x: 3}, {y: 4}, {x: 2}])`, 2.5)
+  testEq(`L.mean(L.elems, [])`, NaN)
+  testEq(`L.meanAs(x => x + 1, L.elems, [])`, NaN)
+  testEq(`L.meanAs((x, i) => x+i, L.elems, [1,1,1])`, 2)
   testEq(`L.sum([L.elems, "x"], undefined)`, 0)
   testEq(`L.product([L.elems, "x"], undefined)`, 1)
   testEq(`L.sumAs(x => x === undefined ? 0 : R.negate(x),

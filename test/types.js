@@ -196,6 +196,13 @@ export const maximumBy =
        T.any)
 export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
 
+
+export const mean = T.fn([T_traversal, T_maybeDataI], T.number)
+export const meanAs = T.fn([T.fn([T_maybeDataO, T_index], T.number),
+                            T_traversal,
+                            T_maybeDataI],
+                           T.number)
+
 export const minimumBy = maximumBy
 export const minimum = maximum
 
