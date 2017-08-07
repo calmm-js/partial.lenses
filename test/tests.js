@@ -115,7 +115,7 @@ const run = expr => eval(`() => ${expr}`)(
 )
 
 const equals = (x, y) =>
-  (x && Object.getPrototypeOf(x)) === (y && Object.getPrototypeOf(y)) &&
+  R.identical(x && Object.getPrototypeOf(x), y && Object.getPrototypeOf(y)) &&
   R.equals(x, y)
 
 function toggleEnv() {
