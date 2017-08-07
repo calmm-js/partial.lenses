@@ -95,6 +95,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
       * [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-maximumBy "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
+      * [`L.mean(traversal, maybeData) ~> number`](#L-mean "L.mean: PTraversal s Number -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
+      * [`L.meanAs((maybeValue, index) => maybeNumber, traversal, maybeData) ~> number`](#L-meanAs "L.meanAs: ((Maybe a, Index) -> Maybe Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
       * [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#L-minimumBy "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
       * [`L.none((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-none "L.none: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean") <small><sup>v11.6.0</sup></small>
@@ -1903,6 +1905,28 @@ L.maximumBy(R.length, L.elems, ["first", "second", "--||--", "third"])
 ```
 
 Note that keys are ordered according to the `>` operator.
+
+##### <a id="L-mean"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-mean) [`L.mean(traversal, maybeData) ~> number`](#L-mean "L.mean: PTraversal s Number -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
+
+`L.mean` computes the arithmetic mean of the optional numbers targeted by the
+traversal.
+
+For example:
+
+```js
+L.mean([L.elems, "x"], [{x: 1}, {ignored: 3}, {x: 2}])
+// 1.5
+```
+
+##### <a id="L-meanAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-meanAs) [`L.meanAs((maybeValue, index) => maybeNumber, traversal, maybeData) ~> number`](#L-meanAs "L.meanAs: ((Maybe a, Index) -> Maybe Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
+
+`L.meanAs` computes the arithmetic mean of the optional numbers returned by the
+given function for the elements targeted by the traversal.
+
+```js
+L.meanAs((x, i) => x <= i ? undefined : x, L.elems, [3,1,4,1])
+// 3.5
+```
 
 ##### <a id="L-minimum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-minimum) [`L.minimum(traversal, maybeData) ~> maybeValue`](#L-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
 

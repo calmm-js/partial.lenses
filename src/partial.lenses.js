@@ -4,6 +4,8 @@ import * as C from "./contract"
 
 //
 
+const pipeO = (f, g) => f ? I.pipe2U(f, g) : g
+
 const toStringPartial = x => void 0 !== x ? String(x) : ""
 
 const not = x => !x
@@ -19,6 +21,7 @@ function pair(x0, x1) {return [x0, x1]}
 const cpair = x => xs => [x, xs]
 
 const unto = c => x => void 0 !== x ? x : c
+const unto0 = /*#__PURE__*/unto(0)
 
 const notPartial = x => void 0 !== x ? !x : x
 
@@ -236,7 +239,7 @@ const Select = /*#__PURE__*/ConcatOf(
   I.id)
 
 const mkSelect = toS => (xi2yM, t, s) =>
-  force(traverseU(Select, xi2yM ? I.pipe2U(xi2yM, toS) : toS, t, s)).v
+  force(traverseU(Select, pipeO(xi2yM, toS), t, s)).v
 
 const selectAny = /*#__PURE__*/mkSelect(x => x ? T : U)
 
@@ -932,6 +935,11 @@ export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
 
 export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
 
+export const meanAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
+  sumAs(pipeO(xi2y, unto0), t, s) / sumAs(pipeO(xi2y, I.isDefined), t, s))
+
+export const mean = /*#__PURE__*/meanAs()
+
 export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
 
 export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
@@ -950,7 +958,7 @@ export const select = /*#__PURE__*/selectAs()
 
 export const sumAs = /*#__PURE__*/traverse(Sum)
 
-export const sum = /*#__PURE__*/sumAs(unto(0))
+export const sum = /*#__PURE__*/sumAs(unto0)
 
 // Operations on lenses
 
