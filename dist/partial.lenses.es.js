@@ -58,6 +58,10 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 //
 
+var pipeO = function pipeO(f, g) {
+  return f ? pipe2U(f, g) : g;
+};
+
 var toStringPartial = function toStringPartial(x) {
   return void 0 !== x ? String(x) : "";
 };
@@ -90,6 +94,7 @@ var unto = function unto(c) {
     return void 0 !== x ? x : c;
   };
 };
+var unto0 = /*#__PURE__*/unto(0);
 
 var notPartial = function notPartial(x) {
   return void 0 !== x ? !x : x;
@@ -325,7 +330,7 @@ var Select = /*#__PURE__*/ConcatOf(function (l, r) {
 
 var mkSelect = function mkSelect(toS) {
   return function (xi2yM, t, s) {
-    return force(traverseU(Select, xi2yM ? pipe2U(xi2yM, toS) : toS, t, s)).v;
+    return force(traverseU(Select, pipeO(xi2yM, toS), t, s)).v;
   };
 };
 
@@ -1126,8 +1131,8 @@ var concatAs =
 var concat = /*#__PURE__*/concatAs(id);
 
 var countIf = /*#__PURE__*/curry(function (p, t, s) {
-  return traverseU(Sum, function (x) {
-    return p(x) ? 1 : 0;
+  return traverseU(Sum, function (x, i) {
+    return p(x, i) ? 1 : 0;
   }, t, s);
 });
 
@@ -1164,6 +1169,12 @@ var maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair);
 
 var maximum = /*#__PURE__*/traverse(Mum(gt), id);
 
+var meanAs = /*#__PURE__*/curry(function (xi2y, t, s) {
+  return sumAs(pipeO(xi2y, unto0), t, s) / sumAs(pipeO(xi2y, isDefined), t, s);
+});
+
+var mean = /*#__PURE__*/meanAs();
+
 var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), id);
@@ -1186,7 +1197,7 @@ var select = /*#__PURE__*/selectAs();
 
 var sumAs = /*#__PURE__*/traverse(Sum);
 
-var sum = /*#__PURE__*/sumAs(unto(0));
+var sum = /*#__PURE__*/sumAs(unto0);
 
 // Operations on lenses
 
@@ -1485,4 +1496,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, uri, uriComponent, json, seemsArrayLike };

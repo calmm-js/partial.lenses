@@ -155,6 +155,8 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-joinAs" title="L.joinAs: ((Maybe a, Index) -&gt; Maybe String) -&gt; String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.joinAs((maybeValue, index) =&gt; maybeString, string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></li>
 <li><a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-maximumBy" title="L.maximumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v11.2.0</sup></small></li>
+<li><a href="#L-mean" title="L.mean: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.mean(traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.17.0</sup></small></li>
+<li><a href="#L-meanAs" title="L.meanAs: ((Maybe a, Index) -&gt; Maybe Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.meanAs((maybeValue, index) =&gt; maybeNumber, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.17.0</sup></small></li>
 <li><a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-minimumBy" title="L.minimumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v11.2.0</sup></small></li>
 <li><a href="#L-none" title="L.none: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.none((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v11.6.0</sup></small></li>
@@ -1476,6 +1478,17 @@ returned key is <code>undefined</code> are skipped.</p>
 <pre><code class="hljs lang-js">L.maximumBy(R.length, L.elems, [&quot;first&quot;, &quot;second&quot;, &quot;--||--&quot;, &quot;third&quot;])
 </code></pre>
 <p>Note that keys are ordered according to the <code>&gt;</code> operator.</p>
+<h5><a id="L-mean"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-mean">■</a> <a href="#L-mean" title="L.mean: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.mean(traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.17.0</sup></small></h5>
+<p><code>L.mean</code> computes the arithmetic mean of the optional numbers targeted by the
+traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.mean([L.elems, &quot;x&quot;], [{x: 1}, {ignored: 3}, {x: 2}])
+</code></pre>
+<h5><a id="L-meanAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-meanAs">■</a> <a href="#L-meanAs" title="L.meanAs: ((Maybe a, Index) -&gt; Maybe Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.meanAs((maybeValue, index) =&gt; maybeNumber, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.17.0</sup></small></h5>
+<p><code>L.meanAs</code> computes the arithmetic mean of the optional numbers returned by the
+given function for the elements targeted by the traversal.</p>
+<pre><code class="hljs lang-js">L.meanAs((x, i) =&gt; x &lt;= i ? undefined : x, L.elems, [3,1,4,1])
+</code></pre>
 <h5><a id="L-minimum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-minimum">■</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.minimum</code> computes a minimum of the optional elements targeted by the
 traversal.</p>

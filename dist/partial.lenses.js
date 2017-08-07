@@ -61,6 +61,10 @@ var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = [
 
 //
 
+var pipeO = function pipeO(f, g) {
+  return f ? I.pipe2U(f, g) : g;
+};
+
 var toStringPartial = function toStringPartial(x) {
   return void 0 !== x ? String(x) : "";
 };
@@ -93,6 +97,7 @@ var unto = function unto(c) {
     return void 0 !== x ? x : c;
   };
 };
+var unto0 = /*#__PURE__*/unto(0);
 
 var notPartial = function notPartial(x) {
   return void 0 !== x ? !x : x;
@@ -328,7 +333,7 @@ var Select = /*#__PURE__*/ConcatOf(function (l, r) {
 
 var mkSelect = function mkSelect(toS) {
   return function (xi2yM, t, s) {
-    return force(traverseU(Select, xi2yM ? I.pipe2U(xi2yM, toS) : toS, t, s)).v;
+    return force(traverseU(Select, pipeO(xi2yM, toS), t, s)).v;
   };
 };
 
@@ -1129,8 +1134,8 @@ var concatAs =
 var concat = /*#__PURE__*/concatAs(I.id);
 
 var countIf = /*#__PURE__*/I.curry(function (p, t, s) {
-  return traverseU(Sum, function (x) {
-    return p(x) ? 1 : 0;
+  return traverseU(Sum, function (x, i) {
+    return p(x, i) ? 1 : 0;
   }, t, s);
 });
 
@@ -1167,6 +1172,12 @@ var maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair);
 
 var maximum = /*#__PURE__*/traverse(Mum(gt), I.id);
 
+var meanAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
+  return sumAs(pipeO(xi2y, unto0), t, s) / sumAs(pipeO(xi2y, I.isDefined), t, s);
+});
+
+var mean = /*#__PURE__*/meanAs();
+
 var minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair);
 
 var minimum = /*#__PURE__*/traverse(Mum(lt), I.id);
@@ -1189,7 +1200,7 @@ var select = /*#__PURE__*/selectAs();
 
 var sumAs = /*#__PURE__*/traverse(Sum);
 
-var sum = /*#__PURE__*/sumAs(unto(0));
+var sum = /*#__PURE__*/sumAs(unto0);
 
 // Operations on lenses
 
@@ -1535,6 +1546,8 @@ exports.joinAs = joinAs;
 exports.join = join;
 exports.maximumBy = maximumBy;
 exports.maximum = maximum;
+exports.meanAs = meanAs;
+exports.mean = mean;
 exports.minimumBy = minimumBy;
 exports.minimum = minimum;
 exports.none = none;
