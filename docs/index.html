@@ -1533,6 +1533,9 @@ for the elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.productAs((x, i) =&gt; x + i, L.elems, [3,2,1])
 </code></pre>
+<p>Note that unlike many other folds, <code>L.productAs</code> expects the function to only
+return numbers and <code>undefined</code> is not treated in a special way.  If you need to
+skip elements, you can return the number <code>1</code>.</p>
 <h5><a id="L-select"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-select">■</a> <a href="#L-select" title="L.select: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.select(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.select</code> goes lazily over the elements focused on by the given traversal and
 returns the first non-<code>undefined</code> element.</p>
@@ -1570,6 +1573,9 @@ elements targeted by the traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.sumAs((x, i) =&gt; x + i, L.elems, [3,2,1])
 </code></pre>
+<p>Note that unlike many other folds, <code>L.sumAs</code> expects the function to only return
+numbers and <code>undefined</code> is not treated in a special way.  If you need to skip
+elements, you can return the number <code>0</code>.</p>
 <h3 id="lenses">Lenses</h3>
 <p>Lenses always have a single focus which can be <a href="#L-get">viewed</a> directly.  Put
 in another way, a lens specifies a path to a single element in a data structure.</p>

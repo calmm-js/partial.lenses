@@ -2012,6 +2012,10 @@ L.productAs((x, i) => x + i, L.elems, [3,2,1])
 // 27
 ```
 
+Note that unlike many other folds, `L.productAs` expects the function to only
+return numbers and `undefined` is not treated in a special way.  If you need to
+skip elements, you can return the number `1`.
+
 ##### <a id="L-select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-select) [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>
 
 `L.select` goes lazily over the elements focused on by the given traversal and
@@ -2079,6 +2083,10 @@ For example:
 L.sumAs((x, i) => x + i, L.elems, [3,2,1])
 // 9
 ```
+
+Note that unlike many other folds, `L.sumAs` expects the function to only return
+numbers and `undefined` is not treated in a special way.  If you need to skip
+elements, you can return the number `0`.
 
 ### Lenses
 
