@@ -775,7 +775,7 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
 export function cache(o) {
   if (process.env.NODE_ENV !== "production")
-    warn(cache, `\`L.cache\` is experimental and might be removed or changed before next major release.`)
+    warn(cache, "`L.cache` is experimental and might be removed or changed before next major release.")
   const map = arguments[1] || new Map()
   let C_, xi2yC_
   o = toFunction(o)
