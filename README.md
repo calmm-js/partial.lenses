@@ -762,7 +762,7 @@ behave.  Here is a table of the means of composition supported by this library:
 | [Querying](#querying)     | [`L.choice(...optics)`](#L-choice) and [`L.chain(value => optic, optic)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [optics](#optics)
 | Picking                   | [`L.pick({...prop:lens})`](#L-pick)                                                 | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
 | Branching                 | [`L.branch({...prop:traversal})`](#L-branch)                                        | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
-| [Sequencing](#sequencing) | [`L.seq(...transforms)`](#L-seq)                                                    | Sequential application of [transforms](#transforms)
+| [Sequencing](#sequencing) | [`L.seq(...transforms)`](#L-seq)                                                    | <a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over [transforms](#transforms)
 
 The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
