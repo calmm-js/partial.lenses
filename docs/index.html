@@ -834,31 +834,27 @@ a
 or
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a> depending
 on the optic as specified in <a href="#L-toFunction"><code>L.toFunction</code></a>.</p>
-<p>Here is a bit involved example that uses the State monad and <code>L.traverse</code> to
-replace elements in a data structure by the number of times those elements have
-appeared at that point in the data structure:</p>
-<pre><code class="hljs lang-js">var Monad = ({of, chain}) =&gt; ({
-  of,
-  chain,
-  ap: (x2yS, xS) =&gt; chain(x2y =&gt; chain(x =&gt; of(x2y(x)), xS), x2yS),
-  map: (x2y, xS) =&gt; chain(x =&gt; of(x2y(x)), xS)
-})
-
-var StateM = Monad({
-  of: x =&gt; s =&gt; [x, s],
-  chain: (x2yS, xS) =&gt; s1 =&gt; {
-    const [x, s] = xS(s1)
-    return x2yS(x)(s)
-  }
-})
-
-var countS = x =&gt; x2n =&gt; {
-  const k = `${x}`
-  const n = (x2n[k] || 0) + 1
-  return [n, L.set(k, n, x2n)]
+<p>Here is a bit involved example that uses the State applicative and <code>L.traverse</code>
+to replace elements in a data structure by the number of times those elements
+have appeared at that point in the data structure:</p>
+<pre><code class="hljs lang-js">var State = {
+  of: result =&gt; state =&gt; ({state, result}),
+  ap: (x2yS, xS) =&gt; state0 =&gt; {
+    const {state: state1, result: x2y} = x2yS(state0)
+    const {state, result: x} = xS(state1)
+    return {state, result: x2y(x)}
+  },
+  map: (x2y, xS) =&gt; State.ap(State.of(x2y), xS),
+  run: (s, xS) =&gt; xS(s).result
 }
 
-L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
+var count = x =&gt; x2n =&gt; {
+  const k = `${x}`
+  const n = (x2n[k] || 0) + 1
+  return {result: n, state: L.set(k, n, x2n)}
+}
+
+State.run({}, L.traverse(State, count, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5]))
 </code></pre>
 <h4 id="nesting">Nesting</h4>
 <p>The <a href="#L-compose"><code>L.compose</code></a> combinator allows one to build optics that deal

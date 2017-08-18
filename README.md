@@ -888,33 +888,29 @@ or
 [`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad) depending
 on the optic as specified in [`L.toFunction`](#L-toFunction).
 
-Here is a bit involved example that uses the State monad and `L.traverse` to
-replace elements in a data structure by the number of times those elements have
-appeared at that point in the data structure:
+Here is a bit involved example that uses the State applicative and `L.traverse`
+to replace elements in a data structure by the number of times those elements
+have appeared at that point in the data structure:
 
 ```js
-const Monad = ({of, chain}) => ({
-  of,
-  chain,
-  ap: (x2yS, xS) => chain(x2y => chain(x => of(x2y(x)), xS), x2yS),
-  map: (x2y, xS) => chain(x => of(x2y(x)), xS)
-})
-
-const StateM = Monad({
-  of: x => s => [x, s],
-  chain: (x2yS, xS) => s1 => {
-    const [x, s] = xS(s1)
-    return x2yS(x)(s)
-  }
-})
-
-const countS = x => x2n => {
-  const k = `${x}`
-  const n = (x2n[k] || 0) + 1
-  return [n, L.set(k, n, x2n)]
+const State = {
+  of: result => state => ({state, result}),
+  ap: (x2yS, xS) => state0 => {
+    const {state: state1, result: x2y} = x2yS(state0)
+    const {state, result: x} = xS(state1)
+    return {state, result: x2y(x)}
+  },
+  map: (x2y, xS) => State.ap(State.of(x2y), xS),
+  run: (s, xS) => xS(s).result
 }
 
-L.traverse(StateM, countS, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5])({})[0]
+const count = x => x2n => {
+  const k = `${x}`
+  const n = (x2n[k] || 0) + 1
+  return {result: n, state: L.set(k, n, x2n)}
+}
+
+State.run({}, L.traverse(State, count, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5]))
 // [1, 1, 2, 3, 2, 1, 1, 2, 2, 1]
 ```
 
