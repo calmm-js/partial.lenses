@@ -288,7 +288,7 @@ function object0ToUndefined(o) {
 //
 
 const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
-  (0,F.map)(v => set(i, v, x), xi2yF(get(i, x), i))
+  F.map(v => set(i, v, x), xi2yF(get(i, x), i))
 
 //
 
@@ -453,9 +453,9 @@ function modifyComposed(os, xi2y, x, y) {
 //
 
 const lensU = (get, set) => (x, i, F, xi2yF) =>
-  (0,F.map)(y => set(y, x, i), xi2yF(get(x, i), i))
+  F.map(y => set(y, x, i), xi2yF(get(x, i), i))
 
-const isoU = (bwd, fwd) => (x, i, F, xi2yF) => (0,F.map)(fwd, xi2yF(bwd(x), i))
+const isoU = (bwd, fwd) => (x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i))
 
 //
 
@@ -606,7 +606,7 @@ const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ?
 })
 
 const fromReader = wi2x => (w, i, F, xi2yF) =>
-  (0,F.map)(I.always(w), xi2yF(wi2x(w, i), i))
+  F.map(I.always(w), xi2yF(wi2x(w, i), i))
 
 //
 
@@ -680,7 +680,7 @@ const orElseU = (back, prim) =>
 
 function zeroOp(y, i, C, xi2yC, x) {
   const of = C.of
-  return of ? of(y) : (0,C.map)(I.always(y), xi2yC(x, i))
+  return of ? of(y) : C.map(I.always(y), xi2yC(x, i))
 }
 
 //
@@ -819,7 +819,7 @@ export const seq = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : 
   function loop(M, xi2xM, i, j) {
     return j === n
       ? M.of
-      : x => (0,M.chain)(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
+      : x => M.chain(loop(M, xi2xM, i, j+1), xMs[j](x, i, M, xi2xM))
   }
   return (x, i, M, xi2xM) => loop(M, xi2xM, i, 0)(x)
 })
@@ -844,7 +844,7 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
       :    A === Select ? selectElems(xi2yA, xs)
       :                   traversePartialIndex(A, xi2yA, xs)
   } else {
-    return (0,A.of)(xs)
+    return A.of(xs)
   }
 })
 
@@ -856,7 +856,7 @@ export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
     return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs))
       :                  branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
   } else {
-    return (0,A.of)(xs)
+    return A.of(xs)
   }
 })
 
@@ -898,7 +898,7 @@ export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
 export const collect = /*#__PURE__*/collectAs(I.id)
 
 export const concatAs =
-  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, (0,m.empty)(), m.delay))
+  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, m.empty(), m.delay))
 
 export const concat = /*#__PURE__*/concatAs(I.id)
 
@@ -1006,35 +1006,35 @@ export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.i
 
 export function defaults(out) {
   function o2u(x) {return replaced(out, void 0, x)}
-  return (x, i, F, xi2yF) => (0,F.map)(o2u, xi2yF(void 0 !== x ? x : out, i))
+  return (x, i, F, xi2yF) => F.map(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
 export function define(v) {
   const untoV = unto(v)
-  return (x, i, F, xi2yF) => (0,F.map)(untoV, xi2yF(void 0 !== x ? x : v, i))
+  return (x, i, F, xi2yF) => F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
 }
 
 export const normalize = xi2x => (x, i, F, xi2yF) =>
-  (0,F.map)(x => void 0 !== x ? xi2x(x, i) : x,
-            xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
+  F.map(x => void 0 !== x ? xi2x(x, i) : x,
+        xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
 
 export const required = inn => replace(inn, void 0)
 
 export const rewrite = yi2y => (x, i, F, xi2yF) =>
-  (0,F.map)(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
+  F.map(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
 
 // Lensing arrays
 
 export function append(xs, _, F, xi2yF) {
   const i = seemsArrayLike(xs) ? xs.length : 0
-  return (0,F.map)(x => setIndex(i, x, xs), xi2yF(void 0, i))
+  return F.map(x => setIndex(i, x, xs), xi2yF(void 0, i))
 }
 
 export const filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(lens => toFunction([lens, isoU(I.id, C.ef(reqMaybeArray("`filter` must be set with undefined or an array-like object")))])))(xi2b => (xs, i, F, xi2yF) => {
   let ts, fs
   if (seemsArrayLike(xs))
     partitionIntoIndex(xi2b, xs, ts = [], fs = [])
-  return (0,F.map)(
+  return F.map(
     ts => {
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
@@ -1050,14 +1050,14 @@ export const filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
 export const find = xi2b => (xs, _i, F, xi2yF) => {
   const ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys)
-  return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
+  return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
 
 export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   return (xs, _i, F, xi2yF) => {
     const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
-    return (0,F.map)(v => setIndex(i, v, ys), xi2yF(ys[i], i))
+    return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
   }
 })
 
@@ -1078,7 +1078,7 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end)
-  return (0,F.map)(
+  return F.map(
     zs => {
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
       return n
@@ -1124,7 +1124,7 @@ export function removable(...ps) {
       if (I.hasU(ps[i], y))
         return y
   }
-  return (x, i, F, xi2yF) => (0,F.map)(drop, xi2yF(x, i))
+  return (x, i, F, xi2yF) => F.map(drop, xi2yF(x, i))
 }
 
 // Providing defaults
@@ -1135,12 +1135,12 @@ export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
 
 export const pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqTemplate("pick"))))(template => {
   return (x, i, F, xi2yF) =>
-    (0,F.map)(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
+    F.map(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 })
 
 export const replace = /*#__PURE__*/I.curry((inn, out) => {
   function o2i(x) {return replaced(out, inn, x)}
-  return (x, i, F, xi2yF) => (0,F.map)(o2i, xi2yF(replaced(inn, out, x), i))
+  return (x, i, F, xi2yF) => F.map(o2i, xi2yF(replaced(inn, out, x), i))
 })
 
 // Operations on isomorphisms
@@ -1154,7 +1154,7 @@ export const iso = /*#__PURE__*/I.curry(isoU)
 // Isomorphism combinators
 
 export const inverse = iso => (x, i, F, xi2yF) =>
-  (0,F.map)(x => getU(iso, x), xi2yF(setU(iso, x, void 0), i))
+  F.map(x => getU(iso, x), xi2yF(setU(iso, x, void 0), i))
 
 // Basic isomorphisms
 
