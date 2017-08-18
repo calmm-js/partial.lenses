@@ -23,7 +23,7 @@ const unto0 = /*#__PURE__*/unto(0)
 
 const notPartial = x => void 0 !== x ? !x : x
 
-const expect = (p, f) => x => p(x) ? f(x) : undefined
+const expect = (p, f) => x => p(x) ? f(x) : void 0
 
 const freeze = x => x && Object.freeze(x)
 
