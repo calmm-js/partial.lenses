@@ -1,7 +1,7 @@
 window.klipse_settings = {
   codemirror_options_in: {
     lineWrapping: true,
-    autoCloseBrackets: true,
+    autoCloseBrackets: false,
     cursorBlinkRate: 0
   },
   codemirror_options_out: {
