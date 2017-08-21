@@ -2830,7 +2830,7 @@ For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
 
 ```js
-const sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
+const sampleFlat = {px: 1, py: 2, vx: 1, vy: 0}
 ```
 
 We can use `L.pick` to create a lens to pick apart the data and put it back
@@ -2867,6 +2867,15 @@ underlying object, so writing through the lens will give unpredictable results.
 Note that, when set, `L.pick` simply ignores any properties that the given
 template doesn't mention.  Also note that the underlying data structure need not
 be an object.
+
+Note that the `sanitize` lens defined above can also been seen as an
+[isomorphism](#isomorphisms) between the "flat" and "nested" forms of the data.
+It can even be inverted using [`L.inverse`](#L-inverse):
+
+```js
+L.get(L.inverse(sanitize), {pos: {x: 1, y: 2}, vel: {x: 1, y: 0}})
+// { px: 1, py: 2, vx: 1, vy: 0 }
+```
 
 ##### <a id="L-replace"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-replace) [`L.replace(maybeValueIn, maybeValueOut) ~> lens`](#L-replace "L.replace: Maybe s -> Maybe s -> PLens s s") <small><sup>v1.0.0</sup></small>
 
@@ -2911,6 +2920,12 @@ functions are precisely inverses of each other.  It can be useful to have
 "isomorphisms" that, when written through, actually change the data structure.
 For that reason the name "adapter", rather than "isomorphism", is sometimes used
 for the concept.
+
+In this library there is no type distinction between partial lenses and partial
+isomorphisms.  Among other things this means that some lens combinators, such as
+[`L.pick`](#L-pick), can also be used to create isomorphisms.  On the other
+hand, some forms of optic composition, particularly [adapting](#adapting) and
+[querying](#querying), do not work properly on (inverted) isomorphisms.
 
 #### Operations on isomorphisms
 

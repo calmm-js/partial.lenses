@@ -2040,7 +2040,7 @@ properties of the object are set to the context via the lenses of the template.
 directions.</p>
 <p>For example, let&#39;s say we need to deal with data and schema in need of some
 semantic restructuring:</p>
-<pre><code class="hljs lang-js">var sampleFlat = {px: 1, py: 2, vx: 1.0, vy: 0.0}
+<pre><code class="hljs lang-js">var sampleFlat = {px: 1, py: 2, vx: 1, vy: 0}
 </code></pre>
 <p>We can use <code>L.pick</code> to create a lens to pick apart the data and put it back
 together into a more meaningful structure:</p>
@@ -2063,6 +2063,11 @@ underlying object, so writing through the lens will give unpredictable results.<
 <p>Note that, when set, <code>L.pick</code> simply ignores any properties that the given
 template doesn&#39;t mention.  Also note that the underlying data structure need not
 be an object.</p>
+<p>Note that the <code>sanitize</code> lens defined above can also been seen as an
+<a href="#isomorphisms">isomorphism</a> between the &quot;flat&quot; and &quot;nested&quot; forms of the data.
+It can even be inverted using <a href="#L-inverse"><code>L.inverse</code></a>:</p>
+<pre><code class="hljs lang-js">L.get(L.inverse(sanitize), {pos: {x: 1, y: 2}, vel: {x: 1, y: 0}})
+</code></pre>
 <h5><a id="L-replace"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-replace">■</a> <a href="#L-replace" title="L.replace: Maybe s -&gt; Maybe s -&gt; PLens s s"><code>L.replace(maybeValueIn, maybeValueOut) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.replace(maybeValueIn, maybeValueOut)</code>, when viewed, replaces the value
 <code>maybeValueIn</code> with <code>maybeValueOut</code> and vice versa when set.</p>
@@ -2091,6 +2096,11 @@ functions are precisely inverses of each other.  It can be useful to have
 &quot;isomorphisms&quot; that, when written through, actually change the data structure.
 For that reason the name &quot;adapter&quot;, rather than &quot;isomorphism&quot;, is sometimes used
 for the concept.</p>
+<p>In this library there is no type distinction between partial lenses and partial
+isomorphisms.  Among other things this means that some lens combinators, such as
+<a href="#L-pick"><code>L.pick</code></a>, can also be used to create isomorphisms.  On the other
+hand, some forms of optic composition, particularly <a href="#adapting">adapting</a> and
+<a href="#querying">querying</a>, do not work properly on (inverted) isomorphisms.</p>
 <h4 id="operations-on-isomorphisms">Operations on isomorphisms</h4>
 <h5><a id="L-getInverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-getInverse">■</a> <a href="#L-getInverse" title="L.getInverse: PIso a b -&gt; Maybe b -&gt; Maybe a"><code>L.getInverse(isomorphism, maybeData) ~&gt; maybeData</code></a> <small><sup>v5.0.0</sup></small></h5>
 <p><code>L.getInverse</code> views through an isomorphism in the inverse direction.</p>
