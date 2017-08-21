@@ -854,9 +854,9 @@ console.log(L.set(valOf("x"), 13, sampleAssoc))
 
 It obeys lens laws.  Before you try to break it, note that a lens returned by
 `valOf(key)` is only supposed to work on valid association arrays.  A valid
-association array must not contain duplicate keys and the order of elements is
-not significant.  (Note that you could also add
-[`L.rewrite(R.sortBy(L.get("key")))`](#L-rewrite) to the composition after
+association array must not contain duplicate keys, `undefined` is not valid
+`val`, and the order of elements is not significant.  (Note that you could also
+add [`L.rewrite(R.sortBy(L.get("key")))`](#L-rewrite) to the composition after
 `L.define([])` to ensure that elements stay in the same order.)
 
 The gist of this example is important.  Even if it is the case that not all
