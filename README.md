@@ -780,7 +780,7 @@ many laws have been formulated for lenses and it can be useful to have lenses
 that do not necessarily obey some laws.
 
 Here is a snippet that demonstrates that partial lenses can obey the laws of, so
-called, *well behaved lenses*:
+called, *very well-behaved lenses*:
 
 ```js
 const elemA = 2
