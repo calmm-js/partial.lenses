@@ -327,6 +327,10 @@ R.forEach(bs => {
     `R.find(x => x < 3, xs100)`,
     [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, "NO SHORTCUT EVALUATION"],
   ], [
+    `L.sum([L.elems, x => x+1, x => x*2, L.when(x => x%2 === 0)], xs1000)`,
+    `R.pipe(R.map(x => x+1), R.map(x => x*2), R.filter(x => x%2 === 0), R.sum)(xs1000)`,
+    `R.transduce(R.compose(R.map(x => x+1), R.map(x => x*2), R.filter(x => x%2 === 0)), (x, y) => x+y, 0, xs1000)`,
+  ], [
     `L.remove(50, xs100)`,
     `R.remove(50, 1, xs100)`,
   ], [
