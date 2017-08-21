@@ -32,6 +32,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [On partiality](#on-partiality)
     * [On immutability](#on-immutability)
     * [On composability](#on-composability)
+    * [On lens laws](#on-lens-laws)
     * [Operations on optics](#operations-on-optics)
       * [`L.assign(optic, object, maybeData) ~> maybeData`](#L-assign "L.assign: PLens s {p1: a1, ...ps, ...o} -> {p1: a1, ...ps} -> Maybe s -> Maybe s") <small><sup>v11.13.0</sup></small>
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s") <small><sup>v2.2.0</sup></small>
@@ -768,7 +769,7 @@ The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.
 
-##### On lens laws
+#### On lens laws
 
 Aside from understanding laws on how forms of composition behave, it is useful
 to understand laws that are specific to operations on lenses and optics, in
@@ -782,28 +783,87 @@ Here is a snippet that demonstrates that partial lenses can obey the laws of, so
 called, *well behaved lenses*:
 
 ```js
-const elem = 2
+const elemA = 2
+const elemB = 3
 const data = {x: 1}
 const lens = "x"
 
 const test = (actual, expected) => R.equals(actual, expected) || actual
 
 R.identity({
-  GetSet: test( L.set(lens, L.get(lens, data), data), data ),
-  SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
+  GetSet: test(L.set(lens, L.get(lens, data), data), data),
+  SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
+  SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
+               L.set(lens, elemB, data))
 })
-// { GetSet: true, SetGet: true }
+// { GetSet: true, SetGet: true, SetSet: true }
 ```
 
 You might want to [▶
 play](https://calmm-js.github.io/partial.lenses/#on-lens-laws) with the laws in
 your browser.
 
-Note, however, that *partial* lenses are not (total) lenses.  To support
+*Note*, however, that *partial* lenses are not (total) lenses.  To support
 propagating removal, partial lenses treat empty objects, `{}`, and empty arrays,
 `[]`, as equivalent to `undefined` in certain contexts.  You need to account for
 this behaviour in laws or adjust the behaviour using combinators like
 [`L.define`](#L-define).
+
+##### Myth: Partial Lenses are not lawful
+
+For some reason there seems to be a persistent myth that partial lenses cannot
+obey [lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf).  The
+issue a little more interesting than a simple yes or no.  The short answer is
+that partial lenses can obey lens laws.  However, for practical reasons there
+are many combinators in this library that, alone, do not obey lens laws.
+Nevertheless even such combinators can be used in lens compositions that obey
+lens laws.
+
+Consider the [`L.find`](#L-find) combinator.  The truth is that it doesn't
+by itself obey lens laws.  Here is an example:
+
+```js
+L.get(L.find(R.equals(1)),
+      L.set(L.find(R.equals(1)), 2, []))
+// undefined
+```
+
+As you can see, `L.find(R.equals(2))` does not obey the `SetGet` aka `Put-Get`
+law.  Does this make the [`L.find`](#L-find) combinator useless?  Far from it.
+
+Consider the following lens:
+
+```js
+const valOf = key => [L.define([]),
+                      L.find(R.whereEq({key})),
+                      L.defaults({key}),
+                      "val"]
+```
+
+The `valOf` lens constructor is for accessing association arrays that contain
+`{id, val}` pairs.  For example:
+
+```js
+console.log(L.get(valOf("x"), 101, [])) // [{key: "x", val: 101}]
+const sampleAssoc = [{key: "x", val: 42}, {key: "y", val: 24}]
+console.log(L.get(valOf("x"), sampleAssoc)) // 42
+console.log(L.set(valOf("x"), undefined, sampleAssoc)) // [{key: "y", val: 24}]
+console.log(L.set(valOf("x"), 13, sampleAssoc))
+// [{key: "x", val: 13}, {key: "y", val: 24}]
+```
+
+It obeys lens laws.  Before you try to break it, note that a lens returned by
+`valOf(key)` is only supposed to work on valid association arrays.  A valid
+association array must not contain duplicate keys and the order of elements is
+not significant.  (Note that you could also add
+[`L.rewrite(R.sortBy(L.get("key")))`](#L-rewrite) to the composition after
+`L.define([])` to ensure that elements stay in the same order.)
+
+The gist of this example is important.  Even if it is the case that not all
+parts of a lens composition obey lens laws, it can be that a composition taken
+as a whole obeys lens laws.  The reason why this use of [`L.find`](#L-find)
+results in a lawful partial lens is that the lenses composed after it restrict
+the domain of the lens so that one cannot modify the `key`.
 
 #### Operations on optics
 

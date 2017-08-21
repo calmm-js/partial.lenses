@@ -62,6 +62,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#on-partiality">On partiality</a></li>
 <li><a href="#on-immutability">On immutability</a></li>
 <li><a href="#on-composability">On composability</a></li>
+<li><a href="#on-lens-laws">On lens laws</a></li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
@@ -762,7 +763,7 @@ behave.  Here is a table of the means of composition supported by this library:<
 <p>The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.</p>
-<h5 id="on-lens-laws">On lens laws</h5>
+<h4 id="on-lens-laws">On lens laws</h4>
 <p>Aside from understanding laws on how forms of composition behave, it is useful
 to understand laws that are specific to operations on lenses and optics, in
 general.  As described in the
@@ -772,25 +773,68 @@ many laws have been formulated for lenses and it can be useful to have lenses
 that do not necessarily obey some laws.</p>
 <p>Here is a snippet that demonstrates that partial lenses can obey the laws of, so
 called, <em>well behaved lenses</em>:</p>
-<pre><code class="hljs lang-js">var elem = 2
+<pre><code class="hljs lang-js">var elemA = 2
+var elemB = 3
 var data = {x: 1}
 var lens = &quot;x&quot;
 
 var test = (actual, expected) =&gt; R.equals(actual, expected) || actual
 
 R.identity({
-  GetSet: test( L.set(lens, L.get(lens, data), data), data ),
-  SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
+  GetSet: test(L.set(lens, L.get(lens, data), data), data),
+  SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
+  SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
+               L.set(lens, elemB, data))
 })
 </code></pre>
 <p>You might want to <a href="#on-lens-laws">▶
 play</a> with the laws in
 your browser.</p>
-<p>Note, however, that <em>partial</em> lenses are not (total) lenses.  To support
+<p><em>Note</em>, however, that <em>partial</em> lenses are not (total) lenses.  To support
 propagating removal, partial lenses treat empty objects, <code>{}</code>, and empty arrays,
 <code>[]</code>, as equivalent to <code>undefined</code> in certain contexts.  You need to account for
 this behaviour in laws or adjust the behaviour using combinators like
 <a href="#L-define"><code>L.define</code></a>.</p>
+<h5 id="myth-partial-lenses-are-not-lawful">Myth: Partial Lenses are not lawful</h5>
+<p>For some reason there seems to be a persistent myth that partial lenses cannot
+obey <a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">lens laws</a>.  The
+issue a little more interesting than a simple yes or no.  The short answer is
+that partial lenses can obey lens laws.  However, for practical reasons there
+are many combinators in this library that, alone, do not obey lens laws.
+Nevertheless even such combinators can be used in lens compositions that obey
+lens laws.</p>
+<p>Consider the <a href="#L-find"><code>L.find</code></a> combinator.  The truth is that it doesn&#39;t
+by itself obey lens laws.  Here is an example:</p>
+<pre><code class="hljs lang-js">L.get(L.find(R.equals(1)),
+      L.set(L.find(R.equals(1)), 2, []))
+</code></pre>
+<p>As you can see, <code>L.find(R.equals(2))</code> does not obey the <code>SetGet</code> aka <code>Put-Get</code>
+law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far from it.</p>
+<p>Consider the following lens:</p>
+<pre><code class="hljs lang-js">var valOf = key =&gt; [L.define([]),
+                      L.find(R.whereEq({key})),
+                      L.defaults({key}),
+                      &quot;val&quot;]
+</code></pre>
+<p>The <code>valOf</code> lens constructor is for accessing association arrays that contain
+<code>{id, val}</code> pairs.  For example:</p>
+<pre><code class="hljs lang-js">console.log(L.get(valOf(&quot;x&quot;), 101, []))
+var sampleAssoc = [{key: &quot;x&quot;, val: 42}, {key: &quot;y&quot;, val: 24}]
+console.log(L.get(valOf(&quot;x&quot;), sampleAssoc))
+console.log(L.set(valOf(&quot;x&quot;), undefined, sampleAssoc))
+console.log(L.set(valOf(&quot;x&quot;), 13, sampleAssoc))
+</code></pre>
+<p>It obeys lens laws.  Before you try to break it, note that a lens returned by
+<code>valOf(key)</code> is only supposed to work on valid association arrays.  A valid
+association array must not contain duplicate keys and the order of elements is
+not significant.  (Note that you could also add
+<a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code></a> to the composition after
+<code>L.define([])</code> to ensure that elements stay in the same order.)</p>
+<p>The gist of this example is important.  Even if it is the case that not all
+parts of a lens composition obey lens laws, it can be that a composition taken
+as a whole obeys lens laws.  The reason why this use of <a href="#L-find"><code>L.find</code></a>
+results in a lawful partial lens is that the lenses composed after it restrict
+the domain of the lens so that one cannot modify the <code>key</code>.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5><a id="L-assign"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assign">■</a> <a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></h5>
 <p><code>L.assign</code> allows one to merge the given object into the object or objects
