@@ -845,7 +845,7 @@ The `valOf` lens constructor is for accessing association arrays that contain
 
 ```js
 const sampleAssoc = [{key: "x", val: 42}, {key: "y", val: 24}]
-console.log(L.get(valOf("x"), 101, [])) // [{key: "x", val: 101}]
+console.log(L.set(valOf("x"), 101, [])) // [{key: "x", val: 101}]
 console.log(L.get(valOf("x"), sampleAssoc)) // 42
 console.log(L.set(valOf("x"), undefined, sampleAssoc)) // [{key: "y", val: 24}]
 console.log(L.set(valOf("x"), 13, sampleAssoc))
