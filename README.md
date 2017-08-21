@@ -3482,6 +3482,47 @@ L.joinAs(R.toUpper,
 
 ### Performance tips
 
+#### Nesting traversals does not create intermediate aggregates
+
+Consider the following naïve use of [Ramda](http://ramdajs.com/):
+
+```js
+const sumPositiveXs = R.pipe(R.flatten,
+                             R.map(R.prop("x")),
+                             R.filter(R.lt(0)),
+                             R.sum)
+
+const sampleXs = [[{x: 1}], [{x: -2}, {x: 2}]]
+
+sumPositiveXs(sampleXs)
+// 3
+```
+
+A performance problem in the above naïve `sumPositiveXs` function is that aside
+from the last step, `R.sum`, every step of the computation, `R.flatten`,
+`R.map(R.prop("x"))`, and `R.filter(R.lt(0))`, creates an intermediate array
+that is only used by the next step of the computation and is then thrown away.
+When dealing with large amounts of data this kind of composition can cause
+performance issues.
+
+Please note that the above example is *intentionally naïve*.  In Ramda [one can
+use transducers to avoid building such intermediate
+results](http://simplectic.com/blog/2015/ramda-transducers-logs/) although in
+this particular case the use of [`R.flatten`](http://ramdajs.com/docs/#flatten)
+makes things a bit more interesting, because it doesn't (at the time of writing)
+act as a transducer in Ramda (version 0.24.1).
+
+Using traversals one could perform the same summations as
+
+```js
+L.sum([L.flatten, "x", L.when(R.lt(0))], sampleXs)
+// 3
+```
+
+and, thankfully, it doesn't create intermediate arrays.  This is the case with
+traversals in general.  Traversals do not materialize intermediate aggregates
+and it is useful to understand this performance characteristic.
+
 #### Avoid reallocating optics in [`L.choose`](#L-choose)
 
 Consider the following example:

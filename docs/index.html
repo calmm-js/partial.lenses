@@ -2455,6 +2455,35 @@ var isoList = L.iso(fromList, toList)
 </code></pre>
 <h2 id="advanced-topics">Advanced topics</h2>
 <h3 id="performance-tips">Performance tips</h3>
+<h4 id="nesting-traversals-does-not-create-intermediate-aggregates">Nesting traversals does not create intermediate aggregates</h4>
+<p>Consider the following naïve use of <a href="http://ramdajs.com/">Ramda</a>:</p>
+<pre><code class="hljs lang-js">var sumPositiveXs = R.pipe(R.flatten,
+                             R.map(R.prop(&quot;x&quot;)),
+                             R.filter(R.lt(0)),
+                             R.sum)
+
+var sampleXs = [[{x: 1}], [{x: -2}, {x: 2}]]
+
+sumPositiveXs(sampleXs)
+</code></pre>
+<p>A performance problem in the above naïve <code>sumPositiveXs</code> function is that aside
+from the last step, <code>R.sum</code>, every step of the computation, <code>R.flatten</code>,
+<code>R.map(R.prop(&quot;x&quot;))</code>, and <code>R.filter(R.lt(0))</code>, creates an intermediate array
+that is only used by the next step of the computation and is then thrown away.
+When dealing with large amounts of data this kind of composition can cause
+performance issues.</p>
+<p>Please note that the above example is <em>intentionally naïve</em>.  In Ramda <a href="http://simplectic.com/blog/2015/ramda-transducers-logs/">one can
+use transducers to avoid building such intermediate
+results</a> although in
+this particular case the use of <a href="http://ramdajs.com/docs/#flatten"><code>R.flatten</code></a>
+makes things a bit more interesting, because it doesn&#39;t (at the time of writing)
+act as a transducer in Ramda (version 0.24.1).</p>
+<p>Using traversals one could perform the same summations as</p>
+<pre><code class="hljs lang-js">L.sum([L.flatten, &quot;x&quot;, L.when(R.lt(0))], sampleXs)
+</code></pre>
+<p>and, thankfully, it doesn&#39;t create intermediate arrays.  This is the case with
+traversals in general.  Traversals do not materialize intermediate aggregates
+and it is useful to understand this performance characteristic.</p>
 <h4 id="avoid-reallocating-optics-in-l-choose-l-choose-">Avoid reallocating optics in <a href="#L-choose"><code>L.choose</code></a></h4>
 <p>Consider the following example:</p>
 <pre><code class="hljs lang-jsx">L.choose(x =&gt; Array.isArray(x) ? [L.elems, &quot;data&quot;] : &quot;data&quot;)
