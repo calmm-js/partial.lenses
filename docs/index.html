@@ -808,7 +808,7 @@ by itself obey lens laws.  Here is an example:</p>
 <pre><code class="hljs lang-js">L.get(L.find(R.equals(1)),
       L.set(L.find(R.equals(1)), 2, []))
 </code></pre>
-<p>As you can see, <code>L.find(R.equals(2))</code> does not obey the <code>SetGet</code> aka <code>Put-Get</code>
+<p>As you can see, <code>L.find(R.equals(1))</code> does not obey the <code>SetGet</code> aka <code>Put-Get</code>
 law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far from it.</p>
 <p>Consider the following lens:</p>
 <pre><code class="hljs lang-js">var valOf = key =&gt; [L.define([]),

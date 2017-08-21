@@ -828,7 +828,7 @@ L.get(L.find(R.equals(1)),
 // undefined
 ```
 
-As you can see, `L.find(R.equals(2))` does not obey the `SetGet` aka `Put-Get`
+As you can see, `L.find(R.equals(1))` does not obey the `SetGet` aka `Put-Get`
 law.  Does this make the [`L.find`](#L-find) combinator useless?  Far from it.
 
 Consider the following lens:
