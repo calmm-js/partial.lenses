@@ -3991,6 +3991,7 @@ links&mdash;feel free to suggest more!
 
 #### Papers and other introductory material
 
+* [A Little Lens Starter Tutorial](https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/a-little-lens-starter-tutorial)
 * [A clear picture of lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf)
 * [An Introduction Into Lenses In JavaScript](https://medium.com/javascript-inside/an-introduction-into-lenses-in-javascript-e494948d1ea5#.777juzfcw)
 * [Functional Lenses, How Do They Work](https://medium.com/@dtipson/functional-lenses-d1aba9e52254#.qja55h7uh)
