@@ -783,9 +783,14 @@ R.identity({
   SetGet: test( L.get(lens, L.set(lens, elem, data)), elem )
 })
 </code></pre>
-<p>Note, however, that <em>partial</em> lenses are not (total) lenses.  You might want
-to <a href="#on-lens-laws">▶ play</a> with the
-laws in your browser.</p>
+<p>You might want to <a href="#on-lens-laws">▶
+play</a> with the laws in
+your browser.</p>
+<p>Note, however, that <em>partial</em> lenses are not (total) lenses.  To support
+propagating removal, partial lenses treat empty objects, <code>{}</code>, and empty arrays,
+<code>[]</code>, as equivalent to <code>undefined</code> in certain contexts.  You need to account for
+this behaviour in laws or adjust the behaviour using combinators like
+<a href="#L-define"><code>L.define</code></a>.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5><a id="L-assign"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assign">■</a> <a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></h5>
 <p><code>L.assign</code> allows one to merge the given object into the object or objects

@@ -795,9 +795,15 @@ R.identity({
 // { GetSet: true, SetGet: true }
 ```
 
-Note, however, that *partial* lenses are not (total) lenses.  You might want
-to [▶ play](https://calmm-js.github.io/partial.lenses/#on-lens-laws) with the
-laws in your browser.
+You might want to [▶
+play](https://calmm-js.github.io/partial.lenses/#on-lens-laws) with the laws in
+your browser.
+
+Note, however, that *partial* lenses are not (total) lenses.  To support
+propagating removal, partial lenses treat empty objects, `{}`, and empty arrays,
+`[]`, as equivalent to `undefined` in certain contexts.  You need to account for
+this behaviour in laws or adjust the behaviour using combinators like
+[`L.define`](#L-define).
 
 #### Operations on optics
 
