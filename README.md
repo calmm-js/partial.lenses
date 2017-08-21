@@ -809,7 +809,7 @@ propagating removal, partial lenses treat empty objects, `{}`, and empty arrays,
 this behaviour in laws or adjust the behaviour using combinators like
 [`L.define`](#L-define).
 
-##### Myth: Partial Lenses are not lawful
+##### <a id="myth"></a> Myth: Partial Lenses are not lawful
 
 For some reason there seems to be a persistent myth that partial lenses cannot
 obey [lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf).  The
@@ -2467,6 +2467,11 @@ matching element is found the effect is same as with [`L.append`](#L-append).
 L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
 // [ 3, 4, 1, 5, 9, 2 ]
 ```
+
+Note that `L.find` by itself does not satisfy all lens laws.  To fix this, you
+can e.g. post compose `L.find` with lenses that ensure that the property being
+tested by the predicate given to `L.find` cannot be written to.  See
+[here](#myth) for discussion and an example.
 
 ##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>
 

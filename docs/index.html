@@ -795,7 +795,7 @@ propagating removal, partial lenses treat empty objects, <code>{}</code>, and em
 <code>[]</code>, as equivalent to <code>undefined</code> in certain contexts.  You need to account for
 this behaviour in laws or adjust the behaviour using combinators like
 <a href="#L-define"><code>L.define</code></a>.</p>
-<h5 id="myth-partial-lenses-are-not-lawful">Myth: Partial Lenses are not lawful</h5>
+<h5><a id="myth"></a> Myth: Partial Lenses are not lawful</h5>
 <p>For some reason there seems to be a persistent myth that partial lenses cannot
 obey <a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">lens laws</a>.  The
 issue a little more interesting than a simple yes or no.  The short answer is
@@ -1820,6 +1820,10 @@ the first element from the focus that matches the given predicate.  When no
 matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
+<p>Note that <code>L.find</code> by itself does not satisfy all lens laws.  To fix this, you
+can e.g. post compose <code>L.find</code> with lenses that ensure that the property being
+tested by the predicate given to <code>L.find</code> cannot be written to.  See
+<a href="#myth">here</a> for discussion and an example.</p>
 <h5><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a> <small><sup>v10.1.0</sup></small></h5>
 <p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of
 an <a href="#array-like">array-like</a> object to operate on by searching with the given
