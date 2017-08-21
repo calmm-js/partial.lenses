@@ -49,6 +49,7 @@ const body =
   .replace(/ id="-[^"]*"/g, "")
   .replace(/<code class="lang-([a-z]*)">/g,
            '<code class="hljs lang-$1\">')
+  .replace(/ +$/gm, "")
 
 const headElems = [
   `<meta charset="utf-8">`,
