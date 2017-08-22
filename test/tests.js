@@ -187,6 +187,7 @@ describe("arities", () => {
     and: 2,
     any: 3,
     append: 4,
+    array: 1,
     assign: 3,
     assignOp: 1,
     augment: 1,
@@ -1105,6 +1106,15 @@ describe("L.singleton", () => {
 describe("L.flatten", () => {
   testEq(`L.collect(L.flatten, 101)`, [101])
   testEq(`L.collect(L.flatten, [["x"], [1, []], [[false]]])`, ["x", 1, false])
+})
+
+describe("L.array", () => {
+  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [{x:1, y:2}, {x:3, y:4}])`,
+         [{y:1, x:2}, {y:3, x:4}])
+  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [])`, undefined)
+  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), {})`, undefined)
+  testEq(`L.set(L.array(L.pick({x:"y", y:"x"})), [], [{x:1, y:2}])`, undefined)
+  testEq(`L.get(L.array(L.identity), "string")`, ["s", "t", "r", "i", "n", "g"])
 })
 
 if (process.env.NODE_ENV !== "production") {
