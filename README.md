@@ -864,7 +864,7 @@ The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of [`L.find`](#L-find)
 results in a lawful partial lens is that the lenses composed after it restrict
-the domain of the lens so that one cannot modify the `key`.
+the scope of the lens so that one cannot modify the `key`.
 
 #### Operations on optics
 

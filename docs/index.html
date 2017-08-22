@@ -835,7 +835,7 @@ add <a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of <a href="#L-find"><code>L.find</code></a>
 results in a lawful partial lens is that the lenses composed after it restrict
-the domain of the lens so that one cannot modify the <code>key</code>.</p>
+the scope of the lens so that one cannot modify the <code>key</code>.</p>
 <h4 id="operations-on-optics">Operations on optics</h4>
 <h5><a id="L-assign"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-assign">■</a> <a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></h5>
 <p><code>L.assign</code> allows one to merge the given object into the object or objects
