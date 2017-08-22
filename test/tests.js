@@ -1093,6 +1093,9 @@ describe("L.cache", () => {
 })
 
 describe("L.singleton", () => {
+  testEq(`L.get(L.singleton, ["too", "long"])`, undefined)
+  testEq(`L.get(L.singleton, "too-long")`, undefined)
+  testEq(`L.get(L.singleton, "x")`, "x")
   testEq(`L.get(L.singleton, [101])`, 101)
   testEq(`L.get(L.singleton, {})`, undefined)
   testEq(`L.getInverse(L.singleton, 43)`, [43])
