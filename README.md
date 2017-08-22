@@ -153,6 +153,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a") <small><sup>v5.3.0</sup></small>
     * [Isomorphism combinators](#isomorphism-combinators)
+      * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]")
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
@@ -3059,6 +3060,18 @@ L.modify([L.uriComponent,
 ```
 
 #### Isomorphism combinators
+
+##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]")
+
+`L.array` lifts an isomorphism over elements, `a ≅ b`, to an isomorphism over
+arrays of elements, `[a] ≅ [b]`.
+
+For example:
+
+```js
+L.getInverse(L.array(L.pick({x: "y", z: "x"})), [{x:1, y:2}, {x:3, y:4}])
+// [{x:2, z:1}, {x:4, z:3}]
+```
 
 ##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
 
