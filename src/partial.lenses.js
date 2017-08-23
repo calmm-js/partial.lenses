@@ -1166,6 +1166,14 @@ export const is = v =>
   isoU(x => I.acyclicEqualsU(v, x),
        b => true === b ? v : void 0)
 
+export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
+  (x, i, F, xi2yF) =>
+    F.map(x => void 0 !== x ? [x] : void 0,
+          xi2yF((x instanceof Object || I.isString(x)) && x.length === 1
+                ? x[0]
+                : void 0,
+                i)))
+
 // Standard isomorphisms
 
 export const uri =

@@ -267,6 +267,7 @@ describe("arities", () => {
     set: 3,
     setOp: 1,
     setter: 1,
+    singleton: 4,
     slice: 2,
     suffix: 1,
     sum: 2,
@@ -1089,6 +1090,16 @@ describe("L.cache", () => {
           ; X.get(x, {x: 1})
           ; return c.size}`,
          1)
+})
+
+describe("L.singleton", () => {
+  testEq(`L.get(L.singleton, ["too", "long"])`, undefined)
+  testEq(`L.get(L.singleton, "too-long")`, undefined)
+  testEq(`L.get(L.singleton, "x")`, "x")
+  testEq(`L.get(L.singleton, [101])`, 101)
+  testEq(`L.get(L.singleton, {})`, undefined)
+  testEq(`L.getInverse(L.singleton, 43)`, [43])
+  testEq(`L.getInverse(L.singleton, undefined)`, undefined)
 })
 
 describe("L.flatten", () => {

@@ -158,6 +158,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
+      * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3108,6 +3109,25 @@ L.set([L.complement, L.log()],
 `L.is` reads the given value as `true` and everything else as `false` and writes
 `true` as the given value and everything else as `undefined`.
 See [here](#an-array-of-ids-as-boolean-flags) for an example.
+
+##### <a id="L-singleton"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-singleton) [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
+
+`L.singleton` is a partial isomorphism between an [array-like](#array-like)
+object, `[x]`, that contains a single element and that element `x`.  When
+written through with a non-`undefined` value, the result is an array containing
+the value.
+
+For example:
+
+```js
+L.modify(L.singleton, R.negate, [1]) // [-1]
+```
+
+Note that in case the target of `L.singleton` is an array-like object that does
+not contain exactly one element, then the view will be `undefined`.  The reason
+for this behaviour is that it allows `L.singleton` to not only be used to access
+the first element of an array-like object, but to also check that the object is
+of the expected form.
 
 #### Standard isomorphisms
 
