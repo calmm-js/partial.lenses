@@ -153,7 +153,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a") <small><sup>v5.3.0</sup></small>
     * [Isomorphism combinators](#isomorphism-combinators)
-      * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]")
+      * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
@@ -2380,9 +2380,9 @@ Objects that have a non-negative integer `length` and strings, which are not
 considered `Object` instances in JavaScript, are considered *array-like* objects
 by partial optics.  See also [`L.seemsArrayLike`](#L-seemsArrayLike).
 
-When writing through an optic that operates on array-like objects, the result is
-always either `undefined`, in case the result would be empty, or a plain
-`Array`.  For example:
+When writing through a lens or traversal that operates on array-like objects,
+the result is always either `undefined`, in case the result would be empty, or a
+plain `Array`.  For example:
 
 ```js
 L.set(1, "a", "LoLa")
@@ -3061,10 +3061,11 @@ L.modify([L.uriComponent,
 
 #### Isomorphism combinators
 
-##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]")
+##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
 
-`L.array` lifts an isomorphism over elements, `a ≅ b`, to an isomorphism over
-arrays of elements, `[a] ≅ [b]`.
+`L.array` lifts an isomorphism between elements, `a ≅ b`, to an isomorphism
+between an [array-like](#array-like) object and an array of elements, `[a] ≅
+[b]`.
 
 For example:
 
@@ -3072,6 +3073,14 @@ For example:
 L.getInverse(L.array(L.pick({x: "y", z: "x"})), [{x:1, y:2}, {x:3, y:4}])
 // [{x:2, z:1}, {x:4, z:3}]
 ```
+
+Elements mapped to `undefined` by the isomorphism on elements are removed from
+the resulting array in both directions.  However, unlike with [lenses operating
+on elements or slices of arrays](#array-like), an empty array is not implicitly
+converted to `undefined`.  You can pre compose with
+[`L.defaults([])`](#L-defaults) and post compose with
+[`L.required([])`](#L-required) to convert empty arrays to `undefined` if
+desired.
 
 ##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
 
