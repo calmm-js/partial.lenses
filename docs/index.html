@@ -248,6 +248,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></li>
 <li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a> <small><sup>v1.3.0</sup></small></li>
 <li><a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a> <small><sup>v11.1.0</sup></small></li>
+<li><a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#standard-isomorphisms">Standard isomorphisms</a><ul>
@@ -2224,6 +2225,19 @@ non-<code>undefined</code> value when either read or written through.</p>
 <p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes
 <code>true</code> as the given value and everything else as <code>undefined</code>.
 See <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
+<h5><a id="L-singleton"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-singleton">■</a> <a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></h5>
+<p><code>L.singleton</code> is a partial isomorphism between an <a href="#array-like">array-like</a>
+object, <code>[x]</code>, that contains a single element and that element <code>x</code>.  When
+written through with a non-<code>undefined</code> value, the result is an array containing
+the value.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.singleton, R.negate, [1])
+</code></pre>
+<p>Note that in case the target of <code>L.singleton</code> is an array-like object that does
+not contain exactly one element, then the view will be <code>undefined</code>.  The reason
+for this behaviour is that it allows <code>L.singleton</code> to not only be used to access
+the first element of an array-like object, but to also check that the object is
+of the expected form.</p>
 <h4 id="standard-isomorphisms">Standard isomorphisms</h4>
 <h5><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.uri</code> is an isomorphism based on the

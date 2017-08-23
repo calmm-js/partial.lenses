@@ -105,7 +105,7 @@ var notPartial = function notPartial(x) {
 
 var expect = function expect(p, f) {
   return function (x) {
-    return p(x) ? f(x) : undefined;
+    return p(x) ? f(x) : void 0;
   };
 };
 
@@ -400,7 +400,7 @@ function object0ToUndefined(o) {
 var lensFrom = function lensFrom(get, set) {
   return function (i) {
     return function (x, _i, F, xi2yF) {
-      return (0, F.map)(function (v) {
+      return F.map(function (v) {
         return set(i, v, x);
       }, xi2yF(get(i, x), i));
     };
@@ -579,7 +579,7 @@ function modifyComposed(os, xi2y, x, y) {
 
 var lensU = function lensU(get, set) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (y) {
+    return F.map(function (y) {
       return set(y, x, i);
     }, xi2yF(get(x, i), i));
   };
@@ -587,7 +587,7 @@ var lensU = function lensU(get, set) {
 
 var isoU = function isoU(bwd, fwd) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(fwd, xi2yF(bwd(x), i));
+    return F.map(fwd, xi2yF(bwd(x), i));
   };
 };
 
@@ -764,7 +764,7 @@ var partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I
 
 var fromReader = function fromReader(wi2x) {
   return function (w, i, F, xi2yF) {
-    return (0, F.map)(I.always(w), xi2yF(wi2x(w, i), i));
+    return F.map(I.always(w), xi2yF(wi2x(w, i), i));
   };
 };
 
@@ -853,7 +853,7 @@ var orElseU = function orElseU(back, prim) {
 
 function zeroOp(y, i, C, xi2yC, x) {
   var of = C.of;
-  return of ? of(y) : (0, C.map)(I.always(y), xi2yC(x, i));
+  return of ? of(y) : C.map(I.always(y), xi2yC(x, i));
 }
 
 //
@@ -1036,7 +1036,7 @@ var seq = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function 
     xMs[i] = toFunction(arguments[i]);
   }function loop(M, xi2xM, i, j) {
     return j === n ? M.of : function (x) {
-      return (0, M.chain)(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
+      return M.chain(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
     };
   }
   return function (x, i, M, xi2xM) {
@@ -1063,7 +1063,7 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, 
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectElems(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
-    return (0, A.of)(xs);
+    return A.of(xs);
   }
 });
 
@@ -1076,7 +1076,7 @@ var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2,
   if (xs instanceof Object) {
     return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
-    return (0, A.of)(xs);
+    return A.of(xs);
   }
 });
 
@@ -1128,7 +1128,7 @@ var collect = /*#__PURE__*/collectAs(I.id);
 
 var concatAs =
 /*#__PURE__*/mkTraverse(I.id, function (m) {
-  return ConcatOf(m.concat, (0, m.empty)(), m.delay);
+  return ConcatOf(m.concat, m.empty(), m.delay);
 });
 
 var concat = /*#__PURE__*/concatAs(I.id);
@@ -1256,20 +1256,20 @@ function defaults(out) {
     return replaced(out, void 0, x);
   }
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(o2u, xi2yF(void 0 !== x ? x : out, i));
+    return F.map(o2u, xi2yF(void 0 !== x ? x : out, i));
   };
 }
 
 function define(v) {
   var untoV = unto(v);
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(untoV, xi2yF(void 0 !== x ? x : v, i));
+    return F.map(untoV, xi2yF(void 0 !== x ? x : v, i));
   };
 }
 
 var normalize = function normalize(xi2x) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (x) {
+    return F.map(function (x) {
       return void 0 !== x ? xi2x(x, i) : x;
     }, xi2yF(void 0 !== x ? xi2x(x, i) : x, i));
   };
@@ -1281,7 +1281,7 @@ var required = function required(inn) {
 
 var rewrite = function rewrite(yi2y) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (y) {
+    return F.map(function (y) {
       return void 0 !== y ? yi2y(y, i) : y;
     }, xi2yF(x, i));
   };
@@ -1291,7 +1291,7 @@ var rewrite = function rewrite(yi2y) {
 
 function append(xs, _, F, xi2yF) {
   var i = seemsArrayLike(xs) ? xs.length : 0;
-  return (0, F.map)(function (x) {
+  return F.map(function (x) {
     return setIndex(i, x, xs);
   }, xi2yF(void 0, i));
 }
@@ -1303,7 +1303,7 @@ var filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(fu
     var ts = void 0,
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
-    return (0, F.map)(function (ts) {
+    return F.map(function (ts) {
       var tsN = ts ? ts.length : 0,
           fsN = fs ? fs.length : 0,
           n = tsN + fsN;
@@ -1316,7 +1316,7 @@ var find = function find(xi2b) {
   return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = findIndex(xi2b, ys);
-    return (0, F.map)(function (v) {
+    return F.map(function (v) {
       return setIndex(i, v, ys);
     }, xi2yF(ys[i], i));
   };
@@ -1326,7 +1326,7 @@ var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
   return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
-    return (0, F.map)(function (v) {
+    return F.map(function (v) {
       return setIndex(i, v, ys);
     }, xi2yF(ys[i], i));
   };
@@ -1355,7 +1355,7 @@ var slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : res(
         xsN = seems && xs.length,
         b = sliceIndex(0, xsN, 0, begin),
         e = sliceIndex(b, xsN, xsN, end);
-    return (0, F.map)(function (zs) {
+    return F.map(function (zs) {
       var zsN = zs ? zs.length : 0,
           bPzsN = b + zsN,
           n = xsN - e + bPzsN;
@@ -1403,7 +1403,7 @@ function removable() {
     }
   }
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(drop, xi2yF(x, i));
+    return F.map(drop, xi2yF(x, i));
   };
 }
 
@@ -1419,7 +1419,7 @@ var valueOr = function valueOr(v) {
 
 var pick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqTemplate("pick"))))(function (template) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (v) {
+    return F.map(function (v) {
       return setPick(template, v, x);
     }, xi2yF(getPick(template, x), i));
   };
@@ -1430,7 +1430,7 @@ var replace = /*#__PURE__*/I.curry(function (inn, out) {
     return replaced(out, inn, x);
   }
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(o2i, xi2yF(replaced(inn, out, x), i));
+    return F.map(o2i, xi2yF(replaced(inn, out, x), i));
   };
 });
 
@@ -1448,7 +1448,7 @@ var iso = /*#__PURE__*/I.curry(isoU);
 
 var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
-    return (0, F.map)(function (x) {
+    return F.map(function (x) {
       return getU(iso, x);
     }, xi2yF(setU(iso, x, void 0), i));
   };
@@ -1469,6 +1469,14 @@ var is = function is(v) {
     return true === b ? v : void 0;
   });
 };
+
+var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (iso) {
+  return toFunction([isoU(I.id, freeze), iso]);
+})(function (x, i, F, xi2yF) {
+  return F.map(function (x) {
+    return void 0 !== x ? [x] : void 0;
+  }, xi2yF((x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0, i));
+});
 
 // Standard isomorphisms
 
@@ -1592,6 +1600,7 @@ exports.inverse = inverse;
 exports.complement = complement;
 exports.identity = identity;
 exports.is = is;
+exports.singleton = singleton;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
 exports.json = json;
