@@ -1111,9 +1111,10 @@ describe("L.flatten", () => {
 describe("L.array", () => {
   testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [{x:1, y:2}, {x:3, y:4}])`,
          [{y:1, x:2}, {y:3, x:4}])
-  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [])`, undefined)
+  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [])`, [])
   testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), {})`, undefined)
-  testEq(`L.set(L.array(L.pick({x:"y", y:"x"})), [], [{x:1, y:2}])`, undefined)
+  testEq(`L.set(L.array(L.pick({x:"y", y:"x"})), [], [{x:1, y:2}])`, [])
+  testEq(`L.remove([L.array(L.identity), 0], ["it"])`, undefined)
   testEq(`L.get(L.array(L.identity), "string")`, ["s", "t", "r", "i", "n", "g"])
 })
 

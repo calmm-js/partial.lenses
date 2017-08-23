@@ -56,6 +56,9 @@ const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I
   }
 })
 
+const mapIfArrayLike = (xi2y, xs) =>
+  seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) || I.array0 : void 0
+
 const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (ys, k, xs, i, j) => (ys.length === k + j - i ? freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j)))((ys, k, xs, i, j) => {
   while (i < j)
     ys[k++] = xs[i++]
@@ -1155,12 +1158,13 @@ export const iso = /*#__PURE__*/I.curry(isoU)
 
 // Isomorphism combinators
 
-export const array = elem => (x, i, F, xi2yF) =>
-  F.map(x => seemsArrayLike(x) ? mapPartialIndexU(get(elem), x) : void 0,
-        xi2yF(seemsArrayLike(x)
-              ? mapPartialIndexU(getInverse(elem), x)
-              : void 0,
-              i))
+export const array = elem => {
+  const fwd = get(elem),
+        bwd = getInverse(elem),
+        mapFwd = x => mapIfArrayLike(fwd, x)
+  return (x, i, F, xi2yF) =>
+    F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
+}
 
 export const inverse = iso => (x, i, F, xi2yF) =>
   F.map(x => getU(iso, x), xi2yF(setU(iso, x, void 0), i))
