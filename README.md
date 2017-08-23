@@ -3123,6 +3123,12 @@ For example:
 L.modify(L.singleton, R.negate, [1]) // [-1]
 ```
 
+Note that in case the target of `L.singleton` is an array-like object that does
+not contain exactly one element, then the view will be `undefined`.  The reason
+for this behaviour is that it allows `L.singleton` to not only be used to access
+the first element of an array-like object, but to also check that the object is
+of the expected form.
+
 #### Standard isomorphisms
 
 ##### <a id="L-uri"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-uri) [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
