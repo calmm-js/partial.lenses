@@ -23,6 +23,8 @@ const unto0 = /*#__PURE__*/unto(0)
 
 const notPartial = x => void 0 !== x ? !x : x
 
+const singletonPartial = x => void 0 !== x ? [x] : void 0
+
 const expect = (p, f) => x => p(x) ? f(x) : void 0
 
 const freeze = x => x && Object.freeze(x)
@@ -1168,7 +1170,7 @@ export const is = v =>
 
 export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
   (x, i, F, xi2yF) =>
-    F.map(x => void 0 !== x ? [x] : void 0,
+    F.map(singletonPartial,
           xi2yF((x instanceof Object || I.isString(x)) && x.length === 1
                 ? x[0]
                 : void 0,
