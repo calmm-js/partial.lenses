@@ -1111,11 +1111,13 @@ describe("L.flatten", () => {
 describe("L.array", () => {
   testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), [{x:1, y:2}, {x:3, y:4}])`,
          [{x:2, z:1}, {x:4, z:3}])
-  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), [])`, [])
-  testEq(`L.get(L.array(L.pick({x:"y", y:"x"})), {})`, undefined)
-  testEq(`L.set(L.array(L.pick({x:"y", y:"x"})), [], [{x:1, y:2}])`, [])
-  testEq(`L.remove([L.array(L.identity), 0], ["it"])`, undefined)
-  testEq(`L.get(L.array(L.identity), "string")`, ["s", "t", "r", "i", "n", "g"])
+  testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), [])`, [])
+  testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), {})`, undefined)
+  testEq(`L.set(L.array(L.pick({x:"y", z:"x"})), [], [{x:1, y:2}])`, [])
+  testEq(`L.remove([L.array(L.iso(R.toUpper, R.toLower)), 0], ["it"])`,
+         undefined)
+  testEq(`L.get(L.array(L.iso(R.toUpper, R.toLower)), "string")`,
+         ["S", "T", "R", "I", "N", "G"])
 })
 
 if (process.env.NODE_ENV !== "production") {
