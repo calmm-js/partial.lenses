@@ -1150,7 +1150,9 @@ export const replace = /*#__PURE__*/I.curry((inn, out) => {
 
 // Operations on isomorphisms
 
-export const getInverse = /*#__PURE__*/I.curry((o, s) => setU(o, s, void 0))
+export function getInverse(o, s) {
+  return 1 < arguments.length ? setU(o, s, void 0) : s => setU(o, s, void 0)
+}
 
 // Creating new isomorphisms
 
