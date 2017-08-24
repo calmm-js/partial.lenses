@@ -241,6 +241,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#isomorphism-combinators">Isomorphism combinators</a><ul>
+<li><a href="#L-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></li>
 <li><a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v4.1.0</sup></small></li>
 </ul>
 </li>
@@ -1764,9 +1765,9 @@ while <code>L.rewrite</code> only applies the transform when writing.</p>
 <p>Objects that have a non-negative integer <code>length</code> and strings, which are not
 considered <code>Object</code> instances in JavaScript, are considered <em>array-like</em> objects
 by partial optics.  See also <a href="#L-seemsArrayLike"><code>L.seemsArrayLike</code></a>.</p>
-<p>When writing through an optic that operates on array-like objects, the result is
-always either <code>undefined</code>, in case the result would be empty, or a plain
-<code>Array</code>.  For example:</p>
+<p>When writing through a lens or traversal that operates on array-like objects,
+the result is always either <code>undefined</code>, in case the result would be empty, or a
+plain <code>Array</code>.  For example:</p>
 <pre><code class="hljs lang-js">L.set(1, &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
 <p>It may seem like the result should be of the same type as the object being
@@ -2196,6 +2197,20 @@ L.modify([L.uriComponent,
          &quot;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&quot;)
 </code></pre>
 <h4 id="isomorphism-combinators">Isomorphism combinators</h4>
+<h5><a id="L-array"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-array">■</a> <a href="#L-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></h5>
+<p><code>L.array</code> lifts an isomorphism between elements, <code>a ≅ b</code>, to an isomorphism
+between an <a href="#array-like">array-like</a> object and an array of elements, <code>[a] ≅
+[b]</code>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.getInverse(L.array(L.pick({x: &quot;y&quot;, z: &quot;x&quot;})), [{x:2, z:1}, {x:4, z:3}])
+</code></pre>
+<p>Elements mapped to <code>undefined</code> by the isomorphism on elements are removed from
+the resulting array in both directions.  However, unlike with <a href="#array-like">lenses operating
+on elements or slices of arrays</a>, an empty array is not implicitly
+converted to <code>undefined</code>.  You can pre compose with
+<a href="#L-defaults"><code>L.defaults([])</code></a> and post compose with
+<a href="#L-required"><code>L.required([])</code></a> to convert empty arrays to <code>undefined</code> if
+desired.</p>
 <h5><a id="L-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-inverse">■</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v4.1.0</sup></small></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
 operation only makes sense on isomorphisms.</p>

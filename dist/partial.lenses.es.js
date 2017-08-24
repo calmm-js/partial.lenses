@@ -99,6 +99,10 @@ var notPartial = function notPartial(x) {
   return void 0 !== x ? !x : x;
 };
 
+var singletonPartial = function singletonPartial(x) {
+  return void 0 !== x ? [x] : void 0;
+};
+
 var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : void 0;
@@ -134,6 +138,10 @@ var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id 
     return ys;
   }
 });
+
+var mapIfArrayLike = function mapIfArrayLike(xi2y, xs) {
+  return seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) || array0 : void 0;
+};
 
 var copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : function (fn$$1) {
   return function (ys, k, xs, i, j) {
@@ -1432,15 +1440,28 @@ var replace = /*#__PURE__*/curry(function (inn, out) {
 
 // Operations on isomorphisms
 
-var getInverse = /*#__PURE__*/curry(function (o, s) {
-  return setU(o, s, void 0);
-});
+function getInverse(o, s) {
+  return 1 < arguments.length ? setU(o, s, void 0) : function (s) {
+    return setU(o, s, void 0);
+  };
+}
 
 // Creating new isomorphisms
 
 var iso = /*#__PURE__*/curry(isoU);
 
 // Isomorphism combinators
+
+var array = function array(elem) {
+  var fwd = getInverse(elem),
+      bwd = get(elem),
+      mapFwd = function mapFwd(x) {
+    return mapIfArrayLike(fwd, x);
+  };
+  return function (x, i, F, xi2yF) {
+    return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
+  };
+};
 
 var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
@@ -1469,9 +1490,7 @@ var is = function is(v) {
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : function (iso) {
   return toFunction([isoU(id, freeze), iso]);
 })(function (x, i, F, xi2yF) {
-  return F.map(function (x) {
-    return void 0 !== x ? [x] : void 0;
-  }, xi2yF((x instanceof Object || isString(x)) && x.length === 1 ? x[0] : void 0, i));
+  return F.map(singletonPartial, xi2yF((x instanceof Object || isString(x)) && x.length === 1 ? x[0] : void 0, i));
 });
 
 // Standard isomorphisms
@@ -1503,4 +1522,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, inverse, complement, identity, is, singleton, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, is, singleton, uri, uriComponent, json, seemsArrayLike };
