@@ -301,6 +301,7 @@ export const iso = T.fn([T.fn([T_maybeDataO], T_maybeDataI),
 
 // Isomorphism combinators
 
+export const array = T.fn([T_isomorphism], T_isomorphism)
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
 
 // Basic isomorphisms

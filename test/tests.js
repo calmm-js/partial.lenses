@@ -187,6 +187,7 @@ describe("arities", () => {
     and: 2,
     any: 3,
     append: 4,
+    array: 1,
     assign: 3,
     assignOp: 1,
     augment: 1,
@@ -1098,13 +1099,28 @@ describe("L.singleton", () => {
   testEq(`L.get(L.singleton, "x")`, "x")
   testEq(`L.get(L.singleton, [101])`, 101)
   testEq(`L.get(L.singleton, {})`, undefined)
-  testEq(`L.getInverse(L.singleton, 43)`, [43])
+  testEq(`L.getInverse(L.singleton)(43)`, [43])
   testEq(`L.getInverse(L.singleton, undefined)`, undefined)
 })
 
 describe("L.flatten", () => {
   testEq(`L.collect(L.flatten, 101)`, [101])
   testEq(`L.collect(L.flatten, [["x"], [1, []], [[false]]])`, ["x", 1, false])
+})
+
+describe("L.array", () => {
+  testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), [{x:1, y:2}, {x:3, y:4}])`,
+         [{x:2, z:1}, {x:4, z:3}])
+  testEq(`L.getInverse(L.array(L.pick({x:"y", z:"x"})),
+                       [{x:2, z:1}, {x:4, z:3}])`,
+         [{x:1, y:2}, {x:3, y:4}])
+  testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), [])`, [])
+  testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), {})`, undefined)
+  testEq(`L.set(L.array(L.pick({x:"y", z:"x"})), [], [{x:1, y:2}])`, [])
+  testEq(`L.remove([L.array(L.iso(R.toUpper, R.toLower)), 0], ["it"])`,
+         undefined)
+  testEq(`L.get(L.array(L.iso(R.toUpper, R.toLower)), "string")`,
+         ["S", "T", "R", "I", "N", "G"])
 })
 
 if (process.env.NODE_ENV !== "production") {
