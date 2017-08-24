@@ -1159,8 +1159,8 @@ export const iso = /*#__PURE__*/I.curry(isoU)
 // Isomorphism combinators
 
 export const array = elem => {
-  const fwd = get(elem),
-        bwd = getInverse(elem),
+  const fwd = getInverse(elem),
+        bwd = get(elem),
         mapFwd = x => mapIfArrayLike(fwd, x)
   return (x, i, F, xi2yF) =>
     F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
