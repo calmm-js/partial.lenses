@@ -3070,8 +3070,8 @@ between an [array-like](#array-like) object and an array of elements, `[a] ≅
 For example:
 
 ```js
-L.getInverse(L.array(L.pick({x: "y", z: "x"})), [{x:1, y:2}, {x:3, y:4}])
-// [{x:2, z:1}, {x:4, z:3}]
+L.getInverse(L.array(L.pick({x: "y", z: "x"})), [{x:2, z:1}, {x:4, z:3}])
+// [{x:1, y:2}, {x:3, y:4}]
 ```
 
 Elements mapped to `undefined` by the isomorphism on elements are removed from
