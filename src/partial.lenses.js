@@ -916,11 +916,10 @@ export const foldl = /*#__PURE__*/I.curry((f, r, t, s) => {
 })
 
 export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
-  const xs = collectAs(pair, t, s)
-  for (let i=xs.length-1; 0<=i; --i) {
-    const x = xs[i]
-    r = f(r, x[0], x[1])
-  }
+  const is = [], xs = []
+  traverseU(Ignore, (x, i) => {xs.push(x); is.push(i)}, t, s)
+  for (let i=xs.length-1; 0<=i; --i)
+    r = f(r, xs[i], is[i])
   return r
 })
 
