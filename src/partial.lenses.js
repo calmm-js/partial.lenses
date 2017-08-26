@@ -890,7 +890,7 @@ export const any = /*#__PURE__*/I.pipe2U(selectAny, Boolean)
 
 export const collectAs = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(freeze))((xi2y, t, s) => {
   const results = []
-  forEach((x, i) => {
+  traverseU(Ignore, (x, i) => {
     const y = xi2y(x, i)
     if (void 0 !== y)
       results.push(y)
@@ -911,7 +911,7 @@ export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
 export const count = /*#__PURE__*/countIf(I.isDefined)
 
 export const foldl = /*#__PURE__*/I.curry((f, r, t, s) => {
-  forEach((x, i) => r = f(r, x, i), t, s)
+  traverseU(Ignore, (x, i) => r = f(r, x, i), t, s)
   return r
 })
 
