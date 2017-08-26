@@ -216,6 +216,7 @@ describe("arities", () => {
     foldTraversalLens: 2,
     foldl: 4,
     foldr: 4,
+    forEach: 3,
     get: 2,
     getInverse: 2,
     identity: 4,
@@ -444,7 +445,7 @@ describe("L.zero", () => {
   testEq(`L.get(L.zero, "anything")`, undefined)
   testEq(`L.get([L.zero, L.valueOr("whatever")], "anything")`, "whatever")
   testEq(`L.set(L.zero, "anything", "original")`, "original")
-  testEq(`L.collect([L.elems, L.zero], [1,3])`, [])
+  testEq(`X.collect([X.elems, X.zero], [1,3])`, [])
   testEq(`L.remove([L.elems, L.zero], [1,2])`, [1,2])
 })
 
@@ -452,9 +453,9 @@ describe("composing with plain functions", () => {
   testEq(`L.get(x => x+1, 2)`, 3)
   testEq(`L.modify(R.inc, R.negate, 1)`, 1)
   testEq(`L.get(["x", (x,i) => [x, i]], {x:-1})`, [-1, "x"])
-  testEq(`L.collect([L.elems, (x,i) => [x, i]], ["x","y"])`,
+  testEq(`X.collect([X.elems, (x,i) => [x, i]], ["x","y"])`,
          [["x", 0], ["y", 1]])
-  testEq(`L.collect([L.values, (x,i) => [x, i]], {x:1, y:-1})`,
+  testEq(`X.collect([X.values, (x,i) => [x, i]], {x:1, y:-1})`,
          [[1, "x"], [-1, "y"]])
   testEq(`L.get([0, (x,i) => [x, i]], [-1])`, [-1, 0])
   testEq(`L.get([0, "x", R.negate], [{x:-1}])`, 1)
@@ -514,7 +515,7 @@ describe("L.findWith", () => {
          [{x: ["a"]},{x: ["b","d"]}])
   testEq(`L.remove(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`,
          [{x: ["a"]},{x: ["b"]}])
-  testEq(`L.collect(L.findWith(L.elems), [1,[2],3])`, [2])
+  testEq(`X.collect(X.findWith(X.elems), [1,[2],3])`, [2])
 })
 
 describe("L.filter", () => {
@@ -639,18 +640,18 @@ describe("L.values", () => {
 })
 
 describe("L.optional", () => {
-  testEq(`L.collect(L.optional, undefined)`, [])
-  testEq(`L.collect(L.optional, 0)`, [ 0 ])
-  testEq(`L.collect([L.elems, L.elems], [[0, null], [false, NaN]])`,
+  testEq(`X.collect(X.optional, undefined)`, [])
+  testEq(`X.collect(X.optional, 0)`, [ 0 ])
+  testEq(`X.collect([X.elems, X.elems], [[0, null], [false, NaN]])`,
          [0, null, false, NaN])
-  testEq(`L.collect([L.elems, "x", L.optional],
+  testEq(`X.collect([X.elems, "x", X.optional],
                     [{x: 1}, {y: 2}, {x: 3, z: 1}])`,
          [1, 3])
   testEq(`L.modify([L.elems, "x", L.optional],
                    R.add(1),
                    [{x: 1}, {y: 2}, {x: 3, z: 1}])`,
          [{x: 2}, {y: 2}, {x: 4, z: 1}])
-  testEq(`L.collect([L.elems, "x", L.optional, L.elems],
+  testEq(`X.collect([X.elems, "x", X.optional, X.elems],
                     [{x: [1, 2]}, {y: 2}, {x: [3], z: 1}])`,
          [1, 2, 3])
   testEq(`L.modify([L.elems, "x", L.optional, L.elems],
@@ -663,30 +664,30 @@ describe("L.when", () => {
   testEq(`L.get(L.when(x => x > 2), 1)`, undefined)
   testEq(`L.get([L.when(x => x > 2), I.always(2)], 1)`, 2)
   testEq(`L.get(L.when(x => x > 2), 3)`, 3)
-  testEq(`L.collect([L.elems, L.when(x => x > 2)], [1,3,2,4])`, [3,4])
+  testEq(`X.collect([X.elems, X.when(x => x > 2)], [1,3,2,4])`, [3,4])
   testEq(`L.modify([L.elems, L.when(x => x > 2)], R.negate, [1,3,2,4])`,
          [1,-3,2,-4])
 })
 
 describe("L.collect", () => {
-  testEq(`L.collect(["xs", L.elems, "x", L.elems],
+  testEq(`X.collect(["xs", X.elems, "x", X.elems],
                     {xs: [{x:[3,1]},{x:[4,1]},{x:[5,9,2]}]})`,
          [3,1,4,1,5,9,2])
-  testEq(`L.collect([L.elems, "x", L.elems],
+  testEq(`X.collect([X.elems, "x", X.elems],
                     [{x: [1]}, {}, {x: []}, {x: [2, 3]}])`,
          [1, 2, 3])
-  testEq(`L.collect(L.elems, [])`, [])
-  testEq(`L.collect("x", {x: 101})`, [101])
-  testEq(`L.collect("y", {x: 101})`, [])
-  testEq(`L.collect(["a", L.elems, "b", L.elems, "c", L.elems],
+  testEq(`X.collect(X.elems, [])`, [])
+  testEq(`X.collect("x", {x: 101})`, [101])
+  testEq(`X.collect("y", {x: 101})`, [])
+  testEq(`X.collect(["a", X.elems, "b", X.elems, "c", X.elems],
                     {a:[{b:[]},{b:[{c:[1]}]},{b:[]},{b:[{c:[2]}]}]})`,
          [1,2])
   testEq(`X.collect(X.elems, a100000).length`, 100000)
 })
 
 describe("L.collectAs", () => {
-  testEq(`L.collectAs(R.negate, L.elems, [1,2,3])`, [-1,-2,-3])
-  testEq(`L.collectAs(x => x < 0 ? undefined : x+1, L.elems, [0,-1,2,-3])`,
+  testEq(`X.collectAs(R.negate, X.elems, [1,2,3])`, [-1,-2,-3])
+  testEq(`X.collectAs(x => x < 0 ? undefined : x+1, X.elems, [0,-1,2,-3])`,
          [1, 3])
 })
 
@@ -756,13 +757,13 @@ describe("folds", () => {
   testEq(`L.joinAs(x => "(" + x + ")", ", ", L.elems, [1, 2])`, "(1), (2)")
   testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
   testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [])`, 0)
-  testEq(`L.foldr((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,
+  testEq(`X.foldr((x,y) => [x,y], 0, [X.elems, X.elems], [[1,2],[3]])`,
          [[[0,3],2],1])
-  testEq(`L.foldr((x,y,i) => [x,y,i], 0, [L.elems, L.elems], [[1,2],[3]])`,
+  testEq(`X.foldr((x,y,i) => [x,y,i], 0, [X.elems, X.elems], [[1,2],[3]])`,
          [[[0,3,0],2,1],1,0])
-  testEq(`L.foldl((x,y) => [x,y], 0, [L.elems, L.elems], [[1,2],[3]])`,
+  testEq(`X.foldl((x,y) => [x,y], 0, [X.elems, X.elems], [[1,2],[3]])`,
          [[[0,1],2],3])
-  testEq(`L.foldl((x,y,i) => [x,y,i], 0, [L.elems, L.elems], [[1,2],[3]])`,
+  testEq(`X.foldl((x,y,i) => [x,y,i], 0, [X.elems, X.elems], [[1,2],[3]])`,
          [[[0,1,0],2,1],3,0])
   testEq(`L.countIf((x, i) => i & 1, L.elems, [1, 2, 3])`, 1)
   testEq(`L.count([L.elems, L.orElse("x","y")], [{x:11}, {z:33}, {y:22}])`, 2)
@@ -822,7 +823,7 @@ describe("L.getInverse", () => {
 })
 
 describe("L.lazy", () => {
-  testEq(`L.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])`,
+  testEq(`X.collect(flatten, [[[1], 2], 3, [4, [[5]], [6]]])`,
          [1, 2, 3, 4, 5, 6])
   testEq(`L.modify(flatten, x => x+1, [[[1], 2], 3, [4, [[5]], [6]]])`,
          [[[2], 3], 4, [5, [[6]], [7]]])
@@ -895,9 +896,9 @@ describe("indexing", () => {
          [1,-2,3,-4])
   testEq(`L.modify([L.elems, L.when((_, i) => i & 1)], x => -x, [1,2,3,4])`,
          [1,-2,3,-4])
-  testEq(`L.collectAs((x, i) => [x, i], L.elems, ["a", "b"])`,
+  testEq(`X.collectAs((x, i) => [x, i], X.elems, ["a", "b"])`,
          [["a", 0], ["b", 1]])
-  testEq(`L.collectAs((x, i) => [x, i], L.values, {x: 101, y: 42})`,
+  testEq(`X.collectAs((x, i) => [x, i], X.values, {x: 101, y: 42})`,
          [[101, "x"], [42, "y"]])
 })
 
@@ -1021,7 +1022,7 @@ describe("standard isos", () => {
 })
 
 describe("L.matches", () => {
-  testEq(`L.collect(L.matches(/\\w+/g), "Hello, world!")`, ["Hello", "world"])
+  testEq(`X.collect(X.matches(/\\w+/g), "Hello, world!")`, ["Hello", "world"])
   testEq(`L.and(L.matches(/\\w+/g), "This is another test!")`, true)
   testEq(`L.modify(L.matches(/\\w+/g), R.toUpper, "Hello, world!")`,
          "HELLO, WORLD!")
@@ -1035,7 +1036,7 @@ describe("L.matches", () => {
   testEq(`L.set(L.matches(/\\w+|\\W+/g), "", "Hello, world!")`, undefined)
   testEq(`L.remove(L.matches(/\\w+|\\W+/g), "Hello, world!")`, undefined)
 
-  testEq(`L.collect(L.matches(/a?b?/g), "x")`, [])
+  testEq(`X.collect(X.matches(/a?b?/g), "x")`, [])
 
   testEq(`L.get(L.matches(/\\w+/), "Hello, world!")`, "Hello")
   testEq(`L.set(L.matches(/\\w+/), "Salut", "Hello, world!")`, "Salut, world!")
@@ -1108,8 +1109,8 @@ describe("L.singleton", () => {
 })
 
 describe("L.flatten", () => {
-  testEq(`L.collect(L.flatten, 101)`, [101])
-  testEq(`L.collect(L.flatten, [["x"], [1, []], [[false]]])`, ["x", 1, false])
+  testEq(`X.collect(X.flatten, 101)`, [101])
+  testEq(`X.collect(X.flatten, [["x"], [1, []], [[false]]])`, ["x", 1, false])
 })
 
 describe("L.array", () => {
@@ -1125,6 +1126,33 @@ describe("L.array", () => {
          undefined)
   testEq(`L.get(L.array(L.iso(R.toUpper, R.toLower)), "string")`,
          ["S", "T", "R", "I", "N", "G"])
+})
+
+describe("L.forEach", () => {
+  testEq(`{let xs=[];
+           X.forEach((x, i) => xs.push([x, i]),
+                     X.matches(/[ab]+/g),
+                     "Diiba daaba!");
+           return xs}`,
+         [["ba", 3], ["aaba", 7]])
+  testEq(`{let xs=[];
+           X.forEach((x, i) => xs.push([x, i]),
+                     X.elems,
+                     ["a", "b"]);
+           return xs}`,
+         [["a",0],["b",1]])
+  testEq(`{let xs=[];
+           X.forEach((x, i) => xs.push([x, i]),
+                     X.values,
+                     {x: 1, y: 2});
+           return xs}`,
+         [[1,"x"],[2,"y"]])
+  testEq(`{let xs=[];
+           X.forEach((x, i) => xs.push([x, i]),
+                     X.branch({y: [], x: X.elems}),
+                     {x: ["a", "b", "c"], y: 4});
+           return xs}`,
+         [[4,"y"],["a",0],["b",1],["c",2]])
 })
 
 if (process.env.NODE_ENV !== "production") {
