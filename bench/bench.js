@@ -289,11 +289,11 @@ R.forEach(bs => {
     `R.view(l_0x0y, axay)`,
     `_get(axay, [0,"x",0,"y"])`,
   ], [
+    `K_0_x_0_y.set(axay, 0)`,
     `L.set([0,"x",0,"y"], 0, axay)`,
     `R.assocPath([0,"x",0,"y"], 0, axay)`,
     `R.set(l_0_x_0_y, 0, axay)`,
     `R.set(l_0x0y, 0, axay)`,
-    `K_0_x_0_y.set(axay, 0)`,
   ], [
     `K_0_x_0_y.over(axay, inc)`,
     `L.modify([0,"x",0,"y"], inc, axay)`,
