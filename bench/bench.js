@@ -48,6 +48,8 @@ const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
 const l_0x0y = R.lensPath([0, "x", 0, "y"])
 const l_xyz = R.lensPath(["x", "y", "z"])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
+const K_0_x_0_y = K && K.idx(0).key("x").idx(0).key("y")
+const K_xyz = K && K.key("x").key("y").key("z")
 
 const o_x_y_z = O && R.compose(O.Lens.atObject('x'),
                                O.Prism._Just,
@@ -149,9 +151,9 @@ Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 const pattern = new RegExp(process.argv[3] || "")
 
 const dropped = [
-  P    ? "" : "P.",
-  O    ? "" : "O.",
-  K    ? "" : "K.",
+  P    ? "" : "P",
+  O    ? "" : "O",
+  K    ? "" : "K",
   _get ? "" : "_get"
 ].filter(I.id)
 
@@ -280,23 +282,23 @@ R.forEach(bs => {
     `R.set(l_y, 0, xyz)`,
     `K.key("y").set(xyz, 0)`,
   ], [
+    `K_0_x_0_y.get(axay)`,
     `L.get([0,"x",0,"y"], axay)`,
     `R.path([0,"x",0,"y"], axay)`,
     `R.view(l_0_x_0_y, axay)`,
     `R.view(l_0x0y, axay)`,
-    `K.idx(0).key("x").idx(0).key("y").get(axay)`,
     `_get(axay, [0,"x",0,"y"])`,
   ], [
     `L.set([0,"x",0,"y"], 0, axay)`,
     `R.assocPath([0,"x",0,"y"], 0, axay)`,
     `R.set(l_0_x_0_y, 0, axay)`,
     `R.set(l_0x0y, 0, axay)`,
-    `K.idx(0).key("x").idx(0).key("y").set(axay, 0)`,
+    `K_0_x_0_y.set(axay, 0)`,
   ], [
+    `K_0_x_0_y.over(axay, inc)`,
     `L.modify([0,"x",0,"y"], inc, axay)`,
     `R.over(l_0_x_0_y, inc, axay)`,
     `R.over(l_0x0y, inc, axay)`,
-    `K.idx(0).key("x").idx(0).key("y").over(axay, inc)`,
   ], [
     `L.remove(1, xs)`,
     `R.remove(1, 1, xs)`,
@@ -304,20 +306,20 @@ R.forEach(bs => {
     `L.remove("y", xyz)`,
     `R.dissoc("y", xyz)`,
   ], [
+    `K_xyz.get(xyzn)`,
     `L.get(["x","y","z"], xyzn)`,
     `O.Getter.view(o_x_y_z, xyzn)`,
     `R.path(["x","y","z"], xyzn)`,
     `R.view(l_x_y_z, xyzn)`,
     `R.view(l_xyz, xyzn)`,
-    `K.key("x").key("y").key("z").get(xyzn)`,
     `_get(xyzn, ["x", "y", "z"])`,
   ], [
+    `K_xyz.set(xyzn, 0)`,
     `L.set(["x","y","z"], 0, xyzn)`,
     `O.Setter.set(o_x_y_z, 0, xyzn)`,
     `R.assocPath(["x","y","z"], 0, xyzn)`,
     `R.set(l_x_y_z, 0, xyzn)`,
     `R.set(l_xyz, 0, xyzn)`,
-    `K.key("x").key("y").key("z").set(xyzn, 0)`,
   ], [
     `L.selectAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
     `R.find(x => x > 3, xs100)`,
