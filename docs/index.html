@@ -150,6 +150,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
+<li><a href="#L-forEach" title="L.forEach: ((Maybe a, Index) -&gt; Undefined) -&gt; PTraversal s a -&gt; Maybe s -&gt; Undefined"><code>L.forEach((maybeValue, index) =&gt; undefined, traversal, maybeData) ~&gt; undefined</code></a> <small><sup>v11.20.0</sup></small></li>
 <li><a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v11.8.0</sup></small></li>
 <li><a href="#L-isEmpty" title="L.isEmpty: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isEmpty(traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v11.5.0</sup></small></li>
 <li><a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></li>
@@ -1481,6 +1482,11 @@ traversal.</p>
 traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
+</code></pre>
+<h5><a id="L-forEach"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-forEach">■</a> <a href="#L-forEach" title="L.forEach: ((Maybe a, Index) -&gt; Undefined) -&gt; PTraversal s a -&gt; Maybe s -&gt; Undefined"><code>L.forEach((maybeValue, index) =&gt; undefined, traversal, maybeData) ~&gt; undefined</code></a> <small><sup>v11.20.0</sup></small></h5>
+<p><code>L.forEach</code> calls the given function for each focus of the traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.forEach(console.log, [L.elems, &quot;x&quot;, L.elems], [{x: [3]}, {x: [1, 4]}, {x: [1]}])
 </code></pre>
 <h5><a id="L-isDefined"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-isDefined">■</a> <a href="#L-isDefined" title="L.isDefined: PTraversal s a -&gt; Maybe s -&gt; Boolean"><code>L.isDefined(traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v11.8.0</sup></small></h5>
 <p><code>L.isDefined</code> determines whether or not the given traversal focuses on any

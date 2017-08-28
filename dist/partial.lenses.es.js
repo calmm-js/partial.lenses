@@ -1158,6 +1158,12 @@ var foldr = /*#__PURE__*/curry(function (f, r, t, s) {
   return r;
 });
 
+var forEach = /*#__PURE__*/curry(function (f, t, s) {
+  fold(function (_, x, i) {
+    f(x, i);
+  }, void 0, traverseU(Collect, pair, t, s));
+});
+
 var isDefined$1 = /*#__PURE__*/pipe2U(mkSelect(function (x) {
   return void 0 !== x ? T : U;
 }), Boolean)();
@@ -1522,4 +1528,4 @@ var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || isString(x);
 };
 
-export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, is, singleton, uri, uriComponent, json, seemsArrayLike };
+export { toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, flatten, values, matches, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, is, singleton, uri, uriComponent, json, seemsArrayLike };

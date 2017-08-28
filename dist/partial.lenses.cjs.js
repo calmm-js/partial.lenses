@@ -1162,6 +1162,12 @@ var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
   return r;
 });
 
+var forEach = /*#__PURE__*/I.curry(function (f, t, s) {
+  fold(function (_, x, i) {
+    f(x, i);
+  }, void 0, traverseU(Collect, pair, t, s));
+});
+
 var isDefined$1 = /*#__PURE__*/I.pipe2U(mkSelect(function (x) {
   return void 0 !== x ? T : U;
 }), Boolean)();
@@ -1567,6 +1573,7 @@ exports.countIf = countIf;
 exports.count = count;
 exports.foldl = foldl;
 exports.foldr = foldr;
+exports.forEach = forEach;
 exports.isDefined = isDefined$1;
 exports.isEmpty = isEmpty;
 exports.joinAs = joinAs;
