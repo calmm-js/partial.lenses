@@ -1130,26 +1130,26 @@ describe("L.array", () => {
 
 describe("L.forEach", () => {
   testEq(`{let xs=[];
-           X.forEach((x, i) => xs.push([x, i]),
-                     X.matches(/[ab]+/g),
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.matches(/[ab]+/g),
                      "Diiba daaba!");
            return xs}`,
          [["ba", 3], ["aaba", 7]])
   testEq(`{let xs=[];
-           X.forEach((x, i) => xs.push([x, i]),
-                     X.elems,
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.elems,
                      ["a", "b"]);
            return xs}`,
          [["a",0],["b",1]])
   testEq(`{let xs=[];
-           X.forEach((x, i) => xs.push([x, i]),
-                     X.values,
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.values,
                      {x: 1, y: 2});
            return xs}`,
          [[1,"x"],[2,"y"]])
   testEq(`{let xs=[];
-           X.forEach((x, i) => xs.push([x, i]),
-                     X.branch({y: [], x: X.elems}),
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.branch({y: [], x: L.elems}),
                      {x: ["a", "b", "c"], y: 4});
            return xs}`,
          [[4,"y"],["a",0],["b",1],["c",2]])
