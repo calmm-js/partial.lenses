@@ -924,6 +924,10 @@ export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
   return r
 })
 
+export const forEach = /*#__PURE__*/I.curry((f, t, s) => {
+  fold((_, x, i) => {f(x, i)}, void 0, traverseU(Collect, pair, t, s))
+})
+
 export const isDefined = /*#__PURE__*/I.pipe2U(mkSelect(x => void 0 !== x ? T : U), Boolean)()
 
 export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()

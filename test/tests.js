@@ -216,6 +216,7 @@ describe("arities", () => {
     foldTraversalLens: 2,
     foldl: 4,
     foldr: 4,
+    forEach: 3,
     get: 2,
     getInverse: 2,
     identity: 4,
@@ -1125,6 +1126,33 @@ describe("L.array", () => {
          undefined)
   testEq(`L.get(L.array(L.iso(R.toUpper, R.toLower)), "string")`,
          ["S", "T", "R", "I", "N", "G"])
+})
+
+describe("L.forEach", () => {
+  testEq(`{let xs=[];
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.matches(/[ab]+/g),
+                     "Diiba daaba!");
+           return xs}`,
+         [["ba", 3], ["aaba", 7]])
+  testEq(`{let xs=[];
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.elems,
+                     ["a", "b"]);
+           return xs}`,
+         [["a",0],["b",1]])
+  testEq(`{let xs=[];
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.values,
+                     {x: 1, y: 2});
+           return xs}`,
+         [[1,"x"],[2,"y"]])
+  testEq(`{let xs=[];
+           L.forEach((x, i) => xs.push([x, i]),
+                     L.branch({y: [], x: L.elems}),
+                     {x: ["a", "b", "c"], y: 4});
+           return xs}`,
+         [[4,"y"],["a",0],["b",1],["c",2]])
 })
 
 if (process.env.NODE_ENV !== "production") {
