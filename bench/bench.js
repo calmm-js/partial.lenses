@@ -145,6 +145,15 @@ const abS = L.choices("a", "b")
 const abcM = L.choice("a", "b", "c")
 const abcS = L.choices("a", "b", "c")
 
+const EffectA = {
+  map: (x2y, xE) => xE,
+  ap: (x2yE, xE) => () => {x2yE(); xE()},
+  of: I.always(() => {}),
+  delay: th => () => th()()
+}
+
+const forEach = (xi2u, t, s) => L.traverse(EffectA, (x, i) => () => xi2u(x, i), t, s)()
+
 const Benchmark = require("benchmark")
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
@@ -339,6 +348,7 @@ R.forEach(bs => {
   ], [
     `L.forEach(I.id, [L.elems, L.elems, L.elems], xsss100)`,
     `R.forEach(R.forEach(R.forEach(I.id)), xsss100)`,
+    `forEach(I.id, [L.elems, L.elems, L.elems], xsss100)`,
     `xsss100.forEach(xss100 => xss100.forEach(xs100 => xs100.forEach(I.id)))`,
   ], [
     `L.remove(50, xs100)`,
