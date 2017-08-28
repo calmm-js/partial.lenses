@@ -177,6 +177,11 @@ export const foldl =
        T.any)
 export const foldr = foldl
 
+export const forEach = T.fn([T.fn([T_maybeDataO, T_index], T.any),
+                             T_traversal,
+                             T_maybeDataI],
+                            T.undef)
+
 export const isDefined = T.fn([T_traversal, T_maybeDataI], T.boolean)
 export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
