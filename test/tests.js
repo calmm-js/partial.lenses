@@ -89,6 +89,15 @@ const countS = x => x2n => {
 
 //
 
+const LazyIdent = {
+  map: (x2y, xL) => () => x2y(xL()),
+  of: x => () => x,
+  ap: (x2yL, xL) => () => x2yL()(xL()),
+  delay: th => () => th()()
+}
+
+//
+
 function show(x) {
   switch (typeof x) {
   case "string":
@@ -100,6 +109,7 @@ function show(x) {
 }
 
 const run = expr => eval(`() => ${expr}`)(
+  LazyIdent,
   Sum,
   StateM,
   T,
@@ -1153,6 +1163,30 @@ describe("L.forEach", () => {
                      {x: ["a", "b", "c"], y: 4});
            return xs}`,
          [[4,"y"],["a",0],["b",1],["c",2]])
+})
+
+describe("LazyIdent", () => {
+  testEq(`L.traverse(LazyIdent, x => LazyIdent.of(x+1), L.elems, [1,2,3])()`,
+         [2, 3, 4])
+  testEq(`L.traverse(LazyIdent,
+                     x => LazyIdent.of(x+1),
+                     L.values,
+                     {x:1, y:2, z:3})()`,
+         {x:2, y:3, z:4})
+  testEq(`L.traverse(LazyIdent,
+                     x => LazyIdent.of(x+1),
+                     L.branch({z:[], y:[]}),
+                     {x:1, y:2, z:3})()`,
+         {x:1, y:3, z:4})
+  testEq(`L.traverse(LazyIdent,
+                     x => LazyIdent.of(R.toUpper(x)),
+                     L.matches(/[eol]+/g),
+                     "Hello, world!")()`,
+         "HELLO, wOrLd!")
+  testEq(`L.modify(L.matches(/[eol]+/g),
+                   R.toUpper,
+                   "Hello, world!")`,
+         "HELLO, wOrLd!")
 })
 
 if (process.env.NODE_ENV !== "production") {
