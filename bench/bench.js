@@ -178,14 +178,17 @@ R.forEach(bs => {
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduceRight(add, 0, xs100)`,
+    `xs100.reduceRight(add, 0)`,
   ], [
     `L.foldr(add, 0, L.elems, xs100000)`,
     [`O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`, "STACK OVERFLOW"],
     `R.reduceRight(add, 0, xs100000)`,
+    `xs100000.reduceRight(add, 0)`,
   ], [
     `L.foldl(add, 0, L.elems, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
     `R.reduce(add, 0, xs100)`,
+    `xs100.reduce(add, 0)`,
   ], [
     'xs100.reduce((a, b) => a + b, 0)',
     'L.concat(Sum, L.elems, xs100)',
