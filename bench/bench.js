@@ -344,6 +344,10 @@ R.forEach(bs => {
     `R.forEach(R.forEach(R.forEach(I.id)), xsss100)`,
     `xsss100.forEach(xss100 => xss100.forEach(xs100 => xs100.forEach(I.id)))`,
   ], [
+    `L.minimum(L.elems, xs10000)`,
+    `L.minimumBy(x => -x, L.elems, xs10000)`,
+    `R.reduce(R.min, -Infinity, xs10000)`,
+  ], [
     `L.remove(50, xs100)`,
     `R.remove(50, 1, xs100)`,
   ], [
