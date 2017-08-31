@@ -221,7 +221,7 @@ R.forEach(bs => {
                      xsss100)`,
     `R.chain(R.chain(R.identity), xsss100)`,
     `K.traversed().traversed().traversed().arrayOf(xsss100)`,
-    `(() => { let acc = []; xsss100.forEach(x0 => { x0.forEach(x1 => { acc = acc.concat(x1); })}); return acc; })()`,
+    `{let acc=[]; xsss100.forEach(x0 => {x0.forEach(x1 => {acc = acc.concat(x1)})}); return acc}`,
   ], [
     `L.collect(L.flatten, xsss100)`,
     `R.flatten(xsss100)`,
@@ -263,7 +263,7 @@ R.forEach(bs => {
     `R_nth_1(xs)`,
   ], [
     `xs.map((x, i) => i === 1 ? 0 : x)`,
-    `(() => { let ys = xs.slice(); ys[1] = 0; return ys; })()`,
+    `{let ys = xs.slice(); ys[1] = 0; return ys}`,
     `L.set(1, 0, xs)`,
     `R.set(l_1, 0, xs)`,
     `R.update(1, 0, xs)`,
