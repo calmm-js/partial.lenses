@@ -994,7 +994,34 @@ describe("lazy folds", () => {
                      flatten,
                      [[[1], 2], {y: 3}, [{l: 41, r: [5]}, {x: 6}]])`,
         [41])
-
+  testEq(`{ let n = 0
+          ; const v =
+              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         L.elems,
+                         [1, 3, 42, 56, 32])
+          ; return [n, v] }`,
+         [3, 42])
+  testEq(`{ let n = 0
+          ; const v =
+              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         L.values,
+                         {x: 1, y: 42, z: 25})
+          ; return [n, v] }`,
+         [2, 42])
+  testEq(`{ let n = 0
+          ; const v =
+              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         L.branch({x: [], y: 0, z: []}),
+                         {x: 5, z: 5, y: [42]})
+          ; return [n, v] }`,
+         [2, 42])
+  testEq(`{ let n = 0
+          ; const v =
+              L.selectAs(x => { n += 1; return x === 'ba' ? x : undefined },
+                         L.matches(/[ab]+/g),
+                         "Ab-ba CD b")
+          ; return [n, v] }`,
+         [2, 'ba'])
   testEq(`L.any((x, i) => x > i, L.elems, [0,1,3])`, true)
   testEq(`L.any((x, i) => x > i, L.elems, [0,1,2])`, false)
   testEq(`L.all((x, i) => x > i, L.elems, [1,2,3])`, true)
