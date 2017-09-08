@@ -503,17 +503,18 @@ const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
 
 //
 
-function mapPartialObjectU(xi2y, o, r) {
+const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, o) => {
+  let r = void 0
   for (const k in o) {
     const v = xi2y(o[k], k)
     if (void 0 !== v) {
-      if (!r)
+      if (void 0 === r)
         r = {}
       r[k] = v
     }
   }
   return r
-}
+})
 
 const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(freeze)))((x, keys) => xs => {
   const o = {}, n = keys.length
