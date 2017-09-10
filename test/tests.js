@@ -218,6 +218,7 @@ describe("arities", () => {
     defaults: 1,
     define: 1,
     elems: 4,
+    entries: 4,
     filter: 1,
     find: 1,
     findHint: 2,
@@ -232,6 +233,7 @@ describe("arities", () => {
     identity: 4,
     iftes: 2,
     index: 1,
+    indexed: 4,
     inverse: 1,
     is: 1,
     isDefined: 2,
@@ -240,6 +242,7 @@ describe("arities", () => {
     join: 3,
     joinAs: 4,
     json: 1,
+    keyed: 4,
     last: 4,
     lazy: 1,
     lens: 2,
@@ -1222,6 +1225,24 @@ describe("LazyIdent", () => {
                    R.toUpper,
                    "Hello, world!")`,
          "HELLO, wOrLd!")
+})
+
+describe("L.indexed", () => {
+  testEq(`L.get(L.indexed, ["a", "b"])`,
+         [{value: "a", index: 0}, {value: "b", index: 1}])
+  testEq(`L.getInverse(L.indexed, [{value: "a", index: 0}, {value: "b", index: 1}])`,
+         ["a", "b"])
+})
+
+describe("L.keyed", () => {
+  testEq(`L.get(L.keyed, {x: 4, y: 2})`,
+         [{value: 4, key: "x"}, {value: 2, key: "y"}])
+  testEq(`L.getInverse(L.keyed, [{value: 4, key: "x"}, {value: 2, key: "y"}])`,
+         {x: 4, y: 2})
+})
+
+describe("L.entries", () => {
+  testEq(`L.modify([L.entries, "key"], R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
 })
 
 if (process.env.NODE_ENV !== "production") {

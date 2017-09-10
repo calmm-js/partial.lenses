@@ -25,6 +25,8 @@ const notPartial = x => void 0 !== x ? !x : x
 
 const singletonPartial = x => void 0 !== x ? [x] : void 0
 
+const instanceofObject = x => x instanceof Object
+
 const expect = (p, f) => x => p(x) ? f(x) : void 0
 
 const freeze = x => x && Object.freeze(x)
@@ -40,6 +42,13 @@ function deepFreeze(x) {
   }
   return x
 }
+
+function freezeArrayOfObjects(xs) {
+  xs.forEach(freeze)
+  return freeze(xs)
+}
+
+const indexCmp = ({index: l}, {index: r}) => l - r
 
 //
 
@@ -660,6 +669,27 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 
 //
 
+const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(x => {
+  x = toObject(x)
+  const es = []
+  for (const key in x)
+    es.push({key, value: x[key]})
+  return es
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
+  let o = void 0
+  for (let i=0, n=es.length; i<n; ++i) {
+    const {key, value} = es[i]
+    if (void 0 !== key && void 0 !== value) {
+      if (void 0 === o)
+        o = {}
+      o[key] = value
+    }
+  }
+  return o
+})))
+
+//
+
 const matchesJoin = input => matches => {
   let result = ""
   let lastIndex = 0
@@ -692,6 +722,12 @@ function zeroOp(y, i, C, xi2yC, x) {
 //
 
 const pickInAux = (t, k) => [k, pickIn(t)]
+
+// Auxiliary
+
+export const seemsArrayLike = x =>
+  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
+  I.isString(x)
 
 // Internals
 
@@ -853,6 +889,8 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
     return A.of(xs)
   }
 })
+
+export const entries = /*#__PURE__*/toFunction([keyed, elems])
 
 export const flatten =
   /*#__PURE__*/lazy(rec => iftes(Array.isArray, [elems, rec], identity))
@@ -1183,9 +1221,33 @@ export const complement = /*#__PURE__*/isoU(notPartial, notPartial)
 
 export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
+export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(xs => {
+  const n = xs.length, xis = Array(n)
+  for (let i=0; i<n; ++i)
+    xis[i] = {value: xs[i], index: i}
+  return xis
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xisIn => {
+  const n = xisIn.length, xis = Array(n)
+  let m = 0
+  for (let i=0; i<n; ++i) {
+    const xi = xisIn[i]
+    if (void 0 !== xi && void 0 !== xi.value && void 0 !== xi.index)
+      xis[m++] = xi
+  }
+  if (m) {
+    xis.length = m
+    xis.sort(indexCmp)
+    for (let i=0; i<m; ++i)
+      xis[i] = xis[i].value
+    return xis
+  }
+})))
+
 export const is = v =>
   isoU(x => I.acyclicEqualsU(v, x),
        b => true === b ? v : void 0)
+
+export {keyed}
 
 export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
   (x, i, F, xi2yF) =>
@@ -1210,9 +1272,3 @@ export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
   return isoU(expect(I.isString, text => JSON.parse(text, reviver)),
               expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
 })
-
-// Auxiliary
-
-export const seemsArrayLike = x =>
-  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  I.isString(x)
