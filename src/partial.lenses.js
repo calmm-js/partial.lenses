@@ -1218,24 +1218,25 @@ export const seemsArrayLike = x =>
 
 // Specialized Lens Creators
 
-export const pointer = s =>
+const isArray = x =>
+  !(x instanceof Object) || Array.isArray(x)
+
+export const pointer = s => {
   // See https://tools.ietf.org/html/rfc6901
-  // Only handles pointers in JSON String Representation format
-  { const o = f => g => h => f(g(h))
-    const isArray = x => !(x instanceof Object) || Array.isArray(x)
-    return(
-      o(xs =>
-           1 === xs.length
-             ? identity
-             : o(ys =>
-                    ys.map(x =>
-                             /^0|[1-9]\d*$/.test(x)
-                               ? iftes(isArray, Number(x), x)
-                               : '-' === x
-                               ? iftes(isArray, append, x)
-                               : o(y => y.replace('~0', '~'))(y => y.replace('~1', '/'))(x)
-                          )
-                )(x => x.slice(1))(xs)
-       )(p => p.split('/'))(s)
-    )
+  // Only handles pointers in JSON String Representation format at this time
+  const ts = s.split('/')
+  const n = ts.length
+  for (let i=1; i<n; ++i) {
+    let t = ts[i]
+    ts[i-1] =
+      /^0|[1-9]\d*$/.test(t)
+        ? iftes(isArray, Number(t), t)
+        : '-' === t
+        ? iftes(isArray, append, t)
+        : t.replace('~1', '/').replace('~0', '~')
   }
+
+  ts.length = n-1
+  return ts
+}
+
