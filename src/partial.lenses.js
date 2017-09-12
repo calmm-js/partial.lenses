@@ -1223,11 +1223,14 @@ const isArray = x =>
 
 export const pointer = s => {
   // See https://tools.ietf.org/html/rfc6901
-  // Only handles pointers in JSON String Representation format at this time
   const ts = s.split('/')
   const n = ts.length
+  const isURI = '#' === ts[0]
   for (let i=1; i<n; ++i) {
-    let t = ts[i]
+    let t =
+      isURI
+        ? decodeURIComponent( ts[i] )
+        : ts[i]
     ts[i-1] =
       /^0|[1-9]\d*$/.test(t)
         ? iftes(isArray, Number(t), t)
@@ -1235,7 +1238,6 @@ export const pointer = s => {
         ? iftes(isArray, append, t)
         : t.replace('~1', '/').replace('~0', '~')
   }
-
   ts.length = n-1
   return ts
 }
