@@ -1223,14 +1223,11 @@ const isArray = x =>
 
 export const pointer = s => {
   // See https://tools.ietf.org/html/rfc6901
+  if (s[0] === '#') s = decodeURIComponent(s)
   const ts = s.split('/')
   const n = ts.length
-  const isURI = '#' === ts[0]
   for (let i=1; i<n; ++i) {
-    let t =
-      isURI
-        ? decodeURIComponent( ts[i] )
-        : ts[i]
+    let t = ts[i]
     ts[i-1] =
       /^0|[1-9]\d*$/.test(t)
         ? iftes(isArray, Number(t), t)
