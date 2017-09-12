@@ -8,7 +8,9 @@
     }
     if (hash) {
       var text = window.LZString.decompressFromEncodedURIComponent(hash)
-      pg.innerHTML = text
+      pg.innerHTML = text.replace(/[\u00A0-\u9999<>&]/gim, function (i) {
+        return '&#' + i.charCodeAt(0) + ';'
+      })
       updateTitle(text)
     }
     var to = null
