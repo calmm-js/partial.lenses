@@ -1215,3 +1215,27 @@ export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
 export const seemsArrayLike = x =>
   x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
   I.isString(x)
+
+// Specialized Lens Creators
+
+export const pointer = s =>
+  // See https://tools.ietf.org/html/rfc6901
+  // Only handles pointers in JSON String Representation format
+  { const o = f => g => h => f(g(h))
+    const isArray = x => !(x instanceof Object) || Array.isArray(x)
+    return(
+      o(xs =>
+           1 === xs.length
+             ? identity
+             : o(ys =>
+                    ys.map(x =>
+                             /^0|[1-9]\d*$/.test(x)
+                               ? iftes(isArray, Number(x), x)
+                               : '-' === x
+                               ? iftes(isArray, append, x)
+                               : o(y => y.replace('~0', '~'))(y => y.replace('~1', '/'))(x)
+                          )
+                )(x => x.slice(1))(xs)
+       )(p => p.split('/'))(s)
+    )
+  }
