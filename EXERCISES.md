@@ -148,8 +148,8 @@ test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'field'}), {start: 1, num
 * Define a traversal that targets the `x` properties of the coordinate pairs.
   * <span class="hint">Compose [`L.elems`](/#L-elems) and
     [`'x'`](/#L-prop).</span>
-* Support removal so that the whole coordinate pair is removed and removing
-  last produces and empty array.
+* Support removal so that the whole coordinate pair is removed and removing the
+  last one produces an empty array.
   * <span class="hint">Use [`L.removable`](/#L-removable).</span>
   * <span class="hint">Use [`L.define`](/#L-define).</span>
 
