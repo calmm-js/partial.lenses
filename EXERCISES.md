@@ -35,6 +35,8 @@ const whole = {
 test('get',    L.get(lens,           whole), 101)
 test('set',    L.set(lens,       42, whole), {part: 42})
 test('mod', L.modify(lens, R.negate, whole), {part: -101})
+
+test('no-mutate', whole, {part: 101})
 ```
 
 ### Nested objects

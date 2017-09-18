@@ -56,6 +56,8 @@ const whole = {
 test(&#39;get&#39;,    L.get(lens,           whole), 101)
 test(&#39;set&#39;,    L.set(lens,       42, whole), {part: 42})
 test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
+
+test(&#39;no-mutate&#39;, whole, {part: 101})
 </code></pre>
 <h3 id="nested-objects">Nested objects</h3>
 <ul>
