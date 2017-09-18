@@ -10,6 +10,7 @@ Most of the exercises include hints that you can reveal by placing the pointer
 over them.  The hints are written with a particular solution in mind, but it is
 often possible to solve a particular exercise in more than one way.
 
+Suggestions for additional exercises are welcome!
 
 ## Lenses
 
