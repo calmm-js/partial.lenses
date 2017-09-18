@@ -822,11 +822,11 @@ law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator us
 <p>The <code>valOf</code> lens constructor is for accessing association arrays that contain
 <code>{id, val}</code> pairs.  For example:</p>
 <pre><code class="hljs lang-js">var sampleAssoc = [{key: &quot;x&quot;, val: 42}, {key: &quot;y&quot;, val: 24}]
-console.log(L.set(valOf(&quot;x&quot;), 101, []))
-console.log(L.get(valOf(&quot;x&quot;), sampleAssoc))
-console.log(L.get(valOf(&quot;z&quot;), sampleAssoc))
-console.log(L.set(valOf(&quot;x&quot;), undefined, sampleAssoc))
-console.log(L.set(valOf(&quot;x&quot;), 13, sampleAssoc))
+log(&#39;A&#39;, L.set(valOf(&quot;x&quot;), 101, []))
+log(&#39;B&#39;, L.get(valOf(&quot;x&quot;), sampleAssoc))
+log(&#39;C&#39;, L.get(valOf(&quot;z&quot;), sampleAssoc))
+log(&#39;D&#39;, L.set(valOf(&quot;x&quot;), undefined, sampleAssoc))
+log(&#39;E&#39;, L.set(valOf(&quot;x&quot;), 13, sampleAssoc))
 </code></pre>
 <p>It obeys lens laws.  Before you try to break it, note that a lens returned by
 <code>valOf(key)</code> is only supposed to work on valid association arrays.  A valid
