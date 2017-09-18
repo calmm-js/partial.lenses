@@ -3,7 +3,8 @@
   display: inline-block;
   padding: 1px;
 }
-.hint :after {
+.hint::after {
+  content: ' ';
   position: absolute;
   align-items: center;
   overflow: hidden;
@@ -15,7 +16,7 @@
   border-radius: 3px;
   border: 1px solid rgba(0,0,0,255);
 }
-.hint:hover :after {
+.hint:hover::after {
   display: none;
 }
 
