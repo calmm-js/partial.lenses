@@ -1,3 +1,24 @@
+.hint {
+  position: relative;
+  display: inline-block;
+  padding: 1px;
+}
+.hint :after {
+  position: absolute;
+  align-items: center;
+  overflow: hidden;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,255);
+}
+.hint:hover :after {
+  display: none;
+}
+
 .markdown-body h4 code { font-size: 16px; }
 .markdown-body h5 code { font-size: 14px; }
 

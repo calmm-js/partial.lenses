@@ -1,3 +1,14 @@
+function test(name, actual, expect) {
+  if (R.equals(actual, expect))
+    console.log(name, 'Ok')
+  else
+    console.log(name, 'Error', actual)
+}
+
+function log() {
+  console.log.apply(null, arguments)
+}
+
 window.klipse_settings = {
   codemirror_options_in: {
     lineWrapping: true,

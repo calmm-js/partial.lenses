@@ -1469,7 +1469,7 @@ the number of non-<code>undefined</code> elements.</p>
 <p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
 the number of elements for which the given predicate returns a truthy value.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.countIf(L.isDefined(&quot;x&quot;), [L.elems], [{x: 11}, {y: 12}])
+<pre><code class="hljs lang-js">L.countIf(L.isDefined(&quot;x&quot;), L.elems, [{x: 11}, {y: 12}])
 </code></pre>
 <h5><a id="L-foldl"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldl">■</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
@@ -3004,7 +3004,7 @@ optics when the focus doesn&#39;t match the expectation of the optic and also
 whether the optic should propagate removal.  Such behavior should also be
 tested.</p>
 <p>It is best not to commit changes to generated files in PRs.  Some of the files
-in <code>docs</code>, <code>lib</code> and <code>dist</code> directories are generated.</p>
+in <code>docs</code>, and <code>dist</code> directories are generated.</p>
 <h3 id="building">Building</h3>
 <p>The <code>prepare</code> script is the usual way to build after changes:</p>
 <pre><code class="hljs lang-bash">npm run prepare

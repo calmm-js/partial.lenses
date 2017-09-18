@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Partial Lenses Exercises</title>
+    <link rel="icon" href="https://avatars1.githubusercontent.com/u/17234211">
+    <link rel="stylesheet" type="text/css" href="fw/github.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/styles/googlecode.min.css">
+    <link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
+    <link rel="stylesheet" type="text/css" href="fw/styles.css">
+    <script type="text/javascript">startTime = Date.now()</script>
+    <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');ga('create','UA-52808982-2','auto');ga('send','pageview');</script>
+  </head>
+  <body class="markdown-body">
+    <div class="loading-message">
+      Please wait... The interactive code snippets on this page take a moment to render.
+    </div>
+    <p>
+      All the code snippets on this page are <b>live</b> and <b>interactive</b>
+      powered by the <a href="https://github.com/viebel/klipse">klipse
+      plugin</a>.
+    </p>
+    <hr>
+    <h1 id="partial-lenses-exercises">Partial Lenses Exercises</h1>
+<h2 id="lenses">Lenses</h2>
+<h3 id="lens">Lens</h3>
+<ul>
+<li>Write getter and setter to access <code>part</code> field.</li>
+<li>Then use the <a href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>L.prop</code></a>
+shorthand.</li>
+</ul>
+<pre><code class="hljs lang-js">const lens = L.lens(
+  /* getter: */whole =&gt; &#39;???&#39;,
+  /* setter: */(part, whole) =&gt; &#39;???&#39;
+)
+
+const whole = {
+  part: 101
+}
+
+test(&#39;get&#39;,    L.get(lens,           whole), 101)
+test(&#39;set&#39;,    L.set(lens,       42, whole), {part: 42})
+test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
+</code></pre>
+<h3 id="nesting">Nesting</h3>
+<ul>
+<li>Create a lens to access <code>inside.part</code>.<ul>
+<li><span class="hint">Use the
+<a href="https://github.com/calmm-js/partial.lenses/#L-compose"><code>L.compose</code></a>
+shorthand notation.</span></li>
+</ul>
+</li>
+<li>Make it so that when <code>part</code> is removed then so is the whole object.<ul>
+<li><span class="hint">Use
+<a href="https://github.com/calmm-js/partial.lenses/#L-removable"><code>L.removable</code></a>.</span></li>
+</ul>
+</li>
+</ul>
+<pre><code class="hljs lang-js">const lens = &#39;???&#39;
+
+const nested = {
+  inside: {
+    part: 101,
+    more: &#39;stuff&#39;
+  }
+}
+
+test(&#39;get&#39;,    L.get(lens,           nested), 101)
+test(&#39;set&#39;,    L.set(lens,       42, nested), {inside: {part: 42, more: &#39;stuff&#39;}})
+test(&#39;mod&#39;, L.modify(lens, R.negate, nested), {inside: {part: -101, more: &#39;stuff&#39;}})
+test(&#39;rem&#39;, L.remove(lens,           nested), undefined)
+</code></pre>
+<h3 id="association-list">Association list</h3>
+<ul>
+<li>Write a function <code>valOf</code> to return a lens to access value with given key.<ul>
+<li><span class="hint">Compose a lens that uses
+<a href="https://github.com/calmm-js/partial.lenses/#L-find"><code>L.find</code></a> to search for
+an object with the given key.</span></li>
+</ul>
+</li>
+<li>Support removal.<ul>
+<li><span class="hint">Use <a href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.removable</code></a>.</span></li>
+</ul>
+</li>
+<li>Make it so that the array does not become <code>undefined</code> once empty.<ul>
+<li><span class="hint">Use
+<a href="https://github.com/calmm-js/partial.lenses/#L-define"><code>L.define</code></a>.</span></li>
+</ul>
+</li>
+<li>Support insertion and make it so that keys remain ordered.<ul>
+<li><span class="hint">Use
+<a href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.valueOr</code></a> to add
+the <code>key</code> property in case there is no matching object.</span></li>
+<li><span class="hint">Use
+<a href="https://github.com/calmm-js/partial.lenses/#L-rewrite"><code>L.rewrite</code></a> to sort
+by <code>key</code>.</span></li>
+</ul>
+</li>
+</ul>
+<pre><code class="hljs lang-js">const valOf = key =&gt; &#39;???&#39;
+
+const data = [{key: &#39;en&#39;, val: &#39;Title&#39;},
+              {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}]
+
+test(&#39;get&#39;,    L.get(valOf(&#39;en&#39;),              data), &#39;Title&#39;)
+test(&#39;set&#39;,    L.set(valOf(&#39;en&#39;), &#39;The title&#39;, data), [{key: &#39;en&#39;, val: &#39;The title&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
+test(&#39;rem&#39;, L.remove(valOf(&#39;en&#39;),              data), [{key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
+
+test(&#39;emp&#39;, L.remove(valOf(&#39;sv&#39;), L.remove(valOf(&#39;en&#39;), data)), [])
+
+test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;fi&#39;, val: &#39;Otsikko&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
+</code></pre>
+<h3 id="adapting">Adapting</h3>
+<ul>
+<li>Write a lens to access the end of a range object.<ul>
+<li><span class="hint">Using
+<a href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.lens</code></a>, write a
+custom lens to access the end of <code>{start, num}</code> pair.</span></li>
+<li><span class="hint">Use
+<a href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.iftes</code></a> to select
+between <code>&#39;end&#39;</code> and the custom lens.</span></li>
+</ul>
+</li>
+</ul>
+<pre><code class="hljs lang-js">const end = &#39;???&#39;
+
+test(&#39;get_num&#39;, L.get(end, {start: 1, num: 2}), 3)
+test(&#39;get_end&#39;, L.get(end, {start: 1, end: 3} ), 3)
+
+test(&#39;set_num&#39;, L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
+test(&#39;set_end&#39;, L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
+</code></pre>
+<!--
+* `L.lazy`
+* `L.pick`
+* `L.slice`
+* `L.matches`
+-->
+<h2 id="traversals">Traversals</h2>
+<h2 id="isomorphisms">Isomorphisms</h2>
+<!--
+* `L.indexed` + sorting + filtering
+* `L.keyed`
+-->
+<h2 id="transforms">Transforms</h2>
+
+    <div class="loading-hidden">
+      <pre><code class="hljs lang-js">
+        document.querySelector('.loading-message').className = "loading-hidden";
+        ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000));
+      </code></pre>
+    </div>
+    <script type="text/javascript" src="https://unpkg.com/babel-polyfill/dist/polyfill.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/infestines/dist/infestines.min.js"></script>
+    <script type="text/javascript" src="partial.lenses.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="fw/klipse-settings.js"></script>
+    <script type="text/javascript" src="https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/languages/javascript.min.js"></script>
+    <script type="text/javascript" src="fw/init-hljs.js"></script>
+    <script type="text/javascript" src="fw/clicks-to-ga.js"></script>
+  </body>
+</html>
