@@ -12,6 +12,21 @@ often possible to solve a particular exercise in more than one way.
 
 Suggestions for additional exercises are welcome!
 
+## Contents
+
+* [Lenses](#lenses)
+  * [Getter and Setter](#getter-and-setter)
+  * [Nested objects](#nested-objects)
+  * [Association list](#association-list)
+  * [Dimorphic ranges](#dimorphic-ranges)
+* [Traversals](#traversals)
+  * [Xces](#xces)
+  * [Nested properties](#nested-properties)
+* [Isomorphisms](#isomorphisms)
+  * [Inverse puzzle](#inverse-puzzle)
+* [Transforms](#transforms)
+  * [Increment and Decrement](#increment-and-decrement)
+
 ## Lenses
 
 ### Getter and Setter
@@ -188,9 +203,36 @@ test('mod', L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [
 
 ## Isomorphisms
 
-<!--
-* `L.indexed` + sorting + filtering
-* `L.keyed`
--->
+### Inverse puzzle
+
+* Solve for `iso`.
+  * <span class="hint">Use [`L.complement`](/#L-complement) on the booleans.</span>
+  * <span class="hint">Lift with [`L.array`](/#L-array) to complement them.</span>
+  * <span class="hint">Use [`L.pick`](/#L-pick) to convert object shapes.</span>
+  * <span class="hint">Use [`L.json`](/#L-json) to convert between JSON and objects.</span>
+
+```js
+const iso = '???'
+
+test('inv', L.getInverse(L.inverse(iso), '{"foo":[true,false,true]}'), '{"bar":[false,true,false]}')
+test('get', L.get(L.inverse(iso), '{"bar":[true]}'), '{"foo":[false]}')
+```
 
 ## Transforms
+
+### Increment and Decrement
+
+* Implement transform `trn` that increments primitives under `xs` and decrements
+  under `ys`.
+  * <span class="hint">Use [`L.modifyOp`](/#L-modifyOp) on the leafs.</span>
+  * <span class="hint">Use [`L.branch`](/#L-branch) to do different things to
+    `xs` and `ys`.</span>
+  * <span class="hint">Use [`L.elems`](/#L-elems) and [`L.values`](/#L-values)
+    to get to the leafs.</span>
+
+```js
+const trn = '???'
+
+test('sol', L.transform(trn, {xs: {a:3, b:1, c:4}, ys: [1, 5, 9]}),
+     /**/                    {xs: {a:4, b:2, c:5}, ys: [0, 4, 8]})
+```

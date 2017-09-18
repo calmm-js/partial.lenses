@@ -30,7 +30,8 @@ const targets = [{
   ...targetDefaults,
   source: "EXERCISES.md",
   target: "docs/exercises.html",
-  title: "Partial Lenses Exercises"
+  title: "Partial Lenses Exercises",
+  menu: true
 }]
 
 //
