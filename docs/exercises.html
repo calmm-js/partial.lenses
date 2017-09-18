@@ -155,6 +155,48 @@ test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;})
 * `L.matches`
 -->
 <h2 id="traversals">Traversals</h2>
+<h3 id="xces">Xces</h3>
+<ul>
+<li>Define a traversal that targets the <code>x</code> properties of the coordinate pairs.<ul>
+<li><span class="hint">Compose <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-elems"><code>L.elems</code></a> and
+<a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>&#39;x&#39;</code></a>.</span></li>
+</ul>
+</li>
+<li>Support removal so that the whole coordinate pair is removed and removing
+last produces and empty array.<ul>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-removable"><code>L.removable</code></a>.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-define"><code>L.define</code></a>.</span></li>
+</ul>
+</li>
+</ul>
+<pre><code class="hljs lang-js">const xs = &#39;???&#39;
+
+const coords = [
+  {x: 3, y: 9},
+  {x: 1, y: 2},
+  {x: 4, y: 6},
+  {x: 1, y: 5},
+  {x: 5, y: 3}
+]
+
+test(&#39;max&#39;, L.maximum(xs, coords), 5)
+
+test(&#39;neg&#39;, L.modify([xs, L.when(x =&gt; 3 &lt; x)], R.negate, coords), [
+  {x:  3, y: 9},
+  {x:  1, y: 2},
+  {x: -4, y: 6},
+  {x:  1, y: 5},
+  {x: -5, y: 3}
+])
+
+test(&#39;rem&#39;, L.remove([xs, L.when(x =&gt; x &lt; 3)], coords), [
+  {x: 3, y: 9},
+  {x: 4, y: 6},
+  {x: 5, y: 3}
+])
+
+test(&#39;emp&#39;, L.remove([xs, L.when(x =&gt; 0 &lt; x)], coords), [])
+</code></pre>
 <h2 id="isomorphisms">Isomorphisms</h2>
 <!--
 * `L.indexed` + sorting + filtering

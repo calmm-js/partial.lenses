@@ -127,6 +127,46 @@ test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'field'}), {start: 1, num
 
 ## Traversals
 
+### Xces
+
+* Define a traversal that targets the `x` properties of the coordinate pairs.
+  * <span class="hint">Compose [`L.elems`](/#L-elems) and
+    [`'x'`](/#L-prop).</span>
+* Support removal so that the whole coordinate pair is removed and removing
+  last produces and empty array.
+  * <span class="hint">Use [`L.removable`](/#L-removable).</span>
+  * <span class="hint">Use [`L.define`](/#L-define).</span>
+
+```js
+const xs = '???'
+
+const coords = [
+  {x: 3, y: 9},
+  {x: 1, y: 2},
+  {x: 4, y: 6},
+  {x: 1, y: 5},
+  {x: 5, y: 3}
+]
+
+test('max', L.maximum(xs, coords), 5)
+
+test('neg', L.modify([xs, L.when(x => 3 < x)], R.negate, coords), [
+  {x:  3, y: 9},
+  {x:  1, y: 2},
+  {x: -4, y: 6},
+  {x:  1, y: 5},
+  {x: -5, y: 3}
+])
+
+test('rem', L.remove([xs, L.when(x => x < 3)], coords), [
+  {x: 3, y: 9},
+  {x: 4, y: 6},
+  {x: 5, y: 3}
+])
+
+test('emp', L.remove([xs, L.when(x => 0 < x)], coords), [])
+```
+
 ## Isomorphisms
 
 <!--
