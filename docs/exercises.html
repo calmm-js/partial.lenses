@@ -197,6 +197,24 @@ test(&#39;rem&#39;, L.remove([xs, L.when(x =&gt; x &lt; 3)], coords), [
 
 test(&#39;emp&#39;, L.remove([xs, L.when(x =&gt; 0 &lt; x)], coords), [])
 </code></pre>
+<h3 id="nested-properties">Nested properties</h3>
+<ul>
+<li>Implement a <code>nonObject</code> traversal that targets all non-object or primitive
+properties of arbitrarily nested objects.<ul>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-iftes"><code>L.iftes</code></a> to select whether to treat
+target as an object or primitive.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-values"><code>L.values</code></a> to traverse through all
+properties of an object.</span></li>
+<li><span class="hint">You will need a recursive lens.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lazy"><code>L.lazy</code></a> to allow recursion.</span></li>
+</ul>
+</li>
+</ul>
+<pre><code class="hljs lang-js">const nonObjects = &#39;???&#39;
+
+test(&#39;max&#39;, L.maximum(nonObjects, {a: 1, b: {c: 2, d: {e: 5}}, e: 3}), 5)
+test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [1]}}}})
+</code></pre>
 <h2 id="isomorphisms">Isomorphisms</h2>
 <!--
 * `L.indexed` + sorting + filtering

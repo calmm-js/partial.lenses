@@ -167,6 +167,24 @@ test('rem', L.remove([xs, L.when(x => x < 3)], coords), [
 test('emp', L.remove([xs, L.when(x => 0 < x)], coords), [])
 ```
 
+### Nested properties
+
+* Implement a `nonObject` traversal that targets all non-object or primitive
+  properties of arbitrarily nested objects.
+  * <span class="hint">Use [`L.iftes`](/#L-iftes) to select whether to treat
+    target as an object or primitive.</span>
+  * <span class="hint">Use [`L.values`](/#L-values) to traverse through all
+    properties of an object.</span>
+  * <span class="hint">You will need a recursive lens.</span>
+  * <span class="hint">Use [`L.lazy`](/#L-lazy) to allow recursion.</span>
+
+```js
+const nonObjects = '???'
+
+test('max', L.maximum(nonObjects, {a: 1, b: {c: 2, d: {e: 5}}, e: 3}), 5)
+test('mod', L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [1]}}}})
+```
+
 ## Isomorphisms
 
 <!--
