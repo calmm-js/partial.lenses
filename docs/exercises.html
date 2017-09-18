@@ -17,17 +17,32 @@
     </div>
     <p>
       All the code snippets on this page are <b>live</b> and <b>interactive</b>
-      powered by the <a href="https://github.com/viebel/klipse">klipse
+      powered by the <a target="_blank" href="https://github.com/viebel/klipse">klipse
       plugin</a>.
     </p>
     <hr>
     <h1 id="partial-lenses-exercises">Partial Lenses Exercises</h1>
+<p>This page contains exercises for the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#">Partial Lenses</a> library.  Each
+exercise asks you to implement an <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#optics">optic</a> or <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#transforms">transform</a>
+using Partial lenses.  An acceptable solution will then make all the <code>test(
+... )</code> cases to log <code>Ok</code>.  In case a <code>test( ... )</code> doesn&#39;t pass it logs <code>Error</code>
+and the (wrong) result.</p>
+<p>Most of the exercises include hints that you can reveal by placing the pointer
+over them.  The hints are written with a particular solution in mind, but it is
+often possible to solve a particular exercise in more than one way.</p>
 <h2 id="lenses">Lenses</h2>
-<h3 id="lens">Lens</h3>
+<h3 id="getter-and-setter">Getter and Setter</h3>
 <ul>
-<li>Write getter and setter to access <code>part</code> field.</li>
-<li>Then use the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>L.prop</code></a>
-shorthand.</li>
+<li>Complete the getter and setter for <code>L.lens</code> to access the <code>part</code> field of an
+object.<ul>
+<li><span class="hint">Use <code>Object.assign</code> in the setter.</span></li>
+</ul>
+</li>
+<li>Then replace the whole thing using the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>L.prop</code></a> shorthand, which
+also supports <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-remove">removal</a>.<ul>
+<li><span class="hint"><code>const lens = &#39;part&#39;</code></span></li>
+</ul>
+</li>
 </ul>
 <pre><code class="hljs lang-js">const lens = L.lens(
   /* getter: */whole =&gt; &#39;???&#39;,
@@ -42,7 +57,7 @@ test(&#39;get&#39;,    L.get(lens,           whole), 101)
 test(&#39;set&#39;,    L.set(lens,       42, whole), {part: 42})
 test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
 </code></pre>
-<h3 id="nesting">Nesting</h3>
+<h3 id="nested-objects">Nested objects</h3>
 <ul>
 <li>Create a lens to access <code>inside.part</code>.<ul>
 <li><span class="hint">Use the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-compose"><code>L.compose</code></a> shorthand
@@ -104,23 +119,32 @@ test(&#39;emp&#39;, L.remove(valOf(&#39;sv&#39;), L.remove(valOf(&#39;en&#39;), 
 
 test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;fi&#39;, val: &#39;Otsikko&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
 </code></pre>
-<h3 id="adapting">Adapting</h3>
+<h3 id="dimorphic-ranges">Dimorphic ranges</h3>
 <ul>
-<li>Write a lens to access the end of a range object.<ul>
+<li>Implement the <code>end</code> lens to access the end of range objects that may take one
+of two different forms.<ul>
 <li><span class="hint">Using <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.lens</code></a>, write a custom lens
 to access the end of <code>{start, num}</code> pair.</span></li>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.iftes</code></a> to select between
-<code>&#39;end&#39;</code> and the custom lens.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.iftes</code></a> or <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-choices"><code>L.choices</code></a>
+to select between <code>&#39;end&#39;</code> and the custom lens.</span></li>
+</ul>
+</li>
+<li>Enhance the lens to allow additional fields beyond <code>start</code>, <code>end</code> / <code>num</code> in a
+range object.<ul>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-props"><code>L.props</code></a> to limit the fields that the
+lens deals with.</span></li>
 </ul>
 </li>
 </ul>
 <pre><code class="hljs lang-js">const end = &#39;???&#39;
 
 test(&#39;get_num&#39;, L.get(end, {start: 1, num: 2}), 3)
-test(&#39;get_end&#39;, L.get(end, {start: 1, end: 3} ), 3)
+test(&#39;get_end&#39;, L.get(end, {start: 1, end: 3}), 3)
 
 test(&#39;set_num&#39;, L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
 test(&#39;set_end&#39;, L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
+
+test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;fld&#39;}), {start: 1, num: 3, xtra: &#39;field&#39;})
 </code></pre>
 <!--
 * `L.lazy`

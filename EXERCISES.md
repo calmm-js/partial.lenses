@@ -1,12 +1,26 @@
 # Partial Lenses Exercises
 
+This page contains exercises for the [Partial Lenses](/#) library.  Each
+exercise asks you to implement an [optic](/#optics) or [transform](/#transforms)
+using Partial lenses.  An acceptable solution will then make all the `test(
+... )` cases to log `Ok`.  In case a `test( ... )` doesn't pass it logs `Error`
+and the (wrong) result.
+
+Most of the exercises include hints that you can reveal by placing the pointer
+over them.  The hints are written with a particular solution in mind, but it is
+often possible to solve a particular exercise in more than one way.
+
+
 ## Lenses
 
-### Lens
+### Getter and Setter
 
-* Write getter and setter to access `part` field.
-* Then use the [`L.prop`](/#L-prop)
-  shorthand.
+* Complete the getter and setter for `L.lens` to access the `part` field of an
+  object.
+  * <span class="hint">Use `Object.assign` in the setter.</span>
+* Then replace the whole thing using the [`L.prop`](/#L-prop) shorthand, which
+  also supports [removal](/#L-remove).
+  * <span class="hint">`const lens = 'part'`</span>
 
 ```js
 const lens = L.lens(
@@ -23,7 +37,7 @@ test('set',    L.set(lens,       42, whole), {part: 42})
 test('mod', L.modify(lens, R.negate, whole), {part: -101})
 ```
 
-### Nesting
+### Nested objects
 
 * Create a lens to access `inside.part`.
   * <span class="hint">Use the [`L.compose`](/#L-compose) shorthand
@@ -77,22 +91,29 @@ test('emp', L.remove(valOf('sv'), L.remove(valOf('en'), data)), [])
 test('ins',    L.set(valOf('fi'), 'Otsikko',   data), [{key: 'en', val: 'Title'}, {key: 'fi', val: 'Otsikko'}, {key: 'sv', val: 'Rubrik'}])
 ```
 
-### Adapting
+### Dimorphic ranges
 
-* Write a lens to access the end of a range object.
+* Implement the `end` lens to access the end of range objects that may take one
+  of two different forms.
   * <span class="hint">Using [`L.lens`](/#L-lens), write a custom lens
     to access the end of `{start, num}` pair.</span>
-  * <span class="hint">Use [`L.iftes`](/#L-lens) to select between
-    `'end'` and the custom lens.</span>
+  * <span class="hint">Use [`L.iftes`](/#L-lens) or [`L.choices`](/#L-choices)
+    to select between `'end'` and the custom lens.</span>
+* Enhance the lens to allow additional fields beyond `start`, `end` / `num` in a
+  range object.
+  * <span class="hint">Use [`L.props`](/#L-props) to limit the fields that the
+    lens deals with.</span>
 
 ```js
 const end = '???'
 
 test('get_num', L.get(end, {start: 1, num: 2}), 3)
-test('get_end', L.get(end, {start: 1, end: 3} ), 3)
+test('get_end', L.get(end, {start: 1, end: 3}), 3)
 
 test('set_num', L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
 test('set_end', L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
+
+test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'fld'}), {start: 1, num: 3, xtra: 'field'})
 ```
 
 <!--
