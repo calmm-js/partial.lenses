@@ -115,7 +115,7 @@ test('get_end', L.get(end, {start: 1, end: 3}), 3)
 test('set_num', L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
 test('set_end', L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
 
-test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'fld'}), {start: 1, num: 3, xtra: 'field'})
+test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'field'}), {start: 1, num: 3, xtra: 'field'})
 ```
 
 <!--
