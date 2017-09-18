@@ -567,8 +567,9 @@ L.remove([texts, L.when(t => t.length > 5)],
 This concludes the tutorial.  The reference documentation contains lots of tiny
 examples and a few [more involved examples](#L-lazy).  The [examples](#examples)
 section describes a couple of lens compositions we've found practical as well as
-examples that may help to
-see [possibilities beyond the immediately obvious](#bst-as-a-lens).
+examples that may help to see [possibilities beyond the immediately
+obvious](#bst-as-a-lens).  There is also a page of [Partial Lenses
+Exercises](https://calmm-js.github.io/partial.lenses/exercises.html) to solve.
 
 ## The why of optics
 
