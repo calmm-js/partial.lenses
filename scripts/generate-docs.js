@@ -73,6 +73,7 @@ function process({
 }) {
   const body = fs.readFileSync(source)
     .toString()
+    .replace(/\(\/#/g, `(${github}/#`)
     .replaceIf(constToVar, /([^ ])\bconst\b/g, "$1var")
     .replaceIf(stripComments, /\/\/ [^.].*/g, "")
     .replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`)
@@ -80,6 +81,7 @@ function process({
              `[■](${github}#$1)`)
     .replace(new RegExp(esc(site), "g"), "")
     .marked()
+    .replace(new RegExp(esc(`a href="${github}/#`), "g"), `a target="_blank" href="${github}/#`)
     .replace(/ id="-[^"]*"/g, "")
     .replace(/<code class="lang-([a-z]*)">/g,
              '<code class="hljs lang-$1">')

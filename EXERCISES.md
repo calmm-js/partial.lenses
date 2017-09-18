@@ -5,7 +5,8 @@
 ### Lens
 
 * Write getter and setter to access `part` field.
-* Then try the [`L.prop`](index.html#L-prop) shorthand.
+* Then use the [`L.prop`](/#L-prop)
+  shorthand.
 
 ```js
 const lens = L.lens(
@@ -25,10 +26,10 @@ test('mod', L.modify(lens, R.negate, whole), {part: -101})
 ### Nesting
 
 * Create a lens to access `inside.part`.
-  * <span class="hint">Use the [`L.compose`](index.html#L-compose) shorthand
+  * <span class="hint">Use the [`L.compose`](/#L-compose) shorthand
     notation.</span>
 * Make it so that when `part` is removed then so is the whole object.
-  * <span class="hint">Use [`L.removable`](index.html#L-removable).</span>
+  * <span class="hint">Use [`L.removable`](/#L-removable).</span>
 
 ```js
 const lens = '???'
@@ -49,16 +50,16 @@ test('rem', L.remove(lens,           nested), undefined)
 ### Association list
 
 * Write a function `valOf` to return a lens to access value with given key.
-  * <span class="hint">Compose a lens that uses [`L.find`](index.html#L-find) to
+  * <span class="hint">Compose a lens that uses [`L.find`](/#L-find) to
     search for an object with the given key.</span>
 * Support removal.
-  * <span class="hint">Use [`L.removable`](index.html#L-valueOr).</span>
+  * <span class="hint">Use [`L.removable`](/#L-valueOr).</span>
 * Make it so that the array does not become `undefined` once empty.
-  * <span class="hint">Use [`L.define`](index.html#L-define).</span>
+  * <span class="hint">Use [`L.define`](/#L-define).</span>
 * Support insertion and make it so that keys remain ordered.
-  * <span class="hint">Use [`L.valueOr`](index.html#L-valueOr) to add the `key`
+  * <span class="hint">Use [`L.valueOr`](/#L-valueOr) to add the `key`
     property in case there is no matching object.</span>
-  * <span class="hint">Use [`L.rewrite`](index.html#L-rewrite) to sort by
+  * <span class="hint">Use [`L.rewrite`](/#L-rewrite) to sort by
     `key`.</span>
 
 ```js
@@ -79,9 +80,9 @@ test('ins',    L.set(valOf('fi'), 'Otsikko',   data), [{key: 'en', val: 'Title'}
 ### Adapting
 
 * Write a lens to access the end of a range object.
-  * <span class="hint">Using [`L.lens`](index.html#L-lens), write a custom lens
+  * <span class="hint">Using [`L.lens`](/#L-lens), write a custom lens
     to access the end of `{start, num}` pair.</span>
-  * <span class="hint">Use [`L.iftes`](index.html#L-lens) to select between
+  * <span class="hint">Use [`L.iftes`](/#L-lens) to select between
     `'end'` and the custom lens.</span>
 
 ```js

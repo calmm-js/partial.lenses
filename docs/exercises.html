@@ -26,7 +26,8 @@
 <h3 id="lens">Lens</h3>
 <ul>
 <li>Write getter and setter to access <code>part</code> field.</li>
-<li>Then try the <a href="index.html#L-prop"><code>L.prop</code></a> shorthand.</li>
+<li>Then use the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>L.prop</code></a>
+shorthand.</li>
 </ul>
 <pre><code class="hljs lang-js">const lens = L.lens(
   /* getter: */whole =&gt; &#39;???&#39;,
@@ -44,12 +45,12 @@ test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
 <h3 id="nesting">Nesting</h3>
 <ul>
 <li>Create a lens to access <code>inside.part</code>.<ul>
-<li><span class="hint">Use the <a href="index.html#L-compose"><code>L.compose</code></a> shorthand
+<li><span class="hint">Use the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-compose"><code>L.compose</code></a> shorthand
 notation.</span></li>
 </ul>
 </li>
 <li>Make it so that when <code>part</code> is removed then so is the whole object.<ul>
-<li><span class="hint">Use <a href="index.html#L-removable"><code>L.removable</code></a>.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-removable"><code>L.removable</code></a>.</span></li>
 </ul>
 </li>
 </ul>
@@ -70,22 +71,22 @@ test(&#39;rem&#39;, L.remove(lens,           nested), undefined)
 <h3 id="association-list">Association list</h3>
 <ul>
 <li>Write a function <code>valOf</code> to return a lens to access value with given key.<ul>
-<li><span class="hint">Compose a lens that uses <a href="index.html#L-find"><code>L.find</code></a> to
+<li><span class="hint">Compose a lens that uses <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-find"><code>L.find</code></a> to
 search for an object with the given key.</span></li>
 </ul>
 </li>
 <li>Support removal.<ul>
-<li><span class="hint">Use <a href="index.html#L-valueOr"><code>L.removable</code></a>.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.removable</code></a>.</span></li>
 </ul>
 </li>
 <li>Make it so that the array does not become <code>undefined</code> once empty.<ul>
-<li><span class="hint">Use <a href="index.html#L-define"><code>L.define</code></a>.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-define"><code>L.define</code></a>.</span></li>
 </ul>
 </li>
 <li>Support insertion and make it so that keys remain ordered.<ul>
-<li><span class="hint">Use <a href="index.html#L-valueOr"><code>L.valueOr</code></a> to add the <code>key</code>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.valueOr</code></a> to add the <code>key</code>
 property in case there is no matching object.</span></li>
-<li><span class="hint">Use <a href="index.html#L-rewrite"><code>L.rewrite</code></a> to sort by
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-rewrite"><code>L.rewrite</code></a> to sort by
 <code>key</code>.</span></li>
 </ul>
 </li>
@@ -106,9 +107,9 @@ test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{
 <h3 id="adapting">Adapting</h3>
 <ul>
 <li>Write a lens to access the end of a range object.<ul>
-<li><span class="hint">Using <a href="index.html#L-lens"><code>L.lens</code></a>, write a custom lens
+<li><span class="hint">Using <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.lens</code></a>, write a custom lens
 to access the end of <code>{start, num}</code> pair.</span></li>
-<li><span class="hint">Use <a href="index.html#L-lens"><code>L.iftes</code></a> to select between
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.iftes</code></a> to select between
 <code>&#39;end&#39;</code> and the custom lens.</span></li>
 </ul>
 </li>
