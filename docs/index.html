@@ -847,34 +847,32 @@ focused on by the given optic.</p>
 <pre><code class="hljs lang-js">L.assign(L.elems, {y: 1}, [{x: 3, y: 2}, {x: 4}])
 </code></pre>
 <h5><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></h5>
-<p><code>L.modify</code> allows one to map over the focused element</p>
+<p><code>L.modify</code> allows one to map over the elements focused on by the given optic.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, 0, &quot;x&quot;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
-<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
 <pre><code class="hljs lang-js">L.modify([&quot;elems&quot;, L.elems, &quot;x&quot;],
          R.dec,
          {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
-<p>of a data structure.</p>
 <h5><a id="L-remove"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-remove">■</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></h5>
-<p><code>L.remove</code> allows one to remove the focused element</p>
+<p><code>L.remove</code> allows one to remove the elements focused on by the given optic.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
-<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
 <pre><code class="hljs lang-js">L.remove([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
-<p>from a data structure.</p>
 <p>Note that <code>L.remove(optic, maybeData)</code> is equivalent
 to <a href="#L-set"><code>L.set(lens, undefined, maybeData)</code></a>.  With partial lenses, setting
 to <code>undefined</code> typically has the effect of removing the focused element.</p>
 <h5><a id="L-set"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-set">■</a> <a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v1.0.0</sup></small></h5>
-<p><code>L.set</code> allows one to replace the focused element</p>
+<p><code>L.set</code> allows one to replace the elements focused on by the given optic with
+the specified value.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.set([&quot;a&quot;, 0, &quot;x&quot;], 11, {id: &quot;z&quot;})
 </code></pre>
-<p>or, when using a <a href="#traversals">traversal</a>, elements</p>
 <pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
-<p>of a data structure.</p>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
 to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
 <h5><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></h5>

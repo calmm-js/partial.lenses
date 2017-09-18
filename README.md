@@ -885,15 +885,14 @@ L.assign(L.elems, {y: 1}, [{x: 3, y: 2}, {x: 4}])
 
 ##### <a id="L-modify"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-modify) [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s") <small><sup>v2.2.0</sup></small>
 
-`L.modify` allows one to map over the focused element
+`L.modify` allows one to map over the elements focused on by the given optic.
+
+For example:
 
 ```js
 L.modify(["elems", 0, "x"], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // { elems: [ { x: 2, y: 2 }, { x: 3, y: 4 } ] }
 ```
-
-or, when using a [traversal](#traversals), elements
-
 ```js
 L.modify(["elems", L.elems, "x"],
          R.dec,
@@ -901,25 +900,22 @@ L.modify(["elems", L.elems, "x"],
 // { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
 ```
 
-of a data structure.
 
 ##### <a id="L-remove"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-remove) [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s") <small><sup>v2.0.0</sup></small>
 
-`L.remove` allows one to remove the focused element
+`L.remove` allows one to remove the elements focused on by the given optic.
+
+For example:
 
 ```js
 L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
 // [ { x: 2 }, { x: 3 } ]
 ```
-
-or, when using a [traversal](#traversals), elements
-
 ```js
 L.remove([L.elems, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 // [ { x: 1 }, { y: 1 } ]
 ```
 
-from a data structure.
 
 Note that `L.remove(optic, maybeData)` is equivalent
 to [`L.set(lens, undefined, maybeData)`](#L-set).  With partial lenses, setting
@@ -927,21 +923,19 @@ to `undefined` typically has the effect of removing the focused element.
 
 ##### <a id="L-set"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-set) [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s") <small><sup>v1.0.0</sup></small>
 
-`L.set` allows one to replace the focused element
+`L.set` allows one to replace the elements focused on by the given optic with
+the specified value.
+
+For example:
 
 ```js
 L.set(["a", 0, "x"], 11, {id: "z"})
 // {a: [{x: 11}], id: 'z'}
 ```
-
-or, when using a [traversal](#traversals), elements
-
 ```js
 L.set([L.elems, "x", L.when(x => x > 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 // [ { x: 1 }, { x: -1, y: 1 }, { x: -1 } ]
 ```
-
-of a data structure.
 
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent
 to [`L.modify(lens, R.always(maybeValue), maybeData)`](#L-modify).
