@@ -11,7 +11,7 @@ function log() {
 
 window.klipse_settings = {
   codemirror_options_in: {
-    lineWrapping: true,
+    lineWrapping: false,
     autoCloseBrackets: false,
     cursorBlinkRate: 0
   },
