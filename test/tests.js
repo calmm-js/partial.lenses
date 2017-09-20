@@ -1248,7 +1248,7 @@ describe("L.keyed", () => {
 })
 
 describe("L.entries", () => {
-  testEq(`L.modify(L.entries, ([k, v]) => [v, k], {x: "a", y: "b"})`, {a: "x", b: "y"})
+  testEq(`L.modify(L.entries, (kv) => [kv[1], kv[0]], {x: "a", y: "b"})`, {a: "x", b: "y"})
   testEq(`L.remove([L.entries, 1, L.when(x => x === "a")], {x: "a", y: "b"})`, {y: "b"})
 })
 
