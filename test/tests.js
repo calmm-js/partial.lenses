@@ -1231,18 +1231,30 @@ describe("LazyIdent", () => {
 describe("L.indexed", () => {
   testEq(`L.get(L.indexed, ["a", "b"])`, [[0, "a"], [1, "b"]])
   testEq(`L.getInverse(L.indexed, [[0, "a"], [1, "b"]])`, ["a", "b"])
+  testEq(`L.set(L.indexed, [], ["a", "b"])`, undefined)
+  testEq(`L.set([L.indexed, 2], [-1, "c"], ["a", "b"])`, ["c", "a", "b"])
+  testEq(`L.set([L.indexed, 2], [3, "c"], ["a", "b"])`, ["a", "b", "c"])
+  testEq(`L.remove([L.indexed, 1, 0], ["a", "b"])`, ["a"])
+  testEq(`L.remove([L.indexed, 0, 1], ["a", "b"])`, ["b"])
 })
 
 describe("L.keyed", () => {
   testEq(`L.get(L.keyed, {x: 4, y: 2})`, [["x", 4], ["y", 2]])
   testEq(`L.getInverse(L.keyed, [["x", 4], ["y", 2]])`, {x: 4, y: 2})
+  testEq(`L.set(L.keyed, {}, {x: 4, y: 2})`, undefined)
+  testEq(`L.set([L.keyed, 2], ["z", 6], {x: 4, y: 2})`, {x: 4, y: 2, z: 6})
+  testEq(`L.remove([L.keyed, 1, 0], {x: 4, y: 2})`, {x: 4})
+  testEq(`L.remove([L.keyed, 0, 1], {x: 4, y: 2})`, {y: 2})
 })
 
 describe("L.entries", () => {
+  testEq(`L.modify(L.entries, ([k, v]) => [v, k], {x: "a", y: "b"})`, {a: "x", b: "y"})
+  testEq(`L.remove([L.entries, 1, L.when(x => x === "a")], {x: "a", y: "b"})`, {y: "b"})
 })
 
 describe("L.keys", () => {
   testEq(`L.modify(L.keys, R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
+  testEq(`L.remove([L.keys, L.when(x => x > "b")], {a: 1, c: 3, b: 2})`, {a: 1, b: 2})
 })
 
 if (process.env.NODE_ENV !== "production") {
