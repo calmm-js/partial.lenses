@@ -857,15 +857,6 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
 export const flatten =
   /*#__PURE__*/lazy(rec => iftes(Array.isArray, [elems, rec], identity))
 
-export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("values"))))((xs, _i, A, xi2yA) => {
-  if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs))
-      :                  branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
-  } else {
-    return A.of(xs)
-  }
-})
-
 export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
@@ -887,6 +878,15 @@ export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.i
       }
     }
     return zeroOp(x, void 0, C, xi2yC)
+  }
+})
+
+export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("values"))))((xs, _i, A, xi2yA) => {
+  if (xs instanceof Object) {
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs))
+      :                  branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
+  } else {
+    return A.of(xs)
   }
 })
 
