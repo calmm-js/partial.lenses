@@ -76,8 +76,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
       * [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
-      * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
+      * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
     * [Folds over traversals](#folds-over-traversals)
       * [`L.all((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-all "L.all: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean") <small><sup>v9.6.0</sup></small>
       * [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.and: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
@@ -1632,6 +1632,32 @@ L.join(" ", L.flatten, [[[1]], ["2"], 3])
 // "1 2 3"
 ```
 
+##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
+
+`L.matches`, when given a regular expression with
+the
+[`global`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global) flag,
+`/.../g`, is a partial traversal over the matches that the regular expression
+gives over the focused string.  See also [`L.matches`](#L-matches).
+
+For example:
+
+```js
+L.collect([L.matches(/[^&=?]+=[^&=]+/g),
+           L.pick({name: L.matches(/^[^=]+/),
+                   value: L.matches(/[^=]+$/)})],
+           "?first=foo&second=bar")
+// [ { name: 'first', value: 'foo' },
+//   { name: 'second', value: 'bar' } ]
+```
+
+Note that when writing through `L.matches` and the result would be an empty
+string, `""`, the result will be `undefined` to support propagating removal.
+
+Note that an empty match terminates the traversal.  It is possible to make use
+of that feature, but it is also possible that an empty match is due to an
+incorrect regular expression that can match the empty string.
+
 ##### <a id="L-values"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-values) [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
 
 `L.values` is a traversal over the values of an `instanceof Object`.  When
@@ -1671,32 +1697,6 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          new XYZ(1,2,3))
 // XYZ { x: -1, y: -2, z: -3 }
 ```
-
-##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
-
-`L.matches`, when given a regular expression with
-the
-[`global`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global) flag,
-`/.../g`, is a partial traversal over the matches that the regular expression
-gives over the focused string.  See also [`L.matches`](#L-matches).
-
-For example:
-
-```js
-L.collect([L.matches(/[^&=?]+=[^&=]+/g),
-           L.pick({name: L.matches(/^[^=]+/),
-                   value: L.matches(/[^=]+$/)})],
-           "?first=foo&second=bar")
-// [ { name: 'first', value: 'foo' },
-//   { name: 'second', value: 'bar' } ]
-```
-
-Note that when writing through `L.matches` and the result would be an empty
-string, `""`, the result will be `undefined` to support propagating removal.
-
-Note that an empty match terminates the traversal.  It is possible to make use
-of that feature, but it is also possible that an empty match is due to an
-incorrect regular expression that can match the empty string.
 
 #### Folds over traversals
 
