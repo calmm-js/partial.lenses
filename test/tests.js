@@ -243,6 +243,7 @@ describe("arities", () => {
     joinAs: 4,
     json: 1,
     keyed: 4,
+    keys: 4,
     last: 4,
     lazy: 1,
     lens: 2,
@@ -1228,21 +1229,20 @@ describe("LazyIdent", () => {
 })
 
 describe("L.indexed", () => {
-  testEq(`L.get(L.indexed, ["a", "b"])`,
-         [{value: "a", index: 0}, {value: "b", index: 1}])
-  testEq(`L.getInverse(L.indexed, [{value: "a", index: 0}, {value: "b", index: 1}])`,
-         ["a", "b"])
+  testEq(`L.get(L.indexed, ["a", "b"])`, [[0, "a"], [1, "b"]])
+  testEq(`L.getInverse(L.indexed, [[0, "a"], [1, "b"]])`, ["a", "b"])
 })
 
 describe("L.keyed", () => {
-  testEq(`L.get(L.keyed, {x: 4, y: 2})`,
-         [{value: 4, key: "x"}, {value: 2, key: "y"}])
-  testEq(`L.getInverse(L.keyed, [{value: 4, key: "x"}, {value: 2, key: "y"}])`,
-         {x: 4, y: 2})
+  testEq(`L.get(L.keyed, {x: 4, y: 2})`, [["x", 4], ["y", 2]])
+  testEq(`L.getInverse(L.keyed, [["x", 4], ["y", 2]])`, {x: 4, y: 2})
 })
 
 describe("L.entries", () => {
-  testEq(`L.modify([L.entries, "key"], R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
+})
+
+describe("L.keys", () => {
+  testEq(`L.modify(L.keys, R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
 })
 
 if (process.env.NODE_ENV !== "production") {

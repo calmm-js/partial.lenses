@@ -48,7 +48,7 @@ function freezeArrayOfObjects(xs) {
   return freeze(xs)
 }
 
-const indexCmp = ({index: l}, {index: r}) => l - r
+const indexCmp = (l, r) => l[0] - r[0]
 
 //
 
@@ -673,16 +673,19 @@ const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV =
   x = toObject(x)
   const es = []
   for (const key in x)
-    es.push({key, value: x[key]})
+    es.push([key, x[key]])
   return es
 })), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
   let o = void 0
   for (let i=0, n=es.length; i<n; ++i) {
-    const {key, value} = es[i]
-    if (void 0 !== key && void 0 !== value) {
-      if (void 0 === o)
-        o = {}
-      o[key] = value
+    const entry = es[i]
+    if (entry.length === 2) {
+      const key = entry[0], value = entry[1]
+      if (void 0 !== key && void 0 !== value) {
+        if (void 0 === o)
+          o = {}
+        o[key] = value
+      }
     }
   }
   return o
@@ -894,6 +897,8 @@ export const entries = /*#__PURE__*/toFunction([keyed, elems])
 
 export const flatten =
   /*#__PURE__*/lazy(rec => iftes(Array.isArray, [elems, rec], identity))
+
+export const keys = /*#__PURE__*/toFunction([keyed, elems, 0])
 
 export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
@@ -1224,21 +1229,21 @@ export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(xs => {
   const n = xs.length, xis = Array(n)
   for (let i=0; i<n; ++i)
-    xis[i] = {value: xs[i], index: i}
+    xis[i] = [i, xs[i]]
   return xis
 })), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xisIn => {
   const n = xisIn.length, xis = Array(n)
   let m = 0
   for (let i=0; i<n; ++i) {
     const xi = xisIn[i]
-    if (void 0 !== xi && void 0 !== xi.value && void 0 !== xi.index)
+    if (xi.length === 2 && void 0 !== xi[0] && void 0 !== xi[1])
       xis[m++] = xi
   }
   if (m) {
     xis.length = m
     xis.sort(indexCmp)
     for (let i=0; i<m; ++i)
-      xis[i] = xis[i].value
+      xis[i] = xis[i][1]
     return xis
   }
 })))
