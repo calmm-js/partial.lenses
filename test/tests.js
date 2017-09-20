@@ -271,6 +271,7 @@ describe("arities", () => {
     removeOp: 4,
     replace: 2,
     required: 1,
+    reread: 1,
     rewrite: 1,
     seemsArrayLike: 1,
     select: 2,
@@ -439,6 +440,13 @@ describe("L.rewrite", () => {
   testEq(`L.get(L.rewrite(x => x-1), undefined)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), undefined, 1)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), 3, 1)`, 2)
+})
+
+describe("L.reread", () => {
+  testEq(`L.get(L.reread(x => x-1), 1)`, 0)
+  testEq(`L.get(L.reread(x => x-1), undefined)`, undefined)
+  testEq(`L.set(L.reread(x => x-1), undefined, 1)`, undefined)
+  testEq(`L.set(L.reread(x => x-1), 3, 1)`, 3)
 })
 
 describe("L.setter", () => {

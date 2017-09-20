@@ -1030,6 +1030,9 @@ export const normalize = xi2x => (x, i, F, xi2yF) =>
 
 export const required = inn => replace(inn, void 0)
 
+export const reread = xi2x => (x, i, _F, xi2yF) =>
+  xi2yF(void 0 !== x ? xi2x(x, i) : x, i)
+
 export const rewrite = yi2y => (x, i, F, xi2yF) =>
   F.map(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
 
