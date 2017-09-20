@@ -123,6 +123,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.define(value) ~> lens`](#L-define "L.define: s -> PLens s s") <small><sup>v1.0.0</sup></small>
       * [`L.normalize((value, index) => maybeValue) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v1.0.0</sup></small>
       * [`L.required(valueOut) ~> lens`](#L-required "L.required: s -> PLens s s") <small><sup>v1.0.0</sup></small>
+      * [`L.reread((valueIn, index) => maybeValueIn) ~> lens`](#L-reread "L.reread: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v11.21.0</sup></small>
       * [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v5.1.0</sup></small>
     * [Lensing array-like objects](#array-like)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a") <small><sup>v1.0.0</sup></small>
@@ -2371,6 +2372,11 @@ L.remove(["items", L.required([]), 0], {items: [1]})
 
 Note that `L.required(valueOut)` is equivalent
 to [`L.replace(valueOut, undefined)`](#L-replace).
+
+##### <a id="L-reread"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-reread) [`L.reread((valueIn, index) => maybeValueIn) ~> lens`](#L-reread "L.reread: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v11.21.0</sup></small>
+
+`L.reread` maps the value with the given transform on get and implicitly maps
+`undefined` to `undefined`.
 
 ##### <a id="L-rewrite"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-rewrite) [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v5.1.0</sup></small>
 
