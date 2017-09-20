@@ -1232,7 +1232,7 @@ describe("L.indexed", () => {
   testEq(`L.get(L.indexed, ["a", "b"])`, [[0, "a"], [1, "b"]])
   testEq(`L.getInverse(L.indexed, [[0, "a"], [1, "b"]])`, ["a", "b"])
   testEq(`L.set(L.indexed, [], ["a", "b"])`, undefined)
-  testEq(`L.set([L.indexed, 2], [-1, "c"], ["a", "b"])`, ["c", "a", "b"])
+  testEq(`L.set([L.indexed, 2], [0, "c"], ["a", "b"])`, ["c", "b"])
   testEq(`L.set([L.indexed, 2], [3, "c"], ["a", "b"])`, ["a", "b", "c"])
   testEq(`L.remove([L.indexed, 1, 0], ["a", "b"])`, ["a"])
   testEq(`L.remove([L.indexed, 0, 1], ["a", "b"])`, ["b"])
