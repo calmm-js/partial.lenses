@@ -1024,11 +1024,12 @@ export function define(v) {
   return (x, i, F, xi2yF) => F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
 }
 
-export const normalize = xi2x => (x, i, F, xi2yF) =>
-  F.map(x => void 0 !== x ? xi2x(x, i) : x,
-        xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
+export const normalize = xi2x => [reread(xi2x), rewrite(xi2x)]
 
 export const required = inn => replace(inn, void 0)
+
+export const reread = xi2x => (x, i, _F, xi2yF) =>
+  xi2yF(void 0 !== x ? xi2x(x, i) : x, i)
 
 export const rewrite = yi2y => (x, i, F, xi2yF) =>
   F.map(y => void 0 !== y ? yi2y(y, i) : y, xi2yF(x, i))
