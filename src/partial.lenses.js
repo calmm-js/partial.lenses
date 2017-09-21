@@ -1024,9 +1024,7 @@ export function define(v) {
   return (x, i, F, xi2yF) => F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
 }
 
-export const normalize = xi2x => (x, i, F, xi2yF) =>
-  F.map(x => void 0 !== x ? xi2x(x, i) : x,
-        xi2yF(void 0 !== x ? xi2x(x, i) : x, i))
+export const normalize = xi2x => [reread(xi2x), rewrite(xi2x)]
 
 export const required = inn => replace(inn, void 0)
 
