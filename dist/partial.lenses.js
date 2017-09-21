@@ -643,16 +643,17 @@ var toObject = function toObject(x) {
 
 //
 
-function mapPartialObjectU(xi2y, o, r) {
+var mapPartialObjectU = /*#__PURE__*/(res(freeze))(function (xi2y, o) {
+  var r = void 0;
   for (var k in o) {
     var v = xi2y(o[k], k);
     if (void 0 !== v) {
-      if (!r) r = {};
+      if (void 0 === r) r = {};
       r[k] = v;
     }
   }
   return r;
-}
+});
 
 var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
@@ -1080,14 +1081,6 @@ var flatten =
   return iftes(Array.isArray, [elems, rec], identity);
 });
 
-var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
-  if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
-  } else {
-    return A.of(xs);
-  }
-});
-
 var matches = /*#__PURE__*/(dep(function (_ref5) {
   var _ref6 = _slicedToArray(_ref5, 1),
       re = _ref6[0];
@@ -1116,6 +1109,14 @@ var matches = /*#__PURE__*/(dep(function (_ref5) {
     }
     return zeroOp(x, void 0, C, xi2yC);
   };
+});
+
+var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
+  if (xs instanceof Object) {
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
+  } else {
+    return A.of(xs);
+  }
 });
 
 // Folds over traversals
@@ -1282,15 +1283,17 @@ function define(v) {
 }
 
 var normalize = function normalize(xi2x) {
-  return function (x, i, F, xi2yF) {
-    return F.map(function (x) {
-      return void 0 !== x ? xi2x(x, i) : x;
-    }, xi2yF(void 0 !== x ? xi2x(x, i) : x, i));
-  };
+  return [reread(xi2x), rewrite(xi2x)];
 };
 
 var required = function required(inn) {
   return replace(inn, void 0);
+};
+
+var reread = function reread(xi2x) {
+  return function (x, i, _F, xi2yF) {
+    return xi2yF(void 0 !== x ? xi2x(x, i) : x, i);
+  };
 };
 
 var rewrite = function rewrite(yi2y) {
@@ -1560,8 +1563,8 @@ exports.seq = seq;
 exports.branch = branch;
 exports.elems = elems;
 exports.flatten = flatten;
-exports.values = values;
 exports.matches = matches;
+exports.values = values;
 exports.all = all;
 exports.and = and;
 exports.any = any;
@@ -1601,6 +1604,7 @@ exports.defaults = defaults;
 exports.define = define;
 exports.normalize = normalize;
 exports.required = required;
+exports.reread = reread;
 exports.rewrite = rewrite;
 exports.append = append;
 exports.filter = filter;

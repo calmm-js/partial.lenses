@@ -66,7 +66,7 @@
     "babel-register": "^6.26.0",
     "benchmark": "^2.1.4",
     "codecov": "^2.3.0",
-    "eslint": "^4.7.0",
+    "eslint": "^4.7.1",
     "livereload": "^0.6.2",
     "marked": "^0.3.6",
     "mocha": "^3.5.3",
@@ -78,7 +78,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "sprintf-js": "^1.1.1",
-    "uglify-js": "^3.1.0",
+    "uglify-js": "^3.1.1",
     "watch-run": "^1.2.5"
   }
 }

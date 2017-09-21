@@ -193,6 +193,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
+<li><a href="#L-reread" title="L.reread: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.reread((valueIn, index) =&gt; maybeValueIn) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; maybeValueOut) ~&gt; lens</code></a> <small><sup>v5.1.0</sup></small></li>
 </ul>
 </li>
@@ -1738,14 +1739,12 @@ required value for an element.</p>
 <p>Note that <code>L.define(value)</code> is equivalent to <code>[L.required(value),
 L.defaults(value)]</code>.</p>
 <h5><a id="L-normalize"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-normalize">■</a> <a href="#L-normalize" title="L.normalize: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.normalize((value, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
-<p><code>L.normalize</code> maps the value with same given transform when viewed and set and
-implicitly maps <code>undefined</code> to <code>undefined</code>.</p>
+<p><code>L.normalize</code> maps the value with same given transform when read and written and
+implicitly maps <code>undefined</code> to <code>undefined</code>.  <code>L.normalize(fn)</code> is equivalent to
+composing <a href="#L-reread"><code>L.reread(fn)</code></a> and <a href="#L-rewrite"><code>L.rewrite(fn)</code></a>.</p>
 <p>One use case for <code>normalize</code> is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a
 simple <a href="http://ramdajs.com/docs/#equals"><code>R.equals</code></a> comparison will do.</p>
-<p>Note that the difference between <code>L.normalize</code> and <a href="#L-rewrite"><code>L.rewrite</code></a> is
-that <code>L.normalize</code> applies the transform in both directions
-while <a href="#L-rewrite"><code>L.rewrite</code></a> only applies the transform when writing.</p>
 <h5><a id="L-required"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-required">■</a> <a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.required</code> is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.</p>
@@ -1758,13 +1757,14 @@ is removed, the given value will be substituted instead.</p>
 </code></pre>
 <p>Note that <code>L.required(valueOut)</code> is equivalent
 to <a href="#L-replace"><code>L.replace(valueOut, undefined)</code></a>.</p>
+<h5><a id="L-reread"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-reread">■</a> <a href="#L-reread" title="L.reread: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.reread((valueIn, index) =&gt; maybeValueIn) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.reread</code> maps the value with the given transform on read and implicitly maps
+<code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a>.</p>
 <h5><a id="L-rewrite"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-rewrite">■</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; maybeValueOut) ~&gt; lens</code></a> <small><sup>v5.1.0</sup></small></h5>
-<p><code>L.rewrite</code> maps the value with the given transform when set and implicitly maps
-<code>undefined</code> to <code>undefined</code>.  One use case for <code>rewrite</code> is to re-establish data
-structure invariants after changes.</p>
-<p>Note that the difference between <a href="#L-normalize"><code>L.normalize</code></a> and <code>L.rewrite</code>
-is that <a href="#L-normalize"><code>L.normalize</code></a> applies the transform in both directions
-while <code>L.rewrite</code> only applies the transform when writing.</p>
+<p><code>L.rewrite</code> maps the value with the given transform when written and implicitly
+maps <code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a>.</p>
+<p>One use case for <code>rewrite</code> is to re-establish data structure invariants after
+changes.</p>
 <p>See the <a href="#bst-as-a-lens">BST as a lens</a> section for a meaningful example.</p>
 <h4><a id="array-like"></a> Lensing array-like objects</h4>
 <p>Objects that have a non-negative integer <code>length</code> and strings, which are not
