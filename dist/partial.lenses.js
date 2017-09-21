@@ -107,6 +107,10 @@ var singletonPartial = function singletonPartial(x) {
   return void 0 !== x ? [x] : void 0;
 };
 
+var instanceofObject = function instanceofObject(x) {
+  return x instanceof Object;
+};
+
 var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : void 0;
@@ -127,6 +131,11 @@ function deepFreeze(x) {
     }freeze(x);
   }
   return x;
+}
+
+function freezeArrayOfObjects(xs) {
+  xs.forEach(freeze);
+  return freeze(xs);
 }
 
 //
@@ -643,16 +652,17 @@ var toObject = function toObject(x) {
 
 //
 
-function mapPartialObjectU(xi2y, o, r) {
+var mapPartialObjectU = /*#__PURE__*/(res(freeze))(function (xi2y, o) {
+  var r = void 0;
   for (var k in o) {
     var v = xi2y(o[k], k);
     if (void 0 !== v) {
-      if (!r) r = {};
+      if (void 0 === r) r = {};
       r[k] = v;
     }
   }
   return r;
-}
+});
 
 var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
   return function (xs) {
@@ -827,6 +837,26 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 
 //
 
+var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (res(freezeArrayOfObjects))(function (x) {
+  x = toObject(x);
+  var es = [];
+  for (var key in x) {
+    es.push([key, x[key]]);
+  }return es;
+})), expect(I.isDefined, (res(freeze))(function (es) {
+  var o = void 0;
+  for (var i = 0, n = es.length; i < n; ++i) {
+    var entry = es[i];
+    if (entry.length === 2) {
+      if (void 0 === o) o = {};
+      o[entry[0]] = entry[1];
+    }
+  }
+  return o;
+})));
+
+//
+
 var matchesJoin = function matchesJoin(input) {
   return function (matches) {
     var result = "";
@@ -868,6 +898,12 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 var pickInAux = function pickInAux(t, k) {
   return [k, pickIn(t)];
+};
+
+// Auxiliary
+
+var seemsArrayLike = function seemsArrayLike(x) {
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
 };
 
 // Internals
@@ -1075,18 +1111,14 @@ var elems = /*#__PURE__*/(par(2, ef(reqApplicative("elems"))))(function (xs, _i,
   }
 });
 
+var entries = /*#__PURE__*/toFunction([keyed, elems]);
+
 var flatten =
 /*#__PURE__*/lazy(function (rec) {
   return iftes(Array.isArray, [elems, rec], identity);
 });
 
-var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
-  if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
-  } else {
-    return A.of(xs);
-  }
-});
+var keys$1 = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
 var matches = /*#__PURE__*/(dep(function (_ref5) {
   var _ref6 = _slicedToArray(_ref5, 1),
@@ -1116,6 +1148,14 @@ var matches = /*#__PURE__*/(dep(function (_ref5) {
     }
     return zeroOp(x, void 0, C, xi2yC);
   };
+});
+
+var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
+  if (xs instanceof Object) {
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
+  } else {
+    return A.of(xs);
+  }
 });
 
 // Folds over traversals
@@ -1282,15 +1322,17 @@ function define(v) {
 }
 
 var normalize = function normalize(xi2x) {
-  return function (x, i, F, xi2yF) {
-    return F.map(function (x) {
-      return void 0 !== x ? xi2x(x, i) : x;
-    }, xi2yF(void 0 !== x ? xi2x(x, i) : x, i));
-  };
+  return [reread(xi2x), rewrite(xi2x)];
 };
 
 var required = function required(inn) {
   return replace(inn, void 0);
+};
+
+var reread = function reread(xi2x) {
+  return function (x, i, _F, xi2yF) {
+    return xi2yF(void 0 !== x ? xi2x(x, i) : x, i);
+  };
 };
 
 var rewrite = function rewrite(yi2y) {
@@ -1489,6 +1531,34 @@ var identity = function identity(x, i, _F, xi2yF) {
   return xi2yF(x, i);
 };
 
+var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (res(freezeArrayOfObjects))(function (xs) {
+  var n = xs.length,
+      xis = Array(n);
+  for (var i = 0; i < n; ++i) {
+    xis[i] = [i, xs[i]];
+  }return xis;
+})), expect(I.isDefined, (res(freeze))(function (xis) {
+  var n = xis.length,
+      xs = Array(n);
+  for (var i = 0; i < n; ++i) {
+    var xi = xis[i];
+    if (xi.length === 2) xs[xi[0]] = xi[1];
+  }
+  n = xs.length;
+  var j = 0;
+  for (var _i3 = 0; _i3 < n; ++_i3) {
+    var x = xs[_i3];
+    if (void 0 !== x) {
+      if (_i3 !== j) xs[j] = x;
+      ++j;
+    }
+  }
+  if (j) {
+    xs.length = j;
+    return xs;
+  }
+})));
+
 var is = function is(v) {
   return isoU(function (x) {
     return I.acyclicEqualsU(v, x);
@@ -1526,12 +1596,7 @@ var json = /*#__PURE__*/(res(function (iso) {
   }));
 });
 
-// Auxiliary
-
-var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
-};
-
+exports.seemsArrayLike = seemsArrayLike;
 exports.toFunction = toFunction;
 exports.assign = assign;
 exports.modify = modify;
@@ -1559,9 +1624,11 @@ exports.log = log;
 exports.seq = seq;
 exports.branch = branch;
 exports.elems = elems;
+exports.entries = entries;
 exports.flatten = flatten;
-exports.values = values;
+exports.keys = keys$1;
 exports.matches = matches;
+exports.values = values;
 exports.all = all;
 exports.and = and;
 exports.any = any;
@@ -1601,6 +1668,7 @@ exports.defaults = defaults;
 exports.define = define;
 exports.normalize = normalize;
 exports.required = required;
+exports.reread = reread;
 exports.rewrite = rewrite;
 exports.append = append;
 exports.filter = filter;
@@ -1626,12 +1694,13 @@ exports.array = array;
 exports.inverse = inverse;
 exports.complement = complement;
 exports.identity = identity;
+exports.indexed = indexed;
 exports.is = is;
+exports.keyed = keyed;
 exports.singleton = singleton;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
 exports.json = json;
-exports.seemsArrayLike = seemsArrayLike;
 
 Object.defineProperty(exports, '__esModule', { value: true });
 

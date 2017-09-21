@@ -135,9 +135,11 @@ export const branch = T.fn([template(T_traversal)], T_traversal)
 // Traversals and combinators
 
 export const elems = T_traversal
+export const entries = T_traversal
 export const flatten = T_traversal
-export const values = T_traversal
+export const keys = T_traversal
 export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
+export const values = T_traversal
 
 // Folds over traversals
 
@@ -262,6 +264,7 @@ export const defaults = T.fn([T_dataI], T_lens)
 export const define = T.fn([T_dataI], T_lens)
 export const normalize = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const required = T.fn([T_dataI], T_lens)
+export const reread = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 
 // Lensing arrays
@@ -313,7 +316,9 @@ export const inverse = T.fn([T_isomorphism], T_isomorphism)
 
 export const complement = T_isomorphism
 export const identity = T_isomorphism
+export const indexed = T_isomorphism
 export const is = T.fn([T.def], T_lens)
+export const keyed = T_isomorphism
 export const singleton = T_isomorphism
 
 // Standard isomorphisms

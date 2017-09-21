@@ -218,6 +218,7 @@ describe("arities", () => {
     defaults: 1,
     define: 1,
     elems: 4,
+    entries: 4,
     filter: 1,
     find: 1,
     findHint: 2,
@@ -232,6 +233,7 @@ describe("arities", () => {
     identity: 4,
     iftes: 2,
     index: 1,
+    indexed: 4,
     inverse: 1,
     is: 1,
     isDefined: 2,
@@ -240,6 +242,8 @@ describe("arities", () => {
     join: 3,
     joinAs: 4,
     json: 1,
+    keyed: 4,
+    keys: 4,
     last: 4,
     lazy: 1,
     lens: 2,
@@ -271,6 +275,7 @@ describe("arities", () => {
     removeOp: 4,
     replace: 2,
     required: 1,
+    reread: 1,
     rewrite: 1,
     seemsArrayLike: 1,
     select: 2,
@@ -439,6 +444,13 @@ describe("L.rewrite", () => {
   testEq(`L.get(L.rewrite(x => x-1), undefined)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), undefined, 1)`, undefined)
   testEq(`L.set(L.rewrite(x => x-1), 3, 1)`, 2)
+})
+
+describe("L.reread", () => {
+  testEq(`L.get(L.reread(x => x-1), 1)`, 0)
+  testEq(`L.get(L.reread(x => x-1), undefined)`, undefined)
+  testEq(`L.set(L.reread(x => x-1), undefined, 1)`, undefined)
+  testEq(`L.set(L.reread(x => x-1), 3, 1)`, 3)
 })
 
 describe("L.setter", () => {
@@ -1214,6 +1226,35 @@ describe("LazyIdent", () => {
                    R.toUpper,
                    "Hello, world!")`,
          "HELLO, wOrLd!")
+})
+
+describe("L.indexed", () => {
+  testEq(`L.get(L.indexed, ["a", "b"])`, [[0, "a"], [1, "b"]])
+  testEq(`L.getInverse(L.indexed, [[0, "a"], [1, "b"]])`, ["a", "b"])
+  testEq(`L.set(L.indexed, [], ["a", "b"])`, undefined)
+  testEq(`L.set([L.indexed, 2], [0, "c"], ["a", "b"])`, ["c", "b"])
+  testEq(`L.set([L.indexed, 2], [3, "c"], ["a", "b"])`, ["a", "b", "c"])
+  testEq(`L.remove([L.indexed, 1, 0], ["a", "b"])`, ["a"])
+  testEq(`L.remove([L.indexed, 0, 1], ["a", "b"])`, ["b"])
+})
+
+describe("L.keyed", () => {
+  testEq(`L.get(L.keyed, {x: 4, y: 2})`, [["x", 4], ["y", 2]])
+  testEq(`L.getInverse(L.keyed, [["x", 4], ["y", 2]])`, {x: 4, y: 2})
+  testEq(`L.set(L.keyed, {}, {x: 4, y: 2})`, undefined)
+  testEq(`L.set([L.keyed, 2], ["z", 6], {x: 4, y: 2})`, {x: 4, y: 2, z: 6})
+  testEq(`L.remove([L.keyed, 1, 0], {x: 4, y: 2})`, {x: 4})
+  testEq(`L.remove([L.keyed, 0, 1], {x: 4, y: 2})`, {y: 2})
+})
+
+describe("L.entries", () => {
+  testEq(`L.modify(L.entries, (kv) => [kv[1], kv[0]], {x: "a", y: "b"})`, {a: "x", b: "y"})
+  testEq(`L.remove([L.entries, 1, L.when(x => x === "a")], {x: "a", y: "b"})`, {y: "b"})
+})
+
+describe("L.keys", () => {
+  testEq(`L.modify(L.keys, R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
+  testEq(`L.remove([L.keys, L.when(x => x > "b")], {a: 1, c: 3, b: 2})`, {a: 1, b: 2})
 })
 
 if (process.env.NODE_ENV !== "production") {
