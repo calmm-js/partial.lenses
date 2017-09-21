@@ -2339,16 +2339,13 @@ L.defaults(value)]`.
 
 ##### <a id="L-normalize"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-normalize) [`L.normalize((value, index) => maybeValue) ~> lens`](#L-normalize "L.normalize: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v1.0.0</sup></small>
 
-`L.normalize` maps the value with same given transform when viewed and set and
-implicitly maps `undefined` to `undefined`.
+`L.normalize` maps the value with same given transform when read and written and
+implicitly maps `undefined` to `undefined`.  `L.normalize(fn)` is equivalent to
+composing [`L.reread(fn)`](#L-reread) and [`L.rewrite(fn)`](#L-rewrite).
 
 One use case for `normalize` is to make it easy to determine whether, after a
 change, the data has actually changed.  By keeping the data normalized, a
 simple [`R.equals`](http://ramdajs.com/docs/#equals) comparison will do.
-
-Note that the difference between `L.normalize` and [`L.rewrite`](#L-rewrite) is
-that `L.normalize` applies the transform in both directions
-while [`L.rewrite`](#L-rewrite) only applies the transform when writing.
 
 ##### <a id="L-required"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-required) [`L.required(valueOut) ~> lens`](#L-required "L.required: s -> PLens s s") <small><sup>v1.0.0</sup></small>
 
@@ -2375,18 +2372,16 @@ to [`L.replace(valueOut, undefined)`](#L-replace).
 
 ##### <a id="L-reread"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-reread) [`L.reread((valueIn, index) => maybeValueIn) ~> lens`](#L-reread "L.reread: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v11.21.0</sup></small>
 
-`L.reread` maps the value with the given transform on get and implicitly maps
-`undefined` to `undefined`.
+`L.reread` maps the value with the given transform on read and implicitly maps
+`undefined` to `undefined`.  See also [`L.normalize`](#L-normalize).
 
 ##### <a id="L-rewrite"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-rewrite) [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v5.1.0</sup></small>
 
-`L.rewrite` maps the value with the given transform when set and implicitly maps
-`undefined` to `undefined`.  One use case for `rewrite` is to re-establish data
-structure invariants after changes.
+`L.rewrite` maps the value with the given transform when written and implicitly
+maps `undefined` to `undefined`.  See also [`L.normalize`](#L-normalize).
 
-Note that the difference between [`L.normalize`](#L-normalize) and `L.rewrite`
-is that [`L.normalize`](#L-normalize) applies the transform in both directions
-while `L.rewrite` only applies the transform when writing.
+One use case for `rewrite` is to re-establish data structure invariants after
+changes.
 
 See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
