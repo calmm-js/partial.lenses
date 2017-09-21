@@ -951,6 +951,16 @@ export const countIf = /*#__PURE__*/I.curry((p, t, s) =>
 
 export const count = /*#__PURE__*/countIf(I.isDefined)
 
+export const countBy = /*#__PURE__*/I.curry((xi2k, t, s) => {
+  const counts = new Map()
+  forEach((x, i) => {
+    const k = xi2k(x, i),
+          n = counts.get(k)
+    counts.set(k, void 0 !== n ? n + 1 : 1)
+  }, t, s)
+  return counts
+})
+
 export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
   fold(f, r, traverseU(Collect, pair, t, s)))
 
