@@ -216,7 +216,7 @@ describe("arities", () => {
     count: 2,
     countIf: 3,
     counts: 2,
-    countsBy: 3,
+    countsAs: 3,
     defaults: 1,
     define: 1,
     elems: 4,
@@ -792,7 +792,7 @@ describe("folds", () => {
   testEq(`L.countIf((x, i) => i & 1, L.elems, [1, 2, 3])`, 1)
   testEq(`L.count([L.elems, L.orElse("x","y")], [{x:11}, {z:33}, {y:22}])`, 2)
   testEq(`L.count(flatten, [[],{},[[[],[{x:[],y:[]}],{}]]])`, 0)
-  testEq(`Array.from(L.countsBy(L.get(0), L.elems, [
+  testEq(`Array.from(L.countsAs(L.get(0), L.elems, [
             ["x", 1],
             ["y", 2],
             ["x", 3],

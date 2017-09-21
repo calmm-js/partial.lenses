@@ -91,7 +91,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.count(traversal, maybeData) ~> number`](#L-count "L.count: PTraversal s a -> Number") <small><sup>v9.7.0</sup></small>
       * [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number") <small><sup>v11.2.0</sup></small>
       * [`L.counts(traversal, maybeData) ~> map`](#L-counts "L.counts: PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
-      * [`L.countsBy((maybeValue, index) => any, traversal, maybeData) ~> map`](#L-countsBy "L.countsBy: ((Maybe a, Index) -> Any) -> PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
+      * [`L.countsAs((maybeValue, index) => any, traversal, maybeData) ~> map`](#L-countsAs "L.countsAs: ((Maybe a, Index) -> Any) -> PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.forEach((maybeValue, index) => undefined, traversal, maybeData) ~> undefined`](#L-forEach "L.forEach: ((Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> Undefined") <small><sup>v11.20.0</sup></small>
@@ -1894,15 +1894,15 @@ Array.from(L.counts(L.elems, [3,1,4,1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
 ```
 
-##### <a id="L-countsBy"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countsBy) [`L.countsBy((maybeValue, index) => any, traversal, maybeData) ~> map`](#L-countsBy "L.countsBy: ((Maybe a, Index) -> Any) -> PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
+##### <a id="L-countsAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countsAs) [`L.countsAs((maybeValue, index) => any, traversal, maybeData) ~> map`](#L-countsAs "L.countsAs: ((Maybe a, Index) -> Any) -> PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
 
-`L.countsBy` returns a
+`L.countsAs` returns a
 [map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map)
 of the counts of distinct values, including `undefined`, returned by the given
 function from the values focused on by the given traversal.
 
 ```js
-Array.from(L.countsBy(Math.abs, L.elems, [3,-1,4,1]).entries())
+Array.from(L.countsAs(Math.abs, L.elems, [3,-1,4,1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
 ```
 

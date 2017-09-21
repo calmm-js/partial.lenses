@@ -171,7 +171,7 @@ export const countIf =
        T.number)
 export const count = T.fn([T_traversal, T_maybeDataI], T.number)
 
-export const countsBy =
+export const countsAs =
   T.fn([T.fn([T_maybeDataO, T_index], T.any),
         T_traversal,
         T_maybeDataI],
