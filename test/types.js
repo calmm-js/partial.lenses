@@ -170,11 +170,13 @@ export const countIf =
         T_maybeDataI],
        T.number)
 export const count = T.fn([T_traversal, T_maybeDataI], T.number)
-export const countBy =
+
+export const countsBy =
   T.fn([T.fn([T_maybeDataO, T_index], T.any),
         T_traversal,
         T_maybeDataI],
        T.instanceOf(Map))
+export const counts = T.fn([T_traversal, T_maybeDataI], T.instanceOf(Map))
 
 export const foldl =
   T.fn([T.fn([T.any, T_maybeDataO, T_index], T.any),
