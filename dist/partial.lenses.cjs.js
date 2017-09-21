@@ -107,6 +107,10 @@ var singletonPartial = function singletonPartial(x) {
   return void 0 !== x ? [x] : void 0;
 };
 
+var instanceofObject = function instanceofObject(x) {
+  return x instanceof Object;
+};
+
 var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : void 0;
@@ -127,6 +131,11 @@ function deepFreeze(x) {
     }freeze(x);
   }
   return x;
+}
+
+function freezeArrayOfObjects(xs) {
+  xs.forEach(freeze);
+  return freeze(xs);
 }
 
 //
@@ -828,6 +837,26 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 
 //
 
+var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV === "production" ? I.id : res(freezeArrayOfObjects))(function (x) {
+  x = toObject(x);
+  var es = [];
+  for (var key in x) {
+    es.push([key, x[key]]);
+  }return es;
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (es) {
+  var o = void 0;
+  for (var i = 0, n = es.length; i < n; ++i) {
+    var entry = es[i];
+    if (entry.length === 2) {
+      if (void 0 === o) o = {};
+      o[entry[0]] = entry[1];
+    }
+  }
+  return o;
+})));
+
+//
+
 var matchesJoin = function matchesJoin(input) {
   return function (matches) {
     var result = "";
@@ -869,6 +898,12 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 var pickInAux = function pickInAux(t, k) {
   return [k, pickIn(t)];
+};
+
+// Auxiliary
+
+var seemsArrayLike = function seemsArrayLike(x) {
+  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
 };
 
 // Internals
@@ -1076,10 +1111,14 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(2, 
   }
 });
 
+var entries = /*#__PURE__*/toFunction([keyed, elems]);
+
 var flatten =
 /*#__PURE__*/lazy(function (rec) {
   return iftes(Array.isArray, [elems, rec], identity);
 });
+
+var keys$1 = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
 var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref5) {
   var _ref6 = _slicedToArray(_ref5, 1),
@@ -1492,6 +1531,34 @@ var identity = function identity(x, i, _F, xi2yF) {
   return xi2yF(x, i);
 };
 
+var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : res(freezeArrayOfObjects))(function (xs) {
+  var n = xs.length,
+      xis = Array(n);
+  for (var i = 0; i < n; ++i) {
+    xis[i] = [i, xs[i]];
+  }return xis;
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xis) {
+  var n = xis.length,
+      xs = Array(n);
+  for (var i = 0; i < n; ++i) {
+    var xi = xis[i];
+    if (xi.length === 2) xs[xi[0]] = xi[1];
+  }
+  n = xs.length;
+  var j = 0;
+  for (var _i3 = 0; _i3 < n; ++_i3) {
+    var x = xs[_i3];
+    if (void 0 !== x) {
+      if (_i3 !== j) xs[j] = x;
+      ++j;
+    }
+  }
+  if (j) {
+    xs.length = j;
+    return xs;
+  }
+})));
+
 var is = function is(v) {
   return isoU(function (x) {
     return I.acyclicEqualsU(v, x);
@@ -1529,12 +1596,7 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(func
   }));
 });
 
-// Auxiliary
-
-var seemsArrayLike = function seemsArrayLike(x) {
-  return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
-};
-
+exports.seemsArrayLike = seemsArrayLike;
 exports.toFunction = toFunction;
 exports.assign = assign;
 exports.modify = modify;
@@ -1562,7 +1624,9 @@ exports.log = log;
 exports.seq = seq;
 exports.branch = branch;
 exports.elems = elems;
+exports.entries = entries;
 exports.flatten = flatten;
+exports.keys = keys$1;
 exports.matches = matches;
 exports.values = values;
 exports.all = all;
@@ -1630,9 +1694,10 @@ exports.array = array;
 exports.inverse = inverse;
 exports.complement = complement;
 exports.identity = identity;
+exports.indexed = indexed;
 exports.is = is;
+exports.keyed = keyed;
 exports.singleton = singleton;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
 exports.json = json;
-exports.seemsArrayLike = seemsArrayLike;

@@ -133,7 +133,9 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
 <li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></li>
+<li><a href="#L-entries" title="L.entries: PTraversal {p: a, ...ps} [String, a]"><code>L.entries ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></li>
+<li><a href="#L-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></li>
 <li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></li>
 </ul>
@@ -250,7 +252,9 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#basic-isomorphisms">Basic isomorphisms</a><ul>
 <li><a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></li>
 <li><a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a> <small><sup>v1.3.0</sup></small></li>
+<li><a href="#L-indexed" title="L.indexed: PIso [a] [[Integer, a]]"><code>L.indexed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a> <small><sup>v11.1.0</sup></small></li>
+<li><a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></li>
 </ul>
 </li>
@@ -1325,12 +1329,23 @@ convert the result to the desired type, if necessary:</p>
          R.inc,
          Int8Array.from([-1,4,0,2,4]))
 </code></pre>
+<h5><a id="L-entries"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-entries">■</a> <a href="#L-entries" title="L.entries: PTraversal {p: a, ...ps} [String, a]"><code>L.entries ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.entries</code> is a traversal over the entries, or <code>[key, value]</code> pairs, of an
+object.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.entries, ([k, v]) =&gt; [v, k], {x: &quot;a&quot;, y: &quot;b&quot;})
+</code></pre>
 <h5><a id="L-flatten"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-flatten">■</a> <a href="#L-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></h5>
 <p><code>L.flatten</code> is a traversal over the elements of arbitrarily nested arrays.
 Other <a href="#array-like">array-like</a> objects are treated as elements by <code>L.flatten</code>.
 In case the immediate target of <code>L.flatten</code> is not an array, it is traversed.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.join(&quot; &quot;, L.flatten, [[[1]], [&quot;2&quot;], 3])
+</code></pre>
+<h5><a id="L-keys"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-keys">■</a> <a href="#L-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.keys</code> is a traversal over the keys of an object.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 </code></pre>
 <h5><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></h5>
 <p><code>L.matches</code>, when given a regular expression with
@@ -2233,6 +2248,18 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(L.identity, l) = l
   L.compose(l, L.identity) = l
 </code></pre>
+<h5><a id="L-indexed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-indexed">■</a> <a href="#L-indexed" title="L.indexed: PIso [a] [[Integer, a]]"><code>L.indexed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.indexed</code> is an isomorphism between an <a href="#array-like">array-like</a> object and an
+array of <code>[index, value]</code> pairs.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([L.rewrite(R.join(&#39;&#39;)),
+          L.indexed,
+          L.normalize(R.sortBy(L.get(1))),
+          0,
+          1],
+         R.toUpper,
+         &quot;optics&quot;)
+</code></pre>
 <h5><a id="L-complement"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-complement">■</a> <a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></h5>
 <p><code>L.complement</code> is an isomorphism that performs logical negation of any
 non-<code>undefined</code> value when either read or written through.</p>
@@ -2245,6 +2272,12 @@ non-<code>undefined</code> value when either read or written through.</p>
 <p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes
 <code>true</code> as the given value and everything else as <code>undefined</code>.
 See <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
+<h5><a id="L-keyed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-keyed">■</a> <a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.keyed</code> is an isomorphism between an object and an array of <code>[key, value]</code>
+pairs.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.keyed, {a: 1, b: 2})
+</code></pre>
 <h5><a id="L-singleton"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-singleton">■</a> <a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></h5>
 <p><code>L.singleton</code> is a partial isomorphism between an <a href="#array-like">array-like</a>
 object, <code>[x]</code>, that contains a single element and that element <code>x</code>.  When
