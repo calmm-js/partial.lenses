@@ -25,6 +25,8 @@ const notPartial = x => void 0 !== x ? !x : x
 
 const singletonPartial = x => void 0 !== x ? [x] : void 0
 
+const instanceofObject = x => x instanceof Object
+
 const expect = (p, f) => x => p(x) ? f(x) : void 0
 
 const freeze = x => x && Object.freeze(x)
@@ -39,6 +41,11 @@ function deepFreeze(x) {
     freeze(x)
   }
   return x
+}
+
+function freezeArrayOfObjects(xs) {
+  xs.forEach(freeze)
+  return freeze(xs)
 }
 
 //
@@ -660,6 +667,27 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 
 //
 
+const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(x => {
+  x = toObject(x)
+  const es = []
+  for (const key in x)
+    es.push([key, x[key]])
+  return es
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
+  let o = void 0
+  for (let i=0, n=es.length; i<n; ++i) {
+    const entry = es[i]
+    if (entry.length === 2) {
+      if (void 0 === o)
+        o = {}
+      o[entry[0]] = entry[1]
+    }
+  }
+  return o
+})))
+
+//
+
 const matchesJoin = input => matches => {
   let result = ""
   let lastIndex = 0
@@ -692,6 +720,12 @@ function zeroOp(y, i, C, xi2yC, x) {
 //
 
 const pickInAux = (t, k) => [k, pickIn(t)]
+
+// Auxiliary
+
+export const seemsArrayLike = x =>
+  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
+  I.isString(x)
 
 // Internals
 
@@ -854,8 +888,12 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
   }
 })
 
+export const entries = /*#__PURE__*/toFunction([keyed, elems])
+
 export const flatten =
   /*#__PURE__*/lazy(rec => iftes(Array.isArray, [elems, rec], identity))
+
+export const keys = /*#__PURE__*/toFunction([keyed, elems, 0])
 
 export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
@@ -1183,9 +1221,39 @@ export const complement = /*#__PURE__*/isoU(notPartial, notPartial)
 
 export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
+export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(xs => {
+  const n = xs.length, xis = Array(n)
+  for (let i=0; i<n; ++i)
+    xis[i] = [i, xs[i]]
+  return xis
+})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xis => {
+  let n = xis.length, xs = Array(n)
+  for (let i=0; i<n; ++i) {
+    const xi = xis[i]
+    if (xi.length === 2)
+      xs[xi[0]] = xi[1]
+  }
+  n = xs.length
+  let j=0
+  for (let i=0; i<n; ++i) {
+    const x = xs[i]
+    if (void 0 !== x) {
+      if (i !== j)
+        xs[j] = x
+      ++j
+    }
+  }
+  if (j) {
+    xs.length = j
+    return xs
+  }
+})))
+
 export const is = v =>
   isoU(x => I.acyclicEqualsU(v, x),
        b => true === b ? v : void 0)
+
+export {keyed}
 
 export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
   (x, i, F, xi2yF) =>
@@ -1210,9 +1278,3 @@ export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
   return isoU(expect(I.isString, text => JSON.parse(text, reviver)),
               expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
 })
-
-// Auxiliary
-
-export const seemsArrayLike = x =>
-  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  I.isString(x)

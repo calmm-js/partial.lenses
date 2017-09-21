@@ -75,7 +75,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
+      * [`L.entries ~> traversal`](#L-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>
       * [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
+      * [`L.keys ~> traversal`](#L-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
       * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
     * [Folds over traversals](#folds-over-traversals)
@@ -160,7 +162,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
+      * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
+      * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -1620,6 +1624,18 @@ L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
 // Int8Array [ 0, 5, 1, 3, 5 ]
 ```
 
+##### <a id="L-entries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-entries) [`L.entries ~> traversal`](#L-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>
+
+`L.entries` is a traversal over the entries, or `[key, value]` pairs, of an
+object.
+
+For example:
+
+```js
+L.modify(L.entries, ([k, v]) => [v, k], {x: "a", y: "b"})
+// { a: 'x', b: 'y' }
+```
+
 ##### <a id="L-flatten"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-flatten) [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
 
 `L.flatten` is a traversal over the elements of arbitrarily nested arrays.
@@ -1631,6 +1647,17 @@ For example:
 ```js
 L.join(" ", L.flatten, [[[1]], ["2"], 3])
 // "1 2 3"
+```
+
+##### <a id="L-keys"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-keys) [`L.keys ~> traversal`](#L-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
+
+`L.keys` is a traversal over the keys of an object.
+
+For example:
+
+```js
+L.modify(L.keys, R.toUpper, {x: 1, y: 2})
+// { X: 1, Y: 2 }
 ```
 
 ##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
@@ -3121,6 +3148,24 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 ```
 
+##### <a id="L-indexed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-indexed) [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
+
+`L.indexed` is an isomorphism between an [array-like](#array-like) object and an
+array of `[index, value]` pairs.
+
+For example:
+
+```js
+L.modify([L.rewrite(R.join('')),
+          L.indexed,
+          L.normalize(R.sortBy(L.get(1))),
+          0,
+          1],
+         R.toUpper,
+         "optics")
+// 'optiCs'
+```
+
 ##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
 
 `L.complement` is an isomorphism that performs logical negation of any
@@ -3142,6 +3187,18 @@ L.set([L.complement, L.log()],
 `L.is` reads the given value as `true` and everything else as `false` and writes
 `true` as the given value and everything else as `undefined`.
 See [here](#an-array-of-ids-as-boolean-flags) for an example.
+
+##### <a id="L-keyed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-keyed) [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
+
+`L.keyed` is an isomorphism between an object and an array of `[key, value]`
+pairs.
+
+For example:
+
+```js
+L.get(L.keyed, {a: 1, b: 2})
+// [ ['a', 1], ['b', 2] ]
+```
 
 ##### <a id="L-singleton"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-singleton) [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
 
