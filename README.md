@@ -1901,6 +1901,8 @@ Array.from(L.counts(L.elems, [3,1,4,1]).entries())
 of the counts of distinct values, including `undefined`, returned by the given
 function from the values focused on by the given traversal.
 
+For example:
+
 ```js
 Array.from(L.countsAs(Math.abs, L.elems, [3,-1,4,1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
