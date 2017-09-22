@@ -1185,6 +1185,18 @@ var countIf = /*#__PURE__*/curry(function (p, t, s) {
 
 var count = /*#__PURE__*/countIf(isDefined);
 
+var countsAs = /*#__PURE__*/curry(function (xi2k, t, s) {
+  var counts = new Map();
+  forEach(function (x, i) {
+    var k = xi2k(x, i),
+        n = counts.get(k);
+    counts.set(k, void 0 !== n ? n + 1 : 1);
+  }, t, s);
+  return counts;
+});
+
+var counts = /*#__PURE__*/countsAs(id);
+
 var foldl = /*#__PURE__*/curry(function (f, r, t, s) {
   return fold(f, r, traverseU(Collect, pair, t, s));
 });
@@ -1592,4 +1604,4 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(functi
   }));
 });
 
-export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, singleton, uri, uriComponent, json };
+export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, singleton, uri, uriComponent, json };

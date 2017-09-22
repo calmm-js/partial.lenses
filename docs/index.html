@@ -150,6 +150,8 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a> <small><sup>v9.7.0</sup></small></li>
 <li><a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></li>
+<li><a href="#L-counts" title="L.counts: PTraversal s a -&gt; Map Any Number"><code>L.counts(traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></li>
+<li><a href="#L-countsAs" title="L.countsAs: ((Maybe a, Index) -&gt; Any) -&gt; PTraversal s a -&gt; Map Any Number"><code>L.countsAs((maybeValue, index) =&gt; any, traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-forEach" title="L.forEach: ((Maybe a, Index) -&gt; Undefined) -&gt; PTraversal s a -&gt; Maybe s -&gt; Undefined"><code>L.forEach((maybeValue, index) =&gt; undefined, traversal, maybeData) ~&gt; undefined</code></a> <small><sup>v11.20.0</sup></small></li>
@@ -1480,6 +1482,22 @@ the number of non-<code>undefined</code> elements.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.count([L.elems, &quot;x&quot;], [{x: 11}, {y: 12}])
 </code></pre>
+<h5><a id="L-counts"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-counts">■</a> <a href="#L-counts" title="L.counts: PTraversal s a -&gt; Map Any Number"><code>L.counts(traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.counts</code> returns a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">map</a>
+of the counts of distinct values, including <code>undefined</code>, focused on by the given
+traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">Array.from(L.counts(L.elems, [3,1,4,1]).entries())
+</code></pre>
+<h5><a id="L-countsAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countsAs">■</a> <a href="#L-countsAs" title="L.countsAs: ((Maybe a, Index) -&gt; Any) -&gt; PTraversal s a -&gt; Map Any Number"><code>L.countsAs((maybeValue, index) =&gt; any, traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></h5>
+<p><code>L.countsAs</code> returns a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">map</a>
+of the counts of distinct values, including <code>undefined</code>, returned by the given
+function from the values focused on by the given traversal.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">Array.from(L.countsAs(Math.abs, L.elems, [3,-1,4,1]).entries())
+</code></pre>
 <h5><a id="L-countIf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countIf">■</a> <a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
 the number of elements for which the given predicate returns a truthy value.</p>
@@ -1523,6 +1541,7 @@ a single focus.  See also <a href="#L-isDefined"><code>L.isDefined</code></a>.</
 <h5><a id="L-join"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-join">■</a> <a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.join</code> creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.join(&quot;,&quot;, [L.elems, &quot;x&quot;], [{x: 1}, {y: 2}, {x: 3}])
 </code></pre>
 <h5><a id="L-joinAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-joinAs">■</a> <a href="#L-joinAs" title="L.joinAs: ((Maybe a, Index) -&gt; Maybe String) -&gt; String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.joinAs((maybeValue, index) =&gt; maybeString, string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></h5>
@@ -1556,6 +1575,7 @@ traversal.</p>
 <h5><a id="L-meanAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-meanAs">■</a> <a href="#L-meanAs" title="L.meanAs: ((Maybe a, Index) -&gt; Maybe Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.meanAs((maybeValue, index) =&gt; maybeNumber, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.17.0</sup></small></h5>
 <p><code>L.meanAs</code> computes the arithmetic mean of the optional numbers returned by the
 given function for the elements targeted by the traversal.</p>
+<p>For example:</p>
 <pre><code class="hljs lang-js">L.meanAs((x, i) =&gt; x &lt;= i ? undefined : x, L.elems, [3,1,4,1])
 </code></pre>
 <h5><a id="L-minimum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-minimum">■</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></h5>
@@ -3025,9 +3045,9 @@ links&mdash;feel free to suggest more!</p>
 <p>Before starting work on a major PR, it is a good idea to open an issue or maybe
 ask on <a href="https://gitter.im/calmm-js/chat">gitter</a> whether the contribution sounds
 like something that should be added to this library.</p>
-<p>If you allow us to make changes to your PR, it can make the process
-smoother:
-<a href="https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/">Allowing changes to a pull request branch created from a fork</a>.
+<p>If you allow us to make changes to your PR, it can make the process smoother:
+<a href="https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/">Allowing changes to a pull request branch created from a
+fork</a>.
 We also welcome starting the PR sooner, before it is ready to be merged, rather
 than later so we know what is going on and can help.</p>
 <p>Aside from the code changes, a PR should also include tests, and documentation.</p>
@@ -3054,9 +3074,13 @@ for the library primitives.  Those are also used when running tests to check
 that the implementation matches the contracts.</p>
 <p>When you implement a new combinator, you will need to also add a type contract
 and a shadow implementation for the primitive.</p>
+<p>When testing a partial optics, you should generally test both read and, usually
+more importantly, write behaviour including attempts to read <code>undefined</code> or
+unexpected data (both of these should be handled as <code>undefined</code>) and writing
+<code>undefined</code>.</p>
 <h3 id="documentation">Documentation</h3>
-<p>The <code>docs</code> folder contains the generated documentation.  You can can open the
-file locally:</p>
+<p>The <code>docs</code> folder contains the generated documentation.  You can open the file
+locally:</p>
 <pre><code class="hljs lang-bash">open docs/index.html
 </code></pre>
 <p>To actually build the docs (translate the markdown to html), you can run</p>
@@ -3065,8 +3089,9 @@ file locally:</p>
 <p>or you can use the watch</p>
 <pre><code class="hljs lang-bash">npm run docs-watch
 </code></pre>
-<p>which builds the docs if you save <code>README.md</code> (you will need to manually refresh
-browser).</p>
+<p>which builds the docs if you save <code>README.md</code>.  The watch also runs
+<a href="http://livereload.com/">LiveReload</a> so if you have the plugin, your browser
+will refresh automatically after changes.</p>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">

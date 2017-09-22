@@ -1189,6 +1189,18 @@ var countIf = /*#__PURE__*/I.curry(function (p, t, s) {
 
 var count = /*#__PURE__*/countIf(I.isDefined);
 
+var countsAs = /*#__PURE__*/I.curry(function (xi2k, t, s) {
+  var counts = new Map();
+  forEach(function (x, i) {
+    var k = xi2k(x, i),
+        n = counts.get(k);
+    counts.set(k, void 0 !== n ? n + 1 : 1);
+  }, t, s);
+  return counts;
+});
+
+var counts = /*#__PURE__*/countsAs(I.id);
+
 var foldl = /*#__PURE__*/I.curry(function (f, r, t, s) {
   return fold(f, r, traverseU(Collect, pair, t, s));
 });
@@ -1638,6 +1650,8 @@ exports.concatAs = concatAs;
 exports.concat = concat;
 exports.countIf = countIf;
 exports.count = count;
+exports.countsAs = countsAs;
+exports.counts = counts;
 exports.foldl = foldl;
 exports.foldr = foldr;
 exports.forEach = forEach;
