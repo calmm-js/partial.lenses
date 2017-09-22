@@ -215,6 +215,8 @@ describe("arities", () => {
     concatAs: 4,
     count: 2,
     countIf: 3,
+    counts: 2,
+    countsAs: 3,
     defaults: 1,
     define: 1,
     elems: 4,
@@ -790,6 +792,34 @@ describe("folds", () => {
   testEq(`L.countIf((x, i) => i & 1, L.elems, [1, 2, 3])`, 1)
   testEq(`L.count([L.elems, L.orElse("x","y")], [{x:11}, {z:33}, {y:22}])`, 2)
   testEq(`L.count(flatten, [[],{},[[[],[{x:[],y:[]}],{}]]])`, 0)
+  testEq(`Array.from(L.countsAs(L.get(0), L.elems, [
+            ["x", 1],
+            ["y", 2],
+            ["x", 3],
+            [],
+            [  0, 4],
+            ["0", 5],
+            ["y", 6]
+          ]).entries())`,
+         [["x", 2],
+          ["y", 2],
+          [undefined, 1],
+          [0, 1],
+          ["0", 1]])
+  testEq(`Array.from(L.counts([L.elems, 0], [
+            ["x", 1],
+            ["y", 2],
+            ["x", 3],
+            [],
+            [  0, 4],
+            ["0", 5],
+            ["y", 6]
+          ]).entries())`,
+         [["x", 2],
+          ["y", 2],
+          [undefined, 1],
+          [0, 1],
+          ["0", 1]])
   ;[`foldl`, `foldr`].forEach(fold => {
     testEq(`X.${fold}((x,y) => x+y, 0, X.elems, a100000)`,
            100000)
