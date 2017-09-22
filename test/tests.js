@@ -1265,6 +1265,9 @@ describe("L.pointer", () => {
   testEq(`L.get(L.pointer("/0"), {"0": 1})`, 1)
   testEq(`L.get(L.pointer("/a~1bc%de^fg|hi\\\\jk\\"lm~0n"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, [1,2])
   testEq(`L.get(L.pointer("/a~1bc%de^fg|hi\\\\jk\\"lm~0n/0"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, 1)
+  testEq(`L.set(L.pointer("/b/0"), 3, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+  testEq(`L.remove(L.pointer("/b/0"), {a: 1, b: [2,3]})`, {a: 1, b: [3]})
+  testEq(`L.modify(L.pointer("/b/0"), R.inc, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
 
   testEq(`L.get(L.pointer("#"), {a: 1, b: 2})`, {a: 1, b: 2})
   testEq(`L.get(L.pointer("#/"), {"": 1, b: 2})`, 1)
@@ -1272,6 +1275,9 @@ describe("L.pointer", () => {
   testEq(`L.get(L.pointer("#/0"), {"0": 1})`, 1)
   testEq(`L.get(L.pointer("#/a~1bc%25de^fg%7Chi%5Cjk%22lm~0n"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, [1,2])
   testEq(`L.get(L.pointer("#/a~1bc%25de^fg%7Chi%5Cjk%22lm~0n/0"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, 1)
+  testEq(`L.set(L.pointer("#/b/0"), 3, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+  testEq(`L.remove(L.pointer("#/b/0"), {a: 1, b: [2,3]})`, {a: 1, b: [3]})
+  testEq(`L.modify(L.pointer("#/b/0"), R.inc, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
 })
 
 if (process.env.NODE_ENV !== "production") {

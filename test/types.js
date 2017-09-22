@@ -330,4 +330,4 @@ export const json = T.fn([T.any], T_isomorphism)
 // Auxiliary
 
 export const seemsArrayLike = T.fn([T.any], T.boolean)
-export const pointer = T.fn([T.string], T.array(T.any))
+export const pointer = T.fn([T.string], T_lens)
