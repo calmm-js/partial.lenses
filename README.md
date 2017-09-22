@@ -4243,9 +4243,9 @@ Before starting work on a major PR, it is a good idea to open an issue or maybe
 ask on [gitter](https://gitter.im/calmm-js/chat) whether the contribution sounds
 like something that should be added to this library.
 
-If you allow us to make changes to your PR, it can make the process
-smoother:
-[Allowing changes to a pull request branch created from a fork](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).
+If you allow us to make changes to your PR, it can make the process smoother:
+[Allowing changes to a pull request branch created from a
+fork](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/).
 We also welcome starting the PR sooner, before it is ready to be merged, rather
 than later so we know what is going on and can help.
 
@@ -4287,10 +4287,15 @@ that the implementation matches the contracts.
 When you implement a new combinator, you will need to also add a type contract
 and a shadow implementation for the primitive.
 
+When testing a partial optics, you should generally test both read and, usually
+more importantly, write behaviour including attempts to read `undefined` or
+unexpected data (both of these should be handled as `undefined`) and writing
+`undefined`.
+
 ### Documentation
 
-The `docs` folder contains the generated documentation.  You can can open the
-file locally:
+The `docs` folder contains the generated documentation.  You can open the file
+locally:
 
 ```bash
 open docs/index.html
@@ -4308,5 +4313,6 @@ or you can use the watch
 npm run docs-watch
 ```
 
-which builds the docs if you save `README.md` (you will need to manually refresh
-browser).
+which builds the docs if you save `README.md`.  The watch also runs
+[LiveReload](http://livereload.com/) so if you have the plugin, your browser
+will refresh automatically after changes.
