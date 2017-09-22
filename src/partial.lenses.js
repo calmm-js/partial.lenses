@@ -1279,7 +1279,7 @@ export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
               expect(I.isDefined, value => JSON.stringify(value, replacer, space)))
 })
 
-// Specialized Lens Creators
+// Interop
 
 const isArray = x =>
   !(x instanceof Object) || Array.isArray(x)
