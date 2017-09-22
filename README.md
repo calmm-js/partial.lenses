@@ -1962,6 +1962,8 @@ L.isEmpty(L.flatten, [[],[[[],[]],[]]])
 `L.join` creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.
 
+For example:
+
 ```js
 L.join(",", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])
 // "1,3"
@@ -2025,6 +2027,8 @@ L.mean([L.elems, "x"], [{x: 1}, {ignored: 3}, {x: 2}])
 
 `L.meanAs` computes the arithmetic mean of the optional numbers returned by the
 given function for the elements targeted by the traversal.
+
+For example:
 
 ```js
 L.meanAs((x, i) => x <= i ? undefined : x, L.elems, [3,1,4,1])
