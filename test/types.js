@@ -327,7 +327,10 @@ export const uri = T_isomorphism
 export const uriComponent = T_isomorphism
 export const json = T.fn([T.any], T_isomorphism)
 
+// Interop
+
+export const pointer = T.fn([T.string], T_lens)
+
 // Auxiliary
 
 export const seemsArrayLike = T.fn([T.any], T.boolean)
-export const pointer = T.fn([T.string], T_lens)
