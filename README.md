@@ -3259,9 +3259,9 @@ to
 For Example:
 
 ```js
-L.get(L.pointer("/foo/0"), {foo: [1, 2]})
+log(L.get(L.pointer("/foo/0"), {foo: [1, 2]}))
 // 1
-L.modify(L.pointer("#/foo/1"), x => x + 1, {foo: [1, 2]})
+log(L.modify(L.pointer("#/foo/1"), x => x + 1, {foo: [1, 2]}))
 // {foo: [1, 3]}
 ```
 
