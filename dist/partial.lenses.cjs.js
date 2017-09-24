@@ -138,6 +138,10 @@ function freezeArrayOfObjects(xs) {
   return freeze(xs);
 }
 
+var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
+  return !(x instanceof Object) || Array.isArray(x);
+};
+
 //
 
 var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xi2y, xs) {
@@ -1608,6 +1612,20 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(func
   }));
 });
 
+// Interop
+
+var pointer = function pointer(s) {
+  if (s[0] === '#') s = decodeURIComponent(s);
+  var ts = s.split('/');
+  var n = ts.length;
+  for (var i = 1; i < n; ++i) {
+    var t = ts[i];
+    ts[i - 1] = /^0|[1-9]\d*$/.test(t) ? iftes(isArrayOrPrimitive, Number(t), t) : '-' === t ? iftes(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
+  }
+  ts.length = n - 1;
+  return ts;
+};
+
 exports.seemsArrayLike = seemsArrayLike;
 exports.toFunction = toFunction;
 exports.assign = assign;
@@ -1715,3 +1733,4 @@ exports.singleton = singleton;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
 exports.json = json;
+exports.pointer = pointer;

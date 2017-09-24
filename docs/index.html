@@ -268,6 +268,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 </ul>
 </li>
+<li><a href="#interop">Interop</a><ul>
+<li><a href="#L-pointer" title="L.pointer: JSONPointer s a -&gt; PLens s a"><code>L.pointer(jsonPointer) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></li>
+</ul>
+</li>
 <li><a href="#auxiliary">Auxiliary</a><ul>
 <li><a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a> <small><sup>v11.4.0</sup></small></li>
 </ul>
@@ -2333,6 +2337,17 @@ to
 the optional <code>replacer</code> and <code>space</code> are passed
 to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>
+<h3 id="interop">Interop</h3>
+<h4><a id="L-pointer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pointer">■</a> <a href="#L-pointer" title="L.pointer: JSONPointer s a -&gt; PLens s a"><code>L.pointer(jsonPointer) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h4>
+<p><code>L.pointer</code> converts a valid <a href="https://tools.ietf.org/html/rfc6901">JSON Pointer</a>
+(string) into a bidirectional lens. Works with <a href="https://tools.ietf.org/html/rfc6901#section-5">JSON
+String</a> and <a href="https://tools.ietf.org/html/rfc6901#section-6">URI Fragment
+Identifier</a> representations.</p>
+<p>For Example:</p>
+<pre><code class="hljs lang-js">log(L.get(L.pointer(&quot;/foo/0&quot;), {foo: [1, 2]}))
+
+log(L.modify(L.pointer(&quot;#/foo/1&quot;), x =&gt; x + 1, {foo: [1, 2]}))
+</code></pre>
 <h3 id="auxiliary">Auxiliary</h3>
 <h4><a id="L-seemsArrayLike"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seemsArrayLike">■</a> <a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a> <small><sup>v11.4.0</sup></small></h4>
 <p><code>L.seemsArrayLike</code> determines whether the given value is an <code>instanceof Object</code>
