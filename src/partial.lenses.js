@@ -1302,7 +1302,7 @@ export const pointer = s => {
   const ts = s.split('/')
   const n = ts.length
   for (let i=1; i<n; ++i) {
-    let t = ts[i]
+    const t = ts[i]
     ts[i-1] =
       /^0|[1-9]\d*$/.test(t)
         ? iftes(isArray, Number(t), t)
