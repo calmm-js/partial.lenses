@@ -3288,7 +3288,10 @@ to
 
 #### <a id="L-pointer"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pointer) [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
 
-`L.pointer` converts a valid [JSON Pointer](https://tools.ietf.org/html/rfc6901) (string) into a bidirectional lens. Works with [JSON String](https://tools.ietf.org/html/rfc6901#section-5) and [URI Fragment Identifier](https://tools.ietf.org/html/rfc6901#section-6) representations.
+`L.pointer` converts a valid [JSON Pointer](https://tools.ietf.org/html/rfc6901)
+(string) into a bidirectional lens. Works with [JSON
+String](https://tools.ietf.org/html/rfc6901#section-5) and [URI Fragment
+Identifier](https://tools.ietf.org/html/rfc6901#section-6) representations.
 
 For Example:
 
