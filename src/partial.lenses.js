@@ -48,6 +48,9 @@ function freezeArrayOfObjects(xs) {
   return freeze(xs)
 }
 
+const isArrayOrPrimitive = x =>
+  !(x instanceof Object) || Array.isArray(x)
+
 //
 
 const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
@@ -1293,9 +1296,6 @@ export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
 
 // Interop
 
-const isArray = x =>
-  !(x instanceof Object) || Array.isArray(x)
-
 export const pointer = s => {
   if (s[0] === '#') s = decodeURIComponent(s)
   const ts = s.split('/')
@@ -1304,9 +1304,9 @@ export const pointer = s => {
     const t = ts[i]
     ts[i-1] =
       /^0|[1-9]\d*$/.test(t)
-        ? iftes(isArray, Number(t), t)
+        ? iftes(isArrayOrPrimitive, Number(t), t)
         : '-' === t
-        ? iftes(isArray, append, t)
+        ? iftes(isArrayOrPrimitive, append, t)
         : t.replace('~1', '/').replace('~0', '~')
   }
   ts.length = n-1
