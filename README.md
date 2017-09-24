@@ -172,6 +172,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON") <small><sup>v11.3.0</sup></small>
+  * [Interop](#interop)
+    * [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
   * [Auxiliary](#auxiliary)
     * [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean") <small><sup>v11.4.0</sup></small>
 * [Examples](#examples)
@@ -3281,6 +3283,22 @@ to
 the optional `replacer` and `space` are passed
 to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+
+### Interop
+
+####  <a id="L-pointer"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pointer) [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
+
+`L.pointer` converts a valid [JSON Pointer](https://tools.ietf.org/html/rfc6901) (string) into a bidirectional lens. Works with [JSON String](https://tools.ietf.org/html/rfc6901#section-5) and [URI Fragment Identifier](https://tools.ietf.org/html/rfc6901#section-6) representations.
+
+For Example:
+
+```js
+log(L.get(L.pointer("/foo/0"), {foo: [1, 2]}))
+// 1
+log(L.modify(L.pointer("#/foo/1"), x => x + 1, {foo: [1, 2]}))
+// {foo: [1, 3]}
+```
+
 
 ### Auxiliary
 

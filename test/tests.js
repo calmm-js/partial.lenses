@@ -266,6 +266,7 @@ describe("arities", () => {
     orElse: 2,
     pick: 1,
     pickIn: 1,
+    pointer: 1,
     prefix: 1,
     product: 2,
     productAs: 3,
@@ -1285,6 +1286,28 @@ describe("L.entries", () => {
 describe("L.keys", () => {
   testEq(`L.modify(L.keys, R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
   testEq(`L.remove([L.keys, L.when(x => x > "b")], {a: 1, c: 3, b: 2})`, {a: 1, b: 2})
+})
+
+describe("L.pointer", () => {
+  testEq(`L.get(L.pointer(""), {a: 1, b: 2})`, {a: 1, b: 2})
+  testEq(`L.get(L.pointer("/"), {"": 1, b: 2})`, 1)
+  testEq(`L.get(L.pointer("/ "), {" ": 1})`, 1)
+  testEq(`L.get(L.pointer("/0"), {"0": 1})`, 1)
+  testEq(`L.get(L.pointer("/a~1bc%de^fg|hi\\\\jk\\"lm~0n"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, [1,2])
+  testEq(`L.get(L.pointer("/a~1bc%de^fg|hi\\\\jk\\"lm~0n/0"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, 1)
+  testEq(`L.set(L.pointer("/b/0"), 3, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+  testEq(`L.remove(L.pointer("/b/0"), {a: 1, b: [2,3]})`, {a: 1, b: [3]})
+  testEq(`L.modify(L.pointer("/b/0"), R.inc, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+
+  testEq(`L.get(L.pointer("#"), {a: 1, b: 2})`, {a: 1, b: 2})
+  testEq(`L.get(L.pointer("#/"), {"": 1, b: 2})`, 1)
+  testEq(`L.get(L.pointer("#/%20"), {" ": 1})`, 1)
+  testEq(`L.get(L.pointer("#/0"), {"0": 1})`, 1)
+  testEq(`L.get(L.pointer("#/a~1bc%25de^fg%7Chi%5Cjk%22lm~0n"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, [1,2])
+  testEq(`L.get(L.pointer("#/a~1bc%25de^fg%7Chi%5Cjk%22lm~0n/0"), {"a/bc%de^fg|hi\\\\jk\\"lm~n": [1,2]})`, 1)
+  testEq(`L.set(L.pointer("#/b/0"), 3, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+  testEq(`L.remove(L.pointer("#/b/0"), {a: 1, b: [2,3]})`, {a: 1, b: [3]})
+  testEq(`L.modify(L.pointer("#/b/0"), R.inc, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
 })
 
 if (process.env.NODE_ENV !== "production") {
