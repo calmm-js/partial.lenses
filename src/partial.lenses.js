@@ -1297,7 +1297,6 @@ const isArray = x =>
   !(x instanceof Object) || Array.isArray(x)
 
 export const pointer = s => {
-  // See https://tools.ietf.org/html/rfc6901
   if (s[0] === '#') s = decodeURIComponent(s)
   const ts = s.split('/')
   const n = ts.length
