@@ -3286,7 +3286,7 @@ to
 
 ### Interop
 
-####  <a id="L-pointer"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pointer) [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
+#### <a id="L-pointer"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-pointer) [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
 
 `L.pointer` converts a valid [JSON Pointer](https://tools.ietf.org/html/rfc6901) (string) into a bidirectional lens. Works with [JSON String](https://tools.ietf.org/html/rfc6901#section-5) and [URI Fragment Identifier](https://tools.ietf.org/html/rfc6901#section-6) representations.
 
@@ -3299,10 +3299,9 @@ log(L.modify(L.pointer("#/foo/1"), x => x + 1, {foo: [1, 2]}))
 // {foo: [1, 3]}
 ```
 
-
 ### Auxiliary
 
-####  <a id="L-seemsArrayLike"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seemsArrayLike) [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean") <small><sup>v11.4.0</sup></small>
+#### <a id="L-seemsArrayLike"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-seemsArrayLike) [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean") <small><sup>v11.4.0</sup></small>
 
 `L.seemsArrayLike` determines whether the given value is an `instanceof Object`
 that has a non-negative integer `length` property or a string, which are not
