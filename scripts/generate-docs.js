@@ -77,6 +77,7 @@ function process({
     .replace(/\(\/#/g, `(${github}/#`)
     .replaceIf(constToVar, /([^ ])\bconst\b/g, "$1var")
     .replaceIf(stripComments, /\/\/ [^.].*/g, "")
+    .replace(/\n{3,}/g, '\n\n')
     .replace(/\[([^\]]*)\]\(\.\/([^)]*)\)/g, `[$1](${blob}$2)`)
     .replace(new RegExp(esc(`[▶](${site}#`) + "([a-zA-Z-]*)" + esc(")"), "g"),
              `[■](${github}#$1)`)
@@ -124,7 +125,8 @@ function process({
 
   const afterLoadStmts = [
     loadingMessage && `document.querySelector('.loading-message').className = "loading-hidden";`,
-    ga && `ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000));`
+    ga && `ga('send', 'event', 'completed', 'load', Math.round((Date.now() - startTime)/1000));`,
+    `accelerate_klipse();`
   ].filter(x => x)
 
   const postBodyElems = [

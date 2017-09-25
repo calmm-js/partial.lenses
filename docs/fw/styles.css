@@ -38,9 +38,14 @@
 }
 
 .CodeMirror {
+  display: none;
   border: none;
   font: 13.6px Consolas, "Liberation Mono", Menlo, Courier, monospace;
   line-height: 19.72px;
+}
+
+#playground .CodeMirror {
+  display: block;
 }
 
 .CodeMirror:first-of-type {

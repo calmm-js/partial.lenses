@@ -1,5 +1,5 @@
 (function () {
-  var pg = document.getElementById("playground")
+  var pg = document.querySelector("#playground code")
   if (pg) {
     var hash = window.location.hash.slice(1)
     function updateTitle(text) {
