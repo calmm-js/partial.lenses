@@ -43,13 +43,13 @@ function accelerate_klipse() {
     pcc[2].style = 'display: block;'
     pcc[2].CodeMirror.refresh()
   }
-
-  for (let i=0; i<all.length; ++i) {
-    show(i)
-    hide(i)
+  function hasBeenShown(i) {
+    const pcc = all[i]
+    return pcc[0].style.length || pcc[1].style.length
   }
 
-  const visibles = []
+  let oldVisStart = 0
+  let oldVisStop = 0
 
   function findVisible(begin, count, height) {
     if (count <= 0)
@@ -79,19 +79,17 @@ function accelerate_klipse() {
   let scheduled = 0
 
   function update() {
-    scheduled = 0
+    if (0 < scheduled)
+      --scheduled
 
     const height = window.innerHeight
     let vis = findVisible(0, all.length, height)
     if (null === vis)
       return
 
-    while (visibles.length)
-      hide(visibles.pop())
+    const newVisStart = vis
 
     while (true) {
-      visibles.push(vis)
-      
       show(vis)
 
       vis++
@@ -100,14 +98,27 @@ function accelerate_klipse() {
       if (all[vis][0].getBoundingClientRect().top >= height)
         break
     }
+
+    const newVisStop = vis
+
+    for (let i=oldVisStart; i<oldVisStop; ++i)
+      if (i < newVisStart || newVisStop <= i)
+        hide(i)
+
+    oldVisStart = newVisStart
+    oldVisStop = newVisStop
   }
 
   update()
 
   function scheduleUpdate() {
-    if (scheduled)
+    if (0 < scheduled)
       return
-    scheduled = 1
+    scheduled = 2
+    setTimeout(() => {
+      if (0 < scheduled)
+        --scheduled
+    }, 200)
     window.requestAnimationFrame(update)
   }
 
