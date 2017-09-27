@@ -31,15 +31,15 @@ function accelerate_klipse() {
 
   function hide(i) {
     const pcc = all[i]
-    pcc[0].style = 'min-height: ' + pcc[0].getBoundingClientRect().height + 'px;'
-    pcc[1].style = ''
-    pcc[2].style = ''
+    pcc[0].style.cssText = 'min-height: ' + pcc[0].getBoundingClientRect().height + 'px;'
+    pcc[1].style.cssText = ''
+    pcc[2].style.cssText = ''
   }
   function show(i) {
     const pcc = all[i]
-    pcc[0].style = ''
-    pcc[1].style = 'display: block;'
-    pcc[2].style = 'display: block;'
+    pcc[0].style.cssText = ''
+    pcc[1].style.cssText = 'display: block;'
+    pcc[2].style.cssText = 'display: block;'
     pcc[1].CodeMirror.refresh()
     pcc[2].CodeMirror.refresh()
   }
