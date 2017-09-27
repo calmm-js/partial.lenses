@@ -39,8 +39,8 @@ function accelerate_klipse() {
     const pcc = all[i]
     pcc[0].style = ''
     pcc[1].style = 'display: block;'
-    pcc[1].CodeMirror.refresh()
     pcc[2].style = 'display: block;'
+    pcc[1].CodeMirror.refresh()
     pcc[2].CodeMirror.refresh()
   }
   function hasBeenShown(i) {
@@ -51,29 +51,38 @@ function accelerate_klipse() {
   let oldVisStart = 0
   let oldVisStop = 0
 
-  function findVisible(begin, count, height) {
+  function visibility(i, height) {
+    const pcc = all[i]
+    const r = pcc[0].getBoundingClientRect()
+    return height <= r.top ? 1 : r.bottom < 0 ? -1 : 0
+  }
+
+  function findFirst(i, height) {
+    while (0 < i && 0 === visibility(i-1, height))
+      --i;
+    return i
+  }
+
+  function findBinary(begin, count, height) {
+    const middle = begin + (count >> 1)
     if (count <= 0)
       return null
-    let middle = begin + (count >> 1)
-    const m = all[middle][0]
-    const r = m.getBoundingClientRect()
-    if (r.top < height) {
-      if (r.bottom > 0) {
-        while (0 < middle && r.top > 0) {
-          const m = all[middle-1][0]
-          const r = m.getBoundingClientRect()
-          if (r.bottom > 0)
-            middle = middle-1
-          else
-            return middle
-        }
-        return middle
-      } else {
-        return findVisible(middle + 1, count - 1 - (count >> 1), height)
-      }
-    } else {
-      return findVisible(begin, count >> 1, height)
+    switch (visibility(middle, height)) {
+      case 1:
+        return findBinary(begin, count >> 1, height)
+      case 0:
+        return findFirst(middle, height)
+      default:
+        return findBinary(middle + 1, count - 1 - (count >> 1), height)
     }
+  }
+
+  function findVisible(height) {
+    const guess = (oldVisStart + oldVisStop) >> 1
+    if (0 === visibility(guess, height))
+      return findFirst(guess, height)
+    else
+      return findBinary(0, all.length, height)
   }
 
   let scheduled = 0
@@ -83,22 +92,17 @@ function accelerate_klipse() {
       --scheduled
 
     const height = window.innerHeight
-    let vis = findVisible(0, all.length, height)
+    let vis = findVisible(height)
     if (null === vis)
       return
 
     const newVisStart = vis
 
-    while (true) {
+    do {
       if (vis < oldVisStart || oldVisStop <= vis)
         show(vis)
-
-      vis++
-      if (all.length <= vis)
-        break
-      if (all[vis][0].getBoundingClientRect().top >= height)
-        break
-    }
+      ++vis
+    } while (vis < all.length && 0 === visibility(vis, height))
 
     const newVisStop = vis
 
