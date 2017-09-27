@@ -90,7 +90,8 @@ function accelerate_klipse() {
     const newVisStart = vis
 
     while (true) {
-      show(vis)
+      if (vis < oldVisStart || oldVisStop <= vis)
+        show(vis)
 
       vis++
       if (all.length <= vis)
