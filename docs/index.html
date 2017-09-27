@@ -834,11 +834,15 @@ law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator us
 <p>The <code>valOf</code> lens constructor is for accessing association arrays that contain
 <code>{id, val}</code> pairs.  For example:</p>
 <pre><code class="hljs lang-js">var sampleAssoc = [{key: &quot;x&quot;, val: 42}, {key: &quot;y&quot;, val: 24}]
-log(&#39;A&#39;, L.set(valOf(&quot;x&quot;), 101, []))
-log(&#39;B&#39;, L.get(valOf(&quot;x&quot;), sampleAssoc))
-log(&#39;C&#39;, L.get(valOf(&quot;z&quot;), sampleAssoc))
-log(&#39;D&#39;, L.set(valOf(&quot;x&quot;), undefined, sampleAssoc))
-log(&#39;E&#39;, L.set(valOf(&quot;x&quot;), 13, sampleAssoc))
+L.set(valOf(&quot;x&quot;), 101, [])
+</code></pre>
+<pre><code class="hljs lang-js">L.get(valOf(&quot;x&quot;), sampleAssoc)
+</code></pre>
+<pre><code class="hljs lang-js">L.get(valOf(&quot;z&quot;), sampleAssoc)
+</code></pre>
+<pre><code class="hljs lang-js">L.set(valOf(&quot;x&quot;), undefined, sampleAssoc)
+</code></pre>
+<pre><code class="hljs lang-js">L.set(valOf(&quot;x&quot;), 13, sampleAssoc)
 </code></pre>
 <p>It obeys lens laws.  Before you try to break it, note that a lens returned by
 <code>valOf(key)</code> is only supposed to work on valid association arrays.  A valid
@@ -2344,9 +2348,9 @@ to
 String</a> and <a href="https://tools.ietf.org/html/rfc6901#section-6">URI Fragment
 Identifier</a> representations.</p>
 <p>For Example:</p>
-<pre><code class="hljs lang-js">log(L.get(L.pointer(&quot;/foo/0&quot;), {foo: [1, 2]}))
-
-log(L.modify(L.pointer(&quot;#/foo/1&quot;), x =&gt; x + 1, {foo: [1, 2]}))
+<pre><code class="hljs lang-js">L.get(L.pointer(&quot;/foo/0&quot;), {foo: [1, 2]})
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(L.pointer(&quot;#/foo/1&quot;), x =&gt; x + 1, {foo: [1, 2]})
 </code></pre>
 <h3 id="auxiliary">Auxiliary</h3>
 <h4><a id="L-seemsArrayLike"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seemsArrayLike">■</a> <a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a> <small><sup>v11.4.0</sup></small></h4>
