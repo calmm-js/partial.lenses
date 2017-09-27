@@ -32,19 +32,18 @@
     </p>
     <hr>
     <h1><a id="partial-lenses"></a> Partial Lenses &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/partial.lenses"><img src="https://img.shields.io/npm/dm/partial.lenses.svg" alt="npm"></a></h1>
-<p>Lenses are basically an abstraction for simultaneously specifying operations
-to <a href="#L-modify">update</a> and <a href="#L-get">query</a> <a href="#on-immutability">immutable</a> data
-structures.  Lenses are <a href="#on-composability">highly composable</a> and can
-be <a href="#benchmarks">efficient</a>.  This library provides
-a <a href="#on-bundle-size-and-minification">rich collection</a>
-of <a href="#on-partiality">partial</a> <a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>,
-and <a href="#traversals">traversals</a>, collectively known as <a href="#optics">optics</a>, for
-manipulating <a href="http://json.org/">JSON</a> and
-users <a href="#L-toFunction">can</a> <a href="#L-iso">write</a> <a href="#L-lens">new</a> <a href="#L-branch">optics</a>
-for manipulating non-JSON objects, such as <a href="#interfacing">Immutable.js</a>
-collections.  A partial lens can <em>view</em> optional data, <em>insert</em> new data,
-<em>update</em> existing data and <em>remove</em> existing data and can, for example, provide
-<em>defaults</em> and maintain <em>required</em> data structure
+<p>Lenses are basically an abstraction for simultaneously specifying operations to
+<a href="#L-modify">update</a> and <a href="#L-get">query</a> <a href="#on-immutability">immutable</a> data
+structures.  Lenses are <a href="#on-composability">highly composable</a> and can be
+<a href="#benchmarks">efficient</a>.  This library provides a <a href="#on-bundle-size-and-minification">rich
+collection</a> of <a href="#on-partiality">partial</a>
+<a href="#isomorphisms">isomorphisms</a>, <a href="#lenses">lenses</a>, and <a href="#traversals">traversals</a>,
+collectively known as <a href="#optics">optics</a>, for manipulating
+<a href="http://json.org/">JSON</a> and users <a href="#L-toFunction">can</a> <a href="#L-iso">write</a>
+<a href="#L-lens">new</a> <a href="#L-branch">optics</a> for manipulating non-JSON objects, such as
+<a href="#interfacing">Immutable.js</a> collections.  A partial lens can <em>view</em> optional
+data, <em>insert</em> new data, <em>update</em> existing data and <em>remove</em> existing data and
+can, for example, provide <em>defaults</em> and maintain <em>required</em> data structure
 parts.  <a href="playground.html">Try Lenses!</a></p>
 <p><a href="http://badge.fury.io/js/partial.lenses"><img src="https://badge.fury.io/js/partial.lenses.svg" alt="npm version"></a>
 <a href="https://badge.fury.io/bo/partial.lenses"><img src="https://badge.fury.io/bo/partial.lenses.svg" alt="Bower version"></a>
@@ -342,21 +341,18 @@ import * as R from &quot;ramda&quot;
 <p>and <a href="#getting-started">▶ play</a> just a
 bit with lenses.</p>
 <blockquote>
-<p>Note that links with
-the <a href="#getting-started">▶ play</a>
-symbol, take you to an interactive version of this page where almost all of
-the code snippets are editable and evaluated in the browser.  Note that due to
-the large number of snippets the interactive version of this page takes awhile
-to render.  There is also a
-separate
+<p>Note that links with the <a href="#getting-started">▶
+play</a> symbol, take
+you to an interactive version of this page where almost all of the code
+snippets are editable and evaluated in the browser.  There is also a separate
 <a href="playground.html">playground page</a>
 that allows you to quickly try out lenses.</p>
 </blockquote>
 <p>As mentioned earlier, with lenses we can specify a path to focus on an element.
-To specify such a path we use primitive lenses
-like <a href="#L-prop"><code>L.prop(propName)</code></a>, to access a named property of an object,
-and <a href="#L-index"><code>L.index(elemIndex)</code></a>, to access an element at a given index in
-an array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
+To specify such a path we use primitive lenses like
+<a href="#L-prop"><code>L.prop(propName)</code></a>, to access a named property of an object, and
+<a href="#L-index"><code>L.index(elemIndex)</code></a>, to access an element at a given index in an
+array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
 <p>So, to just <a href="#L-get">get</a> at the <code>titles</code> array of the <code>sampleTitles</code> we can use
 the lens <a href="#L-prop"><code>L.prop(&quot;titles&quot;)</code></a>:</p>
 <pre><code class="hljs lang-js">L.get(L.prop(&quot;titles&quot;),
@@ -403,13 +399,13 @@ such details along with the path to focus on.</p>
 </code></pre>
 <p>Take a moment to read through the above definition line by line.  Each part
 either specifies a step in the path to select the desired element or a way in
-which the data structure must be treated at that point.
-The <a href="#L-prop"><code>L.prop(...)</code></a> parts are already familiar.  The other parts we
-will mention below.</p>
+which the data structure must be treated at that point.  The
+<a href="#L-prop"><code>L.prop(...)</code></a> parts are already familiar.  The other parts we will
+mention below.</p>
 <h3 id="querying-data">Querying data</h3>
-<p>Thanks to the parameterized search
-part, <a href="#L-find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we
-can use it to query titles:</p>
+<p>Thanks to the parameterized search part,
+<a href="#L-find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we can use
+it to query titles:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;sv&quot;), sampleTitles)
 </code></pre>
 <p>The <a href="#L-find"><code>L.find</code></a> lens is a given a predicate that it then uses to find an
@@ -417,17 +413,17 @@ element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
 that creates an equality predicate from a given template object.</p>
 <h4 id="missing-data-can-be-expected">Missing data can be expected</h4>
-<p>Partial lenses can generally deal with missing data.  In this case,
-when <a href="#L-find"><code>L.find</code></a> doesn&#39;t find an element, it instead works like a lens
-to <a href="#L-append">append</a> a new element into an array.</p>
+<p>Partial lenses can generally deal with missing data.  In this case, when
+<a href="#L-find"><code>L.find</code></a> doesn&#39;t find an element, it instead works like a lens to
+<a href="#L-append">append</a> a new element into an array.</p>
 <p>So, if we use the partial lens to query a title that does not exist, we get the
 default:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), sampleTitles)
 </code></pre>
-<p>We get this value, rather than <code>undefined</code>, thanks to
-the <a href="#L-valueOr"><code>L.valueOr({language, text: &quot;&quot;})</code></a> part of our lens
-composition, which ensures that we get the specified value rather than <code>null</code> or
-<code>undefined</code>.  We get the default even if we query from <code>undefined</code>:</p>
+<p>We get this value, rather than <code>undefined</code>, thanks to the <a href="#L-valueOr"><code>L.valueOr({language,
+text: &quot;&quot;})</code></a> part of our lens composition, which ensures that we get
+the specified value rather than <code>null</code> or <code>undefined</code>.  We get the default even
+if we query from <code>undefined</code>:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), undefined)
 </code></pre>
 <p>With partial lenses, <code>undefined</code> is the equivalent of empty or non-existent.</p>
@@ -441,25 +437,24 @@ composition, which ensures that we get the specified value rather than <code>nul
 </code></pre>
 <p>There are couple of things here that require attention.</p>
 <p>The reason that the newly inserted object not only has the <code>text</code> property, but
-also the <code>language</code> property is due to
-the <a href="#L-valueOr"><code>L.valueOr({language, text: &quot;&quot;})</code></a> part that we used to provide
-a default.</p>
+also the <code>language</code> property is due to the <a href="#L-valueOr"><code>L.valueOr({language, text:
+&quot;&quot;})</code></a> part that we used to provide a default.</p>
 <p>Also note the position into which the new title was inserted.  The array of
-titles is kept sorted thanks to
-the <a href="#L-normalize"><code>L.normalize(R.sortBy(L.get(&quot;language&quot;)))</code></a> part of our lens.
+titles is kept sorted thanks to the
+<a href="#L-normalize"><code>L.normalize(R.sortBy(L.get(&quot;language&quot;)))</code></a> part of our lens.
 The <a href="#L-normalize"><code>L.normalize</code></a> lens transforms the data when either read or
-written with the given function.  In this case we used
-Ramda&#39;s <a href="http://ramdajs.com/docs/#sortBy"><code>R.sortBy</code></a> to specify that we want
-the titles to be kept sorted by language.</p>
+written with the given function.  In this case we used Ramda&#39;s
+<a href="http://ramdajs.com/docs/#sortBy"><code>R.sortBy</code></a> to specify that we want the titles
+to be kept sorted by language.</p>
 <h3 id="removing-data">Removing data</h3>
 <p>Finally, we can use the same partial lens to remove titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTitles)
 </code></pre>
 <p>Note that a single title <code>text</code> is actually a part of an object.  The key to
-having the whole object vanish, rather than just the <code>text</code> property, is
-the <a href="#L-removable"><code>L.removable(&quot;text&quot;)</code></a> part of our lens composition.  It
-makes it so that when the <code>text</code> property is set to <code>undefined</code>, the result will
-be <code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
+having the whole object vanish, rather than just the <code>text</code> property, is the
+<a href="#L-removable"><code>L.removable(&quot;text&quot;)</code></a> part of our lens composition.  It makes it
+so that when the <code>text</code> property is set to <code>undefined</code>, the result will be
+<code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
 <p>If we remove all of the titles, we get the required value:</p>
 <pre><code class="hljs lang-js">L.set(L.seq(textIn(&quot;sv&quot;),
             textIn(&quot;en&quot;)),
@@ -471,12 +466,10 @@ of the focused titles.  The <code>titles</code> property is not removed thanks t
 <a href="#L-define"><code>L.define([])</code></a> part of our lens composition.  It makes it so that
 when reading or writing through the lens, <code>undefined</code> becomes the given value.</p>
 <h3 id="exercises">Exercises</h3>
-<p>Take out one (or
-more)
-<a href="#L-define"><code>L.define(...)</code></a>,
-<a href="#L-normalize"><code>L.normalize(...)</code></a>, <a href="#L-valueOr"><code>L.valueOr(...)</code></a>
-or <a href="#L-removable"><code>L.removable(...)</code></a> part(s) from the lens composition and try
-to predict what happens when you rerun the examples with the modified lens
+<p>Take out one (or more) <a href="#L-define"><code>L.define(...)</code></a>,
+<a href="#L-normalize"><code>L.normalize(...)</code></a>, <a href="#L-valueOr"><code>L.valueOr(...)</code></a> or
+<a href="#L-removable"><code>L.removable(...)</code></a> part(s) from the lens composition and try to
+predict what happens when you rerun the examples with the modified lens
 composition.  Verify your reasoning by actually rerunning the examples.</p>
 <h3 id="shorthands">Shorthands</h3>
 <p>For clarity, the previous code snippets avoided some of the shorthands that this
@@ -485,13 +478,12 @@ library supports.  In particular,</p>
 <li><a href="#L-compose"><code>L.compose(...)</code></a> can be abbreviated as an array
 <a href="#L-compose"><code>[...]</code></a>,</li>
 <li><a href="#L-prop"><code>L.prop(propName)</code></a> can be abbreviated as <a href="#L-prop"><code>propName</code></a>, and</li>
-<li><a href="#L-set"><code>L.set(l, undefined, s)</code></a> can be abbreviated
-as <a href="#L-remove"><code>L.remove(l, s)</code></a>.</li>
+<li><a href="#L-set"><code>L.set(l, undefined, s)</code></a> can be abbreviated as <a href="#L-remove"><code>L.remove(l,
+s)</code></a>.</li>
 </ul>
 <h3 id="systematic-decomposition">Systematic decomposition</h3>
 <p>It is also typical to compose lenses out of short paths following the schema of
-the JSON data being manipulated.  Recall the lens from the start of the
-example:</p>
+the JSON data being manipulated.  Recall the lens from the start of the example:</p>
 <pre><code class="hljs lang-jsx">L.compose(L.prop(&quot;titles&quot;),
           L.define([]),
           L.normalize(R.sortBy(L.get(&quot;language&quot;))),
@@ -606,8 +598,8 @@ such as using <code>addText</code> when there already is a text in the specified
 and <code>setText</code> when there isn&#39;t.  With partial optics, however, you separate the
 selection and data structure invariant maintenance from the operations as
 illustrated in the <a href="#tutorial">tutorial</a> and due to the separation of concerns
-that tends to give you a lot of robust functionality
-in <a href="#a-partial-lens-to-access-title-texts">a small amount of code</a>.</p>
+that tends to give you a lot of robust functionality in <a href="#a-partial-lens-to-access-title-texts">a small amount of
+code</a>.</p>
 <h2 id="reference">Reference</h2>
 <p>The <a href="https://wiki.haskell.org/Combinator">combinators</a> provided by this library
 are available as named imports.  Typically one just imports the library as:</p>
@@ -630,18 +622,19 @@ functions.  Also, the use of arrays to denote composition is not part of the
 stable subset.  Note that <a href="#L-compose"><code>L.compose()</code></a> is guaranteed to be
 equivalent to the <a href="#L-identity"><code>L.identity</code></a> optic.</p>
 </li>
-<li><p><a href="#L-get"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> is stable without limitations.</p>
+<li><p><a href="#L-get"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> is stable without
+limitations.</p>
 </li>
-<li><p><a href="#L-lens"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData) ~&gt; lens</code></a> is
-stable with the exception that one must not depend on the user specified
-getter and setter functions being passed more than 1 and 2 arguments,
-respectively, and one must make no assumptions about any extra parameters
-being passed.</p>
+<li><p><a href="#L-lens"><code>L.lens(maybeData =&gt; maybeValue, (maybeValue, maybeData) =&gt; maybeData) ~&gt;
+lens</code></a> is stable with the exception that one must not depend on the
+user specified getter and setter functions being passed more than 1 and 2
+arguments, respectively, and one must make no assumptions about any extra
+parameters being passed.</p>
 </li>
-<li><p><a href="#L-modify"><code>L.modify(optic, maybeValue =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> is
-stable with the exception that one must not depend on the user specified
-function being passed more than 1 argument and one must make no assumptions
-about any extra parameters being passed.</p>
+<li><p><a href="#L-modify"><code>L.modify(optic, maybeValue =&gt; maybeValue, maybeData) ~&gt;
+maybeData</code></a> is stable with the exception that one must not depend
+on the user specified function being passed more than 1 argument and one must
+make no assumptions about any extra parameters being passed.</p>
 </li>
 <li><p><a href="#L-remove"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> is stable without
 limitations.</p>
@@ -654,16 +647,16 @@ limitations.</p>
 make basic use of lenses created by client code using the dependent library.</p>
 <p>In retrospect, the stable subset has existed since version 2.2.0.</p>
 <h3 id="optics">Optics</h3>
-<p>The abstractions, <a href="#traversals">traversals</a>, <a href="#lenses">lenses</a>,
-and <a href="#isomorphisms">isomorphisms</a>, provided by this library are collectively
-known as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
+<p>The abstractions, <a href="#traversals">traversals</a>, <a href="#lenses">lenses</a>, and
+<a href="#isomorphisms">isomorphisms</a>, provided by this library are collectively known
+as <em>optics</em>.  Traversals can target any number of elements.  Lenses are a
 restriction of traversals that target a single element.  Isomorphisms are a
 restriction of lenses with an <a href="#L-inverse">inverse</a>.</p>
 <p>In addition to basic bidirectional optics, this library also supports more
-arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a>
-and <a href="#transforming">transform ops</a>.  Transforms allow operations, such as
-modifying a part of data structure multiple times or even in a loop, that are
-not possible with basic optics.</p>
+arbitrary <a href="#transforms">transforms</a> using optics with <a href="#L-seq">sequencing</a> and
+<a href="#transforming">transform ops</a>.  Transforms allow operations, such as modifying
+a part of data structure multiple times or even in a loop, that are not possible
+with basic optics.</p>
 <p>Some optics libraries provide many more abstractions, such as &quot;optionals&quot;,
 &quot;prisms&quot; and &quot;folds&quot;, to name a few, forming a DAG.  Aside from being
 conceptually important, many of those abstractions are not only useful but
@@ -703,10 +696,9 @@ abstractions and it tends to make compositions of optics more concise with fewer
 required parts, which both help to avoid bugs.</p>
 <h4 id="on-immutability">On immutability</h4>
 <p>Starting with version <a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#1000">10.0.0</a>, to strongly guide away from
-mutating data structures, optics
-call
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze"><code>Object.freeze</code></a> on
-any new objects they create when <code>NODE_ENV</code> is not <code>production</code>.</p>
+mutating data structures, optics call
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze"><code>Object.freeze</code></a>
+on any new objects they create when <code>NODE_ENV</code> is not <code>production</code>.</p>
 <p>Why only non-<code>production</code> builds?  Because <code>Object.freeze</code> can be quite
 expensive and the main benefit is in catching potential bugs early during
 development.</p>
@@ -714,9 +706,9 @@ development.</p>
 them or freeze data returned by user defined functions.  Only objects newly
 created by optic functions themselves are frozen.</p>
 <h4 id="on-composability">On composability</h4>
-<p>A lot of libraries these days claim to
-be <a href="https://en.wikipedia.org/wiki/Composability">composable</a>.  Is any collection
-of functions composable?  In the opinion of the author of this library, in order
+<p>A lot of libraries these days claim to be
+<a href="https://en.wikipedia.org/wiki/Composability">composable</a>.  Is any collection of
+functions composable?  In the opinion of the author of this library, in order
 for something to be called &quot;composable&quot;, a couple of conditions must be
 fulfilled:</p>
 <ol>
@@ -781,11 +773,10 @@ spell out proofs of the semantics.</p>
 <h4 id="on-lens-laws">On lens laws</h4>
 <p>Aside from understanding laws on how forms of composition behave, it is useful
 to understand laws that are specific to operations on lenses and optics, in
-general.  As described in the
-paper
-<a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">A clear picture of lens laws</a>,
-many laws have been formulated for lenses and it can be useful to have lenses
-that do not necessarily obey some laws.</p>
+general.  As described in the paper <a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">A clear picture of lens
+laws</a>, many laws have
+been formulated for lenses and it can be useful to have lenses that do not
+necessarily obey some laws.</p>
 <p>Here is a snippet that demonstrates that partial lenses can obey the laws of, so
 called, <em>very well-behaved lenses</em>:</p>
 <pre><code class="hljs lang-js">var elemA = 2
@@ -818,8 +809,8 @@ that partial lenses can obey lens laws.  However, for practical reasons there
 are many combinators in this library that, alone, do not obey lens laws.
 Nevertheless even such combinators can be used in lens compositions that obey
 lens laws.</p>
-<p>Consider the <a href="#L-find"><code>L.find</code></a> combinator.  The truth is that it doesn&#39;t
-by itself obey lens laws.  Here is an example:</p>
+<p>Consider the <a href="#L-find"><code>L.find</code></a> combinator.  The truth is that it doesn&#39;t by
+itself obey lens laws.  Here is an example:</p>
 <pre><code class="hljs lang-js">L.get(L.find(R.equals(1)),
       L.set(L.find(R.equals(1)), 2, []))
 </code></pre>
@@ -878,9 +869,9 @@ focused on by the given optic.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
-<p>Note that <code>L.remove(optic, maybeData)</code> is equivalent
-to <a href="#L-set"><code>L.set(lens, undefined, maybeData)</code></a>.  With partial lenses, setting
-to <code>undefined</code> typically has the effect of removing the focused element.</p>
+<p>Note that <code>L.remove(optic, maybeData)</code> is equivalent to <a href="#L-set"><code>L.set(lens, undefined,
+maybeData)</code></a>.  With partial lenses, setting to <code>undefined</code> typically has
+the effect of removing the focused element.</p>
 <h5><a id="L-set"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-set">■</a> <a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.set</code> allows one to replace the elements focused on by the given optic with
 the specified value.</p>
@@ -889,18 +880,17 @@ the specified value.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
-<p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent
-to <a href="#L-modify"><code>L.modify(lens, R.always(maybeValue), maybeData)</code></a>.</p>
+<p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent to <a href="#L-modify"><code>L.modify(lens,
+R.always(maybeValue), maybeData)</code></a>.</p>
 <h5><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></h5>
 <p><code>L.traverse</code> maps each focus to an operation and returns an operation that runs
 those operations in-order and collects the results.  The <code>category</code> argument
-must be either
-a
+must be either a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a>,
 or
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a> depending
-on the optic as specified in <a href="#L-toFunction"><code>L.toFunction</code></a>.</p>
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a>
+depending on the optic as specified in <a href="#L-toFunction"><code>L.toFunction</code></a>.</p>
 <p>Here is a bit involved example that uses the State applicative and <code>L.traverse</code>
 to replace elements in a data structure by the number of times those elements
 have appeared at that point in the data structure:</p>
@@ -1051,8 +1041,7 @@ is equivalent to <code>optics.reduce(L.orElse)</code>.</p>
 is distinguished from <a href="#adapting">adapting</a> in that querying defaults to an
 empty or read-only <a href="#L-zero">zero</a>.</p>
 <h5><a id="L-chain"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-chain">■</a> <a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a> <small><sup>v3.1.0</sup></small></h5>
-<p><code>L.chain</code> provides a
-monadic
+<p><code>L.chain</code> provides a monadic
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain">chain</a>
 combinator for querying with optics.  <code>L.chain(toOptic, optic)</code> is equivalent to</p>
 <pre><code class="hljs lang-jsx">L.compose(optic, L.choose((maybeValue, index) =&gt;
@@ -1060,15 +1049,15 @@ combinator for querying with optics.  <code>L.chain(toOptic, optic)</code> is eq
   ? L.zero
   : toOptic(maybeValue, index)))
 </code></pre>
-<p>Note that with the <a href="http://ramdajs.com/docs/#always"><code>R.always</code></a>,
-<code>L.chain</code>, <a href="#L-choice"><code>L.choice</code></a> and <a href="#L-zero"><code>L.zero</code></a> combinators, one can
-consider optics as subsuming the maybe monad.</p>
+<p>Note that with the <a href="http://ramdajs.com/docs/#always"><code>R.always</code></a>, <code>L.chain</code>,
+<a href="#L-choice"><code>L.choice</code></a> and <a href="#L-zero"><code>L.zero</code></a> combinators, one can consider
+optics as subsuming the maybe monad.</p>
 <h5><a id="L-choice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-choice">■</a> <a href="#L-choice" title="L.choice: (...POptic s a) -&gt; POptic s a"><code>L.choice(...optics) ~&gt; optic</code></a> <small><sup>v2.1.0</sup></small></h5>
 <p><code>L.choice</code> returns a partial optic that acts like the first of the given optics
 whose view is not <code>undefined</code> on the given data structure.  When the views of
-all of the given optics are <code>undefined</code>, the returned optic acts
-like <a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.  See
-also <a href="#L-choices"><code>L.choices</code></a>.</p>
+all of the given optics are <code>undefined</code>, the returned optic acts like
+<a href="#L-zero"><code>L.zero</code></a>, which is the identity element of <code>L.choice</code>.  See also
+<a href="#L-choices"><code>L.choices</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.choice(&quot;a&quot;, &quot;d&quot;)], R.inc, [{R: 1}, {a: 1}, {d: 2}])
 </code></pre>
@@ -1082,21 +1071,21 @@ the focus is <code>undefined</code>, the lens will be read-only.</p>
 <p>and:</p>
 <pre><code class="hljs lang-js">L.set([L.elems, &quot;x&quot;, L.optional], 3, [{x: 1}, {y: 2}])
 </code></pre>
-<p>Note that <code>L.optional</code> is equivalent
-to <a href="#L-when"><code>L.when(x =&gt; x !== undefined)</code></a>.</p>
+<p>Note that <code>L.optional</code> is equivalent to <a href="#L-when"><code>L.when(x =&gt; x !==
+undefined)</code></a>.</p>
 <h5><a id="L-when"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-when">■</a> <a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a> <small><sup>v5.2.0</sup></small></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
 selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
 </code></pre>
-<p>Note that <code>L.when(p)</code> is equivalent
-to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ? L.identity : L.zero)</code></a>.</p>
+<p>Note that <code>L.when(p)</code> is equivalent to <a href="#L-choose"><code>L.choose((x, i) =&gt; p(x, i) ?
+L.identity : L.zero)</code></a>.</p>
 <h5><a id="L-zero"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-zero">■</a> <a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a> <small><sup>v6.0.0</sup></small></h5>
-<p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a>
-and <a href="#L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no
-elements and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a
-read-only lens whose view is always <code>undefined</code>.</p>
+<p><code>L.zero</code> is the identity element of <a href="#L-choice"><code>L.choice</code></a> and
+<a href="#L-chain"><code>L.chain</code></a>.  As a traversal, <code>L.zero</code> is a traversal of no elements
+and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a read-only
+lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.elems,
            L.iftes(R.is(Array),  L.elems,
@@ -1135,13 +1124,11 @@ when used strategically, <code>L.cache</code> can be used to make complex transf
 operate <a href="https://en.wikipedia.org/wiki/Incremental_computing">incrementally</a>.</p>
 <h4 id="debugging">Debugging</h4>
 <h5><a id="L-log"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-log">■</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></h5>
-<p><code>L.log(...labels)</code> is an identity optic that
-outputs
+<p><code>L.log(...labels)</code> is an identity optic that outputs
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
-messages with the given labels
-(or
-<a href="https://nodejs.org/api/console.html#console_console_log_data">format in Node.js</a>)
-when data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
+messages with the given labels (or <a href="https://nodejs.org/api/console.html#console_console_log_data">format in
+Node.js</a>) when
+data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set([&quot;x&quot;, L.log(&quot;x&quot;)], &quot;11&quot;, {x: 10})
 </code></pre>
@@ -1149,11 +1136,11 @@ when data flows in either direction, <code>get</code> or <code>set</code>, throu
 </code></pre>
 <h4 id="internals">Internals</h4>
 <h5><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></h5>
-<p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>,
-an <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.
-This can be useful for implementing new combinators that cannot otherwise be
-implemented using the combinators provided by this library.  See
-also <a href="#L-traverse"><code>L.traverse</code></a>.</p>
+<p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>, an
+<a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.  This
+can be useful for implementing new combinators that cannot otherwise be
+implemented using the combinators provided by this library.  See also
+<a href="#L-traverse"><code>L.traverse</code></a>.</p>
 <p>For <a href="#isomorphisms">isomorphisms</a> and <a href="#lenses">lenses</a>, the returned function
 will have the signature</p>
 <pre><code class="hljs lang-jsx">(Maybe s, Index, Functor c, (Maybe a, Index) -&gt; c b) -&gt; c t
@@ -1170,27 +1157,26 @@ will have the signature</p>
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a>,
 and
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a> arguments
-are expected to conform to
-their
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static Land</a>
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a>
+arguments are expected to conform to their <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
+Land</a>
 specifications.</p>
 <p>Note that, in conjunction with partial optics, it may be advantageous to have
 the algebras to allow for partiality.  With traversals it is also possible, for
-example, to simply post compose optics with <a href="#L-optional"><code>L.optional</code></a> to
-skip <code>undefined</code> elements.</p>
+example, to simply post compose optics with <a href="#L-optional"><code>L.optional</code></a> to skip
+<code>undefined</code> elements.</p>
 <p>Note that if you simply wish to perform an operation that needs roughly the full
-expressive power of the underlying lens encoding, you should
-use <a href="#L-traverse"><code>L.traverse</code></a>, because it is independent of the underlying
+expressive power of the underlying lens encoding, you should use
+<a href="#L-traverse"><code>L.traverse</code></a>, because it is independent of the underlying
 encoding, while <code>L.toFunction</code> essentially exposes the underlying encoding and
 it is better to avoid depending on that.</p>
 <h3 id="transforms">Transforms</h3>
 <p>Ordinary <a href="#optics">optics</a> are passive and bidirectional in such a way that the
 same optic can be both read and written through.  The underlying implementation
 of this library also allows one to implement active operations that don&#39;t quite
-provide the same kind of passive bidirectionality, but can be used to
-flexibly <a href="#L-modifyOp">modify</a> data structures.  Such operations are called
-<em>transforms</em> in this library.</p>
+provide the same kind of passive bidirectionality, but can be used to flexibly
+<a href="#L-modifyOp">modify</a> data structures.  Such operations are called <em>transforms</em>
+in this library.</p>
 <p>Unlike ordinary optics, transforms allow for monadic <a href="#L-seq">sequencing</a>, which
 makes it possible to operate on a part of data structure multiple times.  This
 allows operations that are impossible to implement using ordinary optics, but
@@ -1203,20 +1189,19 @@ such as <a href="#L-modify"><code>L.modify</code></a>.  Although it is not stric
 library, it is perhaps clearest to think that transforms have no focuses.  A
 transform using <a href="#transforming">transform ops</a>, that act as traversals of no
 elements, can, and perhaps preferably should, be <a href="#L-isEmpty">empty</a> and should
-be executed using <a href="#L-transform"><code>L.transform</code></a>, which,
-unlike <a href="#L-modify"><code>L.modify</code></a>, takes no user defined operation to apply to
-focuses.</p>
+be executed using <a href="#L-transform"><code>L.transform</code></a>, which, unlike
+<a href="#L-modify"><code>L.modify</code></a>, takes no user defined operation to apply to focuses.</p>
 <p>The line between transforms and optics is not entirely clear cut in the sense
 that it is technically possible to use various <a href="#transforming">transform ops</a>
-within an ordinary optic definition.  Furthermore, it is also possible to
-use <a href="#L-seq">sequencing</a> to create transforms that have focuses that can then be
+within an ordinary optic definition.  Furthermore, it is also possible to use
+<a href="#L-seq">sequencing</a> to create transforms that have focuses that can then be
 operated upon.  The results of such uses don&#39;t quite follow the laws of ordinary
 optics, but may sometimes be useful.</p>
 <h4 id="operations-on-transforms">Operations on transforms</h4>
 <h5><a id="L-transform"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-transform">■</a> <a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.7.0</sup></small></h5>
 <p><code>L.transform(o, s)</code> is shorthand for <a href="#L-modify"><code>L.modify(o, x =&gt; x, s)</code></a> and
-is intended for running <a href="#transforms">transforms</a> defined
-using <a href="#transforming">transform ops</a>.</p>
+is intended for running <a href="#transforms">transforms</a> defined using <a href="#transforming">transform
+ops</a>.</p>
 <p>Note that</p>
 <ul>
 <li><a href="#L-assign"><code>L.assign(o, x, s)</code></a> is equivalent to <a href="#L-assignOp"><code>L.transform([o,
@@ -1251,8 +1236,7 @@ structure while <code>everywhere</code> also targets those.</p>
 <pre><code class="hljs lang-js">L.modify(everywhere, x =&gt; [x], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>Note that <code>L.seq</code>, <a href="#L-choose"><code>L.choose</code></a>, and <a href="#L-setOp"><code>L.setOp</code></a> can be
-combined together as
-a
+combined together as a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a></p>
 <pre><code class="hljs lang-jsx">chain(x2t, t) = L.seq(t, L.choose(x2t))
         of(x) = L.setOp(x)
@@ -1295,12 +1279,10 @@ L.transform([&#39;elements&#39;,
 <p><code>L.setOp(x)</code> is shorthand for <a href="#L-modifyOp"><code>L.modifyOp(R.always(x))</code></a>.</p>
 <h3 id="traversals">Traversals</h3>
 <p>A traversal operates over a collection of non-overlapping focuses that are
-visited only once and can, for example,
-be
-<a href="#L-collect">collected</a>,
-<a href="#L-concatAs">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a>
-and <a href="#L-remove">removed</a>.  Put in another way, a traversal specifies a set of
-paths to elements in a data structure.</p>
+visited only once and can, for example, be <a href="#L-collect">collected</a>,
+<a href="#L-concatAs">folded</a>, <a href="#L-modify">modified</a>, <a href="#L-set">set</a> and
+<a href="#L-remove">removed</a>.  Put in another way, a traversal specifies a set of paths
+to elements in a data structure.</p>
 <h4 id="creating-new-traversals">Creating new traversals</h4>
 <h5><a id="L-branch"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-branch">■</a> <a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a> <small><sup>v5.1.0</sup></small></h5>
 <p><code>L.branch</code> creates a new traversal from a given possibly nested template object
@@ -1311,10 +1293,10 @@ be seen as mapping each property to a set of paths to traverse.</p>
 <pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
           {first: [&quot;x&quot;], second: {value: &quot;y&quot;}})
 </code></pre>
-<p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at
-first.  <a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So,
-when a property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given
-to <code>L.branch</code>, it means that the element is to be visited by the resulting
+<p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at first.
+<a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So, when a
+property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given to
+<code>L.branch</code>, it means that the element is to be visited by the resulting
 traversal.</p>
 <p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
 can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
@@ -1358,11 +1340,10 @@ In case the immediate target of <code>L.flatten</code> is not an array, it is tr
 <pre><code class="hljs lang-js">L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 </code></pre>
 <h5><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></h5>
-<p><code>L.matches</code>, when given a regular expression with
-the
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flag,
-<code>/.../g</code>, is a partial traversal over the matches that the regular expression
-gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
+<p><code>L.matches</code>, when given a regular expression with the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a>
+flag, <code>/.../g</code>, is a partial traversal over the matches that the regular
+expression gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
            L.pick({name: L.matches(/^[^=]+/),
@@ -1410,15 +1391,16 @@ satisfy the given predicate.</p>
       primitives,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<p>See also: <a href="#L-any"><code>L.any</code></a>, <a href="#L-none"><code>L.none</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
+<p>See also: <a href="#L-any"><code>L.any</code></a>, <a href="#L-none"><code>L.none</code></a>, and
+<a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5><a id="L-and"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-and">■</a> <a href="#L-and" title="L.and: PTraversal s Boolean -&gt; Boolean"><code>L.and(traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
 <p><code>L.and</code> determines whether all of the elements focused on by the given traversal
 are truthy.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.and(L.elems, [])
 </code></pre>
-<p>Note that <code>L.and</code> is equivalent to <a href="#L-all"><code>L.all(x =&gt; x)</code></a>.  See
-also: <a href="#L-or"><code>L.or</code></a>.</p>
+<p>Note that <code>L.and</code> is equivalent to <a href="#L-all"><code>L.all(x =&gt; x)</code></a>.  See also:
+<a href="#L-or"><code>L.or</code></a>.</p>
 <h5><a id="L-any"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-any">■</a> <a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
 <p><code>L.any</code> determines whether any of the elements focused on by the given traversal
 satisfy the given predicate.</p>
@@ -1427,7 +1409,8 @@ satisfy the given predicate.</p>
       primitives,
       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-none"><code>L.none</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
+<p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-none"><code>L.none</code></a>, and
+<a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5><a id="L-collect"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-collect">■</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v3.6.0</sup></small></h5>
 <p><code>L.collect</code> returns an array of the non-<code>undefined</code> elements focused on by the
 given traversal or lens from a data structure.</p>
@@ -1460,10 +1443,9 @@ above naïve implementation.</p>
 <p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
 <code>t</code> from the given data structure <code>s</code>.  The <code>concat</code> operation and the constant
-returned by <code>empty()</code> should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values focused on by <code>t</code>.</p>
+returned by <code>empty()</code> should form a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
+over the values focused on by <code>t</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var Sum = {empty: () =&gt; 0, concat: (x, y) =&gt; x + y}
 L.concat(Sum, L.elems, [1, 2, 3])
@@ -1475,10 +1457,9 @@ L.concat(Sum, L.elems, [1, 2, 3])
 <code>xMi2r</code>, and fold, using the given <code>concat</code> and <code>empty</code> operations, over the
 elements focused on by the given traversal or lens <code>t</code> from the given data
 structure <code>s</code>.  The <code>concat</code> operation and the constant returned by <code>empty()</code>
-should form
-a
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a> over
-the values returned by <code>xMi2r</code>.</p>
+should form a
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
+over the values returned by <code>xMi2r</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.concatAs(x =&gt; x, Sum, L.elems, [1, 2, 3])
 </code></pre>
@@ -1616,8 +1597,8 @@ is truthy.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.or(L.elems, [])
 </code></pre>
-<p>Note that <code>L.or</code> is equivalent to <a href="#L-any"><code>L.any(x =&gt; x)</code></a>.  See
-also: <a href="#L-and"><code>L.and</code></a>.</p>
+<p>Note that <code>L.or</code> is equivalent to <a href="#L-any"><code>L.any(x =&gt; x)</code></a>.  See also:
+<a href="#L-and"><code>L.and</code></a>.</p>
 <h5><a id="L-product"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#-product">■</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
 traversal.</p>
@@ -1786,8 +1767,8 @@ L.defaults(value)]</code>.</p>
 implicitly maps <code>undefined</code> to <code>undefined</code>.  <code>L.normalize(fn)</code> is equivalent to
 composing <a href="#L-reread"><code>L.reread(fn)</code></a> and <a href="#L-rewrite"><code>L.rewrite(fn)</code></a>.</p>
 <p>One use case for <code>normalize</code> is to make it easy to determine whether, after a
-change, the data has actually changed.  By keeping the data normalized, a
-simple <a href="http://ramdajs.com/docs/#equals"><code>R.equals</code></a> comparison will do.</p>
+change, the data has actually changed.  By keeping the data normalized, a simple
+<a href="http://ramdajs.com/docs/#equals"><code>R.equals</code></a> comparison will do.</p>
 <h5><a id="L-required"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-required">■</a> <a href="#L-required" title="L.required: s -&gt; PLens s s"><code>L.required(valueOut) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.required</code> is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.</p>
@@ -1798,8 +1779,8 @@ is removed, the given value will be substituted instead.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([&quot;items&quot;, L.required([]), 0], {items: [1]})
 </code></pre>
-<p>Note that <code>L.required(valueOut)</code> is equivalent
-to <a href="#L-replace"><code>L.replace(valueOut, undefined)</code></a>.</p>
+<p>Note that <code>L.required(valueOut)</code> is equivalent to <a href="#L-replace"><code>L.replace(valueOut,
+undefined)</code></a>.</p>
 <h5><a id="L-reread"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-reread">■</a> <a href="#L-reread" title="L.reread: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.reread((valueIn, index) =&gt; maybeValueIn) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.reread</code> maps the value with the given transform on read and implicitly maps
 <code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a>.</p>
@@ -1829,9 +1810,8 @@ desired type, if necessary.  For example:</p>
 everything but the <code>length</code> property and the integer properties from <code>0</code> to
 <code>length-1</code>.</p>
 <h5><a id="L-append"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-append">■</a> <a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
-<p><code>L.append</code> is a write-only lens that can be used to append values to
-an <a href="#array-like">array-like</a> object.  The view of <code>L.append</code> is always
-<code>undefined</code>.</p>
+<p><code>L.append</code> is a write-only lens that can be used to append values to an
+<a href="#array-like">array-like</a> object.  The view of <code>L.append</code> is always <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.append, [&quot;x&quot;])
 </code></pre>
@@ -1856,18 +1836,18 @@ the resulting array would be empty, the whole result will be <code>undefined</co
 yourself to lenses, consider using the <a href="#L-elems"><code>L.elems</code></a> traversal composed
 with <a href="#L-when"><code>L.when</code></a>.</p>
 <p>An alternative design for filter could implement a smarter algorithm to combine
-arrays when set.  For example, an algorithm based
-on <a href="https://en.wikipedia.org/wiki/Edit_distance">edit distance</a> could be used to
-maintain relative order of elements.  While this would not be difficult to
-implement, it doesn&#39;t seem to make sense, because in most cases use
-of <a href="#L-normalize"><code>L.normalize</code></a> or <a href="#L-rewrite"><code>L.rewrite</code></a> would be
-preferable.  Also, the <a href="#L-elems"><code>L.elems</code></a> traversal composed
-with <a href="#L-when"><code>L.when</code></a> will retain order of elements.</p>
+arrays when set.  For example, an algorithm based on <a href="https://en.wikipedia.org/wiki/Edit_distance">edit
+distance</a> could be used to maintain
+relative order of elements.  While this would not be difficult to implement, it
+doesn&#39;t seem to make sense, because in most cases use of
+<a href="#L-normalize"><code>L.normalize</code></a> or <a href="#L-rewrite"><code>L.rewrite</code></a> would be preferable.
+Also, the <a href="#L-elems"><code>L.elems</code></a> traversal composed with <a href="#L-when"><code>L.when</code></a> will
+retain order of elements.</p>
 <h5><a id="L-find"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-find">■</a> <a href="#L-find" title="L.find: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a"><code>L.find((maybeValue, index) =&gt; testable) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
-<p><code>L.find</code> operates on <a href="#array-like">array-like</a> objects
-like <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding
-the first element from the focus that matches the given predicate.  When no
-matching element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
+<p><code>L.find</code> operates on <a href="#array-like">array-like</a> objects like
+<a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding the
+first element from the focus that matches the given predicate.  When no matching
+element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
 <pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
 </code></pre>
 <p>Note that <code>L.find</code> by itself does not satisfy all lens laws.  To fix this, you
@@ -1875,8 +1855,8 @@ can e.g. post compose <code>L.find</code> with lenses that ensure that the prope
 tested by the predicate given to <code>L.find</code> cannot be written to.  See
 <a href="#myth-partial-lenses-are-not-lawful">here</a> for discussion and an example.</p>
 <h5><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a> <small><sup>v10.1.0</sup></small></h5>
-<p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of
-an <a href="#array-like">array-like</a> object to operate on by searching with the given
+<p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of an
+<a href="#array-like">array-like</a> object to operate on by searching with the given
 predicate.  Unlike <a href="#L-find"><code>L.find</code></a>, <code>L.findHint</code> is designed to operate
 efficiently when used repeatedly on uniquely identifiable targets, such as
 objects with unique <code>id</code>s.  To this end, <code>L.findHint</code> is given an object with a
@@ -1945,8 +1925,8 @@ following example:</p>
 </code></pre>
 <p>In other words, <a href="#L-required"><code>L.required</code></a> works in both directions.  Thanks to
 the handling of <code>undefined</code> within partial lenses, this is often not a problem,
-but sometimes you need the &quot;default&quot; value both ways.  In that case you can
-use <a href="#L-define"><code>L.define</code></a>.</p>
+but sometimes you need the &quot;default&quot; value both ways.  In that case you can use
+<a href="#L-define"><code>L.define</code></a>.</p>
 <h5><a id="L-last"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-last">■</a> <a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.last</code> focuses on the last element of an <a href="#array-like">array-like</a> object or
 works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.</p>
@@ -1978,13 +1958,12 @@ starting from the beginning of the object.  <code>L.prefix</code> is a special c
 <pre><code class="hljs lang-js">L.set(L.prefix(0), [1], [2, 3])
 </code></pre>
 <h5><a id="L-slice"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-slice">■</a> <a href="#L-slice" title="L.slice: Maybe Number -&gt; Maybe Number -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></h5>
-<p><code>L.slice</code> focuses on a specified range of elements of
-an <a href="#array-like">array-like</a> object.  See also <a href="#L-prefix"><code>L.prefix</code></a>
-and <a href="#L-suffix"><code>L.suffix</code></a>.</p>
-<p>The range is determined like with the
-standard
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"><code>slice</code></a> method
-of arrays:</p>
+<p><code>L.slice</code> focuses on a specified range of elements of an
+<a href="#array-like">array-like</a> object.  See also <a href="#L-prefix"><code>L.prefix</code></a> and
+<a href="#L-suffix"><code>L.suffix</code></a>.</p>
+<p>The range is determined like with the standard
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Array/slice"><code>slice</code></a>
+method of arrays:</p>
 <ul>
 <li>non-negative values are relative to the beginning of the array-like object,</li>
 <li><code>Infinity</code> is the end of the array-like object,</li>
@@ -1999,8 +1978,8 @@ of arrays:</p>
 </code></pre>
 <h5><a id="L-suffix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-suffix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
 <p><code>L.suffix</code> focuses on a range of elements of an <a href="#array-like">array-like</a> object
-starting from the end of the object.  <code>L.suffix</code> is a special case
-of <a href="#L-slice"><code>L.slice</code></a>.</p>
+starting from the end of the object.  <code>L.suffix</code> is a special case of
+<a href="#L-slice"><code>L.slice</code></a>.</p>
 <p>The beginning of the range is determined as follows:</p>
 <ul>
 <li>non-negative values are relative to the end of the array-like object,</li>
@@ -2028,9 +2007,9 @@ example:</p>
 
 L.set(&quot;silver&quot;, -2, new Custom(1,2,3))
 </code></pre>
-<p>When manipulating objects whose constructor is not
-<code>Object</code>, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
-desired type, if necessary:</p>
+<p>When manipulating objects whose constructor is not <code>Object</code>,
+<a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
+if necessary:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(Custom)), &quot;silver&quot;], -2, new Custom(1,2,3))
 </code></pre>
 <p>Partial lenses also generally guarantees that the creation order of keys is
@@ -2046,8 +2025,8 @@ and neither are properties with symbol keys.</p>
 <p><code>L.pickIn</code> creates a lens from the given possibly nested object template of
 lenses similar to <a href="#L-pick"><code>L.pick</code></a> except that the lenses in the template are
 relative to their path in the template.  This means that using <code>L.pickIn</code> you
-can effectively create a kind of filter for a nested object structure.  See
-also <a href="#L-props"><code>L.props</code></a>.</p>
+can effectively create a kind of filter for a nested object structure.  See also
+<a href="#L-props"><code>L.props</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.pickIn({meta: {file: [], ext: []}}),
       {meta: {file: &quot;./foo.txt&quot;, base: &quot;foo&quot;, ext: &quot;txt&quot;}})
@@ -2066,9 +2045,9 @@ If the result would be an empty object, the whole result will be <code>undefined
 </code></pre>
 <pre><code class="hljs lang-js">L.set(&quot;y&quot;, -2, {x: 1, y: 2, z: 3})
 </code></pre>
-<p>When manipulating objects whose constructor is not
-<code>Object</code>, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
-desired type, if necessary:</p>
+<p>When manipulating objects whose constructor is not <code>Object</code>,
+<a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
+if necessary:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(XYZ)), &quot;z&quot;], 3, new XYZ(3,1,4))
 </code></pre>
 <h5><a id="L-props"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-props">■</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a> <small><sup>v1.4.0</sup></small></h5>
@@ -2095,12 +2074,11 @@ objects.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([L.removable(&quot;x&quot;), &quot;x&quot;], {x: 1, y: 2})
 </code></pre>
-<p>Note that <code>L.removable(...ps)</code> is roughly equivalent
-to
-<a href="#L-rewrite"><code>rewrite(y =&gt; y instanceof Object &amp;&amp; !L.get(L.props(...ps), y) ? undefined : y)</code></a>.</p>
-<p>Also note that, in a composition, <code>L.removable</code> is likely preceded
-by <a href="#L-valueOr"><code>L.valueOr</code></a> (or <a href="#L-defaults"><code>L.defaults</code></a>) like in
-the <a href="#tutorial">tutorial</a> example.  In such a pair, the preceding lens gives a
+<p>Note that <code>L.removable(...ps)</code> is roughly equivalent to <a href="#L-rewrite"><code>rewrite(y =&gt; y
+instanceof Object &amp;&amp; !L.get(L.props(...ps), y) ? undefined : y)</code></a>.</p>
+<p>Also note that, in a composition, <code>L.removable</code> is likely preceded by
+<a href="#L-valueOr"><code>L.valueOr</code></a> (or <a href="#L-defaults"><code>L.defaults</code></a>) like in the
+<a href="#tutorial">tutorial</a> example.  In such a pair, the preceding lens gives a
 default value when reading through the lens, allowing one to use such a lens to
 insert new objects.  The following lens then specifies that removing the then
 focused property (or properties) should remove the whole object.  In cases where
@@ -2108,12 +2086,11 @@ the shape of the incoming object is know, <a href="#L-defaults"><code>L.defaults
 replace such a pair.</p>
 <h4 id="lensing-strings">Lensing strings</h4>
 <h5><a id="L-matches"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-matches">■</a> <a href="#L-matches" title="L.matches: RegExp -&gt; PLens String String"><code>L.matches(/.../) ~&gt; lens</code></a> <small><sup>v10.4.0</sup></small></h5>
-<p><code>L.matches</code>, when given a regular expression without
-the
-<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a> flags,
-<code>/.../</code>, is a partial lens over the match.  When there is no match, or the
-target is not a string, then <code>L.matches</code> will be read-only.  See
-also <a href="#L-matches-g"><code>L.matches</code></a>.</p>
+<p><code>L.matches</code>, when given a regular expression without the
+<a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a>
+flags, <code>/.../</code>, is a partial lens over the match.  When there is no match, or
+the target is not a string, then <code>L.matches</code> will be read-only.  See also
+<a href="#L-matches-g"><code>L.matches</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(L.matches(/\.[^./]+$/),
       &quot;.txt&quot;,
@@ -2182,8 +2159,8 @@ It can even be inverted using <a href="#L-inverse"><code>L.inverse</code></a>:</
 </code></pre>
 <p>The main use case for <code>replace</code> is to handle optional and required properties
 and elements.  In most cases, rather than using <code>replace</code>, you will make
-selective use of <a href="#L-defaults"><code>defaults</code></a>, <a href="#L-required"><code>required</code></a>
-and <a href="#L-define"><code>define</code></a>.</p>
+selective use of <a href="#L-defaults"><code>defaults</code></a>, <a href="#L-required"><code>required</code></a> and
+<a href="#L-define"><code>define</code></a>.</p>
 <h3 id="isomorphisms">Isomorphisms</h3>
 <p><a href="https://en.wikipedia.org/wiki/Isomorphism">Isomorphisms</a> are <a href="#lenses">lenses</a>
 with a kind of <a href="#L-inverse">inverse</a>.  The focus of an isomorphism is the whole
@@ -2216,8 +2193,8 @@ var offBy1 = L.iso(expect(R.is(Number), R.inc),
 
 L.getInverse(offBy1, 1)
 </code></pre>
-<p>Note that <code>L.getInverse(iso, data)</code> is equivalent
-to <a href="#L-set"><code>L.set(iso, data, undefined)</code></a>.</p>
+<p>Note that <code>L.getInverse(iso, data)</code> is equivalent to <a href="#L-set"><code>L.set(iso, data,
+undefined)</code></a>.</p>
 <p>Also note that, while <code>L.getInverse</code> makes most sense when used with an
 isomorphism, it is valid to use <code>L.getInverse</code> with <em>partial</em> lenses in general.
 Doing so essentially constructs a minimal data structure that contains the given
@@ -2298,8 +2275,8 @@ non-<code>undefined</code> value when either read or written through.</p>
 </code></pre>
 <h5><a id="L-is"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-is">■</a> <a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a> <small><sup>v11.1.0</sup></small></h5>
 <p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes
-<code>true</code> as the given value and everything else as <code>undefined</code>.
-See <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
+<code>true</code> as the given value and everything else as <code>undefined</code>.  See
+<a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
 <h5><a id="L-keyed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-keyed">■</a> <a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.keyed</code> is an isomorphism between an object and an array of <code>[key, value]</code>
 pairs.</p>
@@ -2321,25 +2298,26 @@ the first element of an array-like object, but to also check that the object is
 of the expected form.</p>
 <h4 id="standard-isomorphisms">Standard isomorphisms</h4>
 <h5><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
-<p><code>L.uri</code> is an isomorphism based on the
-standard
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a> and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a> functions.</p>
+<p><code>L.uri</code> is an isomorphism based on the standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a>
+functions.</p>
 <h5><a id="L-uriComponent"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-uriComponent">■</a> <a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
-<p><code>L.uriComponent</code> is an isomorphism based on the
-standard
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a> and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a> functions.</p>
+<p><code>L.uriComponent</code> is an isomorphism based on the standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
+functions.</p>
 <h5><a id="L-json"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-json">■</a> <a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.json({reviver, replacer, space})</code> returns an isomorphism based on the
 standard
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a> and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a> functions.
-The optional <code>reviver</code> is passed
-to
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a> and
-the optional <code>replacer</code> and <code>space</code> are passed
-to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>
+functions.  The optional <code>reviver</code> is passed to
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a>
+and the optional <code>replacer</code> and <code>space</code> are passed to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>
 <h3 id="interop">Interop</h3>
 <h4><a id="L-pointer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pointer">■</a> <a href="#L-pointer" title="L.pointer: JSONPointer s a -&gt; PLens s a"><code>L.pointer(jsonPointer) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h4>
@@ -2356,15 +2334,14 @@ Identifier</a> representations.</p>
 <h4><a id="L-seemsArrayLike"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-seemsArrayLike">■</a> <a href="#L-seemsArrayLike" title="L.seemsArrayLike: any -&gt; Boolean"><code>L.seemsArrayLike(anything) ~&gt; boolean</code></a> <small><sup>v11.4.0</sup></small></h4>
 <p><code>L.seemsArrayLike</code> determines whether the given value is an <code>instanceof Object</code>
 that has a non-negative integer <code>length</code> property or a string, which are not
-Objects in JavaScript.  In this library, such values are
-considered <a href="#array-like">array-like</a> objects that can be manipulated with
-various optics.</p>
+Objects in JavaScript.  In this library, such values are considered
+<a href="#array-like">array-like</a> objects that can be manipulated with various optics.</p>
 <p>Note that this function is intentionally loose, which is also intentionally
 apparent from the name of this function.  JavaScript includes many array-like
-values, including
-normal
+values, including normal
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array">arrays</a>,
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed arrays</a>,
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays">typed
+arrays</a>,
 and
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String">strings</a>.
 Unfortunately there seems to be no simple way to directly and precisely test for
@@ -2373,8 +2350,8 @@ and might not cover user defined types.  Fortunately, optics are targeting
 specific paths inside data-structures, rather than completely arbitrary values,
 which means that even a loose test can be accurate enough.</p>
 <h2 id="examples">Examples</h2>
-<p>Note that if you are new to lenses, then you probably want to start with
-the <a href="#tutorial">tutorial</a>.</p>
+<p>Note that if you are new to lenses, then you probably want to start with the
+<a href="#tutorial">tutorial</a>.</p>
 <h3><a id="an-array-of-ids-as-boolean-flags"></a> <a href="https://github.com/calmm-js/partial.lenses#an-array-of-ids-as-boolean-flags">■</a> An array of ids as boolean flags</h3>
 <p>A case that we have run into multiple times is where we have an array of
 constant strings that we wish to manipulate as if it was a collection of boolean
@@ -2426,10 +2403,9 @@ logic.  Here is how it could look like for the <code>maximum</code>:</p>
 </code></pre>
 <h3><a id="collection-toggle"></a> <a href="https://github.com/calmm-js/partial.lenses#collection-toggle">■</a> Collection toggle</h3>
 <p>A typical element of UIs that display a list of selectable items is a checkbox
-to select or unselect all items.  For example,
-the <a href="http://todomvc.com/">TodoMVC</a> spec
-includes
-<a href="https://github.com/tastejs/todomvc/blob/master/app-spec.md#mark-all-as-complete">such a checkbox</a>.
+to select or unselect all items.  For example, the
+<a href="http://todomvc.com/">TodoMVC</a> spec includes <a href="https://github.com/tastejs/todomvc/blob/master/app-spec.md#mark-all-as-complete">such a
+checkbox</a>.
 The state of a checkbox is a single boolean.  How do we create a lens that
 transforms a collection of booleans into a single boolean?</p>
 <p>The state of a todo list contains a boolean <code>completed</code> flag per item:</p>
@@ -2438,8 +2414,8 @@ transforms a collection of booleans into a single boolean?</p>
 <p>We can address those flags with a traversal:</p>
 <pre><code class="hljs lang-js">var completedFlags = [L.elems, &quot;completed&quot;]
 </code></pre>
-<p>To compute a single boolean out of a traversal over booleans we can use
-the <a href="#L-and"><code>L.and</code></a> fold and use that to define a lens parameterized over flag
+<p>To compute a single boolean out of a traversal over booleans we can use the
+<a href="#L-and"><code>L.and</code></a> fold and use that to define a lens parameterized over flag
 traversals using <a href="#L-foldTraversalLens"><code>L.foldTraversalLens</code></a>:</p>
 <pre><code class="hljs lang-js">var selectAll = L.foldTraversalLens(L.and)
 </code></pre>
@@ -2456,10 +2432,10 @@ lenses.  However, given basic BST operations, one could easily wrap them as a
 primitive partial lens.  But could we leverage lens combinators to build a BST
 lens more compositionally?</p>
 <p>We can.  The <a href="#L-iftes"><code>L.iftes</code></a> combinator allows for dynamic selection of
-lenses based on examining the data structure being manipulated.
-Using <a href="#L-iftes"><code>L.iftes</code></a> we can write the ordinary BST logic to pick the
-correct branch based on the key in the currently examined node and the key that
-we are looking for.  So, here is our first attempt at a BST lens:</p>
+lenses based on examining the data structure being manipulated.  Using
+<a href="#L-iftes"><code>L.iftes</code></a> we can write the ordinary BST logic to pick the correct
+branch based on the key in the currently examined node and the key that we are
+looking for.  So, here is our first attempt at a BST lens:</p>
 <pre><code class="hljs lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; [
   L.iftes(n =&gt; !n || key === n.key, L.defaults({key}),
           n =&gt; key &lt; n.key,         [&quot;smaller&quot;, rec],
@@ -2507,14 +2483,14 @@ var valueOf = key =&gt; [search(key), &quot;value&quot;]
 <pre><code class="hljs lang-js">L.remove(valueOf(3), sampleBST)
 </code></pre>
 <p>As an exercise, you could improve the rewrite to better maintain balance.
-Perhaps you might even enhance it to maintain a balance condition such
-as <a href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a>
-or <a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-Black</a>.  Another
+Perhaps you might even enhance it to maintain a balance condition such as
+<a href="https://en.wikipedia.org/wiki/AVL_tree">AVL</a> or
+<a href="https://en.wikipedia.org/wiki/Red%E2%80%93black_tree">Red-Black</a>.  Another
 worthy exercise would be to make it so that the empty binary tree is <code>null</code>
 rather than <code>undefined</code>.</p>
 <h4 id="bst-traversal">BST traversal</h4>
-<p>What about <a href="#traversals">traversals</a> over BSTs?  We can use
-the <a href="#L-branch"><code>L.branch</code></a> combinator to define an in-order traversal over the
+<p>What about <a href="#traversals">traversals</a> over BSTs?  We can use the
+<a href="#L-branch"><code>L.branch</code></a> combinator to define an in-order traversal over the
 values of a BST:</p>
 <pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
   L.optional,
@@ -2533,19 +2509,18 @@ example:</p>
 </code></pre>
 <h3><a id="interfacing"></a> <a href="https://github.com/calmm-js/partial.lenses#interfacing">■</a> Interfacing with Immutable.js</h3>
 <p><a href="http://facebook.github.io/immutable-js/">Immutable.js</a> is a popular library
-providing immutable data structures.  As argued
-in
-<a href="https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3">Lenses with Immutable.js</a> it
-can be useful to be able to manipulate Immutable.js data structures
-using <a href="#optics">optics</a>.</p>
+providing immutable data structures.  As argued in <a href="https://medium.com/@drboolean/lenses-with-immutable-js-9bda85674780#.kzq41xgw3">Lenses with
+Immutable.js</a>
+it can be useful to be able to manipulate Immutable.js data structures using
+<a href="#optics">optics</a>.</p>
 <p>When interfacing external libraries with partial lenses one does need to
 consider whether and how to support partiality.  Partial lenses allow one to
 insert new and remove existing elements rather than just view and update
 existing elements.</p>
 <h4><code>List</code> indexing</h4>
-<p>Here is a primitive partial lens for
-indexing <a href="http://facebook.github.io/immutable-js/docs/#/List"><code>List</code></a> written
-using <a href="#L-lens"><code>L.lens</code></a>:</p>
+<p>Here is a primitive partial lens for indexing
+<a href="http://facebook.github.io/immutable-js/docs/#/List"><code>List</code></a> written using
+<a href="#L-lens"><code>L.lens</code></a>:</p>
 <pre><code class="hljs lang-js">var getList = i =&gt; xs =&gt; Immutable.List.isList(xs) ? xs.get(i) : undefined
 
 var setList = i =&gt; (x, xs) =&gt; {
@@ -2592,11 +2567,11 @@ special treatment of <code>undefined</code>.  In practise, however, it is not ty
 <h4 id="interfacing-traversals">Interfacing traversals</h4>
 <p>Fortunately we do not need Immutable.js data structures to provide a compatible
 <em>partial</em>
-<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable"><code>traverse</code></a> function
-to support <a href="#traversals">traversals</a>, because it is also possible to implement
-traversals simply by providing suitable isomorphisms between Immutable.js data
-structures and JSON.  Here is a partial <a href="#isomorphisms">isomorphism</a> between
-<code>List</code> and arrays:</p>
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#traversable"><code>traverse</code></a>
+function to support <a href="#traversals">traversals</a>, because it is also possible to
+implement traversals simply by providing suitable isomorphisms between
+Immutable.js data structures and JSON.  Here is a partial
+<a href="#isomorphisms">isomorphism</a> between <code>List</code> and arrays:</p>
 <pre><code class="hljs lang-js">var fromList = xs =&gt; Immutable.List.isList(xs) ? xs.toArray() : undefined
 var toList = xs =&gt; R.is(Array, xs) &amp;&amp; xs.length ? Immutable.List(xs) : undefined
 var isoList = L.iso(fromList, toList)
@@ -2660,17 +2635,15 @@ combinator:</p>
 </code></pre>
 <p>This has the advantage that the optics are constructed only once.</p>
 <h3 id="on-bundle-size-and-minification">On bundle size and minification</h3>
-<p>The distribution of this library includes
-a
-<a href="https://unpkg.com/partial.lenses/dist/partial.lenses.min.js">prebuilt and minified browser bundle</a>.
-However, this library is not designed to be primarily used via that bundle.
-Rather, this library is bundled with <a href="https://rollupjs.org/">Rollup</a>, uses
-<code>/*#__PURE__*/</code> annotations to
-help <a href="https://github.com/mishoo/UglifyJS2">UglifyJS</a> do better dead code
-elimination, and uses <code>process.env.NODE_ENV</code> to detect <code>&quot;production&quot;</code> mode to
-discard some warnings and error checks.  This means that when using Rollup
-with <a href="https://github.com/rollup/rollup-plugin-replace">replace</a>
-and <a href="https://github.com/TrySound/rollup-plugin-uglify">uglify</a> plugins to build
+<p>The distribution of this library includes a <a href="https://unpkg.com/partial.lenses/dist/partial.lenses.min.js">prebuilt and minified browser
+bundle</a>.  However,
+this library is not designed to be primarily used via that bundle.  Rather, this
+library is bundled with <a href="https://rollupjs.org/">Rollup</a>, uses <code>/*#__PURE__*/</code>
+annotations to help <a href="https://github.com/mishoo/UglifyJS2">UglifyJS</a> do better
+dead code elimination, and uses <code>process.env.NODE_ENV</code> to detect <code>&quot;production&quot;</code>
+mode to discard some warnings and error checks.  This means that when using
+Rollup with <a href="https://github.com/rollup/rollup-plugin-replace">replace</a> and
+<a href="https://github.com/TrySound/rollup-plugin-uglify">uglify</a> plugins to build
 browser bundles, the generated bundles will basically only include what you use
 from this library.</p>
 <p>For best results, increasing the number of compression passes may allow UglifyJS
@@ -2711,8 +2684,8 @@ export default {
 <p>One might assume that <a href="http://ramdajs.com/docs/#lensPath"><code>R.lensPath([p0,
 ...ps])</code></a> is equivalent to
 <code>R.compose(R.lensProp(p0), ...ps.map(R.lensProp))</code>, but that is not the case.</p>
-<p>With partial lenses you can robustly compose a path lens from prop
-lenses <a href="#L-compose"><code>L.compose(L.prop(p0), ...ps.map(L.prop))</code></a> or just use the
+<p>With partial lenses you can robustly compose a path lens from prop lenses
+<a href="#L-compose"><code>L.compose(L.prop(p0), ...ps.map(L.prop))</code></a> or just use the
 shorthand notation <a href="#L-compose"><code>[p0, ...ps]</code></a>.  In JavaScript, missing (and
 mismatching) data can be mapped to <code>undefined</code>, which is what partial lenses
 also do, because <code>undefined</code> is not a valid <a href="http://json.org/">JSON</a> value.
@@ -2763,22 +2736,22 @@ value needs to be interpreted as an optic.</p>
 <h4 id="treating-an-array-of-optics-as-a-composition-l-compose-of-optics">Treating an <a href="#L-compose">array of optics as a composition</a> of optics</h4>
 <p>Aside from the brevity, treating an array of optics as a composition allows the
 library to be optimized to deal with simple paths highly efficiently and
-eliminate the need for separate primitives
-like <a href="http://ramdajs.com/docs/#assocPath"><code>assocPath</code></a>
-and <a href="http://ramdajs.com/docs/#dissocPath"><code>dissocPath</code></a> for performance reasons.
+eliminate the need for separate primitives like
+<a href="http://ramdajs.com/docs/#assocPath"><code>assocPath</code></a> and
+<a href="http://ramdajs.com/docs/#dissocPath"><code>dissocPath</code></a> for performance reasons.
 Client code can also manipulate such simple paths as data.</p>
 <h4 id="applicatives">Applicatives</h4>
-<p>One interesting consequence of partiality is that it becomes possible
-to <a href="#isomorphisms">invert isomorphisms</a> without explicitly making it possible to
-extract the forward and backward functions from an isomorphism.  A simple
-internal implementation based on functors and applicatives seems to be expressive
-enough for a wide variety of operations.</p>
+<p>One interesting consequence of partiality is that it becomes possible to <a href="#isomorphisms">invert
+isomorphisms</a> without explicitly making it possible to extract
+the forward and backward functions from an isomorphism.  A simple internal
+implementation based on functors and applicatives seems to be expressive enough
+for a wide variety of operations.</p>
 <h4><a href="#L-branch"><code>L.branch</code></a></h4>
 <p>By providing combinators for creating new traversals, lenses and isomorphisms,
 client code need not depend on the internal implementation of optics.  The
-current version of this library exposes the internal implementation
-via <a href="#L-toFunction"><code>L.toFunction</code></a>, but it would not be unreasonable to not
-provide such an operation.  Only very few applications need to know the internal
+current version of this library exposes the internal implementation via
+<a href="#L-toFunction"><code>L.toFunction</code></a>, but it would not be unreasonable to not provide
+such an operation.  Only very few applications need to know the internal
 representation of optics.</p>
 <h4 id="indexing">Indexing</h4>
 <p>Indexing in partial lenses is unnested, very simple and based on the indices and
@@ -2788,12 +2761,12 @@ added that do require extra allocations to support indexing.  It is also
 possible to compose optics so as to create nested indices or paths, but
 currently no combinator is directly provided for that.</p>
 <h4 id="static-land">Static Land</h4>
-<p>The algebraic structures used in partial lenses follow
-the <a href="https://github.com/rpominov/static-land">Static Land</a> specification rather
-than the <a href="https://github.com/fantasyland/fantasy-land">Fantasy Land</a>
-specification.  Static Land does not require wrapping values in objects, which
-translates to a significant performance advantage throughout the library,
-because fewer allocations are required.</p>
+<p>The algebraic structures used in partial lenses follow the <a href="https://github.com/rpominov/static-land">Static
+Land</a> specification rather than the
+<a href="https://github.com/fantasyland/fantasy-land">Fantasy Land</a> specification.
+Static Land does not require wrapping values in objects, which translates to a
+significant performance advantage throughout the library, because fewer
+allocations are required.</p>
 <h4 id="performance">Performance</h4>
 <p>Concern for performance has been a part of the work on partial lenses for some
 time.  The basic principles can be summarized in order of importance:</p>
@@ -2810,8 +2783,8 @@ time.  The basic principles can be summarized in order of importance:</p>
 some roughly equivalent operations using <a href="http://ramdajs.com/">Ramda</a> (as <code>R</code>
 version 0.23.0), <a href="https://github.com/ramda/ramda-lens">Ramda Lens</a> (as <code>P</code>
 version 0.1.1), <a href="https://github.com/flunc/optics">Flunc Optics</a> (as <code>O</code> version
-0.0.2), <a href="https://github.com/phadej/optika">Optika</a> (as <code>K</code> version 0.0.2),
-and <a href="https://www.npmjs.com/package/lodash.get">lodash.get</a> (as <code>_get</code> version
+0.0.2), <a href="https://github.com/phadej/optika">Optika</a> (as <code>K</code> version 0.0.2), and
+<a href="https://www.npmjs.com/package/lodash.get">lodash.get</a> (as <code>_get</code> version
 4.4.2).  As always with benchmarks, you should take these numbers with a pinch
 of salt and preferably try and measure your actual use cases!</p>
 <pre><code class="hljs lang-jsx">  22,340,825/s     1.00x   L.get(L_findHint_id_5000, ids)
@@ -2976,19 +2949,18 @@ use them.</p>
 <h3 id="lenses-all-the-way">Lenses all the way</h3>
 <p>As said in the first sentence of this document, lenses are convenient for
 performing updates on individual elements of <a href="#on-immutability">immutable</a> data
-structures.  Having abilities such
-as <a href="#L-compose">nesting</a>, <a href="#L-choose">adapting</a>, <a href="#L-lazy">recursing</a>
-and <a href="#L-pick">restructuring</a> using lenses makes the notion of an individual
-element quite flexible and, even further, <a href="#traversals">traversals</a> make it
-possible to <a href="#L-when">selectively</a> target zero or more elements
-of <a href="#L-branch">non-trivial</a> data structures in a single operation.  It can be
-tempting to try to do everything with lenses, but that will likely only lead to
-misery.  It is important to understand that lenses are just one of many
-functional abstractions for working with data structures and sometimes other
-approaches can lead to simpler or easier
-solutions.  <a href="https://github.com/polytypic/fastener">Zippers</a>, for example, are,
-in some ways, less principled and can implement queries and transforms that are
-outside the scope of lenses and traversals.</p>
+structures.  Having abilities such as <a href="#L-compose">nesting</a>,
+<a href="#L-choose">adapting</a>, <a href="#L-lazy">recursing</a> and <a href="#L-pick">restructuring</a> using
+lenses makes the notion of an individual element quite flexible and, even
+further, <a href="#traversals">traversals</a> make it possible to <a href="#L-when">selectively</a>
+target zero or more elements of <a href="#L-branch">non-trivial</a> data structures in a
+single operation.  It can be tempting to try to do everything with lenses, but
+that will likely only lead to misery.  It is important to understand that lenses
+are just one of many functional abstractions for working with data structures
+and sometimes other approaches can lead to simpler or easier solutions.
+<a href="https://github.com/polytypic/fastener">Zippers</a>, for example, are, in some
+ways, less principled and can implement queries and transforms that are outside
+the scope of lenses and traversals.</p>
 <p>One type of use case which we&#39;ve ran into multiple times and falls out of the
 sweet spot of lenses is performing uniform transforms over data structures.  For
 example, we&#39;ve run into the following use cases:</p>
