@@ -813,7 +813,7 @@ propagating removal, partial lenses treat empty objects, `{}`, and empty arrays,
 this behaviour in laws or adjust the behaviour using combinators like
 [`L.define`](#L-define).
 
-##### <a id="myth-partial-lenses-are-not-lawful"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#myth-partial-lensses-are-not-lawful) Myth: Partial Lenses are not lawful
+##### <a id="myth-partial-lenses-are-not-lawful"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#myth-partial-lenses-are-not-lawful) Myth: Partial Lenses are not lawful
 
 For some reason there seems to be a persistent myth that partial lenses cannot
 obey [lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf).  The
