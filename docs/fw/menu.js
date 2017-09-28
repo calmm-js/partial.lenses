@@ -16,6 +16,9 @@
     var contents = document.querySelector("#contents")
     if (!contents)
       return
+    contents = contents.parentNode
+    if (!contents)
+      return
     var tree = contents.nextElementSibling
     if (!tree)
       return
