@@ -22,8 +22,6 @@
           history.replaceState(
             null,
             '',
-            window.location.protocol +
-            window.location.host +
             window.location.pathname +
             window.location.search +
             '#' +
