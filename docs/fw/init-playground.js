@@ -19,9 +19,16 @@
       to = setTimeout(function () {
         var elem = document.querySelector(".CodeMirror-lines")
         if (elem) {
-          window.location.hash =
+          history.replaceState(
+            null,
+            '',
+            window.location.protocol +
+            window.location.host +
+            window.location.pathname +
+            window.location.search +
+            '#' +
             window.LZString.compressToEncodedURIComponent(
-              elem.innerText.replace(/\u200B|^\s*|\s*$/gm, ""))
+              elem.innerText.replace(/\u200B|^\s*|\s*$/gm, "")))
           updateTitle(elem.innerText)
         }
       }, 250)
