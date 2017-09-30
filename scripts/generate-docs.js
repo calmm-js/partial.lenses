@@ -37,7 +37,7 @@ const targets = [{
 //
 
 const fs = require("fs")
-const marked = require("marked")
+const marked = require("8fold-marked")
 
 marked.setOptions({
   renderer: new marked.Renderer(),
