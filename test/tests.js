@@ -535,10 +535,10 @@ describe("L.choice", () => {
 })
 
 describe("L.findWith", () => {
-  testEq(`L.get(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`, "c")
-  testEq(`L.set(L.findWith("x", 1), "d", [{x: ["a"]},{x: ["b","c"]}])`,
+  testEq(`L.get(L.findWith(["x", 1]), [{x: ["a"]},{x: ["b","c"]}])`, "c")
+  testEq(`L.set(L.findWith(["x", 1]), "d", [{x: ["a"]},{x: ["b","c"]}])`,
          [{x: ["a"]},{x: ["b","d"]}])
-  testEq(`L.remove(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`,
+  testEq(`L.remove(L.findWith(["x", 1]), [{x: ["a"]},{x: ["b","c"]}])`,
          [{x: ["a"]},{x: ["b"]}])
   testEq(`L.collect(L.findWith(L.elems), [1,[2],3])`, [2])
 })
@@ -1345,5 +1345,7 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.toFunction(-1)`)
 
     testThrows(`L.joinAs(I.id, 0)`)
+
+    testEq(`L.get(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`, "c")
   })
 }

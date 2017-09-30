@@ -1,5 +1,45 @@
 # Changelog
 
+## 11.21.0
+
+`L.cache` was marked for removal.  The main problem with `L.cache` is much like
+with naïve `memoize` implementations: the cache is stored in the wrong place,
+which is the point of definition of a cached (memoized) optic (function).
+Instead, the cache storage should be at the point of use so that when the data
+at the point of use is discarded so can the cache and that different points of
+use can each have their own cache.  Otherwise it is easy to have inefficient
+caching and space leaks (keeping cache data around for too long).
+
+`L.augment` was marked for removal.  The reason for removing `L.augment` is that
+the library nowadays allows most of `L.augment`s functionality to be implemented
+using simpler combinators such as `L.pick` with ordinary functions.
+
+`L.findHint` was marked for merging into `L.find`.  In the next major version
+`L.find` will take an optional hint parameter like current `L.findHint` and
+`L.findHint` will be marked for removal.  Also, `L.find` will pass three
+arguments to the predicate.  The third parameter is the hint object.
+
+`L.findWith` was marked to be changed to support a hint parameter.  This means
+that instead of taking multiple lenses as arguments to compose, `L.findWith`
+will, in the next major version, take a single lens and an optional hint
+parameter.  To prepare use of `L.findWith` to be more compatible with the next
+major version, simply pass an array of the lenses:
+
+```diff
+-L.findWith(...ls)
++L.findWith([...ls])
+```
+
+Support for lazy algebras in the form of the `delay` operation was marked for
+removal.  The reason for removing support for lazy algebras is that the next
+major version implements operations currently using lazy algebras, like
+`L.select`, using a different technique that is significantly faster on current
+JavaScript engines.  That is because allocation of closures is very expensive on
+current JavaScript engines and lazy algebras tend to result in allocating lots
+of closures.  Aside from performance issues, lazy algebras do, however, seem
+solid, but having code supporting them without actually using them internally
+for anything seems wasteful.
+
 ## 11.17.0
 
 Fixed a bug in `L.countIf`.  Previously it didn't pass the index to the

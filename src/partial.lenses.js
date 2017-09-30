@@ -161,6 +161,11 @@ function reqOptic(o) {
   }
 }
 
+const warnDelay = /*#__PURE__*/C.ef(C => {
+  if (C !== Select && C.delay)
+    warn(warnDelay, "Support for `delay` operation will be removed.  See CHANGELOG.")
+})
+
 //
 
 const reqString = msg => x => {
@@ -279,7 +284,7 @@ const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
        traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
   : z
 
-const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
+const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.and(warnDelay, C.ef(reqApplicative("elems")))))((A, xi2yA, xs) => {
   const {map, ap, of, delay} = A
   let xsA = of(cons),
       i = xs.length
@@ -566,7 +571,7 @@ function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
   }
 }
 
-const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.ef(reqApplicative(vals ? "branch" : "values"))))))((keys, vals) => (x, _i, A, xi2yA) => {
+const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.and(warnDelay, C.ef(reqApplicative(vals ? "branch" : "values")))))))((keys, vals) => (x, _i, A, xi2yA) => {
   const {map, ap, of, delay} = A
   let i = keys.length
   if (!i)
@@ -816,9 +821,10 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
 // Caching
 
-export function cache(o) {
-  if (process.env.NODE_ENV !== "production")
-    warn(cache, "`L.cache` is experimental and might be removed or changed before next major release.")
+export const cache = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function (_) {
+  warn(cache, "`L.cache` will be removed.  See CHANGELOG.")
+  return fn.apply(null, arguments)
+})(function (o) {
   const map = arguments[1] || new Map()
   let C_, xi2yC_
   o = toFunction(o)
@@ -829,7 +835,7 @@ export function cache(o) {
       ? entry[1]
       : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC)
   }
-}
+})
 
 // Transforming
 
@@ -898,7 +904,7 @@ export const flatten =
 
 export const keys = /*#__PURE__*/toFunction([keyed, elems, 0])
 
-export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
+export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.and(warnDelay, C.ef(reqApplicative("matches", re))))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
@@ -1038,32 +1044,36 @@ export const foldTraversalLens = /*#__PURE__*/I.curry((fold, traversal) =>
 
 // Computing derived props
 
-export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), lens => toFunction([isoU(I.id, freeze), lens, isoU(freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))])))(template => lensU(x => {
-  x = I.dissocPartialU(0, x)
-  if (x)
-    for (const k in template)
-      x[k] = template[k](x)
-  return x
-}, (y, x) => {
-  y = toObject(y)
-  if (!(x instanceof Object))
-    x = void 0
-  let z
-  for (const k in y) {
-    if (!I.hasU(k, template)) {
-      if (!z)
-        z = {}
-      z[k] = y[k]
-    } else {
-      if (x && I.hasU(k, x)) {
+export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), C.and(lens => toFunction([isoU(I.id, freeze), lens, isoU(freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))]), C.ef(() => {
+  warn(augment, "`L.augment` will be removed.  See CHANGELOG.")
+}))))(template => {
+  return lensU(x => {
+    x = I.dissocPartialU(0, x)
+    if (x)
+      for (const k in template)
+        x[k] = template[k](x)
+    return x
+  }, (y, x) => {
+    y = toObject(y)
+    if (!(x instanceof Object))
+      x = void 0
+    let z
+    for (const k in y) {
+      if (!I.hasU(k, template)) {
         if (!z)
           z = {}
-        z[k] = x[k]
+        z[k] = y[k]
+      } else {
+        if (x && I.hasU(k, x)) {
+          if (!z)
+            z = {}
+          z[k] = x[k]
+        }
       }
     }
-  }
-  return z
-}))
+    return z
+  })
+})
 
 // Enforcing invariants
 
@@ -1117,7 +1127,9 @@ export const find = xi2b => (xs, _i, F, xi2yF) => {
   return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
 }
 
-export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
+export const findHint = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(C.ef(() => {
+  warn(findHint, "`L.findHint` will be merged into `L.find`.  See CHANGELOG.")
+})))((xh2b, hint) => {
   return (xs, _i, F, xi2yF) => {
     const ys = seemsArrayLike(xs) ? xs : "",
           i = hint.hint = findIndexHint(hint, xh2b, ys)
@@ -1125,10 +1137,14 @@ export const findHint = /*#__PURE__*/I.curry((xh2b, hint) => {
   }
 })
 
-export function findWith(...os) {
+export const findWith = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function () {
+  if (arguments.length !== 1)
+    warn(findWith, "`L.findWith` will be changed to support a hint parameter.  Just replace `L.findWith(...ls)` with `L.findWith([...ls])`.  See CHANGELOG.")
+  return fn.apply(null, arguments)
+})((...os) => {
   const oos = toFunction(compose(...os))
   return [find(isDefined(oos)), oos]
-}
+})
 
 export const index = process.env.NODE_ENV !== "production" ? C.ef(reqIndex) : I.id
 

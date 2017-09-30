@@ -1284,6 +1284,8 @@ L.collect([L.elems,
 
 #### <a id="L-cache"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-cache) [`L.cache(optic[, map]) ~> optic`](#L-cache "L.cache: (POptic s a[, Map]) -> POptic s a") <small><sup>v11.15.0</sup></small>
 
+**WARNING: `L.cache` will be removed.  See [CHANGELOG](./CHANGELOG.md#11210).**
+
 `L.cache` wraps a given optic so that the last operation, inputs, and the result
 are cached and when used repeatedly with the same operation and inputs, the
 cached result is used without recomputing it.  `L.cache` stores the cached
@@ -1293,9 +1295,6 @@ results by index and also works with indexed traversals such as
 [`Map`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map)
 to use for caching results explicitly.  When not given, a `Map` is created
 internally by `L.cache`.
-
-**WARNING: `L.cache` is experimental and might be removed or changed before next
-major release.**
 
 Here is a contrived example
 
@@ -2335,6 +2334,9 @@ example.
 
 ##### <a id="L-augment"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-augment) [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}") <small><sup>v1.1.0</sup></small>
 
+**WARNING: `L.augment` will be removed.  See
+[CHANGELOG](./CHANGELOG.md#11210).**
+
 `L.augment` is given a template of functions to compute new properties.  When
 not viewing or setting a defined object, the result is `undefined`.  When
 viewing a defined object, the object is extended with the computed properties.
@@ -2544,6 +2546,9 @@ tested by the predicate given to `L.find` cannot be written to.  See
 
 ##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>
 
+**WARNING: `L.findHint` will be merged into [`L.find`](#L-find).  See
+[CHANGELOG](./CHANGELOG.md#11210).**
+
 `L.findHint` is much like [`L.find`](#L-find) and determines the index of an
 [array-like](#array-like) object to operate on by searching with the given
 predicate.  Unlike [`L.find`](#L-find), `L.findHint` is designed to operate
@@ -2589,6 +2594,10 @@ L.get(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
+
+**WARNING: `L.findWith` will be changed to support a hint parameter.  Just
+replace `L.findWith(...ls)` with `L.findWith([...ls])`.  See
+[CHANGELOG](./CHANGELOG.md#11210).**
 
 ##### <a id="L-index"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-index) [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex` <small><sup>v1.0.0</sup></small>
 
