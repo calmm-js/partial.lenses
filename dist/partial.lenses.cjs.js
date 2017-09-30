@@ -48,7 +48,17 @@ var par = function par(i, xC) {
   return args(nth(i, xC));
 };
 
+var and$1 = function and() {
+  for (var _len3 = arguments.length, xCs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    xCs[_key3] = arguments[_key3];
+  }
 
+  return function (x) {
+    for (var i = 0, n = xCs.length; i < n; ++i) {
+      x = xCs[i](x);
+    }return x;
+  };
+};
 
 var ef = function ef(xE) {
   return function (x) {
@@ -258,6 +268,10 @@ function reqOptic(o) {
   }
 }
 
+var warnDelay = /*#__PURE__*/ef(function (C) {
+  if (C !== Select && C.delay) warn(warnDelay, "Support for `delay` operation will be removed.  See CHANGELOG.");
+});
+
 //
 
 var reqString = function reqString(msg) {
@@ -394,7 +408,7 @@ var traversePartialIndexLazy = function traversePartialIndexLazy(map, ap, z, del
   })) : z;
 };
 
-var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, ef(reqApplicative("elems"))))(function (A, xi2yA, xs) {
+var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : par(0, and$1(warnDelay, ef(reqApplicative("elems")))))(function (A, xi2yA, xs) {
   var map = A.map,
       ap = A.ap,
       of = A.of,
@@ -715,7 +729,7 @@ var branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(
       _keys = _ref2[0],
       vals = _ref2[1];
 
-  return res(par(2, ef(reqApplicative(vals ? "branch" : "values"))));
+  return res(par(2, and$1(warnDelay, ef(reqApplicative(vals ? "branch" : "values")))));
 }))(function (keys$$1, vals) {
   return function (x, _i, A, xi2yA) {
     var map = A.map,
@@ -1027,8 +1041,12 @@ var zero = function zero(x, i, C, xi2yC) {
 
 // Caching
 
-function cache(o) {
-  if (process.env.NODE_ENV !== "production") warn(cache, "`L.cache` is experimental and might be removed or changed before next major release.");
+var cache = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function (_) {
+    warn(cache, "`L.cache` will be removed.  See CHANGELOG.");
+    return fn$$1.apply(null, arguments);
+  };
+})(function (o) {
   var map = arguments[1] || new Map();
   var C_ = void 0,
       xi2yC_ = void 0;
@@ -1038,7 +1056,7 @@ function cache(o) {
     entry || map.set(i, entry = [zeroOp]);
     return I.identicalU(entry[0], x) && xi2yC_ === xi2yC && C_ === C ? entry[1] : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC);
   };
-}
+});
 
 // Transforming
 
@@ -1128,7 +1146,7 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(f
   var _ref6 = _slicedToArray(_ref5, 1),
       re = _ref6[0];
 
-  return re.global ? res(par(2, ef(reqApplicative("matches", re)))) : I.id;
+  return re.global ? res(par(2, and$1(warnDelay, ef(reqApplicative("matches", re))))) : I.id;
 }))(function (re) {
   return function (x, _i, C, xi2yC) {
     if (I.isString(x)) {
@@ -1292,9 +1310,11 @@ var foldTraversalLens = /*#__PURE__*/I.curry(function (fold, traversal) {
 
 // Computing derived props
 
-var augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn(nth(0, ef(reqTemplate("augment"))), function (lens) {
+var augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn(nth(0, ef(reqTemplate("augment"))), and$1(function (lens) {
   return toFunction([isoU(I.id, freeze), lens, isoU(freeze, ef(reqObject("`augment` must be set with undefined or an object")))]);
-}))(function (template) {
+}, ef(function () {
+  warn(augment, "`L.augment` will be removed.  See CHANGELOG.");
+}))))(function (template) {
   return lensU(function (x) {
     x = I.dissocPartialU(0, x);
     if (x) for (var k in template) {
@@ -1394,7 +1414,9 @@ var find = function find(xi2b) {
   };
 };
 
-var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
+var findHint = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : res(ef(function () {
+  warn(findHint, "`L.findHint` will be merged into `L.find`.  See CHANGELOG.");
+})))(function (xh2b, hint) {
   return function (xs, _i, F, xi2yF) {
     var ys = seemsArrayLike(xs) ? xs : "",
         i = hint.hint = findIndexHint(hint, xh2b, ys);
@@ -1404,10 +1426,15 @@ var findHint = /*#__PURE__*/I.curry(function (xh2b, hint) {
   };
 });
 
-function findWith() {
+var findWith = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function () {
+    if (arguments.length !== 1) warn(findWith, "`L.findWith` will be changed to support a hint parameter.  Just replace `L.findWith(...ls)` with `L.findWith([...ls])`.  See CHANGELOG.");
+    return fn$$1.apply(null, arguments);
+  };
+})(function () {
   var oos = toFunction(compose.apply(undefined, arguments));
   return [find(isDefined$1(oos)), oos];
-}
+});
 
 var index = process.env.NODE_ENV !== "production" ? ef(reqIndex) : I.id;
 

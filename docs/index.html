@@ -1096,6 +1096,7 @@ lens whose view is always <code>undefined</code>.</p>
 </code></pre>
 <h4><a id="caching"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#caching">■</a> Caching</h4>
 <h4><a id="L-cache"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-cache">■</a> <a href="#L-cache" title="L.cache: (POptic s a[, Map]) -&gt; POptic s a"><code>L.cache(optic[, map]) ~&gt; optic</code></a> <small><sup>v11.15.0</sup></small></h4>
+<p><strong>WARNING: <code>L.cache</code> will be removed.  See <a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#11210">CHANGELOG</a>.</strong></p>
 <p><code>L.cache</code> wraps a given optic so that the last operation, inputs, and the result
 are cached and when used repeatedly with the same operation and inputs, the
 cached result is used without recomputing it.  <code>L.cache</code> stores the cached
@@ -1105,8 +1106,6 @@ results by index and also works with indexed traversals such as
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map"><code>Map</code></a>
 to use for caching results explicitly.  When not given, a <code>Map</code> is created
 internally by <code>L.cache</code>.</p>
-<p><strong>WARNING: <code>L.cache</code> is experimental and might be removed or changed before next
-major release.</strong></p>
 <p>Here is a contrived example</p>
 <pre><code class="hljs lang-js">var incOp = L.cache(L.choose(_ =&gt; console.log(&quot;incOp&quot;) || L.modifyOp(R.inc)))
 
@@ -1729,6 +1728,8 @@ the representative.</p>
 example.</p>
 <h4><a id="computing-derived-props"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#computing-derived-props">■</a> Computing derived props</h4>
 <h5><a id="L-augment"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-augment">■</a> <a href="#L-augment" title="L.augment: {p1: o -&gt; a1, ...ps} -&gt; PLens {...o} {...o, p1: a1, ...ps}"><code>L.augment({prop: object =&gt; value, ...props}) ~&gt; lens</code></a> <small><sup>v1.1.0</sup></small></h5>
+<p><strong>WARNING: <code>L.augment</code> will be removed.  See
+<a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#11210">CHANGELOG</a>.</strong></p>
 <p><code>L.augment</code> is given a template of functions to compute new properties.  When
 not viewing or setting a defined object, the result is <code>undefined</code>.  When
 viewing a defined object, the object is extended with the computed properties.
@@ -1856,6 +1857,8 @@ can e.g. post compose <code>L.find</code> with lenses that ensure that the prope
 tested by the predicate given to <code>L.find</code> cannot be written to.  See
 <a href="#myth-partial-lenses-are-not-lawful">here</a> for discussion and an example.</p>
 <h5><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a> <small><sup>v10.1.0</sup></small></h5>
+<p><strong>WARNING: <code>L.findHint</code> will be merged into <a href="#L-find"><code>L.find</code></a>.  See
+<a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#11210">CHANGELOG</a>.</strong></p>
 <p><code>L.findHint</code> is much like <a href="#L-find"><code>L.find</code></a> and determines the index of an
 <a href="#array-like">array-like</a> object to operate on by searching with the given
 predicate.  Unlike <a href="#L-find"><code>L.find</code></a>, <code>L.findHint</code> is designed to operate
@@ -1885,6 +1888,9 @@ non-<code>undefined</code> view and then returns an optic that focuses on that.<
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.findWith(&quot;x&quot;), 3, [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
+<p><strong>WARNING: <code>L.findWith</code> will be changed to support a hint parameter.  Just
+replace <code>L.findWith(...ls)</code> with <code>L.findWith([...ls])</code>.  See
+<a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#11210">CHANGELOG</a>.</strong></p>
 <h5><a id="L-index"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-index">■</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.index(elemIndex)</code> or just <code>elemIndex</code> focuses on the element at specified
 index of an <a href="#array-like">array-like</a> object.</p>
