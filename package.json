@@ -6,7 +6,7 @@
   "main": "dist/partial.lenses.cjs.js",
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
-    "bench-install-extra": "npm i ramda-lens flunc-optics optika lodash.get",
+    "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get",
     "dist": "npm run dist:umd & npm run dist:umd.min & npm run dist:es & npm run dist:cjs & wait",
     "dist:cjs": "    NODE_ENV=           rollup -c -n L -i src/partial.lenses.js -f cjs -o dist/partial.lenses.cjs.js",
     "dist:es": "     NODE_ENV=           rollup -c -n L -i src/partial.lenses.js -f es  -o dist/partial.lenses.es.js",
