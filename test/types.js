@@ -9,7 +9,7 @@ const T_maybeDataO = T_deepFrozenOnDev
 const T_dataI = T.and(T.def, T.deepFreeze)
 const T_dataO = T.and(T.def, T_deepFrozenOnDev)
 
-const T_index = T.or(T.nonNegative, T.string, T.undef)
+const T_index = T_maybeDataO
 const T_sliceIndex = T.or(T.number, T.undef)
 
 const T_functor = T.object({
@@ -81,6 +81,7 @@ export const traverse = T.fn([T.or(T_monad, T_applicative, T_functor),
 // Nesting
 
 export const compose = T.fnVarN(0, T_optic, T_optic)
+export const contexts = T.fnVarN(0, T_optic, T_optic)
 
 // Recursing
 
