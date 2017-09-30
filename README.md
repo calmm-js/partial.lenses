@@ -1047,10 +1047,11 @@ L.set(["x", x => x + 1], 3, {x: 1})
 
 Note that eligible ordinary functions must have a maximum arity of two: the
 first argument will be the data and second will be the index.  Both can, of
-course, be `undefined`.  Also starting from version [11.0.0](CHANGELOG.md#1100)
-it is not guaranteed that such ordinary functions would not be passed other
-arguments and therefore such functions should not depend on the number of
-arguments being passed nor on any arguments beyond the first two.
+course, be `undefined`.  Also starting from version
+[11.0.0](./CHANGELOG.md#1100) it is not guaranteed that such ordinary functions
+would not be passed other arguments and therefore such functions should not
+depend on the number of arguments being passed nor on any arguments beyond the
+first two.
 
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
