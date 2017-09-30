@@ -359,13 +359,6 @@ R.forEach(bs => {
     `R.update(50, 2, xs100)`,
     `K.idx(50).set(xs100, 2)`,
   ], [
-    `L.remove(500, xs1000)`,
-    `R.remove(500, 1, xs1000)`,
-  ], [
-    `L.set(500, 2, xs1000)`,
-    `R.update(500, 2, xs1000)`,
-    `K.idx(500).set(xs1000, 2)`,
-  ], [
     `L.remove(5000, xs10000)`,
     `R.remove(5000, 1, xs10000)`,
   ], [
