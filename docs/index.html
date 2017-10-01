@@ -2250,6 +2250,14 @@ operation only makes sense on isomorphisms.</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(offBy1), 1)
 </code></pre>
 <h4><a id="basic-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#basic-isomorphisms">■</a> Basic isomorphisms</h4>
+<h5><a id="L-complement"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-complement">■</a> <a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></h5>
+<p><code>L.complement</code> is an isomorphism that performs logical negation of any
+non-<code>undefined</code> value when either read or written through.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set([L.complement, L.log()],
+      &quot;Could be anything truthy&quot;,
+      &quot;Also converted to bool&quot;)
+</code></pre>
 <h5><a id="L-identity"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-identity">■</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a> <small><sup>v1.3.0</sup></small></h5>
 <p><code>L.identity</code> is the identity element of lens composition and also the identity
 isomorphism.  <code>L.identity</code> can also been seen as specifying an empty path.
@@ -2271,14 +2279,6 @@ array of <code>[index, value]</code> pairs.</p>
           1],
          R.toUpper,
          &quot;optics&quot;)
-</code></pre>
-<h5><a id="L-complement"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-complement">■</a> <a href="#L-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></h5>
-<p><code>L.complement</code> is an isomorphism that performs logical negation of any
-non-<code>undefined</code> value when either read or written through.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.set([L.complement, L.log()],
-      &quot;Could be anything truthy&quot;,
-      &quot;Also converted to bool&quot;)
 </code></pre>
 <h5><a id="L-is"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-is">■</a> <a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a> <small><sup>v11.1.0</sup></small></h5>
 <p><code>L.is</code> reads the given value as <code>true</code> and everything else as <code>false</code> and writes

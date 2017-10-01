@@ -3169,6 +3169,22 @@ L.get(L.inverse(offBy1), 1)
 
 #### <a id="basic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#basic-isomorphisms) Basic isomorphisms
 
+##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
+
+`L.complement` is an isomorphism that performs logical negation of any
+non-`undefined` value when either read or written through.
+
+For example:
+
+```js
+L.set([L.complement, L.log()],
+      "Could be anything truthy",
+      "Also converted to bool")
+// get false
+// set "Could be anything truthy"
+// false
+```
+
 ##### <a id="L-identity"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-identity) [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
 
 `L.identity` is the identity element of lens composition and also the identity
@@ -3199,22 +3215,6 @@ L.modify([L.rewrite(R.join('')),
          R.toUpper,
          "optics")
 // 'optiCs'
-```
-
-##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
-
-`L.complement` is an isomorphism that performs logical negation of any
-non-`undefined` value when either read or written through.
-
-For example:
-
-```js
-L.set([L.complement, L.log()],
-      "Could be anything truthy",
-      "Also converted to bool")
-// get false
-// set "Could be anything truthy"
-// false
 ```
 
 ##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
