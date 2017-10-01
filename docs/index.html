@@ -2392,16 +2392,16 @@ to edit those values can be dumb and do not need to know about the restrictions.
 (or, in more complex cases, <a href="#L-pick"><code>L.pick</code></a>) to limit the set of properties
 to deal with, and <a href="#L-rewrite"><code>L.rewrite</code></a> to insert the desired restriction
 logic.  Here is how it could look like for the <code>maximum</code>:</p>
-<pre><code class="hljs lang-js">var maximum =
-  [L.props(&quot;maximum&quot;, &quot;initial&quot;),
-   L.rewrite(props =&gt; {
-     const {maximum, initial} = props
-     if (maximum &lt; initial)
-       return {maximum, initial: maximum}
-     else
-       return props
-   }),
-   &quot;maximum&quot;]
+<pre><code class="hljs lang-js">var maximum = [
+  L.props(&quot;maximum&quot;, &quot;initial&quot;),
+  L.rewrite(props =&gt; {
+    const {maximum, initial} = props
+    if (maximum &lt; initial)
+      return {maximum, initial: maximum}
+    else
+      return props
+  }),
+  &quot;maximum&quot;]
 </code></pre>
 <p>Now:</p>
 <pre><code class="hljs lang-js">L.set(maximum,

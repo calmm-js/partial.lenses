@@ -3388,16 +3388,16 @@ to deal with, and [`L.rewrite`](#L-rewrite) to insert the desired restriction
 logic.  Here is how it could look like for the `maximum`:
 
 ```js
-const maximum =
-  [L.props("maximum", "initial"),
-   L.rewrite(props => {
-     const {maximum, initial} = props
-     if (maximum < initial)
-       return {maximum, initial: maximum}
-     else
-       return props
-   }),
-   "maximum"]
+const maximum = [
+  L.props("maximum", "initial"),
+  L.rewrite(props => {
+    const {maximum, initial} = props
+    if (maximum < initial)
+      return {maximum, initial: maximum}
+    else
+      return props
+  }),
+  "maximum"]
 ```
 
 Now:
