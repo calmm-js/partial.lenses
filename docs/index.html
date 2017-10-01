@@ -256,6 +256,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-indexed" title="L.indexed: PIso [a] [[Integer, a]]"><code>L.indexed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-is" title="L.is: v -&gt; PIso v Boolean"><code>L.is(value) ~&gt; isomorphism</code></a> <small><sup>v11.1.0</sup></small></li>
 <li><a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
+<li><a href="#L-reverse" title="L.reverse: PIso [a] [a]"><code>L.reverse ~&gt; isomorphism</code></a> <small><sup>v11.22.0</sup></small></li>
 <li><a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></li>
 </ul>
 </li>
@@ -2289,6 +2290,12 @@ array of <code>[index, value]</code> pairs.</p>
 pairs.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.keyed, {a: 1, b: 2})
+</code></pre>
+<h5><a id="L-reverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-reverse">■</a> <a href="#L-reverse" title="L.reverse: PIso [a] [a]"><code>L.reverse ~&gt; isomorphism</code></a> <small><sup>v11.22.0</sup></small></h5>
+<p><code>L.reverse</code> is an isomorphism between an <a href="#array-like">array-like</a> object
+and its reverse.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.join(&quot;, &quot;, [L.reverse, L.elems], &quot;abc&quot;)
 </code></pre>
 <h5><a id="L-singleton"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-singleton">■</a> <a href="#L-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></h5>
 <p><code>L.singleton</code> is a partial isomorphism between an <a href="#array-like">array-like</a>

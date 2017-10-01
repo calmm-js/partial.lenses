@@ -148,6 +148,15 @@ var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
   return !(x instanceof Object) || Array.isArray(x);
 };
 
+var rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(freeze))(function (xs) {
+  var n = xs.length,
+      ys = Array(n),
+      i = 0;
+  while (n) {
+    ys[i++] = xs[--n];
+  }return ys;
+});
+
 //
 
 var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(freeze))(function (xi2y, xs) {
@@ -1606,6 +1615,9 @@ var is = function is(v) {
   });
 };
 
+var reverse =
+/*#__PURE__*/isoU(expect(seemsArrayLike, rev), expect(isDefined, rev));
+
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : function (iso) {
   return toFunction([isoU(id, freeze), iso]);
 })(function (x, i, F, xi2yF) {
@@ -1615,10 +1627,10 @@ var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : funct
 // Standard isomorphisms
 
 var uri =
-/*#__PURE__*/isoU(expect(isString, decodeURI), expect(isString, encodeURI));
+/*#__PURE__*/isoU(expect(isString, decodeURI), expect(isDefined, encodeURI));
 
 var uriComponent =
-/*#__PURE__*/isoU(expect(isString, decodeURIComponent), expect(isString, encodeURIComponent));
+/*#__PURE__*/isoU(expect(isString, decodeURIComponent), expect(isDefined, encodeURIComponent));
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id)]);
@@ -1649,4 +1661,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, cache, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, augment, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };

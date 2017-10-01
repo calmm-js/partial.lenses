@@ -152,6 +152,15 @@ var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
   return !(x instanceof Object) || Array.isArray(x);
 };
 
+var rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xs) {
+  var n = xs.length,
+      ys = Array(n),
+      i = 0;
+  while (n) {
+    ys[i++] = xs[--n];
+  }return ys;
+});
+
 //
 
 var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xi2y, xs) {
@@ -1610,6 +1619,9 @@ var is = function is(v) {
   });
 };
 
+var reverse =
+/*#__PURE__*/isoU(expect(seemsArrayLike, rev), expect(I.isDefined, rev));
+
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (iso) {
   return toFunction([isoU(I.id, freeze), iso]);
 })(function (x, i, F, xi2yF) {
@@ -1619,10 +1631,10 @@ var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fun
 // Standard isomorphisms
 
 var uri =
-/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
+/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isDefined, encodeURI));
 
 var uriComponent =
-/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
+/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isDefined, encodeURIComponent));
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, I.id)]);
@@ -1756,6 +1768,7 @@ exports.identity = identity;
 exports.indexed = indexed;
 exports.is = is;
 exports.keyed = keyed;
+exports.reverse = reverse;
 exports.singleton = singleton;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
