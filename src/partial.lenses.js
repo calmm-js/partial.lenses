@@ -51,6 +51,13 @@ function freezeArrayOfObjects(xs) {
 const isArrayOrPrimitive = x =>
   !(x instanceof Object) || Array.isArray(x)
 
+const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xs => {
+  let n = xs.length, ys = Array(n), i=0
+  while (n)
+    ys[i++] = xs [--n]
+  return ys
+})
+
 //
 
 const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
@@ -1285,6 +1292,10 @@ export const is = v =>
        b => true === b ? v : void 0)
 
 export {keyed}
+
+export const reverse =
+  /*#__PURE__*/isoU(expect(seemsArrayLike, rev),
+                    expect(I.isDefined, rev))
 
 export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
   (x, i, F, xi2yF) =>

@@ -326,6 +326,7 @@ export const identity = T_isomorphism
 export const indexed = T_isomorphism
 export const is = T.fn([T.def], T_lens)
 export const keyed = T_isomorphism
+export const reverse = T_isomorphism
 export const singleton = T_isomorphism
 
 // Standard isomorphisms
