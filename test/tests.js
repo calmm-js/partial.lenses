@@ -279,6 +279,7 @@ describe("arities", () => {
     replace: 2,
     required: 1,
     reread: 1,
+    reverse: 4,
     rewrite: 1,
     seemsArrayLike: 1,
     select: 2,
@@ -1286,6 +1287,13 @@ describe("L.entries", () => {
 describe("L.keys", () => {
   testEq(`L.modify(L.keys, R.toUpper, {x: 6, y: 9})`, {X: 6, Y: 9})
   testEq(`L.remove([L.keys, L.when(x => x > "b")], {a: 1, c: 3, b: 2})`, {a: 1, b: 2})
+})
+
+describe("L.reverse", () => {
+  testEq(`L.get(L.reverse, 42)`, undefined)
+  testEq(`L.set(L.reverse, undefined, 42)`, undefined)
+  testEq(`L.modify([L.reverse, L.elems], (x, i) => [x, i], [3,1,4])`,
+         [[3,2],[1,1],[4,0]])
 })
 
 describe("L.pointer", () => {

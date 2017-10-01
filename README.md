@@ -166,6 +166,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
       * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
+      * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3233,6 +3234,18 @@ For example:
 ```js
 L.get(L.keyed, {a: 1, b: 2})
 // [ ['a', 1], ['b', 2] ]
+```
+
+##### <a id="L-reverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-reverse) [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
+
+`L.reverse` is an isomorphism between an [array-like](#array-like) object
+and its reverse.
+
+For example:
+
+```js
+L.join(", ", [L.reverse, L.elems], "abc")
+// 'c, b, a'
 ```
 
 ##### <a id="L-singleton"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-singleton) [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
