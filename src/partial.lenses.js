@@ -1309,11 +1309,11 @@ export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I
 
 export const uri =
   /*#__PURE__*/isoU(expect(I.isString, decodeURI),
-                    expect(I.isString, encodeURI))
+                    expect(I.isDefined, encodeURI))
 
 export const uriComponent =
   /*#__PURE__*/isoU(expect(I.isString, decodeURIComponent),
-                    expect(I.isString, encodeURIComponent))
+                    expect(I.isDefined, encodeURIComponent))
 
 export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(iso => toFunction([iso, isoU(deepFreeze, I.id)])))(options => {
   const {reviver, replacer, space} = options || I.object0
