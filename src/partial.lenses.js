@@ -52,10 +52,12 @@ const isArrayOrPrimitive = x =>
   !(x instanceof Object) || Array.isArray(x)
 
 const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xs => {
-  let n = xs.length, ys = Array(n), i=0
-  while (n)
-    ys[i++] = xs [--n]
-  return ys
+  if (seemsArrayLike(xs)) {
+    let n = xs.length, ys = Array(n), i=0
+    while (n)
+      ys[i++] = xs [--n]
+    return ys
+  }
 })
 
 //
@@ -688,7 +690,7 @@ const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV =
   for (const key in x)
     es.push([key, x[key]])
   return es
-})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
   let o = void 0
   for (let i=0, n=es.length; i<n; ++i) {
     const entry = es[i]
@@ -1264,7 +1266,7 @@ export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NOD
   for (let i=0; i<n; ++i)
     xis[i] = [i, xs[i]]
   return xis
-})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xis => {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xis => {
   let n = xis.length, xs = Array(n)
   for (let i=0; i<n; ++i) {
     const xi = xis[i]
@@ -1293,9 +1295,7 @@ export const is = v =>
 
 export {keyed}
 
-export const reverse =
-  /*#__PURE__*/isoU(expect(seemsArrayLike, rev),
-                    expect(I.isDefined, rev))
+export const reverse = /*#__PURE__*/isoU(rev, rev)
 
 export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
   (x, i, F, xi2yF) =>
@@ -1309,11 +1309,11 @@ export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I
 
 export const uri =
   /*#__PURE__*/isoU(expect(I.isString, decodeURI),
-                    expect(I.isDefined, encodeURI))
+                    expect(I.isString, encodeURI))
 
 export const uriComponent =
   /*#__PURE__*/isoU(expect(I.isString, decodeURIComponent),
-                    expect(I.isDefined, encodeURIComponent))
+                    expect(I.isString, encodeURIComponent))
 
 export const json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(iso => toFunction([iso, isoU(deepFreeze, I.id)])))(options => {
   const {reviver, replacer, space} = options || I.object0

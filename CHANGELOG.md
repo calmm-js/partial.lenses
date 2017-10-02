@@ -1,5 +1,12 @@
 # Changelog
 
+## 11.22.1
+
+Tightened the specification of a number of isomorphisms, including `L.uri`,
+`L.uriComponent`, `L.indexed`, `L.keyed`, and `L.reverse`, so that their
+inverses treat unexpected inputs as undefined.  This is considered a bug fix as
+the behaviour wasn't previously strictly specified.
+
 ## 11.21.0
 
 `L.cache` was marked for removal.  The main problem with `L.cache` is much like
