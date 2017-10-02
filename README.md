@@ -788,18 +788,22 @@ Here is a snippet that demonstrates that partial lenses can obey the laws of, so
 called, *very well-behaved lenses*:
 
 ```js
-const elemA = 2
-const elemB = 3
-const data = {x: 1}
-const lens = "x"
+function test(actual, expected) {
+  return R.equals(actual, expected) || {actual, expected}
+}
 
-const test = (actual, expected) => R.equals(actual, expected) || actual
-
-R.identity({
+const VeryWellBehavedLens = ({lens, data, elemA, elemB}) => ({
   GetSet: test(L.set(lens, L.get(lens, data), data), data),
   SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
   SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
                L.set(lens, elemB, data))
+})
+
+VeryWellBehavedLens({
+  elemA: 2,
+  elemB: 3,
+  data: {x: 1},
+  lens: "x"
 })
 // { GetSet: true, SetGet: true, SetSet: true }
 ```
@@ -870,7 +874,18 @@ L.set(valOf("x"), 13, sampleAssoc)
 // [{key: "x", val: 13}, {key: "y", val: 24}]
 ```
 
-It obeys lens laws.  Before you try to break it, note that a lens returned by
+It obeys lens laws:
+
+```js
+VeryWellBehavedLens({
+  elemA: 2,
+  elemB: 3,
+  data: [{key: "x", val: 13}],
+  lens: valOf("x")
+})
+```
+
+Before you try to break it, note that a lens returned by
 `valOf(key)` is only supposed to work on valid association arrays.  A valid
 association array must not contain duplicate keys, `undefined` is not valid
 `val`, and the order of elements is not significant.  (Note that you could also

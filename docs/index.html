@@ -780,18 +780,22 @@ been formulated for lenses and it can be useful to have lenses that do not
 necessarily obey some laws.</p>
 <p>Here is a snippet that demonstrates that partial lenses can obey the laws of, so
 called, <em>very well-behaved lenses</em>:</p>
-<pre><code class="hljs lang-js">var elemA = 2
-var elemB = 3
-var data = {x: 1}
-var lens = &quot;x&quot;
+<pre><code class="hljs lang-js">function test(actual, expected) {
+  return R.equals(actual, expected) || {actual, expected}
+}
 
-var test = (actual, expected) =&gt; R.equals(actual, expected) || actual
-
-R.identity({
+var VeryWellBehavedLens = ({lens, data, elemA, elemB}) =&gt; ({
   GetSet: test(L.set(lens, L.get(lens, data), data), data),
   SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
   SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
                L.set(lens, elemB, data))
+})
+
+VeryWellBehavedLens({
+  elemA: 2,
+  elemB: 3,
+  data: {x: 1},
+  lens: &quot;x&quot;
 })
 </code></pre>
 <p>You might want to <a href="#on-lens-laws">▶
@@ -836,7 +840,15 @@ L.set(valOf(&quot;x&quot;), 101, [])
 </code></pre>
 <pre><code class="hljs lang-js">L.set(valOf(&quot;x&quot;), 13, sampleAssoc)
 </code></pre>
-<p>It obeys lens laws.  Before you try to break it, note that a lens returned by
+<p>It obeys lens laws:</p>
+<pre><code class="hljs lang-js">VeryWellBehavedLens({
+  elemA: 2,
+  elemB: 3,
+  data: [{key: &quot;x&quot;, val: 13}],
+  lens: valOf(&quot;x&quot;)
+})
+</code></pre>
+<p>Before you try to break it, note that a lens returned by
 <code>valOf(key)</code> is only supposed to work on valid association arrays.  A valid
 association array must not contain duplicate keys, <code>undefined</code> is not valid
 <code>val</code>, and the order of elements is not significant.  (Note that you could also
