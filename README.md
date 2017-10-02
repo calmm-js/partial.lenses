@@ -2121,7 +2121,7 @@ L.or(L.elems, [])
 Note that `L.or` is equivalent to [`L.any(x => x)`](#L-any).  See also:
 [`L.and`](#L-and).
 
-##### <a id="L-product"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-product) [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number") <small><sup>v7.2.0</sup></small>
+##### <a id="L-product"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-product) [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number") <small><sup>v7.2.0</sup></small>
 
 `L.product` computes the product of the optional numbers targeted by the
 traversal.
@@ -2133,7 +2133,7 @@ L.product(L.elems, [1, 2, 3])
 // 6
 ```
 
-##### <a id="L-productAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#-productAs) [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.2.0</sup></small>
+##### <a id="L-productAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-productAs) [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.2.0</sup></small>
 
 `L.productAs` computes the product of the numbers returned by the given function
 for the elements targeted by the traversal.

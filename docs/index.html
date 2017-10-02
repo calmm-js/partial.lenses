@@ -1600,13 +1600,13 @@ is truthy.</p>
 </code></pre>
 <p>Note that <code>L.or</code> is equivalent to <a href="#L-any"><code>L.any(x =&gt; x)</code></a>.  See also:
 <a href="#L-and"><code>L.and</code></a>.</p>
-<h5><a id="L-product"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#-product">■</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a> <small><sup>v7.2.0</sup></small></h5>
+<h5><a id="L-product"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-product">■</a> <a href="#L-product" title="L.product: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.product(traversal, maybeData) ~&gt; number</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
 traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.product(L.elems, [1, 2, 3])
 </code></pre>
-<h5><a id="L-productAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#-productAs">■</a> <a href="#L-productAs" title="L.productAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.productAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
+<h5><a id="L-productAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-productAs">■</a> <a href="#L-productAs" title="L.productAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.productAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.productAs</code> computes the product of the numbers returned by the given function
 for the elements targeted by the traversal.</p>
 <p>For example:</p>
