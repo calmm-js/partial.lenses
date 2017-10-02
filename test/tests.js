@@ -1090,16 +1090,19 @@ describe("standard isos", () => {
          "http://www.Not%20a%20URL.com")
   testEq(`L.get(L.uri, "http://www.Not%20a%20URL.com")`,
          "http://www.Not a URL.com")
+  testEq(`L.getInverse(L.uri, null)`, undefined)
 
   testEq(`L.getInverse(L.uriComponent, "Hello, world!")`,
          "Hello%2C%20world!")
   testEq(`L.get(L.uriComponent, "Hello%2C%20world!")`,
          "Hello, world!")
+  testEq(`L.getInverse(L.uriComponent, {})`, undefined)
 
   testEq(`L.getInverse(L.json({space: 2}), {this: ["Is", true]})`,
          "{\n  \"this\": [\n    \"Is\",\n    true\n  ]\n}")
   testEq(`L.get(L.json(undefined), '{"this":["Is",true]}')`,
          {this: ["Is", true]})
+  testEq(`L.getInverse(L.json(), undefined)`, undefined)
 })
 
 describe("L.matches", () => {
@@ -1268,6 +1271,7 @@ describe("L.indexed", () => {
   testEq(`L.set([L.indexed, 2], [3, "c"], ["a", "b"])`, ["a", "b", "c"])
   testEq(`L.remove([L.indexed, 1, 0], ["a", "b"])`, ["a"])
   testEq(`L.remove([L.indexed, 0, 1], ["a", "b"])`, ["b"])
+  testEq(`L.getInverse(L.indexed, null)`, undefined)
 })
 
 describe("L.keyed", () => {
@@ -1277,6 +1281,7 @@ describe("L.keyed", () => {
   testEq(`L.set([L.keyed, 2], ["z", 6], {x: 4, y: 2})`, {x: 4, y: 2, z: 6})
   testEq(`L.remove([L.keyed, 1, 0], {x: 4, y: 2})`, {x: 4})
   testEq(`L.remove([L.keyed, 0, 1], {x: 4, y: 2})`, {y: 2})
+  testEq(`L.getInverse(L.keyed, null)`, undefined)
 })
 
 describe("L.entries", () => {
@@ -1294,6 +1299,7 @@ describe("L.reverse", () => {
   testEq(`L.set(L.reverse, undefined, 42)`, undefined)
   testEq(`L.modify([L.reverse, L.elems], (x, i) => [x, i], [3,1,4])`,
          [[3,2],[1,1],[4,0]])
+  testEq(`L.getInverse(L.reverse, null)`, undefined)
 })
 
 describe("L.pointer", () => {
