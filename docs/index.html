@@ -1093,7 +1093,7 @@ lens whose view is always <code>undefined</code>.</p>
            L.iftes(R.is(Array),  L.elems,
                    R.is(Object), &quot;x&quot;,
                    L.zero)],
-          [1, {x: 2}, [3,4]])
+          [1, {x: 2}, [3, 4]])
 </code></pre>
 <h4><a id="caching"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#caching">■</a> Caching</h4>
 <h4><a id="L-cache"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-cache">■</a> <a href="#L-cache" title="L.cache: (POptic s a[, Map]) -&gt; POptic s a"><code>L.cache(optic[, map]) ~&gt; optic</code></a> <small><sup>v11.15.0</sup></small></h4>
@@ -1320,7 +1320,7 @@ manipulating non-<code>Array</code> objects, <a href="#L-rewrite"><code>L.rewrit
 convert the result to the desired type, if necessary:</p>
 <pre><code class="hljs lang-js">L.modify([L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
          R.inc,
-         Int8Array.from([-1,4,0,2,4]))
+         Int8Array.from([-1, 4, 0, 2, 4]))
 </code></pre>
 <h5><a id="L-entries"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-entries">■</a> <a href="#L-entries" title="L.entries: PTraversal {p: a, ...ps} [String, a]"><code>L.entries ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.entries</code> is a traversal over the entries, or <code>[key, value]</code> pairs, of an
@@ -1363,7 +1363,7 @@ written through, <code>L.values</code> always produces an <code>Object</code>.</
 <pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 </code></pre>
 <p>When manipulating objects with a non-<code>Object</code> constructor</p>
-<pre><code class="hljs lang-js">function XYZ(x,y,z) {
+<pre><code class="hljs lang-js">function XYZ(x, y, z) {
   this.x = x
   this.y = y
   this.z = z
@@ -1381,7 +1381,7 @@ if necessary:</p>
 
 L.modify([L.rewrite(objectTo(XYZ)), L.values],
          R.negate,
-         new XYZ(1,2,3))
+         new XYZ(1, 2, 3))
 </code></pre>
 <h4><a id="folds-over-traversals"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#folds-over-traversals">■</a> Folds over traversals</h4>
 <h5><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
@@ -1478,7 +1478,7 @@ the number of non-<code>undefined</code> elements.</p>
 of the counts of distinct values, including <code>undefined</code>, focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">Array.from(L.counts(L.elems, [3,1,4,1]).entries())
+<pre><code class="hljs lang-js">Array.from(L.counts(L.elems, [3, 1, 4, 1]).entries())
 </code></pre>
 <h5><a id="L-countsAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countsAs">■</a> <a href="#L-countsAs" title="L.countsAs: ((Maybe a, Index) -&gt; Any) -&gt; PTraversal s a -&gt; Map Any Number"><code>L.countsAs((maybeValue, index) =&gt; any, traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.countsAs</code> returns a
@@ -1486,7 +1486,7 @@ traversal.</p>
 of the counts of distinct values, including <code>undefined</code>, returned by the given
 function from the values focused on by the given traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">Array.from(L.countsAs(Math.abs, L.elems, [3,-1,4,1]).entries())
+<pre><code class="hljs lang-js">Array.from(L.countsAs(Math.abs, L.elems, [3, -1, 4, 1]).entries())
 </code></pre>
 <h5><a id="L-countIf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countIf">■</a> <a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
@@ -1498,13 +1498,13 @@ the number of elements for which the given predicate returns a truthy value.</p>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.foldl((x, y) =&gt; x + y, 0, L.elems, [1, 2, 3])
 </code></pre>
 <h5><a id="L-foldr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldr">■</a> <a href="#L-foldr" title="L.foldr: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldr((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.foldr</code> performs a fold from right over the elements focused on by the given
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.foldr((x, y) =&gt; x * y, 1, L.elems, [1, 2, 3])
 </code></pre>
 <h5><a id="L-forEach"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-forEach">■</a> <a href="#L-forEach" title="L.forEach: ((Maybe a, Index) -&gt; Undefined) -&gt; PTraversal s a -&gt; Maybe s -&gt; Undefined"><code>L.forEach((maybeValue, index) =&gt; undefined, traversal, maybeData) ~&gt; undefined</code></a> <small><sup>v11.20.0</sup></small></h5>
 <p><code>L.forEach</code> calls the given function for each focus of the traversal.</p>
@@ -1526,26 +1526,26 @@ elements, <code>undefined</code> or otherwise, on the given data structure.  Not
 used with a lens, <code>L.isEmpty</code> always returns <code>false</code>, because lenses always have
 a single focus.  See also <a href="#L-isDefined"><code>L.isDefined</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.isEmpty(L.flatten, [[],[[[],[]],[]]])
+<pre><code class="hljs lang-js">L.isEmpty(L.flatten, [[], [[[], []], []]])
 </code></pre>
 <h5><a id="L-join"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-join">■</a> <a href="#L-join" title="L.join: String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.join(string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.join</code> creates a string by joining the optional elements targeted by the given
 traversal with the given delimiter.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.join(&quot;,&quot;, [L.elems, &quot;x&quot;], [{x: 1}, {y: 2}, {x: 3}])
+<pre><code class="hljs lang-js">L.join(&quot;, &quot;, [L.elems, &quot;x&quot;], [{x: 1}, {y: 2}, {x: 3}])
 </code></pre>
 <h5><a id="L-joinAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-joinAs">■</a> <a href="#L-joinAs" title="L.joinAs: ((Maybe a, Index) -&gt; Maybe String) -&gt; String -&gt; PTraversal s a -&gt; Maybe s -&gt; String"><code>L.joinAs((maybeValue, index) =&gt; maybeString, string, traversal, maybeData) ~&gt; string</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.joinAs</code> creates a string by converting the elements targeted by the given
 traversal to optional strings with the given function and then joining those
 strings with the given delimiter.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.joinAs(JSON.stringify, &quot;,&quot;, L.elems, [{x: 1}, {y: 2}])
+<pre><code class="hljs lang-js">L.joinAs(JSON.stringify, &quot;, &quot;, L.elems, [{x: 1}, {y: 2}])
 </code></pre>
 <h5><a id="L-maximum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-maximum">■</a> <a href="#L-maximum" title="L.maximum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.maximum</code> computes a maximum of the optional elements targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.maximum(L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.maximum(L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that elements are ordered according to the <code>&gt;</code> operator.</p>
 <h5><a id="L-maximumBy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-maximumBy">■</a> <a href="#L-maximumBy" title="L.maximumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.maximumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v11.2.0</sup></small></h5>
@@ -1566,13 +1566,13 @@ traversal.</p>
 <p><code>L.meanAs</code> computes the arithmetic mean of the optional numbers returned by the
 given function for the elements targeted by the traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.meanAs((x, i) =&gt; x &lt;= i ? undefined : x, L.elems, [3,1,4,1])
+<pre><code class="hljs lang-js">L.meanAs((x, i) =&gt; x &lt;= i ? undefined : x, L.elems, [3, 1, 4, 1])
 </code></pre>
 <h5><a id="L-minimum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-minimum">■</a> <a href="#L-minimum" title="L.minimum: Ord a =&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimum(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.minimum</code> computes a minimum of the optional elements targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.minimum(L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.minimum(L.elems, [1, 2, 3])
 </code></pre>
 <p>Note that elements are ordered according to the <code>&lt;</code> operator.</p>
 <h5><a id="L-minimumBy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-minimumBy">■</a> <a href="#L-minimumBy" title="L.minimumBy: Ord k =&gt; ((Maybe a, Index) -&gt; Maybe k) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.minimumBy((maybeValue, index) =&gt; maybeKey, traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v11.2.0</sup></small></h5>
@@ -1604,13 +1604,13 @@ is truthy.</p>
 <p><code>L.product</code> computes the product of the optional numbers targeted by the
 traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.product(L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.product(L.elems, [1, 2, 3])
 </code></pre>
 <h5><a id="L-productAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#-productAs">■</a> <a href="#L-productAs" title="L.productAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.productAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.productAs</code> computes the product of the numbers returned by the given function
 for the elements targeted by the traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.productAs((x, i) =&gt; x + i, L.elems, [3,2,1])
+<pre><code class="hljs lang-js">L.productAs((x, i) =&gt; x + i, L.elems, [3, 2, 1])
 </code></pre>
 <p>Note that unlike many other folds, <code>L.productAs</code> expects the function to only
 return numbers and <code>undefined</code> is not treated in a special way.  If you need to
@@ -1618,14 +1618,14 @@ skip elements, you can return the number <code>1</code>.</p>
 <h5><a id="L-select"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-select">■</a> <a href="#L-select" title="L.select: PTraversal s a -&gt; Maybe s -&gt; Maybe a"><code>L.select(traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.select</code> goes lazily over the elements focused on by the given traversal and
 returns the first non-<code>undefined</code> element.</p>
-<pre><code class="hljs lang-js">L.select([L.elems, &quot;y&quot;], [{x:1},{y:2},{z:3}])
+<pre><code class="hljs lang-js">L.select([L.elems, &quot;y&quot;], [{x:1}, {y:2}, {z:3}])
 </code></pre>
 <p>Note that <code>L.select</code> is equivalent to <a href="#L-selectAs"><code>L.selectAs(x =&gt; x)</code></a>.</p>
 <h5><a id="L-selectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-selectAs">■</a> <a href="#L-selectAs" title="L.selectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; Maybe b"><code>L.selectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; maybeValue</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.selectAs</code> goes lazily over the elements focused on by the given traversal,
 applying the given function to each element, and returns the first
 non-<code>undefined</code> value returned by the function.</p>
-<pre><code class="hljs lang-js">L.selectAs(x =&gt; x &gt; 3 ? -x : undefined, L.elems, [3,1,4,1,5])
+<pre><code class="hljs lang-js">L.selectAs(x =&gt; x &gt; 3 ? -x : undefined, L.elems, [3, 1, 4, 1, 5])
 </code></pre>
 <p><code>L.selectAs</code> operates lazily.  The user specified function is only applied to
 elements until the first non-<code>undefined</code> value is returned and after that
@@ -1644,13 +1644,13 @@ implement a for all predicate over traversals:</p>
 <h5><a id="L-sum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-sum">■</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.sum(L.elems, [1,2,3])
+<pre><code class="hljs lang-js">L.sum(L.elems, [1, 2, 3])
 </code></pre>
 <h5><a id="L-sumAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-sumAs">■</a> <a href="#L-sumAs" title="L.sumAs: ((Maybe a, Index) -&gt; Number) -&gt; PTraversal s a -&gt; Maybe s -&gt; Number"><code>L.sumAs((maybeValue, index) =&gt; number, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
 <p><code>L.sumAs</code> computes the sum of the numbers returned by the given function for the
 elements targeted by the traversal.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.sumAs((x, i) =&gt; x + i, L.elems, [3,2,1])
+<pre><code class="hljs lang-js">L.sumAs((x, i) =&gt; x + i, L.elems, [3, 2, 1])
 </code></pre>
 <p>Note that unlike many other folds, <code>L.sumAs</code> expects the function to only return
 numbers and <code>undefined</code> is not treated in a special way.  If you need to skip
@@ -1721,9 +1721,9 @@ sense, the fold should compute or pick a representative from the elements
 focused on by the traversal such that when all the elements are equal then so is
 the representative.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.get(L.foldTraversalLens(L.minimum, L.elems), [3,1,4])
+<pre><code class="hljs lang-js">L.get(L.foldTraversalLens(L.minimum, L.elems), [3, 1, 4])
 </code></pre>
-<pre><code class="hljs lang-js">L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3,1,4])
+<pre><code class="hljs lang-js">L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
 </code></pre>
 <p>See the <a href="#collection-toggle">Collection toggle</a> section for a more interesting
 example.</p>
@@ -1851,7 +1851,7 @@ retain order of elements.</p>
 <a href="#L-index"><code>L.index</code></a>, but the index to be viewed is determined by finding the
 first element from the focus that matches the given predicate.  When no matching
 element is found the effect is same as with <a href="#L-append"><code>L.append</code></a>.</p>
-<pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3,1,4,1,5,9,2])
+<pre><code class="hljs lang-js">L.remove(L.find(x =&gt; x &lt;= 2), [3, 1, 4, 1, 5, 9, 2])
 </code></pre>
 <p>Note that <code>L.find</code> by itself does not satisfy all lens laws.  To fix this, you
 can e.g. post compose <code>L.find</code> with lenses that ensure that the property being
@@ -1940,13 +1940,13 @@ but sometimes you need the &quot;default&quot; value both ways.  In that case yo
 works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.</p>
 <p>Focusing on an empty array or <code>undefined</code> results in returning <code>undefined</code>.  For
 example:</p>
-<pre><code class="hljs lang-js">L.get(L.last, [1,2,3])
+<pre><code class="hljs lang-js">L.get(L.last, [1, 2, 3])
 </code></pre>
 <pre><code class="hljs lang-js">L.get(L.last, [])
 </code></pre>
 <p>Setting value with <code>L.last</code> sets the last element of the object or appends the
 value if the focused object is empty or <code>undefined</code>.  For example:</p>
-<pre><code class="hljs lang-js">L.set(L.last, 5, [1,2,3])
+<pre><code class="hljs lang-js">L.set(L.last, 5, [1, 2, 3])
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.last, 1, [])
 </code></pre>
@@ -1980,9 +1980,9 @@ method of arrays:</p>
 <li><code>undefined</code> gives the defaults: 0 for the begin and length for the end.</li>
 </ul>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.get(L.slice(1, -1), [1,2,3,4])
+<pre><code class="hljs lang-js">L.get(L.slice(1, -1), [1, 2, 3, 4])
 </code></pre>
-<pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1,2,3,4])
+<pre><code class="hljs lang-js">L.set(L.slice(-2, undefined), [0], [1, 2, 3, 4])
 </code></pre>
 <h5><a id="L-suffix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-suffix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
 <p><code>L.suffix</code> focuses on a range of elements of an <a href="#array-like">array-like</a> object
@@ -2013,17 +2013,17 @@ example:</p>
   this.bronze = bronze
 }
 
-L.set(&quot;silver&quot;, -2, new Custom(1,2,3))
+L.set(&quot;silver&quot;, -2, new Custom(1, 2, 3))
 </code></pre>
 <p>When manipulating objects whose constructor is not <code>Object</code>,
 <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
 if necessary:</p>
-<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(Custom)), &quot;silver&quot;], -2, new Custom(1,2,3))
+<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(Custom)), &quot;silver&quot;], -2, new Custom(1, 2, 3))
 </code></pre>
 <p>Partial lenses also generally guarantees that the creation order of keys is
 preserved (even though the library used to print out evaluation results from
 code snippets might not preserve the creation order).  For example:</p>
-<pre><code class="hljs lang-js">for (var k in L.set(&quot;silver&quot;, -2, new Custom(1,2,3)))
+<pre><code class="hljs lang-js">for (var k in L.set(&quot;silver&quot;, -2, new Custom(1, 2, 3)))
   console.log(k)
 </code></pre>
 <p>When creating new objects, partial lenses generally ignore everything but own
@@ -2056,7 +2056,7 @@ If the result would be an empty object, the whole result will be <code>undefined
 <p>When manipulating objects whose constructor is not <code>Object</code>,
 <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
 if necessary:</p>
-<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(XYZ)), &quot;z&quot;], 3, new XYZ(3,1,4))
+<pre><code class="hljs lang-js">L.set([L.rewrite(objectTo(XYZ)), &quot;z&quot;], 3, new XYZ(3, 1, 4))
 </code></pre>
 <h5><a id="L-props"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-props">■</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a> <small><sup>v1.4.0</sup></small></h5>
 <p><code>L.props</code> focuses on a subset of properties of an object, allowing one to treat

@@ -1277,7 +1277,7 @@ L.collect([L.elems,
            L.iftes(R.is(Array),  L.elems,
                    R.is(Object), "x",
                    L.zero)],
-          [1, {x: 2}, [3,4]])
+          [1, {x: 2}, [3, 4]])
 // [ 2, 3, 4 ]
 ```
 
@@ -1619,7 +1619,7 @@ convert the result to the desired type, if necessary:
 ```js
 L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
          R.inc,
-         Int8Array.from([-1,4,0,2,4]))
+         Int8Array.from([-1, 4, 0, 2, 4]))
 // Int8Array [ 0, 5, 1, 3, 5 ]
 ```
 
@@ -1699,7 +1699,7 @@ L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 When manipulating objects with a non-`Object` constructor
 
 ```js
-function XYZ(x,y,z) {
+function XYZ(x, y, z) {
   this.x = x
   this.y = y
   this.z = z
@@ -1720,7 +1720,7 @@ const objectTo = C => o => Object.assign(Object.create(C.prototype), o)
 
 L.modify([L.rewrite(objectTo(XYZ)), L.values],
          R.negate,
-         new XYZ(1,2,3))
+         new XYZ(1, 2, 3))
 // XYZ { x: -1, y: -2, z: -3 }
 ```
 
@@ -1886,7 +1886,7 @@ traversal.
 For example:
 
 ```js
-Array.from(L.counts(L.elems, [3,1,4,1]).entries())
+Array.from(L.counts(L.elems, [3, 1, 4, 1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
 ```
 
@@ -1900,7 +1900,7 @@ function from the values focused on by the given traversal.
 For example:
 
 ```js
-Array.from(L.countsAs(Math.abs, L.elems, [3,-1,4,1]).entries())
+Array.from(L.countsAs(Math.abs, L.elems, [3, -1, 4, 1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
 ```
 
@@ -1924,7 +1924,7 @@ traversal.
 For example:
 
 ```js
-L.foldl((x, y) => x + y, 0, L.elems, [1,2,3])
+L.foldl((x, y) => x + y, 0, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -1936,7 +1936,7 @@ traversal.
 For example:
 
 ```js
-L.foldr((x, y) => x * y, 1, L.elems, [1,2,3])
+L.foldr((x, y) => x * y, 1, L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -1979,7 +1979,7 @@ a single focus.  See also [`L.isDefined`](#L-isDefined).
 For example:
 
 ```js
-L.isEmpty(L.flatten, [[],[[[],[]],[]]])
+L.isEmpty(L.flatten, [[], [[[], []], []]])
 // true
 ```
 
@@ -1991,8 +1991,8 @@ traversal with the given delimiter.
 For example:
 
 ```js
-L.join(",", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])
-// "1,3"
+L.join(", ", [L.elems, "x"], [{x: 1}, {y: 2}, {x: 3}])
+// "1, 3"
 ```
 
 ##### <a id="L-joinAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-joinAs) [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#L-joinAs "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
@@ -2004,8 +2004,8 @@ strings with the given delimiter.
 For example:
 
 ```js
-L.joinAs(JSON.stringify, ",", L.elems, [{x: 1}, {y: 2}])
-// '{"x":1},{"y":2}'
+L.joinAs(JSON.stringify, ", ", L.elems, [{x: 1}, {y: 2}])
+// '{"x":1}, {"y":2}'
 ```
 
 ##### <a id="L-maximum"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-maximum) [`L.maximum(traversal, maybeData) ~> maybeValue`](#L-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
@@ -2016,7 +2016,7 @@ traversal.
 For example:
 
 ```js
-L.maximum(L.elems, [1,2,3])
+L.maximum(L.elems, [1, 2, 3])
 // 3
 ```
 
@@ -2057,7 +2057,7 @@ given function for the elements targeted by the traversal.
 For example:
 
 ```js
-L.meanAs((x, i) => x <= i ? undefined : x, L.elems, [3,1,4,1])
+L.meanAs((x, i) => x <= i ? undefined : x, L.elems, [3, 1, 4, 1])
 // 3.5
 ```
 
@@ -2069,7 +2069,7 @@ traversal.
 For example:
 
 ```js
-L.minimum(L.elems, [1,2,3])
+L.minimum(L.elems, [1, 2, 3])
 // 1
 ```
 
@@ -2129,7 +2129,7 @@ traversal.
 For example:
 
 ```js
-L.product(L.elems, [1,2,3])
+L.product(L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -2141,7 +2141,7 @@ for the elements targeted by the traversal.
 For example:
 
 ```js
-L.productAs((x, i) => x + i, L.elems, [3,2,1])
+L.productAs((x, i) => x + i, L.elems, [3, 2, 1])
 // 27
 ```
 
@@ -2155,7 +2155,7 @@ skip elements, you can return the number `1`.
 returns the first non-`undefined` element.
 
 ```js
-L.select([L.elems, "y"], [{x:1},{y:2},{z:3}])
+L.select([L.elems, "y"], [{x:1}, {y:2}, {z:3}])
 // 2
 ```
 
@@ -2168,7 +2168,7 @@ applying the given function to each element, and returns the first
 non-`undefined` value returned by the function.
 
 ```js
-L.selectAs(x => x > 3 ? -x : undefined, L.elems, [3,1,4,1,5])
+L.selectAs(x => x > 3 ? -x : undefined, L.elems, [3, 1, 4, 1, 5])
 // -4
 ```
 
@@ -2201,7 +2201,7 @@ all(x => x < 9,
 For example:
 
 ```js
-L.sum(L.elems, [1,2,3])
+L.sum(L.elems, [1, 2, 3])
 // 6
 ```
 
@@ -2213,7 +2213,7 @@ elements targeted by the traversal.
 For example:
 
 ```js
-L.sumAs((x, i) => x + i, L.elems, [3,2,1])
+L.sumAs((x, i) => x + i, L.elems, [3, 2, 1])
 // 9
 ```
 
@@ -2319,12 +2319,12 @@ the representative.
 For example:
 
 ```js
-L.get(L.foldTraversalLens(L.minimum, L.elems), [3,1,4])
+L.get(L.foldTraversalLens(L.minimum, L.elems), [3, 1, 4])
 // 1
 ```
 
 ```js
-L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3,1,4])
+L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
 // [ 2, 2, 2 ]
 ```
 
@@ -2536,7 +2536,7 @@ first element from the focus that matches the given predicate.  When no matching
 element is found the effect is same as with [`L.append`](#L-append).
 
 ```js
-L.remove(L.find(x => x <= 2), [3,1,4,1,5,9,2])
+L.remove(L.find(x => x <= 2), [3, 1, 4, 1, 5, 9, 2])
 // [ 3, 4, 1, 5, 9, 2 ]
 ```
 
@@ -2680,7 +2680,7 @@ Focusing on an empty array or `undefined` results in returning `undefined`.  For
 example:
 
 ```js
-L.get(L.last, [1,2,3])
+L.get(L.last, [1, 2, 3])
 // 3
 ```
 ```js
@@ -2692,8 +2692,8 @@ Setting value with `L.last` sets the last element of the object or appends the
 value if the focused object is empty or `undefined`.  For example:
 
 ```js
-L.set(L.last, 5, [1,2,3])
-// [1,2,5]
+L.set(L.last, 5, [1, 2, 3])
+// [1, 2, 5]
 ```
 ```js
 L.set(L.last, 1, [])
@@ -2740,11 +2740,11 @@ method of arrays:
 For example:
 
 ```js
-L.get(L.slice(1, -1), [1,2,3,4])
+L.get(L.slice(1, -1), [1, 2, 3, 4])
 // [ 2, 3 ]
 ```
 ```js
-L.set(L.slice(-2, undefined), [0], [1,2,3,4])
+L.set(L.slice(-2, undefined), [0], [1, 2, 3, 4])
 // [ 1, 2, 0 ]
 ```
 
@@ -2788,7 +2788,7 @@ function Custom(gold, silver, bronze) {
   this.bronze = bronze
 }
 
-L.set("silver", -2, new Custom(1,2,3))
+L.set("silver", -2, new Custom(1, 2, 3))
 // { gold: 1, silver: -2, bronze: 3 }
 ```
 
@@ -2797,7 +2797,7 @@ When manipulating objects whose constructor is not `Object`,
 if necessary:
 
 ```js
-L.set([L.rewrite(objectTo(Custom)), "silver"], -2, new Custom(1,2,3))
+L.set([L.rewrite(objectTo(Custom)), "silver"], -2, new Custom(1, 2, 3))
 // Custom { gold: 1, silver: -2, bronze: 3 }
 ```
 
@@ -2806,7 +2806,7 @@ preserved (even though the library used to print out evaluation results from
 code snippets might not preserve the creation order).  For example:
 
 ```js
-for (const k in L.set("silver", -2, new Custom(1,2,3)))
+for (const k in L.set("silver", -2, new Custom(1, 2, 3)))
   console.log(k)
 // gold
 // silver
@@ -2860,7 +2860,7 @@ When manipulating objects whose constructor is not `Object`,
 if necessary:
 
 ```js
-L.set([L.rewrite(objectTo(XYZ)), "z"], 3, new XYZ(3,1,4))
+L.set([L.rewrite(objectTo(XYZ)), "z"], 3, new XYZ(3, 1, 4))
 // XYZ { x: 3, y: 1, z: 3 }
 ```
 
