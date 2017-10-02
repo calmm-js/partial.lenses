@@ -1,4 +1,4 @@
-import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, identicalU, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
+import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, identicalU, isArray, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
 
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
@@ -149,12 +149,14 @@ var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
 };
 
 var rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(freeze))(function (xs) {
-  var n = xs.length,
-      ys = Array(n),
-      i = 0;
-  while (n) {
-    ys[i++] = xs[--n];
-  }return ys;
+  if (seemsArrayLike(xs)) {
+    var n = xs.length,
+        ys = Array(n),
+        i = 0;
+    while (n) {
+      ys[i++] = xs[--n];
+    }return ys;
+  }
 });
 
 //
@@ -866,7 +868,7 @@ var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV ===
   for (var key in x) {
     es.push([key, x[key]]);
   }return es;
-})), expect(isDefined, (process.env.NODE_ENV === "production" ? id : res(freeze))(function (es) {
+})), expect(isArray, (process.env.NODE_ENV === "production" ? id : res(freeze))(function (es) {
   var o = void 0;
   for (var i = 0, n = es.length; i < n; ++i) {
     var entry = es[i];
@@ -1585,7 +1587,7 @@ var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV ===
   for (var i = 0; i < n; ++i) {
     xis[i] = [i, xs[i]];
   }return xis;
-})), expect(isDefined, (process.env.NODE_ENV === "production" ? id : res(freeze))(function (xis) {
+})), expect(isArray, (process.env.NODE_ENV === "production" ? id : res(freeze))(function (xis) {
   var n = xis.length,
       xs = Array(n);
   for (var i = 0; i < n; ++i) {
@@ -1615,8 +1617,7 @@ var is = function is(v) {
   });
 };
 
-var reverse =
-/*#__PURE__*/isoU(expect(seemsArrayLike, rev), expect(isDefined, rev));
+var reverse = /*#__PURE__*/isoU(rev, rev);
 
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : function (iso) {
   return toFunction([isoU(id, freeze), iso]);
@@ -1627,10 +1628,10 @@ var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : funct
 // Standard isomorphisms
 
 var uri =
-/*#__PURE__*/isoU(expect(isString, decodeURI), expect(isDefined, encodeURI));
+/*#__PURE__*/isoU(expect(isString, decodeURI), expect(isString, encodeURI));
 
 var uriComponent =
-/*#__PURE__*/isoU(expect(isString, decodeURIComponent), expect(isDefined, encodeURIComponent));
+/*#__PURE__*/isoU(expect(isString, decodeURIComponent), expect(isString, encodeURIComponent));
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id)]);

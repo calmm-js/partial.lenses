@@ -153,12 +153,14 @@ var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
 };
 
 var rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xs) {
-  var n = xs.length,
-      ys = Array(n),
-      i = 0;
-  while (n) {
-    ys[i++] = xs[--n];
-  }return ys;
+  if (seemsArrayLike(xs)) {
+    var n = xs.length,
+        ys = Array(n),
+        i = 0;
+    while (n) {
+      ys[i++] = xs[--n];
+    }return ys;
+  }
 });
 
 //
@@ -870,7 +872,7 @@ var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV ===
   for (var key in x) {
     es.push([key, x[key]]);
   }return es;
-})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (es) {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (es) {
   var o = void 0;
   for (var i = 0, n = es.length; i < n; ++i) {
     var entry = es[i];
@@ -1589,7 +1591,7 @@ var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV ===
   for (var i = 0; i < n; ++i) {
     xis[i] = [i, xs[i]];
   }return xis;
-})), expect(I.isDefined, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xis) {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : res(freeze))(function (xis) {
   var n = xis.length,
       xs = Array(n);
   for (var i = 0; i < n; ++i) {
@@ -1619,8 +1621,7 @@ var is = function is(v) {
   });
 };
 
-var reverse =
-/*#__PURE__*/isoU(expect(seemsArrayLike, rev), expect(I.isDefined, rev));
+var reverse = /*#__PURE__*/isoU(rev, rev);
 
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (iso) {
   return toFunction([isoU(I.id, freeze), iso]);
@@ -1631,10 +1632,10 @@ var singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fun
 // Standard isomorphisms
 
 var uri =
-/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isDefined, encodeURI));
+/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
 
 var uriComponent =
-/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isDefined, encodeURIComponent));
+/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, I.id)]);
