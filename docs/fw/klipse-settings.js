@@ -22,7 +22,7 @@ window.klipse_settings = {
 }
 
 function accelerate_klipse() {
-  const all = Array.prototype.slice.call(document.querySelectorAll('.klipse-container')).map(function (e) {
+  const all = Array.prototype.slice.call(document.querySelectorAll('.klipse-container'), 0, -1).map(function (e) {
     const pre = e.parentNode
     const cm1 = pre.children[0]
     const cm2 = pre.children[1]
