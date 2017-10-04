@@ -1,5 +1,5 @@
 function test(name, actual, expect) {
-  if (R.equals(actual, expect))
+  if (I.acyclicEqualsU(actual, expect))
     console.log(name, 'Ok')
   else
     console.log(name, 'Error', actual)
