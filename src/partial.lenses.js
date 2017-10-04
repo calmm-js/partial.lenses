@@ -29,29 +29,27 @@ const instanceofObject = x => x instanceof Object
 
 const expect = (p, f) => x => p(x) ? f(x) : void 0
 
-const freeze = x => x && Object.freeze(x)
-
 function deepFreeze(x) {
   if (Array.isArray(x)) {
     x.forEach(deepFreeze)
-    freeze(x)
+    I.freeze(x)
   } else if (I.isObject(x)) {
     for (const k in x)
       deepFreeze(x[k])
-    freeze(x)
+    I.freeze(x)
   }
   return x
 }
 
 function freezeArrayOfObjects(xs) {
-  xs.forEach(freeze)
-  return freeze(xs)
+  xs.forEach(I.freeze)
+  return I.freeze(xs)
 }
 
 const isArrayOrPrimitive = x =>
   !(x instanceof Object) || Array.isArray(x)
 
-const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xs => {
+const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(xs => {
   if (seemsArrayLike(xs)) {
     let n = xs.length, ys = Array(n), i=0
     while (n)
@@ -62,7 +60,7 @@ const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(f
 
 //
 
-const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, xs) => {
+const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((xi2y, xs) => {
   const n = xs.length, ys = Array(n)
   let j = 0
   for (let i=0, y; i<n; ++i)
@@ -78,7 +76,7 @@ const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I
 const mapIfArrayLike = (xi2y, xs) =>
   seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) || I.array0 : void 0
 
-const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (ys, k, xs, i, j) => (ys.length === k + j - i ? freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j)))((ys, k, xs, i, j) => {
+const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (ys, k, xs, i, j) => (ys.length === k + j - i ? I.freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j)))((ys, k, xs, i, j) => {
   while (i < j)
     ys[k++] = xs[i++]
   return ys
@@ -220,7 +218,7 @@ function pushTo(n, ys) {
   return ys
 }
 
-const toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(n => {
+const toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(n => {
   if (void 0 !== n)
     return pushTo(n, [])
 })
@@ -276,7 +274,7 @@ const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
 //
 
 const cons = h => t => void 0 !== h ? [h, t] : t
-const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(n => {
+const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(n => {
   if (cons !== n) {
     const xs = []
     do {
@@ -323,7 +321,7 @@ const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
 
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
-const setProp = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((k, v, o) =>
+const setProp = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((k, v, o) =>
   void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o))
 
 const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
@@ -332,7 +330,7 @@ const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
 
 const getIndex = (i, xs) => seemsArrayLike(xs) ? xs[i] : void 0
 
-const setIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqIndex)), freeze))((i, x, xs) => {
+const setIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqIndex)), I.freeze))((i, x, xs) => {
   if (!seemsArrayLike(xs))
     xs = ""
   const n = xs.length
@@ -488,7 +486,7 @@ const isoU = (bwd, fwd) => (x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i))
 
 //
 
-const getPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((template, x) => {
+const getPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((template, x) => {
   let r
   for (const k in template) {
     const t = template[k]
@@ -523,11 +521,11 @@ const setPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.p
 
 //
 
-const toObject = x => I.constructorOf(x) !== Object ? Object.assign({}, x) : x
+const toObject = x => I.constructorOf(x) !== Object ? I.toObject(x) : x
 
 //
 
-const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(freeze))((xi2y, o) => {
+const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((xi2y, o) => {
   let r = void 0
   for (const k in o) {
     const v = xi2y(o[k], k)
@@ -540,7 +538,7 @@ const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? 
   return r
 })
 
-const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(freeze)))((x, keys) => xs => {
+const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(I.freeze)))((x, keys) => xs => {
   const o = {}, n = keys.length
   for (let i=0; i<n; ++i, xs=xs[1]) {
     const v = xs[0]
@@ -630,7 +628,7 @@ function findIndexHint(hint, xi2b, xs) {
   return n
 }
 
-const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_xi2b, _xs, ts, fs]) => C.res(C.ef(() => {freeze(ts); freeze(fs)}))))((xi2b, xs, ts, fs) => {
+const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_xi2b, _xs, ts, fs]) => C.res(C.ef(() => {I.freeze(ts); I.freeze(fs)}))))((xi2b, xs, ts, fs) => {
   for (let i=0, n=xs.length, x; i<n; ++i)
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
 })
@@ -690,7 +688,7 @@ const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV =
   for (const key in x)
     es.push([key, x[key]])
   return es
-})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(es => {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(es => {
   let o = void 0
   for (let i=0, n=es.length; i<n; ++i) {
     const entry = es[i]
@@ -1053,7 +1051,7 @@ export const foldTraversalLens = /*#__PURE__*/I.curry((fold, traversal) =>
 
 // Computing derived props
 
-export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), C.and(lens => toFunction([isoU(I.id, freeze), lens, isoU(freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))]), C.ef(() => {
+export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), C.and(lens => toFunction([isoU(I.id, I.freeze), lens, isoU(I.freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))]), C.ef(() => {
   warn(augment, "`L.augment` will be removed.  See CHANGELOG.")
 }))))(template => {
   return lensU(x => {
@@ -1266,7 +1264,7 @@ export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NOD
   for (let i=0; i<n; ++i)
     xis[i] = [i, xs[i]]
   return xis
-})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(freeze))(xis => {
+})), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(xis => {
   let n = xis.length, xs = Array(n)
   for (let i=0; i<n; ++i) {
     const xi = xis[i]
@@ -1297,7 +1295,7 @@ export {keyed}
 
 export const reverse = /*#__PURE__*/isoU(rev, rev)
 
-export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, freeze), iso]))(
+export const singleton = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : iso => toFunction([isoU(I.id, I.freeze), iso]))(
   (x, i, F, xi2yF) =>
     F.map(singletonPartial,
           xi2yF((x instanceof Object || I.isString(x)) && x.length === 1
