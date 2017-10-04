@@ -14,7 +14,7 @@
   ],
   "homepage": "https://github.com/calmm-js/partial.lenses",
   "dependencies": {
-    "infestines": "^0.4.2"
+    "infestines": "^0.4.5"
   },
   "ignore": ["*", "!*.md", "!dist/*"]
 }
