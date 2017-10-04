@@ -85,14 +85,24 @@ function accelerate_klipse() {
       return findBinary(0, all.length, height)
   }
 
+  function getPos() {
+    return {
+      offset: window.pageYOffset,
+      width: window.innerWidth,
+      height: window.innerHeight
+    }
+  }
+
+  let updatedAt = undefined
   let scheduled = 0
 
   function update() {
     if (0 < scheduled)
       --scheduled
 
-    const height = window.innerHeight
-    let vis = findVisible(height)
+    updatedAt = getPos()
+
+    let vis = findVisible(updatedAt.height)
     if (null === vis)
       return
 
@@ -102,7 +112,7 @@ function accelerate_klipse() {
       if (vis < oldVisStart || oldVisStop <= vis)
         show(vis)
       ++vis
-    } while (vis < all.length && 0 === visibility(vis, height))
+    } while (vis < all.length && 0 === visibility(vis, updatedAt.height))
 
     const newVisStop = vis
 
@@ -114,18 +124,20 @@ function accelerate_klipse() {
     oldVisStop = newVisStop
   }
 
-  update()
-
   function scheduleUpdate() {
-    if (0 < scheduled)
+    if (0 < scheduled || I.acyclicEqualsU(updatedAt, getPos()))
       return
     scheduled = 2
     setTimeout(() => {
       if (0 < scheduled)
         --scheduled
-    }, 200)
+      if (!scheduled)
+        scheduleUpdate()
+    }, 300)
     window.requestAnimationFrame(update)
   }
+
+  scheduleUpdate()
 
   window.addEventListener('scroll', scheduleUpdate)
   window.addEventListener('resize', scheduleUpdate)
