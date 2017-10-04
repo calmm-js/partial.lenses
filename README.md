@@ -1891,6 +1891,18 @@ L.count([L.elems, "x"], [{x: 11}, {y: 12}])
 // 1
 ```
 
+##### <a id="L-countIf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countIf) [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number") <small><sup>v11.2.0</sup></small>
+
+`L.countIf` goes through all the elements focused on by the traversal and counts
+the number of elements for which the given predicate returns a truthy value.
+
+For example:
+
+```js
+L.countIf(L.isDefined("x"), L.elems, [{x: 11}, {y: 12}])
+// 1
+```
+
 ##### <a id="L-counts"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-counts) [`L.counts(traversal, maybeData) ~> map`](#L-counts "L.counts: PTraversal s a -> Map Any Number") <small><sup>v11.21.0</sup></small>
 
 `L.counts` returns a
@@ -1917,18 +1929,6 @@ For example:
 ```js
 Array.from(L.countsAs(Math.abs, L.elems, [3, -1, 4, 1]).entries())
 // [[3, 1], [1, 2], [4, 1]]
-```
-
-##### <a id="L-countIf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-countIf) [`L.countIf((maybeValue, index) => testable, traversal, maybeData) ~> number`](#L-countIf "L.countIf: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Number") <small><sup>v11.2.0</sup></small>
-
-`L.countIf` goes through all the elements focused on by the traversal and counts
-the number of elements for which the given predicate returns a truthy value.
-
-For example:
-
-```js
-L.countIf(L.isDefined("x"), L.elems, [{x: 11}, {y: 12}])
-// 1
 ```
 
 ##### <a id="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>

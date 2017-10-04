@@ -1484,6 +1484,12 @@ the number of non-<code>undefined</code> elements.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.count([L.elems, &quot;x&quot;], [{x: 11}, {y: 12}])
 </code></pre>
+<h5><a id="L-countIf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countIf">■</a> <a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
+<p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
+the number of elements for which the given predicate returns a truthy value.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.countIf(L.isDefined(&quot;x&quot;), L.elems, [{x: 11}, {y: 12}])
+</code></pre>
 <h5><a id="L-counts"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-counts">■</a> <a href="#L-counts" title="L.counts: PTraversal s a -&gt; Map Any Number"><code>L.counts(traversal, maybeData) ~&gt; map</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.counts</code> returns a
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map">map</a>
@@ -1499,12 +1505,6 @@ of the counts of distinct values, including <code>undefined</code>, returned by 
 function from the values focused on by the given traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">Array.from(L.countsAs(Math.abs, L.elems, [3, -1, 4, 1]).entries())
-</code></pre>
-<h5><a id="L-countIf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-countIf">■</a> <a href="#L-countIf" title="L.countIf: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Number"><code>L.countIf((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; number</code></a> <small><sup>v11.2.0</sup></small></h5>
-<p><code>L.countIf</code> goes through all the elements focused on by the traversal and counts
-the number of elements for which the given predicate returns a truthy value.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.countIf(L.isDefined(&quot;x&quot;), L.elems, [{x: 11}, {y: 12}])
 </code></pre>
 <h5><a id="L-foldl"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-foldl">■</a> <a href="#L-foldl" title="L.foldl: ((r, Maybe a, Index) -&gt; r) -&gt; r -&gt; PTraversal s a -&gt; Maybe s -&gt; r"><code>L.foldl((value, maybeValue, index) =&gt; value, value, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.foldl</code> performs a fold from left over the elements focused on by the given
