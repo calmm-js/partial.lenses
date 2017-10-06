@@ -184,6 +184,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Interfacing with Immutable.js](#interfacing)
 * [Advanced topics](#advanced-topics)
   * [Performance tips](#performance-tips)
+    * [Nesting traversals does not create intermediate aggregates](#nesting-traverals-does-not-create-intermediate-aggregates)
+    * [Avoid reallocating optics in `L.choose`](#avoid-reallocating-optics-in-l-choose)
   * [On bundle size and minification](#on-bundle-size-and-minification)
 * [Background](#background)
   * [Motivation](#motivation)
@@ -3748,6 +3750,9 @@ L.joinAs(R.toUpper,
 
 #### <a id="nesting-traverals-does-not-create-intermediate-aggregates"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#nesting-traverals-does-not-create-intermediate-aggregates) Nesting traversals does not create intermediate aggregates
 
+Traversals do not materialize intermediate aggregates and it is useful to
+understand this performance characteristic.
+
 Consider the following naïve use of [Ramda](http://ramdajs.com/):
 
 ```js
@@ -3784,10 +3789,12 @@ L.sum([L.flatten, "x", L.when(R.lt(0))], sampleXs)
 ```
 
 and, thankfully, it doesn't create intermediate arrays.  This is the case with
-traversals in general.  Traversals do not materialize intermediate aggregates
-and it is useful to understand this performance characteristic.
+traversals in general.
 
 #### <a id="avoid-reallocating-optics-in-l-choose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#avoid-reallocating-optics-in-l-choose) Avoid reallocating optics in [`L.choose`](#L-choose)
+
+The function given to [`L.choose`](#L-choose) is called each time the optic is
+used and any allocations done by the function are consequently repeated.
 
 Consider the following example:
 
