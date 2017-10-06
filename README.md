@@ -850,7 +850,7 @@ const valOf = key => [L.define([]),
 ```
 
 The `valOf` lens constructor is for accessing association arrays that contain
-`{id, val}` pairs.  For example:
+`{key, val}` pairs.  For example:
 
 ```js
 const sampleAssoc = [{key: "x", val: 42}, {key: "y", val: 24}]

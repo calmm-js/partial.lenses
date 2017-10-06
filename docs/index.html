@@ -828,7 +828,7 @@ law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator us
                       &quot;val&quot;]
 </code></pre>
 <p>The <code>valOf</code> lens constructor is for accessing association arrays that contain
-<code>{id, val}</code> pairs.  For example:</p>
+<code>{key, val}</code> pairs.  For example:</p>
 <pre><code class="hljs lang-js">var sampleAssoc = [{key: &quot;x&quot;, val: 42}, {key: &quot;y&quot;, val: 24}]
 L.set(valOf(&quot;x&quot;), 101, [])
 </code></pre>
