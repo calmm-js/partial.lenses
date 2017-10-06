@@ -819,8 +819,9 @@ itself obey lens laws.  Here is an example:</p>
 <pre><code class="hljs lang-js">L.get(L.find(R.equals(1)),
       L.set(L.find(R.equals(1)), 2, []))
 </code></pre>
-<p>As you can see, <code>L.find(R.equals(1))</code> does not obey the <code>SetGet</code> aka <code>Put-Get</code>
-law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far from it.</p>
+<p>As you can see, <a href="#L-find"><code>L.find(R.equals(1))</code></a> does not obey the <code>SetGet</code> aka
+<code>Put-Get</code> law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far
+from it.</p>
 <p>Consider the following lens:</p>
 <pre><code class="hljs lang-js">var valOf = key =&gt; [L.define([]),
                       L.find(R.whereEq({key})),
@@ -848,12 +849,12 @@ L.set(valOf(&quot;x&quot;), 101, [])
   lens: valOf(&quot;x&quot;)
 })
 </code></pre>
-<p>Before you try to break it, note that a lens returned by
-<code>valOf(key)</code> is only supposed to work on valid association arrays.  A valid
-association array must not contain duplicate keys, <code>undefined</code> is not valid
-<code>val</code>, and the order of elements is not significant.  (Note that you could also
-add <a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code></a> to the composition after
-<code>L.define([])</code> to ensure that elements stay in the same order.)</p>
+<p>Before you try to break it, note that a lens returned by <code>valOf(key)</code> is only
+supposed to work on valid association arrays.  A valid association array must
+not contain duplicate keys, <code>undefined</code> is not valid <code>val</code>, and the order of
+elements is not significant.  (Note that you could also add
+<a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code></a> to the composition after
+<a href="#L-define"><code>L.define([])</code></a> to ensure that elements stay in the same order.)</p>
 <p>The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of <a href="#L-find"><code>L.find</code></a>
