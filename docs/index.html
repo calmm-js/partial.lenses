@@ -59,6 +59,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#stable-subset">Stable subset</a></li>
 <li><a href="#optics">Optics</a><ul>
 <li><a href="#on-partiality">On partiality</a></li>
+<li><a href="#on-indexing">On indexing</a></li>
 <li><a href="#on-immutability">On immutability</a></li>
 <li><a href="#on-composability">On composability</a></li>
 <li><a href="#on-lens-laws">On lens laws</a></li>
@@ -699,6 +700,36 @@ number of benefits.  In particular, it allows optics to seamlessly support both
 insertion and removal.  It also allows to reduce the number of necessary
 abstractions and it tends to make compositions of optics more concise with fewer
 required parts, which both help to avoid bugs.</p>
+<h4><a id="on-indexing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#on-indexing">■</a> On indexing</h4>
+<p>Optics in this library support a simple unnested form of indexing.  When
+focusing on an array element or a object property, the index of the array
+element or the key of the object property is passed as the index to user defined
+functions operating on that focus.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get([L.find(R.equals(&quot;bar&quot;)), (value, index) =&gt; ({value, index})],
+      [&quot;foo&quot;, &quot;bar&quot;, &quot;baz&quot;])
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(L.values, (value, key) =&gt; ({key, value}), {x: 1, y: 2})
+</code></pre>
+<p>Only optics directly operating on array elements and object properties produce
+indices.  Most optics do not have an index of their own and they pass the index
+given by the preceding optic as their focus.  For example, <a href="#L-when"><code>L.when</code></a>
+doesn&#39;t have an index by itself, but it passes through the index provided by the
+preceding optic:</p>
+<pre><code class="hljs lang-js">L.collectAs((value, index) =&gt; ({value, index}),
+            [L.elems, L.when(x =&gt; x &gt; 2)],
+            [3,1,4,1])
+</code></pre>
+<pre><code class="hljs lang-js">L.collectAs((value, key) =&gt; ({value, key}),
+            [L.values, L.when(x =&gt; x &gt; 2)],
+            {x: 3, y: 1, z: 4, w: 1})
+</code></pre>
+<p>When accessing a focus deep inside a data structure, the indices along the path
+to the focus are not collected into a path.  However, it is possible to define
+combinators to construct paths.  The reason for not collecting paths by default
+is that doing so would be relatively expensive due to additional allocations.
+The <a href="#L-choose"><code>L.choose</code></a> combinator can be useful in cases where there is a
+need to access some index or context along the path to a focus.</p>
 <h4><a id="on-immutability"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#on-immutability">■</a> On immutability</h4>
 <p>Starting with version <a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#1000">10.0.0</a>, to strongly guide away from
 mutating data structures, optics call
@@ -2788,12 +2819,12 @@ the internal implementation via <a href="#L-toFunction"><code>L.toFunction</code
 not be unreasonable to not provide such an operation.  Only very few
 applications need to know the internal representation of optics.</p>
 <h4><a id="indexing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#indexing">■</a> Indexing</h4>
-<p>Indexing in partial lenses is unnested, very simple and based on the indices and
-keys of the underlying data structures.  When indexing was added, it essentially
-introduced no performance degradation, but since then a few operations have been
-added that do require extra allocations to support indexing.  It is also
-possible to compose optics so as to create nested indices or paths, but
-currently no combinator is directly provided for that.</p>
+<p><a href="#on-indexing">Indexing</a> in partial lenses is unnested, very simple and based on
+the indices and keys of the underlying data structures.  When indexing was
+added, it essentially introduced no performance degradation, but since then a
+few operations have been added that do require extra allocations to support
+indexing.  It is also possible to compose optics so as to create nested indices
+or paths, but currently no combinator is directly provided for that.</p>
 <h4><a id="static-land"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#static-land">■</a> Static Land</h4>
 <p>The algebraic structures used in partial lenses follow the <a href="https://github.com/rpominov/static-land">Static
 Land</a> specification rather than the

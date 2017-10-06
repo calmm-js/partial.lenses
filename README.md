@@ -29,6 +29,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Stable subset](#stable-subset)
   * [Optics](#optics)
     * [On partiality](#on-partiality)
+    * [On indexing](#on-indexing)
     * [On immutability](#on-immutability)
     * [On composability](#on-composability)
     * [On lens laws](#on-lens-laws)
@@ -728,6 +729,51 @@ number of benefits.  In particular, it allows optics to seamlessly support both
 insertion and removal.  It also allows to reduce the number of necessary
 abstractions and it tends to make compositions of optics more concise with fewer
 required parts, which both help to avoid bugs.
+
+#### <a id="on-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#on-indexing) On indexing
+
+Optics in this library support a simple unnested form of indexing.  When
+focusing on an array element or a object property, the index of the array
+element or the key of the object property is passed as the index to user defined
+functions operating on that focus.
+
+For example:
+
+```js
+L.get([L.find(R.equals("bar")), (value, index) => ({value, index})],
+      ["foo", "bar", "baz"])
+// {value: 'bar', index: 1}
+```
+```js
+L.modify(L.values, (value, key) => ({key, value}), {x: 1, y: 2})
+// {x: {key: 'x', value: 1}, y: {key: 'y', value: 2}}
+```
+
+Only optics directly operating on array elements and object properties produce
+indices.  Most optics do not have an index of their own and they pass the index
+given by the preceding optic as their focus.  For example, [`L.when`](#L-when)
+doesn't have an index by itself, but it passes through the index provided by the
+preceding optic:
+
+```js
+L.collectAs((value, index) => ({value, index}),
+            [L.elems, L.when(x => x > 2)],
+            [3,1,4,1])
+// [{value: 3, index: 0}, {value: 4, index: 2}]
+```
+```js
+L.collectAs((value, key) => ({value, key}),
+            [L.values, L.when(x => x > 2)],
+            {x: 3, y: 1, z: 4, w: 1})
+// [{value: 3, key: 'x'}, {value: 4, key: 'z'}]
+```
+
+When accessing a focus deep inside a data structure, the indices along the path
+to the focus are not collected into a path.  However, it is possible to define
+combinators to construct paths.  The reason for not collecting paths by default
+is that doing so would be relatively expensive due to additional allocations.
+The [`L.choose`](#L-choose) combinator can be useful in cases where there is a
+need to access some index or context along the path to a focus.
 
 #### <a id="on-immutability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#on-immutability) On immutability
 
@@ -3983,12 +4029,12 @@ applications need to know the internal representation of optics.
 
 #### <a id="indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#indexing) Indexing
 
-Indexing in partial lenses is unnested, very simple and based on the indices and
-keys of the underlying data structures.  When indexing was added, it essentially
-introduced no performance degradation, but since then a few operations have been
-added that do require extra allocations to support indexing.  It is also
-possible to compose optics so as to create nested indices or paths, but
-currently no combinator is directly provided for that.
+[Indexing](#on-indexing) in partial lenses is unnested, very simple and based on
+the indices and keys of the underlying data structures.  When indexing was
+added, it essentially introduced no performance degradation, but since then a
+few operations have been added that do require extra allocations to support
+indexing.  It is also possible to compose optics so as to create nested indices
+or paths, but currently no combinator is directly provided for that.
 
 #### <a id="static-land"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#static-land) Static Land
 
