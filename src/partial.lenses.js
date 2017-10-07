@@ -360,22 +360,22 @@ const funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex)
 
 //
 
-const close = (o, F, xi2yF) => (x, i) => o(x, i, F, xi2yF)
+const composedMiddle = (o, r) => (F, xi2yF) => {
+  const n = r(F, xi2yF)
+  return (x, i) => o(x, i, F, n)
+}
 
 function composed(oi0, os) {
-  const n = os.length - oi0
+  let n = os.length - oi0
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity
   } else {
-    const fs = Array(n)
-    for (let i=0;i<n;++i)
-      fs[i] = toFunction(os[i+oi0])
-    return (x, i, F, xi2yF) => {
-      let k=n
-      while (--k)
-        xi2yF = close(fs[k], F, xi2yF)
-      return fs[0](x, i, F, xi2yF)
-    }
+    const last = toFunction(os[oi0 + --n])
+    let r = (F, xi2yF) => (x, i) => last(x, i, F, xi2yF)
+    while (--n)
+      r = composedMiddle(toFunction(os[oi0 + n]), r)
+    const first = toFunction(os[oi0])
+    return (x, i, F, xi2yF) => first(x, i, F, r(F, xi2yF))
   }
 }
 
