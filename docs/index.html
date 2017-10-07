@@ -710,7 +710,7 @@ doesn&#39;t have an index by itself, but it passes through the index provided by
 preceding optic:</p>
 <pre><code class="hljs lang-js">L.collectAs((value, index) =&gt; ({value, index}),
             [L.elems, L.when(x =&gt; x &gt; 2)],
-            [3,1,4,1])
+            [3, 1, 4, 1])
 </code></pre>
 <pre><code class="hljs lang-js">L.collectAs((value, key) =&gt; ({value, key}),
             [L.values, L.when(x =&gt; x &gt; 2)],

@@ -754,7 +754,7 @@ preceding optic:
 ```js
 L.collectAs((value, index) => ({value, index}),
             [L.elems, L.when(x => x > 2)],
-            [3,1,4,1])
+            [3, 1, 4, 1])
 // [{value: 3, index: 0}, {value: 4, index: 2}]
 ```
 ```js
