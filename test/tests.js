@@ -89,15 +89,6 @@ const countS = x => x2n => {
 
 //
 
-const LazyIdent = {
-  map: (x2y, xL) => () => x2y(xL()),
-  of: x => () => x,
-  ap: (x2yL, xL) => () => x2yL()(xL()),
-  delay: th => () => th()()
-}
-
-//
-
 function show(x) {
   switch (typeof x) {
   case "string":
@@ -109,7 +100,6 @@ function show(x) {
 }
 
 const run = expr => eval(`() => ${expr}`)(
-  LazyIdent,
   Sum,
   StateM,
   T,
@@ -200,9 +190,7 @@ describe("arities", () => {
     array: 1,
     assign: 3,
     assignOp: 1,
-    augment: 1,
     branch: 1,
-    cache: 1,
     chain: 2,
     choice: 0,
     choices: 1,
@@ -224,7 +212,7 @@ describe("arities", () => {
     filter: 1,
     find: 1,
     findHint: 2,
-    findWith: 0,
+    findWith: 1,
     flatten: 4,
     foldTraversalLens: 2,
     foldl: 4,
@@ -309,18 +297,28 @@ describe("arities", () => {
 })
 
 describe(`L.find`, () => {
-  testEq(`L.set(L.find(R.equals(2)), undefined, [2])`, undefined)
-  testEq(`L.set(L.find(R.equals(2)))(undefined, [1, 2, 3])`, [1, 3])
-  testEq(`L.set(L.find(R.equals(2)))(4)([1, 2, 3])`, [1, 4, 3])
-  testEq(`L.set(L.find(R.equals(2)), 2)([1, 4, 3])`, [1, 4, 3, 2])
-  testEq(`L.set(L.find(R.equals(2)), 2, undefined)`, [2])
-  testEq(`L.set(L.find(R.equals(2)), 2, [])`, [2])
-  testEq(`L.get(L.find(R.equals(2)), undefined)`, undefined)
-  testEq(`L.get(L.find(R.equals(2)), [3])`, undefined)
-  testEq(`L.remove([L.rewrite(R.join("")), L.find(R.equals("A"))], "LOLA")`,
+  testEq(`L.set(X.find(R.equals(2)), undefined, [2])`, undefined)
+  testEq(`L.set(X.find(R.equals(2)))(undefined, [1, 2, 3])`, [1, 3])
+  testEq(`L.set(X.find(R.equals(2)))(4)([1, 2, 3])`, [1, 4, 3])
+  testEq(`L.set(X.find(R.equals(2)), 2)([1, 4, 3])`, [1, 4, 3, 2])
+  testEq(`L.set(X.find(R.equals(2)), 2, undefined)`, [2])
+  testEq(`L.set(X.find(R.equals(2)), 2, [])`, [2])
+  testEq(`L.get(X.find(R.equals(2)), undefined)`, undefined)
+  testEq(`L.get(X.find(R.equals(2)), [3])`, undefined)
+  testEq(`L.remove([L.rewrite(R.join("")), X.find(R.equals("A"))], "LOLA")`,
          "LOL")
-  testEq(`L.set([L.rewrite(R.join("")), L.find(R.equals("O"))], "A-", "LOLA")`,
+  testEq(`L.set([L.rewrite(R.join("")), X.find(R.equals("O"))], "A-", "LOLA")`,
          "LA-LA")
+
+  testEq(`L.get(L.find(R.equals(1), {hint: 2}), [2,2,2,1,2])`, 1)
+  testEq(`L.get(L.find(R.equals(1), {hint: 0}), [2,2,2,1,2])`, 1)
+  testEq(`L.get(L.find(R.equals(1), {hint: 4}), [2,1,2,2,2])`, 1)
+  testEq(`L.get(L.find(R.equals(1), {hint: 5}), 0)`, undefined)
+  testEq(`L.get(L.find(R.pipe(Math.abs, R.equals(2)), {hint: 2}),
+                [-1,-2,3,1,2,1])`,
+         -2)
+  testEq(`L.get(L.find(R.equals(2), {hint: 10}), [3,2,1,0])`, 2)
+  testEq(`L.set(L.find(R.equals(2), {hint: 0}), 2, [0,1])`, [0,1,2])
 })
 
 describe(`L.findHint`, () => {
@@ -601,30 +599,6 @@ describe("L.append", () => {
     testEq(`L.set(L.append, "a", ${show(invalid)})`, ["a"])
   })
   testEq(`L.set(L.append, 1, Int8Array.of(3,1,4))`, [3,1,4,1])
-})
-
-describe("L.augment", () => {
-  testEq(`L.get(L.augment({y: c => c.x+1, z: c => c.x-1}), {x: 0})`,
-         {x: 0, y: 1, z: -1})
-  testEq(`L.get(L.augment({y: c => c.x+1}), {x: 2, y: -1})`, {x: 2, y: 3})
-  testEq(`L.set(L.augment({y: c => c.x+1}), {x: 1, y: 1}, {x: 0})`, {x: 1})
-  testEq(`L.set(L.augment({y: c => c.x+1}), {x: 2, y: 1}, {x: 0, y: -1})`,
-         {x: 2, y: -1})
-  testEq(`L.get(L.augment({y: c => c.x+1, z: c => c.y+1}), {x: 1})`,
-         {x: 1, y: 2, z: 3})
-  testEq(`L.remove([L.augment({y: () => 1}), "x"], {x:0})`, undefined)
-  testEq(`L.remove(L.augment({z: c => c.x + c.y}), {x: 1, y: 2})`, undefined)
-  testEq(`L.set(L.augment({z: c => c.x + c.y}), new XYZ(3,2,1), {x: 1, y: 2})`,
-         {x: 3, y: 2})
-  testEq(`L.set(L.augment({x: () => 1}), {constructor: 1}, {})`,
-         {constructor: 1})
-  testEq(`L.set(L.augment({x: () => 2}), {x: 3}, {x: 1})`, {x: 1})
-  testEq(`L.set([L.augment({constructor: () => 1}), "x"], 2, {x: 1})`, {x: 2})
-  testEq(`L.set(L.augment({x: () => 1}), {x: 2}, undefined)`, undefined)
-  empties.forEach(invalid => {
-    testEq(`L.get(L.augment({x: () => 1}), ${show(invalid)})`, undefined)
-    testEq(`L.set(L.augment({x: () => 1}), {y: 2}, ${show(invalid)})`, {y: 2})
-  })
 })
 
 describe("L.elems", () => {
@@ -1040,29 +1014,29 @@ describe("lazy folds", () => {
         [41])
   testEq(`{ let n = 0
           ; const v =
-              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
-                         L.elems,
+              X.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         X.elems,
                          [1, 3, 42, 56, 32])
           ; return [n, v] }`,
          [3, 42])
   testEq(`{ let n = 0
           ; const v =
-              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
-                         L.values,
+              X.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         X.values,
                          {x: 1, y: 42, z: 25})
           ; return [n, v] }`,
          [2, 42])
   testEq(`{ let n = 0
           ; const v =
-              L.selectAs(x => { n += 1; return x === 42 ? x : undefined },
-                         L.branch({x: [], y: 0, z: []}),
+              X.selectAs(x => { n += 1; return x === 42 ? x : undefined },
+                         X.branch({x: [], y: 0, z: []}),
                          {x: 5, z: 5, y: [42]})
           ; return [n, v] }`,
          [2, 42])
   testEq(`{ let n = 0
           ; const v =
-              L.selectAs(x => { n += 1; return x === 'ba' ? x : undefined },
-                         L.matches(/[ab]+/g),
+              X.selectAs(x => { n += 1; return x === 'ba' ? x : undefined },
+                         X.matches(/[ab]+/g),
                          "Ab-ba CD b")
           ; return [n, v] }`,
          [2, 'ba'])
@@ -1166,22 +1140,6 @@ describe("L.iftes", () => {
          1)
 })
 
-describe("L.cache", () => {
-  testEq(`{ let n = 0
-          ; const inc =
-              X.cache(X.choose(x => {n += 1; return X.modifyOp(R.inc)}))
-          ; return [X.transform([X.elems, inc], [1, 2, 3]),
-                    X.transform([X.elems, inc], [3, 2, 1]),
-                    n] }`,
-         [[2,3,4], [4,3,2], 5])
-  testEq(`{ const c = new Map()
-          ; const x = X.cache("x", c)
-          ; X.get(x, {x: 1})
-          ; X.get(x, {x: 1})
-          ; return c.size}`,
-         1)
-})
-
 describe("L.singleton", () => {
   testEq(`L.get(L.singleton, ["too", "long"])`, undefined)
   testEq(`L.get(L.singleton, "too-long")`, undefined)
@@ -1237,30 +1195,6 @@ describe("L.forEach", () => {
                      {x: ["a", "b", "c"], y: 4});
            return xs}`,
          [[4,"y"],["a",0],["b",1],["c",2]])
-})
-
-describe("LazyIdent", () => {
-  testEq(`L.traverse(LazyIdent, x => LazyIdent.of(x+1), L.elems, [1,2,3])()`,
-         [2, 3, 4])
-  testEq(`L.traverse(LazyIdent,
-                     x => LazyIdent.of(x+1),
-                     L.values,
-                     {x:1, y:2, z:3})()`,
-         {x:2, y:3, z:4})
-  testEq(`L.traverse(LazyIdent,
-                     x => LazyIdent.of(x+1),
-                     L.branch({z:[], y:[]}),
-                     {x:1, y:2, z:3})()`,
-         {x:1, y:3, z:4})
-  testEq(`L.traverse(LazyIdent,
-                     x => LazyIdent.of(R.toUpper(x)),
-                     L.matches(/[eol]+/g),
-                     "Hello, world!")()`,
-         "HELLO, wOrLd!")
-  testEq(`L.modify(L.matches(/[eol]+/g),
-                   R.toUpper,
-                   "Hello, world!")`,
-         "HELLO, wOrLd!")
 })
 
 describe("L.indexed", () => {
@@ -1345,8 +1279,6 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.set(L.slice(undefined, undefined), 11, [])`)
     testThrows(`L.pick(new XYZ(1,2,3))`)
     testThrows(`L.set(L.filter(undefined, undefined), {x: 11}, [])`)
-    testThrows(`L.augment(new XYZ(1,2,3))`)
-    testThrows(`L.set(L.augment({y: () => 1}), 45, {x: 1})`)
 
     testThrows(`L.set(null, 1, 2)`)
 
@@ -1359,7 +1291,5 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.toFunction(-1)`)
 
     testThrows(`L.joinAs(I.id, 0)`)
-
-    testEq(`L.get(L.findWith("x", 1), [{x: ["a"]},{x: ["b","c"]}])`, "c")
   })
 }

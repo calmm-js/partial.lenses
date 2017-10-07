@@ -16,16 +16,11 @@ const T_functor = T.object({
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
 })
 
-const T_applicative = T.or(T.object({
-  delay: T.fn([T.any], T.any),
+const T_applicative = T.object({
   of: T.fn([T.any], T.any),
   ap: T.fn([T.any, T.any], T.any),
   map: T.fn([T.fn([T.any], T.any), T.any], T.any)
-}), T.object({
-  of: T.fn([T.any], T.any),
-  ap: T.fn([T.any, T.any], T.any),
-  map: T.fn([T.fn([T.any], T.any), T.any], T.any)
-}))
+})
 
 const T_monad = T.object({
   chain: T.fn([T.fn([T.any], T.any), T.any], T.any),
@@ -107,10 +102,6 @@ export const choice = T.fnVarN(0, T_optic, T_optic)
 export const optional = T_optic
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const zero = T_optic
-
-// Caching
-
-export const cache = T.fn([T_optic], T_optic)
 
 // Transforming
 
@@ -261,10 +252,6 @@ export const foldTraversalLens =
         T_traversal],
        T_lens)
 
-// Computing derived props
-
-export const augment = T.fn([T.props(T.fn([T.any], T_maybeDataI))], T_lens)
-
 // Enforcing invariants
 
 export const defaults = T.fn([T_dataI], T_lens)
@@ -280,7 +267,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findHint = T.fn([T.fn([T_maybeDataO, hint], T.any), hint], T_lens)
-export const findWith = T.fnVarN(0, T_optic, T_optic)
+export const findWith = T.fn([T_optic], T_optic)
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
 export const prefix = T.fn([T_sliceIndex], T_lens)
