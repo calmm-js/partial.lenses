@@ -127,32 +127,28 @@ var expect = function expect(p, f) {
   };
 };
 
-var freeze = function freeze(x) {
-  return x && Object.freeze(x);
-};
-
 function deepFreeze(x) {
   if (Array.isArray(x)) {
     x.forEach(deepFreeze);
-    freeze(x);
+    I.freeze(x);
   } else if (I.isObject(x)) {
     for (var k in x) {
       deepFreeze(x[k]);
-    }freeze(x);
+    }I.freeze(x);
   }
   return x;
 }
 
 function freezeArrayOfObjects(xs) {
-  xs.forEach(freeze);
-  return freeze(xs);
+  xs.forEach(I.freeze);
+  return I.freeze(xs);
 }
 
 var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
   return !(x instanceof Object) || Array.isArray(x);
 };
 
-var rev = /*#__PURE__*/(res(freeze))(function (xs) {
+var rev = /*#__PURE__*/(res(I.freeze))(function (xs) {
   if (seemsArrayLike(xs)) {
     var n = xs.length,
         ys = Array(n),
@@ -165,7 +161,7 @@ var rev = /*#__PURE__*/(res(freeze))(function (xs) {
 
 //
 
-var mapPartialIndexU = /*#__PURE__*/(res(freeze))(function (xi2y, xs) {
+var mapPartialIndexU = /*#__PURE__*/(res(I.freeze))(function (xi2y, xs) {
   var n = xs.length,
       ys = Array(n);
   var j = 0;
@@ -183,7 +179,7 @@ var mapIfArrayLike = function mapIfArrayLike(xi2y, xs) {
 
 var copyToFrom = /*#__PURE__*/(function (fn$$1) {
   return function (ys, k, xs, i, j) {
-    return ys.length === k + j - i ? freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
+    return ys.length === k + j - i ? I.freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
   };
 })(function (ys, k, xs, i, j) {
   while (i < j) {
@@ -335,7 +331,7 @@ function pushTo(n, ys) {
   return ys;
 }
 
-var toArray = /*#__PURE__*/(res(freeze))(function (n) {
+var toArray = /*#__PURE__*/(res(I.freeze))(function (n) {
   if (void 0 !== n) return pushTo(n, []);
 });
 
@@ -402,7 +398,7 @@ var cons = function cons(h) {
     return void 0 !== h ? [h, t] : t;
   };
 };
-var consTo = /*#__PURE__*/(res(freeze))(function (n) {
+var consTo = /*#__PURE__*/(res(I.freeze))(function (n) {
   if (cons !== n) {
     var xs = [];
     do {
@@ -459,7 +455,7 @@ var getProp = function getProp(k, o) {
   return o instanceof Object ? o[k] : void 0;
 };
 
-var setProp = /*#__PURE__*/(res(freeze))(function (k, v, o) {
+var setProp = /*#__PURE__*/(res(I.freeze))(function (k, v, o) {
   return void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o);
 });
 
@@ -471,7 +467,7 @@ var getIndex = function getIndex(i, xs) {
   return seemsArrayLike(xs) ? xs[i] : void 0;
 };
 
-var setIndex = /*#__PURE__*/(fn(nth(0, ef(reqIndex)), freeze))(function (i, x, xs) {
+var setIndex = /*#__PURE__*/(fn(nth(0, ef(reqIndex)), I.freeze))(function (i, x, xs) {
   if (!seemsArrayLike(xs)) xs = "";
   var n = xs.length;
   if (void 0 !== x) {
@@ -500,9 +496,12 @@ var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
 //
 
-var close = function close(o, F, xi2yF) {
-  return function (x, i) {
-    return o(x, i, F, xi2yF);
+var composedMiddle = function composedMiddle(o, r) {
+  return function (F, xi2yF) {
+    var n = r(F, xi2yF);
+    return function (x, i) {
+      return o(x, i, F, n);
+    };
   };
 };
 
@@ -511,14 +510,17 @@ function composed(oi0, os) {
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity;
   } else {
-    var fs = Array(n);
-    for (var i = 0; i < n; ++i) {
-      fs[i] = toFunction(os[i + oi0]);
-    }return function (x, i, F, xi2yF) {
-      var k = n;
-      while (--k) {
-        xi2yF = close(fs[k], F, xi2yF);
-      }return fs[0](x, i, F, xi2yF);
+    var _last = toFunction(os[oi0 + --n]);
+    var r = function r(F, xi2yF) {
+      return function (x, i) {
+        return _last(x, i, F, xi2yF);
+      };
+    };
+    while (--n) {
+      r = composedMiddle(toFunction(os[oi0 + n]), r);
+    }var first = toFunction(os[oi0]);
+    return function (x, i, F, xi2yF) {
+      return first(x, i, F, r(F, xi2yF));
     };
   }
 }
@@ -639,7 +641,7 @@ var isoU = function isoU(bwd, fwd) {
 
 //
 
-var getPick = /*#__PURE__*/(res(freeze))(function (template, x) {
+var getPick = /*#__PURE__*/(res(I.freeze))(function (template, x) {
   var r = void 0;
   for (var k in template) {
     var t = template[k];
@@ -675,13 +677,13 @@ var setPick = /*#__PURE__*/(par(1, ef(reqObject("`pick` must be set with undefin
 
 //
 
-var toObject = function toObject(x) {
-  return I.constructorOf(x) !== Object ? Object.assign({}, x) : x;
+var toObject$1 = function toObject$$1(x) {
+  return I.constructorOf(x) !== Object ? I.toObject(x) : x;
 };
 
 //
 
-var mapPartialObjectU = /*#__PURE__*/(res(freeze))(function (xi2y, o) {
+var mapPartialObjectU = /*#__PURE__*/(res(I.freeze))(function (xi2y, o) {
   var r = void 0;
   for (var k in o) {
     var v = xi2y(o[k], k);
@@ -693,7 +695,7 @@ var mapPartialObjectU = /*#__PURE__*/(res(freeze))(function (xi2y, o) {
   return r;
 });
 
-var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
+var branchOnMerge = /*#__PURE__*/(res(res(I.freeze)))(function (x, keys$$1) {
   return function (xs) {
     var o = {},
         n = keys$$1.length;
@@ -702,7 +704,7 @@ var branchOnMerge = /*#__PURE__*/(res(res(freeze)))(function (x, keys$$1) {
       o[keys$$1[i]] = void 0 !== v ? v : o;
     }
     var r = void 0;
-    x = toObject(x);
+    x = toObject$1(x);
     for (var k in x) {
       var _v = o[k];
       if (o !== _v) {
@@ -801,7 +803,7 @@ var partitionIntoIndex = /*#__PURE__*/(dep(function (_ref3) {
       fs = _ref4[3];
 
   return res(ef(function () {
-    freeze(ts);freeze(fs);
+    I.freeze(ts);I.freeze(fs);
   }));
 }))(function (xi2b, xs, ts, fs) {
   for (var i = 0, n = xs.length, x; i < n; ++i) {
@@ -867,12 +869,12 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 //
 
 var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (res(freezeArrayOfObjects))(function (x) {
-  x = toObject(x);
+  x = toObject$1(x);
   var es = [];
   for (var key in x) {
     es.push([key, x[key]]);
   }return es;
-})), expect(I.isArray, (res(freeze))(function (es) {
+})), expect(I.isArray, (res(I.freeze))(function (es) {
   var o = void 0;
   for (var i = 0, n = es.length; i < n; ++i) {
     var entry = es[i];
@@ -1185,7 +1187,7 @@ var matches = /*#__PURE__*/(dep(function (_ref5) {
 
 var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject$1(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
     return A.of(xs);
   }
@@ -1322,7 +1324,7 @@ var foldTraversalLens = /*#__PURE__*/I.curry(function (fold, traversal) {
 // Computing derived props
 
 var augment = /*#__PURE__*/(fn(nth(0, ef(reqTemplate("augment"))), and$1(function (lens) {
-  return toFunction([isoU(I.id, freeze), lens, isoU(freeze, ef(reqObject("`augment` must be set with undefined or an object")))]);
+  return toFunction([isoU(I.id, I.freeze), lens, isoU(I.freeze, ef(reqObject("`augment` must be set with undefined or an object")))]);
 }, ef(function () {
   warn(augment, "`L.augment` will be removed.  See CHANGELOG.");
 }))))(function (template) {
@@ -1332,7 +1334,7 @@ var augment = /*#__PURE__*/(fn(nth(0, ef(reqTemplate("augment"))), and$1(functio
       x[k] = template[k](x);
     }return x;
   }, function (y, x) {
-    y = toObject(y);
+    y = toObject$1(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
     for (var k in y) {
@@ -1591,7 +1593,7 @@ var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (res(freezeArrayOfObjects
   for (var i = 0; i < n; ++i) {
     xis[i] = [i, xs[i]];
   }return xis;
-})), expect(I.isArray, (res(freeze))(function (xis) {
+})), expect(I.isArray, (res(I.freeze))(function (xis) {
   var n = xis.length,
       xs = Array(n);
   for (var i = 0; i < n; ++i) {
@@ -1624,7 +1626,7 @@ var is = function is(v) {
 var reverse = /*#__PURE__*/isoU(rev, rev);
 
 var singleton = /*#__PURE__*/(function (iso) {
-  return toFunction([isoU(I.id, freeze), iso]);
+  return toFunction([isoU(I.id, I.freeze), iso]);
 })(function (x, i, F, xi2yF) {
   return F.map(singletonPartial, xi2yF((x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0, i));
 });

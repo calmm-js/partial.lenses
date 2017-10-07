@@ -1,4 +1,4 @@
-import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, hasU, id, identicalU, isArray, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU } from 'infestines';
+import { acyclicEqualsU, always, applyU, arityN, array0, assocPartialU, constructorOf, curry, curryN, dissocPartialU, freeze, hasU, id, identicalU, isArray, isDefined, isFunction, isObject, isString, keys, object0, pipe2U, sndU, toObject } from 'infestines';
 
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
@@ -121,10 +121,6 @@ var expect = function expect(p, f) {
   return function (x) {
     return p(x) ? f(x) : void 0;
   };
-};
-
-var freeze = function freeze(x) {
-  return x && Object.freeze(x);
 };
 
 function deepFreeze(x) {
@@ -496,9 +492,12 @@ var funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex);
 
 //
 
-var close = function close(o, F, xi2yF) {
-  return function (x, i) {
-    return o(x, i, F, xi2yF);
+var composedMiddle = function composedMiddle(o, r) {
+  return function (F, xi2yF) {
+    var n = r(F, xi2yF);
+    return function (x, i) {
+      return o(x, i, F, n);
+    };
   };
 };
 
@@ -507,14 +506,17 @@ function composed(oi0, os) {
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity;
   } else {
-    var fs = Array(n);
-    for (var i = 0; i < n; ++i) {
-      fs[i] = toFunction(os[i + oi0]);
-    }return function (x, i, F, xi2yF) {
-      var k = n;
-      while (--k) {
-        xi2yF = close(fs[k], F, xi2yF);
-      }return fs[0](x, i, F, xi2yF);
+    var _last = toFunction(os[oi0 + --n]);
+    var r = function r(F, xi2yF) {
+      return function (x, i) {
+        return _last(x, i, F, xi2yF);
+      };
+    };
+    while (--n) {
+      r = composedMiddle(toFunction(os[oi0 + n]), r);
+    }var first = toFunction(os[oi0]);
+    return function (x, i, F, xi2yF) {
+      return first(x, i, F, r(F, xi2yF));
     };
   }
 }
@@ -671,8 +673,8 @@ var setPick = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(1, 
 
 //
 
-var toObject = function toObject(x) {
-  return constructorOf(x) !== Object ? Object.assign({}, x) : x;
+var toObject$1 = function toObject$$1(x) {
+  return constructorOf(x) !== Object ? toObject(x) : x;
 };
 
 //
@@ -698,7 +700,7 @@ var branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : r
       o[keys$$1[i]] = void 0 !== v ? v : o;
     }
     var r = void 0;
-    x = toObject(x);
+    x = toObject$1(x);
     for (var k in x) {
       var _v = o[k];
       if (o !== _v) {
@@ -863,7 +865,7 @@ function iterEager(map, ap, of, _, xi2yA, t, s) {
 //
 
 var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV === "production" ? id : res(freezeArrayOfObjects))(function (x) {
-  x = toObject(x);
+  x = toObject$1(x);
   var es = [];
   for (var key in x) {
     es.push([key, x[key]]);
@@ -1181,7 +1183,7 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : dep(fun
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
   if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject(xs)) : branchOn(keys(xs), void 0)(xs, void 0, A, xi2yA);
+    return A === Ident ? mapPartialObjectU(xi2yA, toObject$1(xs)) : branchOn(keys(xs), void 0)(xs, void 0, A, xi2yA);
   } else {
     return A.of(xs);
   }
@@ -1328,7 +1330,7 @@ var augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? id : fn(nth(
       x[k] = template[k](x);
     }return x;
   }, function (y, x) {
-    y = toObject(y);
+    y = toObject$1(y);
     if (!(x instanceof Object)) x = void 0;
     var z = void 0;
     for (var k in y) {
