@@ -4,19 +4,15 @@ import * as C from "./contract"
 
 //
 
-const pipeO = (f, g) => f ? I.pipe2U(f, g) : g
-
 const toStringPartial = x => void 0 !== x ? String(x) : ""
 
-const not = x => !x
 const lt = (x, y) => x < y
 const gt = (x, y) => x > y
 
 const sliceIndex = (m, l, d, i) =>
   void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d
 
-function pair(x0, x1) {return [x0, x1]}
-const cpair = x => xs => [x, xs]
+const cpair = xs => x => [x, xs]
 
 const unto = c => x => void 0 !== x ? x : c
 const unto0 = /*#__PURE__*/unto(0)
@@ -84,30 +80,43 @@ const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : 
 
 //
 
+function selectInArrayLike(xi2v, xs) {
+  for (let i=0, n=xs.length; i<n; ++i) {
+    const v = xi2v(xs[i], i)
+    if (void 0 !== v)
+      return v
+  }
+}
+
+//
+
+const Select = {
+  map: I.sndU,
+  of: () => {},
+  ap: (l, r) => void 0 !== l ? l : r
+}
+
 const Ident = {map: I.applyU, of: I.id, ap: I.applyU, chain: I.applyU}
 
 const Const = {map: I.sndU}
 
-function ConcatOf(ap, empty, delay) {
-  const c = {map: I.sndU, ap, of: I.always(empty)}
-  if (delay)
-    c.delay = delay
-  return c
-}
+const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
 
 const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
 
 const Mum = ord =>
   ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
 
-const MumBy = ord => keyOf => ConcatOf((y, x) => {
-  const xk = x && keyOf(x[0], x[1])
-  if (void 0 === xk)
-    return y
-  const yk = y && keyOf(y[0], y[1])
-  if (void 0 === yk)
-    return x
-  return ord(xk, yk) ? x : y
+const mumBy = ord => I.curry((xi2y, t, s) => {
+  let minX = void 0, minY = void 0
+  traverseU(Select, (x, i) => {
+    const y = xi2y(x, i)
+    if (void 0 !== y && (void 0 === minY || ord(y, minY))) {
+      minX = x
+      minY = y
+    }
+  }, t, s)
+  return minX
 })
 
 //
@@ -168,11 +177,6 @@ function reqOptic(o) {
   }
 }
 
-const warnDelay = /*#__PURE__*/C.ef(C => {
-  if (C !== Select && C.delay)
-    warn(warnDelay, "Support for `delay` operation will be removed.  See CHANGELOG.")
-})
-
 //
 
 const reqString = msg => x => {
@@ -199,81 +203,12 @@ const reqMonad = name => C => {
 
 //
 
-function Both(l, r) {this.l = l; this.r = r}
-
-const isBoth = n => n.constructor === Both
-
-const both = (l, r) => void 0 !== l ? void 0 !== r ? new Both(l, r) : l : r
-
-function pushTo(n, ys) {
-  while (n && isBoth(n)) {
-    const l = n.l
-    n = n.r
-    if (l && isBoth(l))
-      pushTo(l.r, pushTo(l.l, ys))
-    else
-      ys.push(l)
-  }
-  ys.push(n)
-  return ys
-}
-
-const toArray = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(n => {
-  if (void 0 !== n)
-    return pushTo(n, [])
-})
-
-function foldRec(f, r, n) {
-  while (isBoth(n)) {
-    const l = n.l
-    n = n.r
-    r = isBoth(l)
-      ? foldRec(f, foldRec(f, r, l.l), l.r)
-      : f(r, l[0], l[1])
-  }
-  return f(r, n[0], n[1])
-}
-
-const fold = (f, r, n) => void 0 !== n ? foldRec(f, r, n) : r
-
-const Collect = /*#__PURE__*/ConcatOf(both)
-
-//
-
-const U = I.object0
-const T = {v:true}
-
-function force(x) {
-  while (x.constructor === Function)
-    x = x()
-  return x
-}
-
-function selectElems(xi2yA, xs) {
-  for (let i=0, n=xs.length, x; i<n; ++i) {
-    x = force(xi2yA(xs[i], i))
-    if (U !== x)
-      return x
-  }
-  return U
-}
-
-const Select = /*#__PURE__*/ConcatOf(
-  (l, r) => void 0 !== (l = force(l)).v ? l : r,
-  U,
-  I.id)
-
-const mkSelect = toS => (xi2yM, t, s) =>
-  force(traverseU(Select, pipeO(xi2yM, toS), t, s)).v
-
-const selectAny = /*#__PURE__*/mkSelect(x => x ? T : U)
-
 const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
   (m = toC(m), (t, s) => after(traverseU(m, xi2yC, t, s))))
 
 //
 
-const cons = h => t => void 0 !== h ? [h, t] : t
+const cons = t => h => void 0 !== h ? [h, t] : t
 const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(n => {
   if (cons !== n) {
     const xs = []
@@ -281,25 +216,16 @@ const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.re
       xs.push(n[0])
       n=n[1]
     } while (cons !== n)
-    return xs
+    return xs.reverse()
   }
 })
 
-const traversePartialIndexLazy = (map, ap, z, delay, xi2yA, xs, i, n) =>
-  i < n
-  ? ap(map(cons, xi2yA(xs[i], i)), delay(() =>
-       traversePartialIndexLazy(map, ap, z, delay, xi2yA, xs, i+1, n)))
-  : z
-
-const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.and(warnDelay, C.ef(reqApplicative("elems")))))((A, xi2yA, xs) => {
-  const {map, ap, of, delay} = A
-  let xsA = of(cons),
-      i = xs.length
-  if (delay)
-    xsA = traversePartialIndexLazy(map, ap, xsA, delay, xi2yA, xs, 0, i)
-  else
-    while (i--)
-      xsA = ap(map(cons, xi2yA(xs[i], i)), xsA)
+const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
+  const {map, ap, of} = A
+  let xsA = of(cons)
+  const n = xs.length
+  for (let i=0; i<n; ++i)
+    xsA = ap(map(cons, xsA), xi2yA(xs[i], i))
   return map(consTo, xsA)
 })
 
@@ -540,9 +466,9 @@ const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? 
 
 const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(C.res(I.freeze)))((x, keys) => xs => {
   const o = {}, n = keys.length
-  for (let i=0; i<n; ++i, xs=xs[1]) {
+  for (let i=n; i; xs=xs[1]) {
     const v = xs[0]
-    o[keys[i]] = void 0 !== v ? v : o
+    o[keys[--i]] = void 0 !== v ? v : o
   }
   let r
   x = toObject(x)
@@ -567,63 +493,50 @@ const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
   return r
 })
 
-function branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i) {
-  if (i < keys.length) {
-    const k = keys[i], v = x[k]
-    return ap(map(cpair,
-                  vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), delay(() =>
-              branchOnLazy(keys, vals, map, ap, z, delay, A, xi2yA, x, i+1)))
-  } else {
-    return z
-  }
-}
-
-const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.and(warnDelay, C.ef(reqApplicative(vals ? "branch" : "values")))))))((keys, vals) => (x, _i, A, xi2yA) => {
-  const {map, ap, of, delay} = A
-  let i = keys.length
-  if (!i)
+const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.ef(reqApplicative(vals ? "branch" : "values"))))))((keys, vals) => (x, _i, A, xi2yA) => {
+  const {of} = A
+  let n = keys.length
+  if (!n)
     return of(object0ToUndefined(x))
   if (!(x instanceof Object))
     x = I.object0
-  let xsA = of(cpair)
-  if (delay) {
-    xsA = branchOnLazy(keys, vals, map, ap, xsA, delay, A, xi2yA, x, 0)
-  } else {
-    while (i--) {
+  if (Select === A) {
+    for (let i=0; i<n; ++i) {
       const k = keys[i], v = x[k]
-      xsA = ap(map(cpair, vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)), xsA)
+      const y = vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)
+      if (void 0 !== y)
+        return y
     }
+  } else {
+    const {map, ap} = A
+    let xsA = of(cpair)
+    for (let i=0; i<n; ++i) {
+      const k = keys[i], v = x[k]
+      xsA = ap(map(cpair, xsA), vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k))
+    }
+    return map(branchOnMerge(x, keys), xsA)
   }
-  return map(branchOnMerge(x, keys), xsA)
 })
 
 const replaced = (inn, out, x) => I.acyclicEqualsU(x, inn) ? out : x
 
-function findIndex(xi2b, xs) {
-  const n = xs.length
-  for (let i=0; i<n; ++i)
-    if (xi2b(xs[i], i))
-      return i
-  return n
-}
-
 function findIndexHint(hint, xi2b, xs) {
-  const n = xs.length
   let u = hint.hint
+  const n = xs.length
   if (n <= u) u = n-1
   if (u < 0) u = 0
   let d = u-1
   for (; 0 <= d && u < n; ++u, --d) {
-    if (xi2b(xs[u], hint))
+    if (xi2b(xs[u], u, hint))
       return u
-    if (xi2b(xs[d], hint))
+    if (xi2b(xs[d], d, hint))
       return d
   }
   for (; u < n; ++u)
-    if (xi2b(xs[u], hint))
+    if (xi2b(xs[u], u, hint))
       return u
   for (; 0 <= d; --d)
-    if (xi2b(xs[d], hint))
+    if (xi2b(xs[d], d, hint))
       return d
   return n
 }
@@ -656,27 +569,30 @@ function reNext(m, re) {
 
 //
 
-const iterCollect = s => x => xs => [s, x, xs]
+const iterCollect = s => xs => x => [s, x, xs]
 
-const iterLazy = (map, ap, of, delay, xi2yA, t, s) =>
-  (s = reNext(s, t))
-  ? ap(ap(map(iterCollect, of(s)),
-          xi2yA(reValue(s), reIndex(s))),
-       delay(() => iterLazy(map, ap, of, delay, xi2yA, t, s)))
-  : of(iterCollect)
-
-function iterEager(map, ap, of, _, xi2yA, t, s) {
-  const ss = []
-  while ((s = reNext(s, t)))
-    ss.push(s)
-  let i = ss.length
-  let r = of(iterCollect)
-  while (i--) {
-    s = ss[i]
-    r = ap(ap(map(iterCollect, of(s)),
-              xi2yA(reValue(s), reIndex(s))),
-           r)
+const iterToArray = xs => {
+  const ys = []
+  while (iterCollect !== xs) {
+    ys.push(xs[0], xs[1])
+    xs = xs[2]
   }
+  return ys
+}
+
+function iterSelect(xi2y, t, s) {
+  while ((s = reNext(s, t))) {
+    const y = xi2y(reValue(s), reIndex(s))
+    if (void 0 !== y)
+      return y
+  }
+}
+
+function iterEager(map, ap, of, xi2yA, t, s) {
+  let r = of(iterCollect)
+  while ((s = reNext(s, t)))
+    r = ap(ap(map(iterCollect, of(s)), r),
+           xi2yA(reValue(s), reIndex(s)))
   return r
 }
 
@@ -703,18 +619,20 @@ const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV =
 
 //
 
-const matchesJoin = input => matches => {
+const matchesJoin = input => matchesIn => {
   let result = ""
   let lastIndex = 0
-  while (iterCollect !== matches) {
-    const m = matches[0], i = reIndex(m)
+  const matches = iterToArray(matchesIn)
+  const n = matches.length
+  for (let j=n-2; j !== -2; j += -2) {
+    const m = matches[j], i = reIndex(m)
     result += input.slice(lastIndex, i)
-    const s = matches[1]
+    const s = matches[j+1]
     if (void 0 !== s)
       result += s
     lastIndex = i + m[0].length
-    matches = matches[2]
   }
+
   result += input.slice(lastIndex)
   return result || void 0
 }
@@ -826,24 +744,6 @@ export const optional = /*#__PURE__*/when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
-// Caching
-
-export const cache = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function (_) {
-  warn(cache, "`L.cache` will be removed.  See CHANGELOG.")
-  return fn.apply(null, arguments)
-})(function (o) {
-  const map = arguments[1] || new Map()
-  let C_, xi2yC_
-  o = toFunction(o)
-  return (x, i, C, xi2yC) => {
-    let entry = map.get(i)
-    entry || map.set(i, entry = [zeroOp])
-    return I.identicalU(entry[0], x) && xi2yC_ === xi2yC && C_ === C
-      ? entry[1]
-      : entry[1] = o(entry[0] = x, i, C_ = C, xi2yC_ = xi2yC)
-  }
-})
-
 // Transforming
 
 export const assignOp = x => [propsOf(x), setOp(x)]
@@ -897,7 +797,7 @@ export const branch = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
 export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(2, C.ef(reqApplicative("elems"))))((xs, _i, A, xi2yA) => {
   if (seemsArrayLike(xs)) {
     return A === Ident  ? mapPartialIndexU(xi2yA, xs)
-      :    A === Select ? selectElems(xi2yA, xs)
+      :    A === Select ? selectInArrayLike(xi2yA, xs)
       :                   traversePartialIndex(A, xi2yA, xs)
   } else {
     return A.of(xs)
@@ -911,19 +811,20 @@ export const flatten =
 
 export const keys = /*#__PURE__*/toFunction([keyed, elems, 0])
 
-export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.and(warnDelay, C.ef(reqApplicative("matches", re))))) : I.id))(re => {
+export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
       if (re.global) {
-        const {ap, of, delay} = C
         const m0 = [""]
         m0.input = x
         m0.index = 0
-        return map(matchesJoin(x),
-                   (delay
-                    ? iterLazy
-                    : iterEager)(map, ap, of, delay, xi2yC, re, m0))
+        if (Select === C) {
+          return iterSelect(xi2yC, re, m0)
+        } else {
+          const {ap, of} = C
+          return map(matchesJoin(x), iterEager(map, ap, of, xi2yC, re, m0))
+        }
       } else {
         const m = x.match(re)
         if (m)
@@ -946,19 +847,34 @@ export const values = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
 
 // Folds over traversals
 
-export const all = /*#__PURE__*/I.pipe2U(mkSelect(x => x ? U : T), not)
+export const all = /*#__PURE__*/I.curry((xi2b, t, s) =>
+  !traverseU(Select, (x, i) => {
+    if (!xi2b(x, i))
+      return true
+  }, t, s))
 
-export const and = /*#__PURE__*/all()
+export const and = /*#__PURE__*/all(I.id)
 
-export const any = /*#__PURE__*/I.pipe2U(selectAny, Boolean)
+export const any = /*#__PURE__*/I.curry((xi2b, t, s) =>
+  !!traverseU(Select, (x, i) => {
+    if (xi2b(x, i))
+      return true
+  }, t, s))
 
-export const collectAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
-  toArray(traverseU(Collect, xi2y, t, s)) || I.array0)
+export const collectAs = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(I.freeze))((xi2y, t, s) => {
+  const results = []
+  traverseU(Select, (x, i) => {
+    const y = xi2y(x, i)
+    if (void 0 !== y)
+       results.push(y)
+  }, t, s)
+  return results
+})
 
 export const collect = /*#__PURE__*/collectAs(I.id)
 
 export const concatAs =
-  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, m.empty(), m.delay))
+  /*#__PURE__*/mkTraverse(I.id, m => ConcatOf(m.concat, m.empty()))
 
 export const concat = /*#__PURE__*/concatAs(I.id)
 
@@ -969,7 +885,7 @@ export const count = /*#__PURE__*/countIf(I.isDefined)
 
 export const countsAs = /*#__PURE__*/I.curry((xi2k, t, s) => {
   const counts = new Map()
-  forEach((x, i) => {
+  traverseU(Select, (x, i) => {
     const k = xi2k(x, i),
           n = counts.get(k)
     counts.set(k, void 0 !== n ? n + 1 : 1)
@@ -979,25 +895,27 @@ export const countsAs = /*#__PURE__*/I.curry((xi2k, t, s) => {
 
 export const counts = /*#__PURE__*/countsAs(I.id)
 
-export const foldl = /*#__PURE__*/I.curry((f, r, t, s) =>
-  fold(f, r, traverseU(Collect, pair, t, s)))
-
-export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
-  const xs = collectAs(pair, t, s)
-  for (let i=xs.length-1; 0<=i; --i) {
-    const x = xs[i]
-    r = f(r, x[0], x[1])
-  }
+export const foldl = /*#__PURE__*/I.curry((f, r, t, s) => {
+  traverseU(Select, (x, i) => {r = f(r, x, i)}, t, s)
   return r
 })
 
-export const forEach = /*#__PURE__*/I.curry((f, t, s) => {
-  fold((_, x, i) => {f(x, i)}, void 0, traverseU(Collect, pair, t, s))
+export const foldr = /*#__PURE__*/I.curry((f, r, t, s) => {
+  const is = [], xs = []
+  traverseU(Select, (x, i) => {xs.push(x); is.push(i)}, t, s)
+  for (let i=xs.length-1; 0<=i; --i)
+    r = f(r, xs[i], is[i])
+  return r
 })
 
-export const isDefined = /*#__PURE__*/I.pipe2U(mkSelect(x => void 0 !== x ? T : U), Boolean)()
+export const forEach = /*#__PURE__*/I.curry((f, t, s) =>
+  traverseU(Select, (x, i) => {f(x, i)}, t, s))
 
-export const isEmpty = /*#__PURE__*/I.pipe2U(mkSelect(I.always(T)), not)()
+export const isDefined = /*#__PURE__*/I.curry((t, s) =>
+  void 0 !== traverseU(Select, I.id, t, s))
+
+export const isEmpty = /*#__PURE__*/I.curry((t, s) =>
+  !traverseU(Select, I.always(true), t, s))
 
 export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqString("`join` and `joinAs` expect a string delimiter"))))(d => {
   return ConcatOf((x, y) => void 0 !== x ? void 0 !== y ? x + d + y : x : y)
@@ -1005,30 +923,44 @@ export const joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (process.env.NODE
 
 export const join = /*#__PURE__*/joinAs(I.id)
 
-export const maximumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(gt))(pair)
+export const maximumBy = /*#__PURE__*/mumBy(gt)
 
 export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
 
-export const meanAs = /*#__PURE__*/I.curry((xi2y, t, s) =>
-  sumAs(pipeO(xi2y, unto0), t, s) / sumAs(pipeO(xi2y, I.isDefined), t, s))
+export const meanAs = /*#__PURE__*/I.curry((xi2y, t, s) => {
+  let sum = 0
+  let num = 0
+  traverseU(Select, (x, i) => {
+    const y = xi2y(x, i)
+    if (void 0 !== y) {
+      num += 1
+      sum += y
+    }
+  }, t, s)
+  return sum / num
+})
 
-export const mean = /*#__PURE__*/meanAs()
+export const mean = /*#__PURE__*/meanAs(I.id)
 
-export const minimumBy = /*#__PURE__*/mkTraverse(reValue, MumBy(lt))(pair)
+export const minimumBy = /*#__PURE__*/mumBy(lt)
 
 export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
 
-export const none = /*#__PURE__*/I.pipe2U(selectAny, not)
+export const none = /*#__PURE__*/I.curry((xi2b, t, s) =>
+  !traverseU(Select, (x, i) => {
+    if (xi2b(x, i))
+      return true
+  }, t, s))
 
-export const or = /*#__PURE__*/any()
+export const or = /*#__PURE__*/any(I.id)
 
 export const productAs = /*#__PURE__*/traverse(ConcatOf((x, y) => x * y, 1))
 
 export const product = /*#__PURE__*/productAs(unto(1))
 
-export const selectAs = /*#__PURE__*/I.curry(mkSelect(v => void 0 !== v ? {v} : U))
+export const selectAs = /*#__PURE__*/traverse(Select)
 
-export const select = /*#__PURE__*/selectAs()
+export const select = /*#__PURE__*/selectAs(I.id)
 
 export const sumAs = /*#__PURE__*/traverse(Sum)
 
@@ -1048,39 +980,6 @@ export const setter = /*#__PURE__*/lens(I.id)
 
 export const foldTraversalLens = /*#__PURE__*/I.curry((fold, traversal) =>
   lensU(fold(traversal), set(traversal)))
-
-// Computing derived props
-
-export const augment = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.fn(C.nth(0, C.ef(reqTemplate("augment"))), C.and(lens => toFunction([isoU(I.id, I.freeze), lens, isoU(I.freeze, C.ef(reqObject("`augment` must be set with undefined or an object")))]), C.ef(() => {
-  warn(augment, "`L.augment` will be removed.  See CHANGELOG.")
-}))))(template => {
-  return lensU(x => {
-    x = I.dissocPartialU(0, x)
-    if (x)
-      for (const k in template)
-        x[k] = template[k](x)
-    return x
-  }, (y, x) => {
-    y = toObject(y)
-    if (!(x instanceof Object))
-      x = void 0
-    let z
-    for (const k in y) {
-      if (!I.hasU(k, template)) {
-        if (!z)
-          z = {}
-        z[k] = y[k]
-      } else {
-        if (x && I.hasU(k, x)) {
-          if (!z)
-            z = {}
-          z[k] = x[k]
-        }
-      }
-    }
-    return z
-  })
-})
 
 // Enforcing invariants
 
@@ -1128,30 +1027,25 @@ export const filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
     xi2yF(ts, i))
 })
 
-export const find = xi2b => (xs, _i, F, xi2yF) => {
-  const ys = seemsArrayLike(xs) ? xs : "",
-        i = findIndex(xi2b, ys)
-  return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
+export function find(xih2b) {
+  const hint = arguments.length > 1 ? arguments[1] : {hint: 0}
+  return (xs, _i, F, xi2yF) => {
+    const ys = seemsArrayLike(xs) ? xs : "",
+          i = hint.hint = findIndexHint(hint, xih2b, ys)
+    return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
+  }
 }
 
 export const findHint = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(C.ef(() => {
-  warn(findHint, "`L.findHint` will be merged into `L.find`.  See CHANGELOG.")
+  warn(findHint, "`L.findHint` will be removed.  Use `L.find`, which supports an optional hint.")
 })))((xh2b, hint) => {
-  return (xs, _i, F, xi2yF) => {
-    const ys = seemsArrayLike(xs) ? xs : "",
-          i = hint.hint = findIndexHint(hint, xh2b, ys)
-    return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
-  }
+  return find((x, _, h) => xh2b(x,h), hint)
 })
 
-export const findWith = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function () {
-  if (arguments.length !== 1)
-    warn(findWith, "`L.findWith` will be changed to support a hint parameter.  Just replace `L.findWith(...ls)` with `L.findWith([...ls])`.  See CHANGELOG.")
-  return fn.apply(null, arguments)
-})((...os) => {
-  const oos = toFunction(compose(...os))
-  return [find(isDefined(oos)), oos]
-})
+export function findWith(o) {
+  const oo = toFunction(o), p = isDefined(oo)
+  return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo]
+}
 
 export const index = process.env.NODE_ENV !== "production" ? C.ef(reqIndex) : I.id
 

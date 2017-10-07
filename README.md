@@ -54,8 +54,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
-    * [Caching](#caching)
-      * [`L.cache(optic[, map]) ~> optic`](#L-cache "L.cache: (POptic s a[, Map]) -> POptic s a") <small><sup>v11.15.0</sup></small>
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
@@ -120,8 +118,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
       * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
       * [`L.foldTraversalLens((traversal, maybeData) ~> maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
-    * [Computing derived props](#computing-derived-props)
-      * [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}") <small><sup>v1.1.0</sup></small>
     * [Enforcing invariants](#enforcing-invariants)
       * [`L.defaults(valueIn) ~> lens`](#L-defaults "L.defaults: s -> PLens s s") <small><sup>v2.0.0</sup></small>
       * [`L.define(value) ~> lens`](#L-define "L.define: s -> PLens s s") <small><sup>v1.0.0</sup></small>
@@ -132,9 +128,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Lensing array-like objects](#array-like)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a") <small><sup>v1.0.0</sup></small>
       * [`L.filter((maybeValue, index) => testable) ~> lens`](#L-filter "L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]") <small><sup>v1.0.0</sup></small>
-      * [`L.find((maybeValue, index) => testable) ~> lens`](#L-find "L.find: ((Maybe a, Index) -> Boolean) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
-      * [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>
-      * [`L.findWith(...optics) ~> optic`](#L-findWith "L.findWith: (POptic s s1, ...POptic sN a) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
+      * [`L.find((maybeValue, index, {hint: index}) => testable[, {hint: index}]) ~> lens`](#L-find "L.find: ((Maybe a, Index, {hint: Index}) -> Boolean[, {hint: Index}]) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
+      * ~~[`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>~~
+      * [`L.findWith(optic[, {hint: index}]) ~> optic`](#L-findWith "L.findWith: (POptic s a[, {hint: Index}]) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
       * [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex` <small><sup>v1.0.0</sup></small>
       * [`L.last ~> lens`](#L-last "L.last: PLens [a] a") <small><sup>v9.8.0</sup></small>
       * [`L.prefix(maybeBegin) ~> lens`](#L-prefix "L.prefix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
@@ -1345,46 +1341,6 @@ L.collect([L.elems,
 // [ 2, 3, 4 ]
 ```
 
-#### <a id="caching"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#caching) Caching
-
-#### <a id="L-cache"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-cache) [`L.cache(optic[, map]) ~> optic`](#L-cache "L.cache: (POptic s a[, Map]) -> POptic s a") <small><sup>v11.15.0</sup></small>
-
-**WARNING: `L.cache` will be removed.  See [CHANGELOG](./CHANGELOG.md#11210).**
-
-`L.cache` wraps a given optic so that the last operation, inputs, and the result
-are cached and when used repeatedly with the same operation and inputs, the
-cached result is used without recomputing it.  `L.cache` stores the cached
-results by index and also works with indexed traversals such as
-[`L.elems`](#L-elems) and [`L.values`](#L-values).  The second argument to
-`L.cache` is optional and can be used to give the
-[`Map`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Map)
-to use for caching results explicitly.  When not given, a `Map` is created
-internally by `L.cache`.
-
-Here is a contrived example
-
-```js
-const incOp = L.cache(L.choose(_ => console.log("incOp") || L.modifyOp(R.inc)))
-
-R.identity({
-  fst: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2}),
-  snd: L.transform(L.branch({x: incOp, y: incOp}), {x: 1, y: 2})
-})
-// incOp
-// incOp
-// { fst: { x: 2, y: 3 }, snd: { x: 2, y: 3 } }
-```
-
-that demonstrates that the cached `incOp` is only performed twice instead of
-four times.
-
-Note that simply wrapping optics with `L.cache` does not generally improve
-performance and may even cause memory usage issues.  When used on an optic that
-appears after `L.elems`, for example, a cache entry is recorded for each element
-in the operated array, which may take a significant amount of memory.  However,
-when used strategically, `L.cache` can be used to make complex transforms
-operate [incrementally](https://en.wikipedia.org/wiki/Incremental_computing).
-
 #### <a id="debugging"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#debugging) Debugging
 
 ##### <a id="L-log"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-log) [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
@@ -2395,27 +2351,6 @@ L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
 See the [Collection toggle](#collection-toggle) section for a more interesting
 example.
 
-#### <a id="computing-derived-props"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#computing-derived-props) Computing derived props
-
-##### <a id="L-augment"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-augment) [`L.augment({prop: object => value, ...props}) ~> lens`](#L-augment "L.augment: {p1: o -> a1, ...ps} -> PLens {...o} {...o, p1: a1, ...ps}") <small><sup>v1.1.0</sup></small>
-
-**WARNING: `L.augment` will be removed.  See
-[CHANGELOG](./CHANGELOG.md#11210).**
-
-`L.augment` is given a template of functions to compute new properties.  When
-not viewing or setting a defined object, the result is `undefined`.  When
-viewing a defined object, the object is extended with the computed properties.
-When set with a defined object, the extended properties are removed.
-
-For example:
-
-```js
-L.modify(L.augment({y: r => r.x + 1}),
-         r => ({x: r.x + r.y, y: 2, z: r.x - r.y}),
-         {x: 1})
-// { x: 3, z: -1 }
-```
-
 #### <a id="enforcing-invariants"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#enforcing-invariants) Enforcing invariants
 
 ##### <a id="L-defaults"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-defaults) [`L.defaults(valueIn) ~> lens`](#L-defaults "L.defaults: s -> PLens s s") <small><sup>v2.0.0</sup></small>
@@ -2592,7 +2527,7 @@ doesn't seem to make sense, because in most cases use of
 Also, the [`L.elems`](#L-elems) traversal composed with [`L.when`](#L-when) will
 retain order of elements.
 
-##### <a id="L-find"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-find) [`L.find((maybeValue, index) => testable) ~> lens`](#L-find "L.find: ((Maybe a, Index) -> Boolean) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
+##### <a id="L-find"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-find) [`L.find((maybeValue, index, {hint: index}) => testable[, {hint: index}]) ~> lens`](#L-find "L.find: ((Maybe a, Index, {hint: Index}) -> Boolean[, {hint: Index}]) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
 
 `L.find` operates on [array-like](#array-like) objects like
 [`L.index`](#L-index), but the index to be viewed is determined by finding the
@@ -2604,32 +2539,20 @@ L.remove(L.find(x => x <= 2), [3, 1, 4, 1, 5, 9, 2])
 // [ 3, 4, 1, 5, 9, 2 ]
 ```
 
-Note that `L.find` by itself does not satisfy all lens laws.  To fix this, you
-can e.g. post compose `L.find` with lenses that ensure that the property being
-tested by the predicate given to `L.find` cannot be written to.  See
-[here](#myth-partial-lenses-are-not-lawful) for discussion and an example.
-
-##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) [`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>
-
-**WARNING: `L.findHint` will be merged into [`L.find`](#L-find).  See
-[CHANGELOG](./CHANGELOG.md#11210).**
-
-`L.findHint` is much like [`L.find`](#L-find) and determines the index of an
-[array-like](#array-like) object to operate on by searching with the given
-predicate.  Unlike [`L.find`](#L-find), `L.findHint` is designed to operate
-efficiently when used repeatedly on uniquely identifiable targets, such as
-objects with unique `id`s.  To this end, `L.findHint` is given an object with a
-`hint` property.  The search is started from the closest existing index to the
-`hint` and then by increasing distance from that index.  The `hint` is updated
-after each search and the `hint` can also be mutated from the outside.  The
-`hint` object is also passed to the predicate as the second argument.  This
-makes it possible to both practically eliminate the linear search and to
-implement the predicate without allocating extra memory for it.
+`L.find` is designed to operate efficiently when used repeatedly.  To this end,
+`L.find` can be given an object with a `hint` property and when no hint object
+is passed, a new object will be allocated internally.  Repeated searches are
+started from the closest existing index to the `hint` and then by increasing
+distance from that index.  The `hint` is updated after each search and the
+`hint` can also be mutated from the outside.  The `hint` object is also passed
+to the predicate as the third argument.  This makes it possible to both
+practically eliminate the linear search and to implement the predicate without
+allocating extra memory for it.
 
 For example:
 
 ```js
-L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), "value"],
+L.modify([L.find(R.whereEq({id: 2}), {hint: 2}), "value"],
          R.toUpper,
          [{id: 3, value: "a"},
           {id: 2, value: "b"},
@@ -2643,11 +2566,24 @@ L.modify([L.findHint(R.whereEq({id: 2}), {hint: 2}), "value"],
 //  {id: 5, value: "e"}]
 ```
 
-##### <a id="L-findWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findWith) [`L.findWith(...optics) ~> optic`](#L-findWith "L.findWith: (POptic s s1, ...POptic sN a) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
+Note that `L.find` by itself does not satisfy all lens laws.  To fix this, you
+can e.g. post compose `L.find` with lenses that ensure that the property being
+tested by the predicate given to `L.find` cannot be written to.  See
+[here](#myth-partial-lenses-are-not-lawful) for discussion and an example.
 
-`L.findWith(...optics)` chooses an index from an [array-like](#array-like)
-object through which the given optic, [`[...optics]`](#L-compose), has a
-non-`undefined` view and then returns an optic that focuses on that.
+##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) ~~[`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>~~
+
+**WARNING: `L.findHint` will be removed.  Use [`L.find`](#L-find), which
+supports an optional hint.**
+
+`L.findHint` is a wrapper around [`L.find`](#L-find) and is provided to ease
+transitioning.  Use [`L.find`](#L-find) in new code.
+
+##### <a id="L-findWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findWith) [`L.findWith(optic[, {hint: index}]) ~> optic`](#L-findWith "L.findWith: (POptic s a[, {hint: Index}]) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
+
+`L.findWith` chooses an index from an [array-like](#array-like) object through
+which the given optic has a non-`undefined` view and then returns an optic that
+focuses on that.
 
 For example:
 
@@ -2659,10 +2595,6 @@ L.get(L.findWith("x"), [{z: 6}, {x: 9}, {y: 6}])
 L.set(L.findWith("x"), 3, [{z: 6}, {x: 9}, {y: 6}])
 // [ { z: 6 }, { x: 3 }, { y: 6 } ]
 ```
-
-**WARNING: `L.findWith` will be changed to support a hint parameter.  Just
-replace `L.findWith(...ls)` with `L.findWith([...ls])`.  See
-[CHANGELOG](./CHANGELOG.md#11210).**
 
 ##### <a id="L-index"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-index) [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex` <small><sup>v1.0.0</sup></small>
 

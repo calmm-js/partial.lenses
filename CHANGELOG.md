@@ -1,5 +1,20 @@
 # Changelog
 
+## 12.0.0
+
+The current plan is to change Partial Lenses to support so called naked or
+prototypeless objects with `null` prototype (i.e. `Object.create(null)`) in the
+next major version.  This is a breaking change although it is likely that it
+will not affect most users.  Usefully warning for this change of behaviour by
+adding diagnostics to optics seems somewhat difficult.
+
+As documented in 11.21.0:
+* Support for lazy algebras with the `delay` function was removed.
+* `L.cache` was removed.
+* `L.augment` was removed.
+* `L.find` and `L.findWith` were changed to support a hint.
+* `L.findHint` was marked for removal.
+
 ## 11.22.1
 
 Tightened the specification of a number of isomorphisms, including `L.uri`,
@@ -98,14 +113,13 @@ bug fix as the behaviour wasn't previously strictly specified.
 
 ## 10.0.0
 
-As discussed in
-issue [50](https://github.com/calmm-js/partial.lenses/issues/50), to strongly
-guide away from mutating data structures, optics
-now
-[`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze) any
-new objects they create when `NODE_ENV` is not `production`.  Note that optics
-do not implicitly "deep freeze" data structures given to them or freeze data
-returned by user defined functions.  Only objects newly created by optic
+As discussed in issue
+[50](https://github.com/calmm-js/partial.lenses/issues/50), to strongly guide
+away from mutating data structures, optics now
+[`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
+any new objects they create when `NODE_ENV` is not `production`.  Note that
+optics do not implicitly "deep freeze" data structures given to them or freeze
+data returned by user defined functions.  Only objects newly created by optic
 functions themselves are frozen.
 
 Removed previously obsoleted exports:
@@ -122,8 +136,8 @@ See previous changelog entries on how you should deal with those.
 Lazy folds are no longer considered experimental.  Note, however, that the
 technique, an optional `delay` function, upon which they are based is currently
 not included in the [Static Land](https://github.com/rpominov/static-land)
-specification.  See
-issue [40](https://github.com/rpominov/static-land/issues/40) for discussion.
+specification.  See issue
+[40](https://github.com/rpominov/static-land/issues/40) for discussion.
 
 ## 9.8.0
 
@@ -177,8 +191,8 @@ Relaxed treatment of objects and array like objects.  Previously various optics
 required objects to have either `Object` or `Array` as the constructor.  Now any
 `instanceof Object` is allowed where previously `Object` constructor was
 required and a `String` or an `Object` with non-negative integer `length` is
-allowed where previously `Array` constructor was required.  This addresses
-issue [40](https://github.com/calmm-js/partial.lenses/issues/40).  See the
+allowed where previously `Array` constructor was required.  This addresses issue
+[40](https://github.com/calmm-js/partial.lenses/issues/40).  See the
 documentation of `L.prop` and `L.index` for more details.  The `L.branch`,
 `L.elems` and `L.values` traversals have similarly relaxed treatment.
 
@@ -256,18 +270,18 @@ the default import is no longer worth keeping.
 
 ## 5.0.0
 
-Reimplemented library internals
-using [Static Land](https://github.com/rpominov/static-land) style dictionaries,
-switched to using `infernals` and dropped Ramda dependency and interop.  These
-changes were made for the following reasons:
+Reimplemented library internals using [Static
+Land](https://github.com/rpominov/static-land) style dictionaries, switched to
+using `infernals` and dropped Ramda dependency and interop.  These changes were
+made for the following reasons:
 
 * `infernals` is, and is supposed to remain, a tiny library.  This is an
   advantage if one wishes to use lenses, but does not wish to use Ramda.
 
 * Performance of traversals, and folds over traversals in particular, is and can
-  now be significantly improved, because Static Land does not
-  require [wrapping](https://github.com/rpominov/static-land#pros) or boxing
-  primitive values.
+  now be significantly improved, because Static Land does not require
+  [wrapping](https://github.com/rpominov/static-land#pros) or boxing primitive
+  values.
 
 To interop with Ramda, you can write:
 

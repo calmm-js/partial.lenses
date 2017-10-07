@@ -27,7 +27,7 @@ const xs10000 = Array(10000).fill(1)
 const xs100000 = Array(100000).fill(1)
 const ids = R.range(0, 10000).map(i => ({id: i, value: i}))
 
-const L_findHint_id_5000 = L.findHint(o => o.id === 5000, {hint: 5000})
+const L_find_id_5000 = L.find(o => o.id === 5000, {hint: 5000})
 
 const xs10o = Object.assign(xs10)
 const xs100o = Object.assign(xs100)
@@ -173,7 +173,7 @@ R.forEach(bs => {
   }
 }, [
   [
-    `L.get(L_findHint_id_5000, ids)`,
+    `L.get(L_find_id_5000, ids)`,
   ], [
     `L.foldr(add, 0, L.elems, xs100)`,
     `O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100)`,
@@ -430,15 +430,15 @@ R.forEach(bs => {
     `R.find(x => x > 3, pi)`,
     `O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)`,
   ], [
-    `L.get(L.findHint(x => x !== 1, {hint: 0}), xs)`,
+    `L.get(L.find(x => x !== 1, {hint: 0}), xs)`,
     `L.get(L.find(x => x !== 1), xs)`,
     `R.find(x => x !== 1, xs)`,
   ], [
-    `L.get(L.findHint(x => x !== 1, {hint: 0}), xs100)`,
+    `L.get(L.find(x => x !== 1, {hint: 0}), xs100)`,
     `L.get(L.find(x => x !== 1), xs100)`,
     `R.find(x => x !== 1, xs100)`,
   ], [
-    `L.get(L.findHint(x => x !== 1, {hint: 0}), xs1000)`,
+    `L.get(L.find(x => x !== 1, {hint: 0}), xs1000)`,
     `L.get(L.find(x => x !== 1), xs1000)`,
     `R.find(x => x !== 1, xs1000)`,
   ], [
