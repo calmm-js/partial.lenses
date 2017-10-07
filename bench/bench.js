@@ -18,7 +18,7 @@ const sprintf = require("sprintf-js").sprintf
 const _get = tryRequire('lodash.get')
 
 const xyz = {x: 1, y: 2, z: 3}
-const xs = [1,2,3]
+const xs = [1, 2, 3]
 const axay = [{x: [{y: 1}]}]
 const xs10 = Array(10).fill(1)
 const xs100 = Array(100).fill(1)
@@ -125,7 +125,7 @@ const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
 const bst = fromPairs(bstPairs)
 
 const incNum = x => typeof x === "number" ? x + 1 : x
-const nested = [{x:1,y:[2,{d:3},4],z:{a:5}}]
+const nested = [{x: 1, y: [2, {d: 3}, 4], z: {a: 5}}]
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)
   const values = L.seq([L.values, rec], L.identity)
@@ -134,9 +134,9 @@ const everywhere = [L.optional, L.lazy(rec => {
                   :                          L.identity)
 })]
 
-const xyzs = L.seq("x","y","z")
+const xyzs = L.seq("x", "y", "z")
 
-const pi = [3,1,4,1,5]
+const pi = [3, 1, 4, 1, 5]
 
 const aEb = L.orElse("b", "a")
 const aEbEc = L.orElse(L.orElse("c", "b"), "a")
@@ -286,20 +286,20 @@ R.forEach(bs => {
     `K.key("y").set(xyz, 0)`,
   ], [
     `K_0_x_0_y.get(axay)`,
-    `L.get([0,"x",0,"y"], axay)`,
-    `R.path([0,"x",0,"y"], axay)`,
+    `L.get([0, "x", 0, "y"], axay)`,
+    `R.path([0, "x", 0, "y"], axay)`,
     `R.view(l_0_x_0_y, axay)`,
     `R.view(l_0x0y, axay)`,
-    `_get(axay, [0,"x",0,"y"])`,
+    `_get(axay, [0, "x", 0, "y"])`,
   ], [
     `K_0_x_0_y.set(axay, 0)`,
-    `L.set([0,"x",0,"y"], 0, axay)`,
-    `R.assocPath([0,"x",0,"y"], 0, axay)`,
+    `L.set([0, "x", 0, "y"], 0, axay)`,
+    `R.assocPath([0, "x", 0, "y"], 0, axay)`,
     `R.set(l_0_x_0_y, 0, axay)`,
     `R.set(l_0x0y, 0, axay)`,
   ], [
     `K_0_x_0_y.over(axay, inc)`,
-    `L.modify([0,"x",0,"y"], inc, axay)`,
+    `L.modify([0, "x", 0, "y"], inc, axay)`,
     `R.over(l_0_x_0_y, inc, axay)`,
     `R.over(l_0x0y, inc, axay)`,
   ], [
@@ -310,17 +310,17 @@ R.forEach(bs => {
     `R.dissoc("y", xyz)`,
   ], [
     `K_xyz.get(xyzn)`,
-    `L.get(["x","y","z"], xyzn)`,
+    `L.get(["x", "y", "z"], xyzn)`,
     `O.Getter.view(o_x_y_z, xyzn)`,
-    `R.path(["x","y","z"], xyzn)`,
+    `R.path(["x", "y", "z"], xyzn)`,
     `R.view(l_x_y_z, xyzn)`,
     `R.view(l_xyz, xyzn)`,
     `_get(xyzn, ["x", "y", "z"])`,
   ], [
     `K_xyz.set(xyzn, 0)`,
-    `L.set(["x","y","z"], 0, xyzn)`,
+    `L.set(["x", "y", "z"], 0, xyzn)`,
     `O.Setter.set(o_x_y_z, 0, xyzn)`,
-    `R.assocPath(["x","y","z"], 0, xyzn)`,
+    `R.assocPath(["x", "y", "z"], 0, xyzn)`,
     `R.set(l_x_y_z, 0, xyzn)`,
     `R.set(l_xyz, 0, xyzn)`,
   ], [
@@ -384,7 +384,7 @@ R.forEach(bs => {
     `L.modify(everywhere, incNum, xs1000)`,
     `L.modify(flatten, inc, xs1000)`,
   ], [
-    `L.set(L.seq("x","y","z"), 1, undefined)`,
+    `L.set(L.seq("x", "y", "z"), 1, undefined)`,
     `L.set(xyzs, 1, undefined)`,
   ], [
     `L.modify(values, x => x + x, bst)`,
@@ -464,7 +464,7 @@ R.forEach(bs => {
     `L.get(abcM, {x: 1})`,
     `L.get(abcS, {x: 1})`,
   ], [
-    `L.set(L.props("x", "y"), {x:2, y:3}, {x:1, y:2, z:4})`,
+    `L.set(L.props("x", "y"), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`,
   ]
 ])
 
