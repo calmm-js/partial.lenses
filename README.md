@@ -3768,14 +3768,14 @@ structure.
 
 [`L.select`](#L-select) (and [`L.selectAs`](#L-selectAs)) can be used to search
 for an element in a data structure following an arbitrary traversal.  That
-traversal can, of course, also make use of [`L.when`](L-when) to filter elements
+traversal can, of course, also make use of [`L.when`](#L-when) to filter elements
 or to limit the traversal.
 
 [`L.filter`](#L-filter) can be used to create a bidirectional view of a subset
 of elements of an array matching a given predicate.  [`L.filter`](#L-filter)
 should probably be the least most commonly used of the bunch.  If the end goal
 is simply to manipulate multiple elements, it is preferable to use a combination
-of [`L.elems`](#L-elems) and [`L.when`](L-when), because then [no intermediate
+of [`L.elems`](#L-elems) and [`L.when`](#L-when), because then [no intermediate
 array of the elements is
 computed](#nesting-traversals-does-not-create-intermediate-aggregates).
 
