@@ -3984,7 +3984,7 @@ for switching to use Static Land was that correct implementation of
 applicative type without having any instance of said applicative type.  This
 means that one has to explicitly pass something, e.g. a function `of`, through
 optics to make that possible.  This eliminates a major notational advantage of
-Fantasy Land. In Static Land, which can basically be seen as using the
+Fantasy Land.  In Static Land, which can basically be seen as using the
 dictionary translation of type classes, one already passes the algebra module to
 combinators.
 
