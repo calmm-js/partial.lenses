@@ -279,6 +279,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#interfacing">Interfacing with Immutable.js</a></li>
 </ul>
 </li>
+<li><a href="#deepening-topics">Deepening topics</a><ul>
+<li><a href="#understanding-filter-find-select-and-when">Understanding <code>L.filter</code>, <code>L.find</code>, <code>L.select</code>, and <code>L.when</code></a></li>
+</ul>
+</li>
 <li><a href="#advanced-topics">Advanced topics</a><ul>
 <li><a href="#performance-tips">Performance tips</a><ul>
 <li><a href="#nesting-traversals-does-not-create-intermediate-aggregates">Nesting traversals does not create intermediate aggregates</a></li>
@@ -2598,6 +2602,68 @@ var isoList = L.iso(fromList, toList)
          [seqList, L.when(c =&gt; c &lt;= &quot;i&quot;)],
          sampleList)
 </code></pre>
+<h2><a id="deepening-topics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#deepening-topics">■</a> Deepening topics</h2>
+<h3><a id="understanding-filter-find-select-and-when"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#understanding-filter-find-select-and-when">■</a> Understanding <a href="#L-filter"><code>L.filter</code></a>, <a href="#L-find"><code>L.find</code></a>, <a href="#L-select"><code>L.select</code></a>, and <a href="#L-when"><code>L.when</code></a></h3>
+<p>The <a href="#L-filter"><code>L.filter</code></a>, <a href="#L-find"><code>L.find</code></a>, <a href="#L-select"><code>L.select</code></a>, and
+<a href="#L-when"><code>L.when</code></a> serve related, but different, purposes and it is important
+to understand their differences in order to make best use of them.</p>
+<p>Here is a table of their call patterns and type signatures:</p>
+<table>
+<thead>
+<tr>
+<th>Call pattern</th>
+<th>Type signature</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>L.filter((value, index) =&gt; bool) ~&gt; lens</code></td>
+<td><code>L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]</code></td>
+</tr>
+<tr>
+<td><code>L.find((value, index) =&gt; bool) ~&gt; lens</code></td>
+<td><code>L.find: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] a</code></td>
+</tr>
+<tr>
+<td><code>L.select(traversal, data) ~&gt; value</code></td>
+<td><code>L.select: PTraversal s a -&gt; Maybe s -&gt; Maybe a</code></td>
+</tr>
+<tr>
+<td><code>L.when((value, index) =&gt; bool) ~&gt; optic</code></td>
+<td><code>L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a</code></td>
+</tr>
+</tbody>
+</table>
+<p>As can be read from above, both <a href="#L-filter"><code>L.filter</code></a> and <a href="#L-find"><code>L.find</code></a>
+introduce lenses, <a href="#L-select"><code>L.select</code></a> eliminates a traversal, and
+<a href="#L-when"><code>L.when</code></a> introduces an optic, which will always be a traversal in
+this section.  We can also read that <a href="#L-filter"><code>L.filter</code></a> and
+<a href="#L-find"><code>L.find</code></a> operate on arrays, while <a href="#L-select"><code>L.select</code></a> and
+<a href="#L-when"><code>L.when</code></a> operate on arbitrary traversals.  Yet another thing to make
+note of is that both <a href="#L-find"><code>L.find</code></a> and <a href="#L-select"><code>L.select</code></a> are
+many-to-one while both <a href="#L-filter"><code>L.filter</code></a> and <a href="#L-when"><code>L.when</code></a> retain
+cardinality.</p>
+<p>The following equations relate the operations in the read direction:</p>
+<pre><code class="hljs lang-jsx">        L.get([L.filter(p), 0]) = L.get(L.find(p))
+ L.select([L.elems, L.when(p)]) = L.get(L.find(p))
+L.collect([L.elems, L.when(p)]) = L.get(L.filter(p))
+</code></pre>
+<p>In the write direction there are no such simple equations.</p>
+<p><a href="#L-find"><code>L.find</code></a> can be used to create a bidirectional view of an element in
+an array identified by a given predicate.  Despite the name, <a href="#L-find"><code>L.find</code></a>
+is probably not what one should use to generally search for something in a data
+structure.</p>
+<p><a href="#L-select"><code>L.select</code></a> (and <a href="#L-selectAs"><code>L.selectAs</code></a>) can be used to search
+for an element in a data structure following an arbitrary traversal.  That
+traversal can, of course, also make use of <a href="L-when"><code>L.when</code></a> to filter elements
+or to limit the traversal.</p>
+<p><a href="#L-filter"><code>L.filter</code></a> can be used to create a bidirectional view of a subset
+of elements of an array matching a given predicate.  <a href="#L-filter"><code>L.filter</code></a>
+should probably be the least most commonly used of the bunch.  If the end goal
+is simply to manipulate multiple elements, it is preferable to use a combination
+of <a href="#L-elems"><code>L.elems</code></a> and <a href="L-when"><code>L.when</code></a>, because then <a href="#nesting-traversals-does-not-create-intermediate-aggregates">no intermediate
+array of the elements is
+computed</a>.</p>
 <h2><a id="advanced-topics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#advanced-topics">■</a> Advanced topics</h2>
 <h3><a id="performance-tips"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#performance-tips">■</a> Performance tips</h3>
 <h4><a id="nesting-traversals-does-not-create-intermediate-aggregates"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#nesting-traversals-does-not-create-intermediate-aggregates">■</a> Nesting traversals does not create intermediate aggregates</h4>

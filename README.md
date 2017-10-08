@@ -179,6 +179,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Collection toggle](#collection-toggle)
   * [BST as a lens](#bst-as-a-lens)
   * [Interfacing with Immutable.js](#interfacing)
+* [Deepening topics](#deepening-topics)
+  * [Understanding `L.filter`, `L.find`, `L.select`, and `L.when`](#understanding-filter-find-select-and-when)
 * [Advanced topics](#advanced-topics)
   * [Performance tips](#performance-tips)
     * [Nesting traversals does not create intermediate aggregates](#nesting-traversals-does-not-create-intermediate-aggregates)
@@ -3721,6 +3723,61 @@ L.joinAs(R.toUpper,
          sampleList)
 // 'AI'
 ```
+
+## <a id="deepening-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#deepening-topics) Deepening topics
+
+### <a id="understanding-filter-find-select-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#understanding-filter-find-select-and-when) Understanding [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.select`](#L-select), and [`L.when`](#L-when)
+
+The [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.select`](#L-select), and
+[`L.when`](#L-when) serve related, but different, purposes and it is important
+to understand their differences in order to make best use of them.
+
+Here is a table of their call patterns and type signatures:
+
+| Call pattern                               | Type signature
+| ------------------------------------------ | ----------------------------------------------------------
+| `L.filter((value, index) => bool) ~> lens` | `L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]`
+| `L.find((value, index) => bool) ~> lens`   | `L.find: ((Maybe a, Index) -> Boolean) -> PLens [a] a`
+| `L.select(traversal, data) ~> value`       | `L.select: PTraversal s a -> Maybe s -> Maybe a`
+| `L.when((value, index) => bool) ~> optic`  | `L.when: ((Maybe a, Index) -> Boolean) -> POptic a a`
+
+As can be read from above, both [`L.filter`](#L-filter) and [`L.find`](#L-find)
+introduce lenses, [`L.select`](#L-select) eliminates a traversal, and
+[`L.when`](#L-when) introduces an optic, which will always be a traversal in
+this section.  We can also read that [`L.filter`](#L-filter) and
+[`L.find`](#L-find) operate on arrays, while [`L.select`](#L-select) and
+[`L.when`](#L-when) operate on arbitrary traversals.  Yet another thing to make
+note of is that both [`L.find`](#L-find) and [`L.select`](#L-select) are
+many-to-one while both [`L.filter`](#L-filter) and [`L.when`](#L-when) retain
+cardinality.
+
+The following equations relate the operations in the read direction:
+
+```jsx
+        L.get([L.filter(p), 0]) = L.get(L.find(p))
+ L.select([L.elems, L.when(p)]) = L.get(L.find(p))
+L.collect([L.elems, L.when(p)]) = L.get(L.filter(p))
+```
+
+In the write direction there are no such simple equations.
+
+[`L.find`](#L-find) can be used to create a bidirectional view of an element in
+an array identified by a given predicate.  Despite the name, [`L.find`](#L-find)
+is probably not what one should use to generally search for something in a data
+structure.
+
+[`L.select`](#L-select) (and [`L.selectAs`](#L-selectAs)) can be used to search
+for an element in a data structure following an arbitrary traversal.  That
+traversal can, of course, also make use of [`L.when`](L-when) to filter elements
+or to limit the traversal.
+
+[`L.filter`](#L-filter) can be used to create a bidirectional view of a subset
+of elements of an array matching a given predicate.  [`L.filter`](#L-filter)
+should probably be the least most commonly used of the bunch.  If the end goal
+is simply to manipulate multiple elements, it is preferable to use a combination
+of [`L.elems`](#L-elems) and [`L.when`](L-when), because then [no intermediate
+array of the elements is
+computed](#nesting-traversals-does-not-create-intermediate-aggregates).
 
 ## <a id="advanced-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#advanced-topics) Advanced topics
 
