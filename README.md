@@ -181,7 +181,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Interfacing with Immutable.js](#interfacing)
 * [Advanced topics](#advanced-topics)
   * [Performance tips](#performance-tips)
-    * [Nesting traversals does not create intermediate aggregates](#nesting-traverals-does-not-create-intermediate-aggregates)
+    * [Nesting traversals does not create intermediate aggregates](#nesting-traversals-does-not-create-intermediate-aggregates)
     * [Avoid reallocating optics in `L.choose`](#avoid-reallocating-optics-in-l-choose)
   * [On bundle size and minification](#on-bundle-size-and-minification)
 * [Background](#background)
@@ -3726,7 +3726,7 @@ L.joinAs(R.toUpper,
 
 ### <a id="performance-tips"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#performance-tips) Performance tips
 
-#### <a id="nesting-traverals-does-not-create-intermediate-aggregates"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#nesting-traverals-does-not-create-intermediate-aggregates) Nesting traversals does not create intermediate aggregates
+#### <a id="nesting-traversals-does-not-create-intermediate-aggregates"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#nesting-traversals-does-not-create-intermediate-aggregates) Nesting traversals does not create intermediate aggregates
 
 Traversals do not materialize intermediate aggregates and it is useful to
 understand this performance characteristic.
