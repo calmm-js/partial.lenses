@@ -198,12 +198,6 @@ var Sum = /*#__PURE__*/ConcatOf(function (x, y) {
   return x + y;
 }, 0);
 
-var Mum = function Mum(ord) {
-  return ConcatOf(function (y, x) {
-    return void 0 !== x && (void 0 === y || ord(x, y)) ? x : y;
-  });
-};
-
 var mumBy = function mumBy(ord) {
   return I.curry(function (xi2y, t, s) {
     var minX = void 0,
@@ -1178,7 +1172,7 @@ var join = /*#__PURE__*/joinAs(I.id);
 
 var maximumBy = /*#__PURE__*/mumBy(gt);
 
-var maximum = /*#__PURE__*/traverse(Mum(gt), I.id);
+var maximum = /*#__PURE__*/maximumBy(I.id);
 
 var meanAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
   var sum = 0;
@@ -1197,7 +1191,7 @@ var mean = /*#__PURE__*/meanAs(I.id);
 
 var minimumBy = /*#__PURE__*/mumBy(lt);
 
-var minimum = /*#__PURE__*/traverse(Mum(lt), I.id);
+var minimum = /*#__PURE__*/minimumBy(I.id);
 
 var none = /*#__PURE__*/I.curry(function (xi2b, t, s) {
   return !traverseU(Select, function (x, i) {
