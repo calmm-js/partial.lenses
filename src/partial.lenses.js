@@ -104,9 +104,6 @@ const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
 
 const Sum = /*#__PURE__*/ConcatOf((x, y) => x + y, 0)
 
-const Mum = ord =>
-  ConcatOf((y, x) => void 0 !== x && (void 0 === y || ord(x, y)) ? x : y)
-
 const mumBy = ord => I.curry((xi2y, t, s) => {
   let minX = void 0, minY = void 0
   traverseU(Select, (x, i) => {
@@ -925,7 +922,7 @@ export const join = /*#__PURE__*/joinAs(I.id)
 
 export const maximumBy = /*#__PURE__*/mumBy(gt)
 
-export const maximum = /*#__PURE__*/traverse(Mum(gt), I.id)
+export const maximum = /*#__PURE__*/maximumBy(I.id)
 
 export const meanAs = /*#__PURE__*/I.curry((xi2y, t, s) => {
   let sum = 0
@@ -944,7 +941,7 @@ export const mean = /*#__PURE__*/meanAs(I.id)
 
 export const minimumBy = /*#__PURE__*/mumBy(lt)
 
-export const minimum = /*#__PURE__*/traverse(Mum(lt), I.id)
+export const minimum = /*#__PURE__*/minimumBy(I.id)
 
 export const none = /*#__PURE__*/I.curry((xi2b, t, s) =>
   !traverseU(Select, (x, i) => {
