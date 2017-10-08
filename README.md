@@ -3977,6 +3977,17 @@ Static Land does not require wrapping values in objects, which translates to a
 significant performance advantage throughout the library, because fewer
 allocations are required.
 
+However, the [original
+reason](https://github.com/rpominov/static-land/issues/36#issuecomment-285938602)
+for switching to use Static Land was that correct implementation of
+[`traverse`](#L-traverse) requires the ability to construct a value of a given
+applicative type without having any instance of said applicative type.  This
+means that one has to explicitly pass something, e.g. a function `of`, through
+optics to make that possible.  This eliminates a major notational advantage of
+Fantasy Land. In Static Land, which can basically be seen as using the
+dictionary translation of type classes, one already passes the algebra module to
+combinators.
+
 #### <a id="performance"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#performance) Performance
 
 Concern for performance has been a part of the work on partial lenses for some
