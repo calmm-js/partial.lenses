@@ -807,6 +807,10 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
+var identity = function identity(x, i, _F, xi2yF) {
+  return xi2yF(x, i);
+};
+
 var ifteU = function ifteU(c, t, e) {
   return function (x, i, C, xi2yC) {
     return (c(x, i) ? t : e)(x, i, C, xi2yC);
@@ -939,10 +943,12 @@ var choice = function choice() {
   return os.reduceRight(orElseU, zero);
 };
 
+var unless = function unless(p) {
+  return ifteU(p, zeroOp, identity);
+};
+
 var when = function when(p) {
-  return function (x, i, C, xi2yC) {
-    return p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC);
-  };
+  return ifteU(p, identity, zeroOp);
 };
 
 var optional = /*#__PURE__*/when(I.isDefined);
@@ -1457,10 +1463,6 @@ var inverse = function inverse(iso) {
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
-var identity = function identity(x, i, _F, xi2yF) {
-  return xi2yF(x, i);
-};
-
 var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : res(freezeArrayOfObjects))(function (xs) {
   var n = xs.length,
       xis = Array(n);
@@ -1558,6 +1560,7 @@ exports.iftes = iftes;
 exports.orElse = orElse;
 exports.chain = chain;
 exports.choice = choice;
+exports.unless = unless;
 exports.when = when;
 exports.optional = optional;
 exports.zero = zero;

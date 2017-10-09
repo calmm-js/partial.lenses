@@ -803,6 +803,10 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
+var identity = function identity(x, i, _F, xi2yF) {
+  return xi2yF(x, i);
+};
+
 var ifteU = function ifteU(c, t, e) {
   return function (x, i, C, xi2yC) {
     return (c(x, i) ? t : e)(x, i, C, xi2yC);
@@ -935,10 +939,12 @@ var choice = function choice() {
   return os.reduceRight(orElseU, zero);
 };
 
+var unless = function unless(p) {
+  return ifteU(p, zeroOp, identity);
+};
+
 var when = function when(p) {
-  return function (x, i, C, xi2yC) {
-    return p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC);
-  };
+  return ifteU(p, identity, zeroOp);
 };
 
 var optional = /*#__PURE__*/when(isDefined);
@@ -1453,10 +1459,6 @@ var inverse = function inverse(iso) {
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
-var identity = function identity(x, i, _F, xi2yF) {
-  return xi2yF(x, i);
-};
-
 var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? id : res(freezeArrayOfObjects))(function (xs) {
   var n = xs.length,
       xis = Array(n);
@@ -1538,4 +1540,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, toFunction, assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findHint, findWith, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };

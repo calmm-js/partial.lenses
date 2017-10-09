@@ -90,6 +90,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-chain" title="L.chain: ((a, Index) -&gt; POptic s b) -&gt; POptic s a -&gt; POptic s b"><code>L.chain((value, index) =&gt; optic, optic) ~&gt; optic</code></a> <small><sup>v3.1.0</sup></small></li>
 <li><a href="#L-choice" title="L.choice: (...POptic s a) -&gt; POptic s a"><code>L.choice(...optics) ~&gt; optic</code></a> <small><sup>v2.1.0</sup></small></li>
 <li><a href="#L-optional" title="L.optional: POptic a a"><code>L.optional ~&gt; optic</code></a> <small><sup>v3.7.0</sup></small></li>
+<li><a href="#L-unless" title="L.unless: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.unless((maybeValue, index) =&gt; testable) ~&gt; optic</code></a> <small><sup>v12.1.0</sup></small></li>
 <li><a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a> <small><sup>v5.2.0</sup></small></li>
 <li><a href="#L-zero" title="L.zero: POptic s a"><code>L.zero ~&gt; optic</code></a> <small><sup>v6.0.0</sup></small></li>
 </ul>
@@ -1119,9 +1120,17 @@ the focus is <code>undefined</code>, the lens will be read-only.</p>
 </code></pre>
 <p>Note that <code>L.optional</code> is equivalent to <a href="#L-when"><code>L.when(x =&gt; x !==
 undefined)</code></a>.</p>
+<h5><a id="L-unless"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-unless">■</a> <a href="#L-unless" title="L.unless: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.unless((maybeValue, index) =&gt; testable) ~&gt; optic</code></a> <small><sup>v12.1.0</sup></small></h5>
+<p><code>L.unless</code> allows one to selectively skip elements within a traversal or to
+selectively turn a lens into a read-only lens whose view is <code>undefined</code>.  See
+also <a href="#L-when"><code>L.when</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify([L.elems, L.unless(x =&gt; x &lt; 0)], R.negate, [0, -1, 2, -3, 4])
+</code></pre>
 <h5><a id="L-when"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-when">■</a> <a href="#L-when" title="L.when: ((Maybe a, Index) -&gt; Boolean) -&gt; POptic a a"><code>L.when((maybeValue, index) =&gt; testable) ~&gt; optic</code></a> <small><sup>v5.2.0</sup></small></h5>
 <p><code>L.when</code> allows one to selectively skip elements within a traversal or to
-selectively turn a lens into a read-only lens whose view is <code>undefined</code>.</p>
+selectively turn a lens into a read-only lens whose view is <code>undefined</code>.  See
+also <a href="#L-unless"><code>L.unless</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([L.elems, L.when(x =&gt; x &gt; 0)], R.negate, [0, -1, 2, -3, 4])
 </code></pre>
