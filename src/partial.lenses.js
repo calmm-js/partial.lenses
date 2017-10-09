@@ -636,6 +636,8 @@ const matchesJoin = input => matchesIn => {
 
 //
 
+const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
+
 const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
 
 const orElseU = (back, prim) =>
@@ -734,8 +736,9 @@ export const chain = /*#__PURE__*/I.curry((xi2yO, xO) =>
 
 export const choice = (...os) => os.reduceRight(orElseU, zero)
 
-export const when = p => (x, i, C, xi2yC) =>
-  p(x, i) ? xi2yC(x, i) : zeroOp(x, i, C, xi2yC)
+export const unless = p => ifteU(p, zeroOp, identity)
+
+export const when = p => ifteU(p, identity, zeroOp)
 
 export const optional = /*#__PURE__*/when(I.isDefined)
 
@@ -1148,7 +1151,7 @@ export const inverse = iso => (x, i, F, xi2yF) =>
 
 export const complement = /*#__PURE__*/isoU(notPartial, notPartial)
 
-export const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
+export {identity}
 
 export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NODE_ENV === "production" ? I.id : C.res(freezeArrayOfObjects))(xs => {
   const n = xs.length, xis = Array(n)
