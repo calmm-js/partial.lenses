@@ -52,6 +52,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
       * [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
       * [`L.optional ~> optic`](#L-optional "L.optional: POptic a a") <small><sup>v3.7.0</sup></small>
+      * [`L.unless((maybeValue, index) => testable) ~> optic`](#L-unless "L.unless: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v12.1.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
     * [Debugging](#debugging)
@@ -1310,10 +1311,24 @@ L.set([L.elems, "x", L.optional], 3, [{x: 1}, {y: 2}])
 Note that `L.optional` is equivalent to [`L.when(x => x !==
 undefined)`](#L-when).
 
+##### <a id="L-unless"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-unless) [`L.unless((maybeValue, index) => testable) ~> optic`](#L-unless "L.unless: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v12.1.0</sup></small>
+
+`L.unless` allows one to selectively skip elements within a traversal or to
+selectively turn a lens into a read-only lens whose view is `undefined`.  See
+also [`L.when`](#L-when).
+
+For example:
+
+```js
+L.modify([L.elems, L.unless(x => x < 0)], R.negate, [0, -1, 2, -3, 4])
+// [ -0, -1, -2, -3, -4 ]
+```
+
 ##### <a id="L-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-when) [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
 
 `L.when` allows one to selectively skip elements within a traversal or to
-selectively turn a lens into a read-only lens whose view is `undefined`.
+selectively turn a lens into a read-only lens whose view is `undefined`.  See
+also [`L.unless`](#L-unless).
 
 For example:
 

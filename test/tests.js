@@ -284,6 +284,7 @@ describe("arities", () => {
     toFunction: 1,
     transform: 2,
     traverse: 4,
+    unless: 1,
     uri: 4,
     uriComponent: 4,
     valueOr: 1,
@@ -666,6 +667,15 @@ describe("L.when", () => {
   testEq(`L.get(L.when(x => x > 2), 3)`, 3)
   testEq(`L.collect([L.elems, L.when(x => x > 2)], [1,3,2,4])`, [3,4])
   testEq(`L.modify([L.elems, L.when(x => x > 2)], R.negate, [1,3,2,4])`,
+         [1,-3,2,-4])
+})
+
+describe("L.unless", () => {
+  testEq(`L.get(L.unless(x => x <= 2), 1)`, undefined)
+  testEq(`L.get([L.unless(x => x <= 2), I.always(2)], 1)`, 2)
+  testEq(`L.get(L.unless(x => x <= 2), 3)`, 3)
+  testEq(`L.collect([L.elems, L.unless(x => x <= 2)], [1,3,2,4])`, [3,4])
+  testEq(`L.modify([L.elems, L.unless(x => x <= 2)], R.negate, [1,3,2,4])`,
          [1,-3,2,-4])
 })
 
