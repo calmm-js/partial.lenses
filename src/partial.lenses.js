@@ -218,12 +218,18 @@ const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.re
 })
 
 const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
-  const {map, ap, of} = A
-  let xsA = of(cons)
+  const {map, ap} = A
+  let xsA = A.of(cons)
   const n = xs.length
-  for (let i=0; i<n; ++i)
-    xsA = ap(map(cons, xsA), xi2yA(xs[i], i))
-  return map(consTo, xsA)
+  if (map === I.sndU) {
+    for (let i=0; i<n; ++i)
+      xsA = ap(xsA, xi2yA(xs[i], i))
+    return xsA
+  } else {
+    for (let i=0; i<n; ++i)
+      xsA = ap(map(cons, xsA), xi2yA(xs[i], i))
+    return map(consTo, xsA)
+  }
 })
 
 //
