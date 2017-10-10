@@ -50,6 +50,9 @@ const l_xyz = R.lensPath(["x", "y", "z"])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
 const K_0_x_0_y = K && K.idx(0).key("x").idx(0).key("y")
 const K_xyz = K && K.key("x").key("y").key("z")
+const K_t_t_t = K && K.traversed().traversed().traversed()
+
+const L_e_e_e = L.toFunction([L.elems, L.elems, L.elems])
 
 const o_x_y_z = O && R.compose(O.Lens.atObject('x'),
                                O.Prism._Just,
@@ -185,23 +188,26 @@ R.forEach(bs => {
     `R.reduceRight(add, 0, xs100000)`,
     `xs100000.reduceRight(add, 0)`,
   ], [
+    `K.traversed().sumOf(xs100)`,
+    `L.concat(Sum, L.elems, xs100)`,
     `L.foldl(add, 0, L.elems, xs100)`,
+    `L.sum(L.elems, xs100)`,
     `O.Fold.foldlOf(O.Traversal.traversed, addC, 0, xs100)`,
+    `O.Fold.sumOf(O.Traversal.traversed, xs100)`,
+    `P.sumOf(P.traversed, xs100)`,
     `R.reduce(add, 0, xs100)`,
+    `R.sum(xs100)`,
     `xs100.reduce(add, 0)`,
-  ], [
-    'xs100.reduce((a, b) => a + b, 0)',
-    'L.concat(Sum, L.elems, xs100)',
-    'L.sum(L.elems, xs100)',
-    'O.Fold.sumOf(O.Traversal.traversed, xs100)',
-    'P.sumOf(P.traversed, xs100)',
-    'R.sum(xs100)',
-    'K.traversed().sumOf(xs100)',
   ], [
     `L.maximum(L.elems, xs100)`,
     `O.Fold.maximumOf(O.Traversal.traversed, xs100)`,
   ], [
+    `K.traversed().traversed().traversed().sumOf(xsss100)`,
+    `K_t_t_t.sumOf(xsss100)`,
     `L.concat(Sum, [L.elems, L.elems, L.elems], xsss100)`,
+    `L.foldl(add, 0, L_e_e_e, xsss100)`,
+    `L.foldl(add, 0, [L.elems, L.elems, L.elems], xsss100)`,
+    `L.sum(L_e_e_e, xsss100)`,
     `L.sum([L.elems, L.elems, L.elems], xsss100)`,
     `O.Fold.sumOf(R.compose(O.Traversal.traversed,
                             O.Traversal.traversed,
@@ -209,38 +215,42 @@ R.forEach(bs => {
                   xsss100)`,
     `P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)`,
   ], [
-    `xs100.map(I.id)`,
+    `K.traversed().arrayOf(xs100)`,
     `L.collect(L.elems, xs100)`,
     `O.Fold.toListOf(O.Traversal.traversed, xs100)`,
-    `K.traversed().arrayOf(xs100)`,
+    `xs100.map(I.id)`,
   ], [
+    `K.traversed().traversed().traversed().arrayOf(xsss100)`,
+    `K_t_t_t.arrayOf(xsss100)`,
+    `L.collect(L_e_e_e, xsss100)`,
     `L.collect([L.elems, L.elems, L.elems], xsss100)`,
     `O.Fold.toListOf(R.compose(O.Traversal.traversed,
                                O.Traversal.traversed,
                                O.Traversal.traversed),
                      xsss100)`,
     `R.chain(R.chain(R.identity), xsss100)`,
-    `K.traversed().traversed().traversed().arrayOf(xsss100)`,
     `{let acc=[]; xsss100.forEach(x0 => {x0.forEach(x1 => {acc = acc.concat(x1)})}); return acc}`,
   ], [
     `L.collect(L.flatten, xsss100)`,
     `R.flatten(xsss100)`,
   ], [
-    `xs.map(inc)`,
+    `K.traversed().over(xs, inc)`,
     `L.modify(L.elems, inc, xs)`,
     `O.Setter.over(O.Traversal.traversed, inc, xs)`,
     `P.over(P.traversed, inc, xs)`,
     `R.map(inc, xs)`,
-    `K.traversed().over(xs, inc)`,
+    `xs.map(inc)`,
   ], [
-    `xs1000.map(inc)`,
+    `K.traversed().over(xs1000, inc)`,
     `L.modify(L.elems, inc, xs1000)`,
     [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, "QUADRATIC"],
     [`P.over(P.traversed, inc, xs1000)`, "QUADRATIC"],
     `R.map(inc, xs1000)`,
-    `K.traversed().over(xs1000, inc)`,
+    `xs1000.map(inc)`,
   ], [
-    `xsss100.map(x0 => x0.map(x1 => x1.map(inc)))`,
+    `K.traversed().traversed().traversed().over(xsss100, inc)`,
+    `K_t_t_t.over(xsss100, inc)`,
+    `L.modify(L_e_e_e, inc, xsss100)`,
     `L.modify([L.elems, L.elems, L.elems], inc, xsss100)`,
     `O.Setter.over(R.compose(O.Traversal.traversed,
                              O.Traversal.traversed,
@@ -249,12 +259,12 @@ R.forEach(bs => {
                    xsss100)`,
     `P.over(R.compose(P.traversed, P.traversed, P.traversed), inc, xsss100)`,
     `R.map(R.map(R.map(inc)), xsss100)`,
-    `K.traversed().traversed().traversed().over(xsss100, inc)`,
+    `xsss100.map(x0 => x0.map(x1 => x1.map(inc)))`,
   ], [
+    `K.idx(1).get(xs)`,
     `L.get(1, xs)`,
     `R.nth(1, xs)`,
     `R.view(l_1, xs)`,
-    `K.idx(1).get(xs)`,
     `_get(xs, 1)`,
   ], [
     `L.get(1)(xs)`,
@@ -262,17 +272,17 @@ R.forEach(bs => {
     `R.nth(1)(xs)`,
     `R_nth_1(xs)`,
   ], [
-    `xs.map((x, i) => i === 1 ? 0 : x)`,
-    `{let ys = xs.slice(); ys[1] = 0; return ys}`,
+    `K.idx(1).set(xs, 0)`,
     `L.set(1, 0, xs)`,
     `R.set(l_1, 0, xs)`,
     `R.update(1, 0, xs)`,
-    `K.idx(1).set(xs, 0)`,
+    `xs.map((x, i) => i === 1 ? 0 : x)`,
+    `{let ys = xs.slice(); ys[1] = 0; return ys}`,
   ], [
+    `K.key("y").get(xyz)`,
     `L.get("y", xyz)`,
     `R.prop("y", xyz)`,
     `R.view(l_y, xyz)`,
-    `K.key("y").get(xyz)`,
     `_get(xyz, "y")`,
   ], [
     `L.get("y")(xyz)`,
@@ -280,10 +290,10 @@ R.forEach(bs => {
     `R.prop("y")(xyz)`,
     `R_prop_y(xyz)`,
   ], [
+    `K.key("y").set(xyz, 0)`,
     `L.set("y", 0, xyz)`,
     `R.assoc("y", 0, xyz)`,
     `R.set(l_y, 0, xyz)`,
-    `K.key("y").set(xyz, 0)`,
   ], [
     `K_0_x_0_y.get(axay)`,
     `L.get([0, "x", 0, "y"], axay)`,
@@ -340,6 +350,7 @@ R.forEach(bs => {
     `R.forEach(I.id, xs1000)`,
     `xs1000.forEach(I.id)`,
   ], [
+    `L.forEach(I.id, L_e_e_e, xsss100)`,
     `L.forEach(I.id, [L.elems, L.elems, L.elems], xsss100)`,
     `R.forEach(R.forEach(R.forEach(I.id)), xsss100)`,
     `xsss100.forEach(xss100 => xss100.forEach(xs100 => xs100.forEach(I.id)))`,
@@ -354,10 +365,10 @@ R.forEach(bs => {
     `L.remove(50, xs100)`,
     `R.remove(50, 1, xs100)`,
   ], [
+    `K.idx(50).set(xs100, 2)`,
     `L.set(50, 2, xs100)`,
     `R.set(l_50, 2, xs100)`,
     `R.update(50, 2, xs100)`,
-    `K.idx(50).set(xs100, 2)`,
   ], [
     `L.remove(5000, xs10000)`,
     `R.remove(5000, 1, xs10000)`,
