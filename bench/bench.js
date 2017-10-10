@@ -198,6 +198,10 @@ R.forEach(bs => {
     `R.reduce(add, 0, xs100)`,
     `R.sum(xs100)`,
     `xs100.reduce(add, 0)`,
+    `{let s=0;
+      for (let i=0; i<xs100.length; ++i)
+        s+=xs100[i];
+      return s}`,
   ], [
     `L.maximum(L.elems, xs100)`,
     `O.Fold.maximumOf(O.Traversal.traversed, xs100)`,
@@ -214,6 +218,12 @@ R.forEach(bs => {
                             O.Traversal.traversed),
                   xsss100)`,
     `P.sumOf(R.compose(P.traversed, P.traversed, P.traversed), xsss100)`,
+    `{let s=0;
+      for (let i=0; i<xsss100.length; ++i)
+        for (let j=0, xss=xsss100[i]; j<xss.length; ++j)
+          for (let k=0, xs=xss[j]; k<xs.length; ++k)
+            s+=xs[i];
+      return s}`,
   ], [
     `K.traversed().arrayOf(xs100)`,
     `L.collect(L.elems, xs100)`,
