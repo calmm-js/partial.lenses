@@ -283,10 +283,8 @@ const funIndex = /*#__PURE__*/lensFrom(getIndex, setIndex)
 
 //
 
-const composedMiddle = (o, r) => (F, xi2yF) => {
-  const n = r(F, xi2yF)
-  return (x, i) => o(x, i, F, n)
-}
+const composedMiddle = (o, r) => (F, xi2yF) =>
+  (xi2yF = r(F, xi2yF), (x, i) => o(x, i, F, xi2yF))
 
 function composed(oi0, os) {
   let n = os.length - oi0
