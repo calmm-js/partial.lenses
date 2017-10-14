@@ -2481,7 +2481,7 @@ manipulated, but that is problematic, because
 
 * the focus of a *partial* optic is always optional, so there might not be
   an original array-like object whose type to use, and
-* manipulation of the elements can change their types, so they many no longer be
+* manipulation of the elements can change their types, so they may no longer be
   compatible with the type of the original array-like object.
 
 Therefore, instead, when manipulating strings or array-like non-`Array` objects,
