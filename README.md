@@ -2477,9 +2477,15 @@ L.set(1, "a", "LoLa")
 ```
 
 It may seem like the result should be of the same type as the object being
-manipulated, but that is problematic, because the focus of a *partial* optic is
-always optional.  Instead, when manipulating strings or array-like non-`Array`
-objects, [`L.rewrite`](#L-rewrite) can be used to convert the result to the
+manipulated, but that is problematic, because
+
+* the focus of a *partial* optic is always optional, so there might not be
+  an original array-like object whose type to use, and
+* manipulation of the elements can change their types, so they many no longer be
+  compatible with the type of the original array-like object.
+
+Therefore, instead, when manipulating strings or array-like non-`Array` objects,
+[`L.rewrite`](#L-rewrite) can be used to explicitly convert the result to the
 desired type, if necessary.  For example:
 
 ```js

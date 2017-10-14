@@ -1815,9 +1815,15 @@ plain <code>Array</code>.  For example:</p>
 <pre><code class="hljs lang-js">L.set(1, &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
 <p>It may seem like the result should be of the same type as the object being
-manipulated, but that is problematic, because the focus of a <em>partial</em> optic is
-always optional.  Instead, when manipulating strings or array-like non-<code>Array</code>
-objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the
+manipulated, but that is problematic, because</p>
+<ul>
+<li>the focus of a <em>partial</em> optic is always optional, so there might not be
+an original array-like object whose type to use, and</li>
+<li>manipulation of the elements can change their types, so they many no longer be
+compatible with the type of the original array-like object.</li>
+</ul>
+<p>Therefore, instead, when manipulating strings or array-like non-<code>Array</code> objects,
+<a href="#L-rewrite"><code>L.rewrite</code></a> can be used to explicitly convert the result to the
 desired type, if necessary.  For example:</p>
 <pre><code class="hljs lang-js">L.set([L.rewrite(R.join(&quot;&quot;)), 1], &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
