@@ -13,11 +13,14 @@
     "dist:umd": "    NODE_ENV=dev        rollup -c -n L -i src/partial.lenses.js -f umd -o dist/partial.lenses.js && cp dist/partial.lenses.js docs/",
     "dist:umd.min": "NODE_ENV=production rollup -c -n L -i src/partial.lenses.js -f umd -o dist/partial.lenses.min.js",
     "docs": "node ./scripts/generate-docs.js",
-    "docs-watch": "livereload docs & watch-run -i -p '*.md,scripts/generate-docs.js' npm run docs & wait",
     "lint": "eslint src test",
-    "prepare": "npm run lint && npm run dist && npm run test",
+    "prepare": "npm run lint & npm run docs & (npm run dist && npm run test) & wait",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
-    "test": "nyc mocha"
+    "test": "nyc mocha",
+    "watch": "npm run watch:dist & npm run watch:docs & npm run watch:test & wait",
+    "watch:dist": "watch-run -i -p 'src/**' npm run dist",
+    "watch:docs": "livereload docs & watch-run -i -p '*.md,scripts/generate-docs.js' npm run docs & wait",
+    "watch:test": "watch-run -i -p 'dist/**,test/**' npm run test"
   },
   "repository": {
     "type": "git",

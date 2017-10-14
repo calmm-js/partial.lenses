@@ -3279,8 +3279,13 @@ in <code>docs</code>, and <code>dist</code> directories are generated.</p>
 <p>The <code>prepare</code> script is the usual way to build after changes:</p>
 <pre><code class="hljs lang-bash">npm run prepare
 </code></pre>
-<p>It builds the <code>dist</code> files and runs the lint rules and tests.  You can also run
-the scripts for those subtasks separately.</p>
+<p>It builds the <code>dist</code> and <code>docs</code> files and runs the lint rules and tests.  You
+can also run the scripts for those subtasks separately.</p>
+<p>There is also a watch mode for development:</p>
+<pre><code class="hljs lang-bash">npm run watch
+</code></pre>
+<p>It starts watching the source files and runs dist and docs builds and tests
+after changes.</p>
 <h3><a id="testing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#testing">■</a> Testing</h3>
 <p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/tests.js">tests</a> in this library are written in an atypical manner.</p>
 <p>First of all, the tests are written as strings that are <code>eval</code>ed.  This way one
@@ -3305,7 +3310,7 @@ locally:</p>
 <pre><code class="hljs lang-bash">npm run docs
 </code></pre>
 <p>or you can use the watch</p>
-<pre><code class="hljs lang-bash">npm run docs-watch
+<pre><code class="hljs lang-bash">npm run watch
 </code></pre>
 <p>which builds the docs if you save <code>README.md</code>.  The watch also runs
 <a href="http://livereload.com/">LiveReload</a> so if you have the plugin, your browser

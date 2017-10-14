@@ -4509,8 +4509,17 @@ The `prepare` script is the usual way to build after changes:
 npm run prepare
 ```
 
-It builds the `dist` files and runs the lint rules and tests.  You can also run
-the scripts for those subtasks separately.
+It builds the `dist` and `docs` files and runs the lint rules and tests.  You
+can also run the scripts for those subtasks separately.
+
+There is also a watch mode for development:
+
+```bash
+npm run watch
+```
+
+It starts watching the source files and runs dist and docs builds and tests
+after changes.
 
 ### <a id="testing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#testing) Testing
 
@@ -4552,7 +4561,7 @@ npm run docs
 or you can use the watch
 
 ```bash
-npm run docs-watch
+npm run watch
 ```
 
 which builds the docs if you save `README.md`.  The watch also runs
