@@ -1,12 +1,28 @@
-# Changelog
+# Partial Lenses Changelog
 
-## 12.0.0
+## 13.0.0
+
+As discussed in issue
+[#131](https://github.com/calmm-js/partial.lenses/issues/131), optics working on
+arrays, objects, and strings, no longer remove empty values by default.  It
+appears that by default removal, on average, makes optics compositions more
+complex.  In most cases this change means that uses of `L.define` or
+`L.required` with an empty value `{}`, `[]`, or `""`, can simply be removed.
+`L.define` and `L.required` now give a warning in case they are used with an
+empty value and a matching empty value passes through them redundantly.  In
+cases where removal of empty values is desired, one can e.g. compose with
+`L.defaults`.
+
+Removed previously obsoleted `L.findHint`.
 
 The current plan is to change Partial Lenses to support so called naked or
 prototypeless objects with `null` prototype (i.e. `Object.create(null)`) in the
 next major version.  This is a breaking change although it is likely that it
 will not affect most users.  Usefully warning for this change of behaviour by
-adding diagnostics to optics seems somewhat difficult.
+adding diagnostics to optics seems somewhat difficult.  *This note was moved
+from 12.0.0.*
+
+## 12.0.0
 
 As documented in 11.21.0:
 * Support for lazy algebras with the `delay` function was removed.
@@ -114,7 +130,7 @@ bug fix as the behaviour wasn't previously strictly specified.
 ## 10.0.0
 
 As discussed in issue
-[50](https://github.com/calmm-js/partial.lenses/issues/50), to strongly guide
+[#50](https://github.com/calmm-js/partial.lenses/issues/50), to strongly guide
 away from mutating data structures, optics now
 [`Object.freeze`](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/freeze)
 any new objects they create when `NODE_ENV` is not `production`.  Note that

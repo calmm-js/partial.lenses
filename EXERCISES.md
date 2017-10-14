@@ -86,8 +86,6 @@ test('rem', L.remove(lens,           nested), undefined)
     search for an object with the given key.</span>
 * Support removal.
   * <span class="hint">Use [`L.removable`](/#L-valueOr).</span>
-* Make it so that the array does not become `undefined` once empty.
-  * <span class="hint">Use [`L.define`](/#L-define).</span>
 * Support insertion and make it so that keys remain ordered.
   * <span class="hint">Use [`L.valueOr`](/#L-valueOr) to add the `key`
     property in case there is no matching object.</span>
@@ -148,10 +146,8 @@ test('set_ext', L.set(end, 4, {start: 1, num: 2, xtra: 'field'}), {start: 1, num
 * Define a traversal that targets the `x` properties of the coordinate pairs.
   * <span class="hint">Compose [`L.elems`](/#L-elems) and
     [`'x'`](/#L-prop).</span>
-* Support removal so that the whole coordinate pair is removed and removing the
-  last one produces an empty array.
+* Support removal so that the whole coordinate pair is removed.
   * <span class="hint">Use [`L.removable`](/#L-removable).</span>
-  * <span class="hint">Use [`L.define`](/#L-define).</span>
 
 ```js
 const xs = '???'

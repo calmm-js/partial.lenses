@@ -130,7 +130,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a") <small><sup>v1.0.0</sup></small>
       * [`L.filter((maybeValue, index) => testable) ~> lens`](#L-filter "L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]") <small><sup>v1.0.0</sup></small>
       * [`L.find((maybeValue, index, {hint: index}) => testable[, {hint: index}]) ~> lens`](#L-find "L.find: ((Maybe a, Index, {hint: Index}) -> Boolean[, {hint: Index}]) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
-      * ~~[`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>~~
       * [`L.findWith(optic[, {hint: index}]) ~> optic`](#L-findWith "L.findWith: (POptic s a[, {hint: Index}]) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
       * [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex` <small><sup>v1.0.0</sup></small>
       * [`L.last ~> lens`](#L-last "L.last: PLens [a] a") <small><sup>v9.8.0</sup></small>
@@ -320,7 +319,6 @@ Let's then just [compose](#L-compose) a parameterized lens for accessing the
 
 ```js
 const textIn = language => L.compose(L.prop("titles"),
-                                     L.define([]),
                                      L.normalize(R.sortBy(L.get("language"))),
                                      L.find(R.whereEq({language})),
                                      L.valueOr({language, text: ""}),
@@ -374,7 +372,7 @@ L.get(textIn("fi"), undefined)
 // ''
 ```
 
-With partial lenses, `undefined` is the equivalent of empty or non-existent.
+With partial lenses, `undefined` is the equivalent of non-existent.
 
 ### <a id="updating-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#updating-data) Updating data
 
@@ -426,7 +424,7 @@ having the whole object vanish, rather than just the `text` property, is the
 so that when the `text` property is set to `undefined`, the result will be
 `undefined` rather than merely an object without the `text` property.
 
-If we remove all of the titles, we get the required value:
+If we remove all of the titles, we get an empty array:
 
 ```js
 L.set(L.seq(textIn("sv"),
@@ -437,17 +435,15 @@ L.set(L.seq(textIn("sv"),
 ```
 
 Above we use [`L.seq`](#L-seq) to run the [`L.set`](#L-set) operation over both
-of the focused titles.  The `titles` property is not removed thanks to the
-[`L.define([])`](#L-define) part of our lens composition.  It makes it so that
-when reading or writing through the lens, `undefined` becomes the given value.
+of the focused titles.
 
 ### <a id="exercises"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#exercises) Exercises
 
-Take out one (or more) [`L.define(...)`](#L-define),
-[`L.normalize(...)`](#L-normalize), [`L.valueOr(...)`](#L-valueOr) or
-[`L.removable(...)`](#L-removable) part(s) from the lens composition and try to
-predict what happens when you rerun the examples with the modified lens
-composition.  Verify your reasoning by actually rerunning the examples.
+Take out one (or more) [`L.normalize(...)`](#L-normalize),
+[`L.valueOr(...)`](#L-valueOr) or [`L.removable(...)`](#L-removable) part(s)
+from the lens composition and try to predict what happens when you rerun the
+examples with the modified lens composition.  Verify your reasoning by actually
+rerunning the examples.
 
 ### <a id="shorthands"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#shorthands) Shorthands
 
@@ -466,7 +462,6 @@ the JSON data being manipulated.  Recall the lens from the start of the example:
 
 ```jsx
 L.compose(L.prop("titles"),
-          L.define([]),
           L.normalize(R.sortBy(L.get("language"))),
           L.find(R.whereEq({language})),
           L.valueOr({language, text: ""}),
@@ -495,7 +490,6 @@ const Titles = {
 
 const Model = {
   titles: ["titles",
-           L.define([]),
            L.normalize(R.sortBy(L.get("language")))],
   textIn: language => [Model.titles,
                        Titles.titleIn(language),
@@ -859,11 +853,8 @@ You might want to [▶
 play](https://calmm-js.github.io/partial.lenses/#on-lens-laws) with the laws in
 your browser.
 
-*Note*, however, that *partial* lenses are not (total) lenses.  To support
-propagating removal, partial lenses treat empty objects, `{}`, and empty arrays,
-`[]`, as equivalent to `undefined` in certain contexts.  You need to account for
-this behaviour in laws or adjust the behaviour using combinators like
-[`L.define`](#L-define).
+*Note*, however, that *partial* lenses are not (total) lenses.  `undefined` is
+given special meaning and should not appear in the manipulated data.
 
 ##### <a id="myth-partial-lenses-are-not-lawful"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#myth-partial-lenses-are-not-lawful) Myth: Partial Lenses are not lawful
 
@@ -891,10 +882,7 @@ from it.
 Consider the following lens:
 
 ```js
-const valOf = key => [L.define([]),
-                      L.find(R.whereEq({key})),
-                      L.defaults({key}),
-                      "val"]
+const valOf = key => [L.find(R.whereEq({key})), L.defaults({key}), "val"]
 ```
 
 The `valOf` lens constructor is for accessing association arrays that contain
@@ -937,8 +925,8 @@ Before you try to break it, note that a lens returned by `valOf(key)` is only
 supposed to work on valid association arrays.  A valid association array must
 not contain duplicate keys, `undefined` is not valid `val`, and the order of
 elements is not significant.  (Note that you could also add
-[`L.rewrite(R.sortBy(L.get("key")))`](#L-rewrite) to the composition after
-[`L.define([])`](#L-define) to ensure that elements stay in the same order.)
+[`L.rewrite(R.sortBy(L.get("key")))`](#L-rewrite) to the composition to ensure
+that elements stay in the same order.)
 
 The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
@@ -985,12 +973,12 @@ L.modify(["elems", L.elems, "x"],
 For example:
 
 ```js
-L.remove([0, "x"], [{x: 1}, {x: 2}, {x: 3}])
+L.remove([0, L.defaults({}), "x"], [{x: 1}, {x: 2}, {x: 3}])
 // [ { x: 2 }, { x: 3 } ]
 ```
 ```js
 L.remove([L.elems, "x", L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
-// [ { x: 1 }, { y: 1 } ]
+// [ { x: 1 }, { y: 1 }, {} ]
 ```
 
 
@@ -1163,7 +1151,7 @@ L.modify(primitives, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 ```js
 L.remove([primitives, L.when(x => 3 <= x && x <= 4)],
          [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
-// [ [ [ 1 ], 2 ], [ { r: [ 5 ] }, { x: 6 } ] ]
+// [ [ [ 1 ], 2 ], {}, [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
 #### <a id="adapting"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#adaptning) Adapting
@@ -1713,9 +1701,6 @@ L.collect([L.matches(/[^&=?]+=[^&=]+/g),
 // [ { name: 'first', value: 'foo' },
 //   { name: 'second', value: 'bar' } ]
 ```
-
-Note that when writing through `L.matches` and the result would be an empty
-string, `""`, the result will be `undefined` to support propagating removal.
 
 Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
@@ -2390,11 +2375,11 @@ L.get(["items", L.defaults([])], {items: [1, 2, 3]})
 ```
 ```js
 L.set(["items", L.defaults([])], [], {items: [1, 2, 3]})
-// undefined
+// {}
 ```
 
-Note that `L.defaults(valueIn)` is equivalent
-to [`L.replace(undefined, valueIn)`](#L-replace).
+Note that `L.defaults(valueIn)` is equivalent to [`L.replace(undefined,
+valueIn)`](#L-replace).
 
 ##### <a id="L-define"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-define) [`L.define(value) ~> lens`](#L-define "L.define: s -> PLens s s") <small><sup>v1.0.0</sup></small>
 
@@ -2431,16 +2416,12 @@ is removed, the given value will be substituted instead.
 For example:
 
 ```js
-L.remove(["items", 0], {items: [1]})
-// undefined
-```
-```js
-L.remove([L.required({}), "items", 0], {items: [1]})
+L.remove(["item"], {item: 1})
 // {}
 ```
 ```js
-L.remove(["items", L.required([]), 0], {items: [1]})
-// { items: [] }
+L.remove(["item", L.required(null)], {item: 1})
+// { item: null }
 ```
 
 Note that `L.required(valueOut)` is equivalent to [`L.replace(valueOut,
@@ -2468,8 +2449,7 @@ considered `Object` instances in JavaScript, are considered *array-like* objects
 by partial optics.  See also [`L.seemsArrayLike`](#L-seemsArrayLike).
 
 When writing through a lens or traversal that operates on array-like objects,
-the result is always either `undefined`, in case the result would be empty, or a
-plain `Array`.  For example:
+the result is always a plain `Array`.  For example:
 
 ```js
 L.set(1, "a", "LoLa")
@@ -2527,8 +2507,7 @@ defined array.
 array-like object, the result is `undefined`.  When viewing an array-like
 object, only elements matching the given predicate will be returned.  When set,
 the resulting array will be formed by concatenating the elements of the set
-array-like object and the elements of the complement of the filtered focus.  If
-the resulting array would be empty, the whole result will be `undefined`.
+array-like object and the elements of the complement of the filtered focus.
 
 For example:
 
@@ -2594,14 +2573,6 @@ can e.g. post compose `L.find` with lenses that ensure that the property being
 tested by the predicate given to `L.find` cannot be written to.  See
 [here](#myth-partial-lenses-are-not-lawful) for discussion and an example.
 
-##### <a id="L-findHint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findHint) ~~[`L.findHint((maybeValue, {hint: index}) => testable, {hint: index}) ~> lens`](#L-findHint "L.findHint: ((Maybe a, {hint: Index}) -> Boolean, {hint: Index}) -> PLens [a] a") <small><sup>v10.1.0</sup></small>~~
-
-**WARNING: `L.findHint` will be removed.  Use [`L.find`](#L-find), which
-supports an optional hint.**
-
-`L.findHint` is a wrapper around [`L.find`](#L-find) and is provided to ease
-transitioning.  Use [`L.find`](#L-find) in new code.
-
 ##### <a id="L-findWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-findWith) [`L.findWith(optic[, {hint: index}]) ~> optic`](#L-findWith "L.findWith: (POptic s a[, {hint: Index}]) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
 
 `L.findWith` chooses an index from an [array-like](#array-like) object through
@@ -2626,8 +2597,7 @@ index of an [array-like](#array-like) object.
 
 * When not viewing an index with a defined element, the result is `undefined`.
 * When setting to `undefined`, the element is removed from the resulting array,
-  shifting all higher indices down by one.  If the result would be an empty
-  array, the whole result will be `undefined`.
+  shifting all higher indices down by one.
 * When setting a defined value to an index that is higher than the length of the
   array-like object, the missing elements will be filled with `undefined`.
 
@@ -2637,58 +2607,10 @@ For example:
 L.set(2, "z", ["x", "y", "c"])
 // [ 'x', 'y', 'z' ]
 ```
-
-**NOTE:** There is a gotcha related to removing elements from array-like
-objects.  Namely, when the last element is removed, the result is `undefined`
-rather than an empty array.  This is by design, because this allows the removal
-to propagate upwards.  It is not uncommon, however, to have cases where removing
-the last element from an array-like object must not remove the array itself.
-Consider the following examples without [`L.required([])`](#L-required):
-
 ```js
-L.remove(0, ["a", "b"])
-// [ 'b' ]
+L.remove(0, ["x"])
+// [ ]
 ```
-```js
-L.remove(0, ["b"])
-// undefined
-```
-```js
-L.remove(["elems", 0], {elems: ["b"], some: "thing"})
-// { some: 'thing' }
-```
-
-Then consider the same examples with [`L.required([])`](#L-required):
-
-```js
-L.remove([L.required([]), 0], ["a", "b"])
-// [ 'b' ]
-```
-```js
-L.remove([L.required([]), 0], ["b"])
-// []
-```
-```js
-L.remove(["elems", L.required([]), 0], {elems: ["b"], some: "thing"})
-// { elems: [], some: 'thing' }
-```
-
-There is a related gotcha with [`L.required`](#L-required).  Consider the
-following example:
-
-```js
-L.remove(L.required([]), [])
-// []
-```
-```js
-L.get(L.required([]), [])
-// undefined
-```
-
-In other words, [`L.required`](#L-required) works in both directions.  Thanks to
-the handling of `undefined` within partial lenses, this is often not a problem,
-but sometimes you need the "default" value both ways.  In that case you can use
-[`L.define`](#L-define).
 
 ##### <a id="L-last"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-last) [`L.last ~> lens`](#L-last "L.last: PLens [a] a") <small><sup>v9.8.0</sup></small>
 
@@ -2796,9 +2718,8 @@ L.set(L.suffix(1), [4, 1], [3, 1, 3])
 Anything that is an `instanceof Object` is considered an object by partial
 lenses.
 
-When writing through an optic that operates on objects, the result is always
-either `undefined`, in case the result would be empty, or a plain `Object`.  For
-example:
+When writing through an optic that operates on objects, the result is always a
+plain `Object`.  For example:
 
 ```js
 function Custom(gold, silver, bronze) {
@@ -2859,7 +2780,6 @@ L.get(L.pickIn({meta: {file: [], ext: []}}),
 * When not viewing a defined object property, the result is `undefined`.
 * When writing to a property, the result is always an `Object`.
 * When setting property to `undefined`, the property is removed from the result.
-  If the result would be an empty object, the whole result will be `undefined`.
 
 When setting or removing properties, the order of keys is preserved.
 
@@ -2887,7 +2807,8 @@ L.set([L.rewrite(objectTo(XYZ)), "z"], 3, new XYZ(3, 1, 4))
 
 `L.props` focuses on a subset of properties of an object, allowing one to treat
 the subset of properties as a unit.  The view of `L.props` is `undefined` when
-none of the properties is defined.  Otherwise the view is an object containing a
+none of the properties is defined.  This allows `L.props` to be used with
+e.g. [`L.choices`](#L-choices).  Otherwise the view is an object containing a
 subset of the properties.  Setting through `L.props` updates the whole subset of
 properties, which means that any missing properties are removed if they did
 exists previously.  When set, any extra properties are ignored.
@@ -2924,9 +2845,6 @@ L.remove([L.removable("x"), "x"], {x: 1, y: 2})
 // undefined
 ```
 
-Note that `L.removable(...ps)` is roughly equivalent to [`rewrite(y => y
-instanceof Object && !L.get(L.props(...ps), y) ? undefined : y)`](#L-rewrite).
-
 Also note that, in a composition, `L.removable` is likely preceded by
 [`L.valueOr`](#L-valueOr) (or [`L.defaults`](#L-defaults)) like in the
 [tutorial](#tutorial) example.  In such a pair, the preceding lens gives a
@@ -2954,9 +2872,6 @@ L.set(L.matches(/\.[^./]+$/),
       "/dir/file.ext")
 // '/dir/file.txt'
 ```
-
-Note that when writing through `L.matches` and the result would be an empty
-string, `""`, the result will be `undefined` to support propagating removal.
 
 #### <a id="providing-defaults"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#providing-defaults) Providing defaults
 
@@ -2987,11 +2902,12 @@ L.remove(L.valueOr(0), 1)
 
 `L.pick` creates a lens out of the given possibly nested object template of
 lenses and allows one to pick apart a data structure and then put it back
-together.  When viewed, an object is created, whose properties are obtained by
-viewing through the lenses of the template.  When set with an object, the
-properties of the object are set to the context via the lenses of the template.
-`undefined` is treated as the equivalent of empty or non-existent in both
-directions.
+together.  When viewed, `undefined` properties are not added to the result and
+if the result would be an empty object, the result will be `undefined`.  This
+allows `L.pick` to be used with e.g. [`L.choices`](#L-choices).  Otherwise an
+object is created, whose properties are obtained by viewing through the lenses
+of the template.  When set with an object, the properties of the object are set
+to the context via the lenses of the template.
 
 For example, let's say we need to deal with data and schema in need of some
 semantic restructuring:
@@ -3168,12 +3084,7 @@ L.getInverse(L.array(L.pick({x: "y", z: "x"})), [{x:2, z:1}, {x:4, z:3}])
 ```
 
 Elements mapped to `undefined` by the isomorphism on elements are removed from
-the resulting array in both directions.  However, unlike with [lenses operating
-on elements or slices of arrays](#array-like), an empty array is not implicitly
-converted to `undefined`.  You can pre compose with
-[`L.defaults([])`](#L-defaults) and post compose with
-[`L.required([])`](#L-required) to convert empty arrays to `undefined` if
-desired.
+the resulting array in both directions.
 
 ##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
 
@@ -3643,8 +3554,7 @@ const setList = i => (x, xs) => {
     xs = Immutable.List()
   if (x !== undefined)
     return xs.set(i, x)
-  xs = xs.delete(i)
-  return xs.size ? xs : undefined
+  return xs.delete(i)
 }
 
 const idxList = i => L.lens(getList(i), setList(i))
@@ -3652,9 +3562,8 @@ const idxList = i => L.lens(getList(i), setList(i))
 
 Note how the above uses `isList` to check the input.  When viewing, in case the
 input is not a `List`, the proper result is `undefined`.  When updating the
-proper way to handle a non-`List` is to treat it as empty and also to replace a
-resulting empty list with `undefined`.  Also, when updating, we treat
-`undefined` as a request to `delete` rather than `set`.
+proper way to handle a non-`List` is to treat it as empty.  Also, when updating,
+we treat `undefined` as a request to `delete` rather than `set`.
 
 We can now view existing elements:
 
@@ -3671,19 +3580,11 @@ L.modify(idxList(1), R.toUpper, sampleList)
 // List [ "a", "L", "i", "s", "t" ]
 ```
 
-Remove existing elements:
+And remove existing elements:
 
 ```js
 L.remove(idxList(0), sampleList)
 // List [ "l", "i", "s", "t" ]
-```
-
-And removing the last element propagates removal:
-
-```js
-L.remove(["elems", idxList(0)],
-         {elems: Immutable.List(["x"]), look: "No elems!"})
-// { look: 'No elems!' }
 ```
 
 We can also create lists from non-lists:
