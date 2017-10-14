@@ -56,21 +56,33 @@ const rev = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I
 
 //
 
+const isEmptyArrayStringOrObject = x =>
+  I.acyclicEqualsU(I.array0, x) || I.acyclicEqualsU(I.object0, x) || x === ""
+
+const warnEmpty = (o, v, f) => {
+  const msg = `\`${f}(${JSON.stringify(v)})\` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.`
+  return x => {
+    if (I.acyclicEqualsU(v, x))
+      warn(o, msg)
+    return x
+  }
+}
+
+//
+
 const mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((xi2y, xs) => {
   const n = xs.length, ys = Array(n)
   let j = 0
   for (let i=0, y; i<n; ++i)
     if (void 0 !== (y = xi2y(xs[i], i)))
       ys[j++] = y
-  if (j) {
-    if (j < n)
-      ys.length = j
-    return ys
-  }
+  if (j < n)
+    ys.length = j
+  return ys
 })
 
 const mapIfArrayLike = (xi2y, xs) =>
-  seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) || I.array0 : void 0
+  seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) : void 0
 
 const copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (ys, k, xs, i, j) => (ys.length === k + j - i ? I.freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j)))((ys, k, xs, i, j) => {
   while (i < j)
@@ -207,14 +219,12 @@ const mkTraverse = (after, toC) => I.curryN(4, (xi2yC, m) =>
 
 const cons = t => h => void 0 !== h ? [h, t] : t
 const consTo = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(n => {
-  if (cons !== n) {
-    const xs = []
-    do {
-      xs.push(n[0])
-      n=n[1]
-    } while (cons !== n)
-    return xs.reverse()
+  const xs = []
+  while (cons !== n) {
+    xs.push(n[0])
+    n=n[1]
   }
+  return xs.reverse()
 })
 
 const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.par(0, C.ef(reqApplicative("elems"))))((A, xi2yA, xs) => {
@@ -234,15 +244,6 @@ const traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === "production"
 
 //
 
-function object0ToUndefined(o) {
-  if (!(o instanceof Object))
-    return o
-  for (const k in o)
-    return o
-}
-
-//
-
 const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
   F.map(v => set(i, v, x), xi2yF(get(i, x), i))
 
@@ -251,7 +252,7 @@ const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
 const getProp = (k, o) => o instanceof Object ? o[k] : void 0
 
 const setProp = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((k, v, o) =>
-  void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o))
+  void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o) || I.object0)
 
 const funProp = /*#__PURE__*/lensFrom(getProp, setProp)
 
@@ -270,18 +271,14 @@ const setIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.
     ys[i] = x
     return ys
   } else {
-    if (0 < n) {
-      if (n <= i)
-        return copyToFrom(Array(n), 0, xs, 0, n)
-      if (1 < n) {
-        const ys = Array(n-1)
-        for (let j=0; j<i; ++j)
-          ys[j] = xs[j]
-        for (let j=i+1; j<n; ++j)
-          ys[j-1] = xs[j]
-        return ys
-      }
-    }
+    if (n <= i)
+      return copyToFrom(Array(n), 0, xs, 0, n)
+    const ys = Array(n-1)
+    for (let j=0; j<i; ++j)
+      ys[j] = xs[j]
+    for (let j=i+1; j<n; ++j)
+      ys[j-1] = xs[j]
+    return ys
   }
 })
 
@@ -453,14 +450,11 @@ const toObject = x => I.constructorOf(x) !== Object ? I.toObject(x) : x
 //
 
 const mapPartialObjectU = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((xi2y, o) => {
-  let r = void 0
+  const r = {}
   for (const k in o) {
     const v = xi2y(o[k], k)
-    if (void 0 !== v) {
-      if (void 0 === r)
-        r = {}
+    if (void 0 !== v)
       r[k] = v
-    }
   }
   return r
 })
@@ -471,25 +465,20 @@ const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
     const v = xs[0]
     o[keys[--i]] = void 0 !== v ? v : o
   }
-  let r
+  const r = {}
   x = toObject(x)
   for (const k in x) {
     const v = o[k]
     if (o !== v) {
       o[k] = o
-      if (!r)
-        r = {}
       r[k] = void 0 !== v ? v : x[k]
     }
   }
   for (let i=0; i<n; ++i) {
     const k = keys[i]
     const v = o[k]
-    if (o !== v) {
-      if (!r)
-        r = {}
+    if (o !== v)
       r[k] = v
-    }
   }
   return r
 })
@@ -498,7 +487,7 @@ const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.
   const {of} = A
   let n = keys.length
   if (!n)
-    return of(object0ToUndefined(x))
+    return of(x)
   if (!(x instanceof Object))
     x = I.object0
   if (Select === A) {
@@ -606,14 +595,11 @@ const keyed = /*#__PURE__*/isoU(expect(instanceofObject, (process.env.NODE_ENV =
     es.push([key, x[key]])
   return es
 })), expect(I.isArray, (process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))(es => {
-  let o = void 0
+  const o = {}
   for (let i=0, n=es.length; i<n; ++i) {
     const entry = es[i]
-    if (entry.length === 2) {
-      if (void 0 === o)
-        o = {}
+    if (entry.length === 2)
       o[entry[0]] = entry[1]
-    }
   }
   return o
 })))
@@ -635,7 +621,7 @@ const matchesJoin = input => matchesIn => {
   }
 
   result += input.slice(lastIndex)
-  return result || void 0
+  return result
 }
 
 //
@@ -832,7 +818,7 @@ export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.i
       } else {
         const m = x.match(re)
         if (m)
-          return map(y => x.replace(re, void 0 !== y ? y : "") || void 0,
+          return map(y => x.replace(re, void 0 !== y ? y : ""),
                      xi2yC(m[0], reIndex(m)))
       }
     }
@@ -992,14 +978,28 @@ export function defaults(out) {
   return (x, i, F, xi2yF) => F.map(o2u, xi2yF(void 0 !== x ? x : out, i))
 }
 
-export function define(v) {
+export const define = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => inn => {
+  const res = fn(inn)
+  if (isEmptyArrayStringOrObject(inn))
+    return toFunction([isoU(warnEmpty(fn, inn, "define"), I.id),
+                       res,
+                       isoU(I.id, warnEmpty(define, inn, "define"))])
+  else
+    return res
+})(v => {
   const untoV = unto(v)
   return (x, i, F, xi2yF) => F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
-}
+})
 
 export const normalize = xi2x => [reread(xi2x), rewrite(xi2x)]
 
-export const required = inn => replace(inn, void 0)
+export const required = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => inn => {
+  const res = fn(inn)
+  if (isEmptyArrayStringOrObject(inn))
+    return toFunction([res, isoU(I.id, warnEmpty(required, inn, "required"))])
+  else
+    return res
+})(inn => replace(inn, void 0))
 
 export const reread = xi2x => (x, i, _F, xi2yF) =>
   xi2yF(void 0 !== x ? xi2x(x, i) : x, i)
@@ -1023,8 +1023,7 @@ export const filter = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
       const tsN = ts ? ts.length : 0,
             fsN = fs ? fs.length : 0,
             n = tsN + fsN
-      if (n)
-        return n === fsN
+      return n === fsN
         ? fs
         : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
     },
@@ -1039,12 +1038,6 @@ export function find(xih2b) {
     return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
   }
 }
-
-export const findHint = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.curry : C.res(C.ef(() => {
-  warn(findHint, "`L.findHint` will be removed.  Use `L.find`, which supports an optional hint.")
-})))((xh2b, hint) => {
-  return find((x, _, h) => xh2b(x,h), hint)
-})
 
 export function findWith(o) {
   const oo = toFunction(o), p = isDefined(oo)
@@ -1066,13 +1059,11 @@ export const slice = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.cur
   return F.map(
     zs => {
       const zsN = zs ? zs.length : 0, bPzsN = b + zsN, n = xsN - e + bPzsN
-      return n
-        ? copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
-                                b,
-                                zs, 0, zsN),
-                     bPzsN,
-                     xs, e, xsN)
-        : void 0
+      return copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b),
+                                   b,
+                                   zs, 0, zsN),
+                        bPzsN,
+                        xs, e, xsN)
     },
     xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) :
            void 0,
@@ -1179,10 +1170,8 @@ export const indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (process.env.NOD
       ++j
     }
   }
-  if (j) {
-    xs.length = j
-    return xs
-  }
+  xs.length = j
+  return xs
 })))
 
 export const is = v =>
