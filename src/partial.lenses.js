@@ -555,18 +555,18 @@ const fromReader = wi2x => (w, i, F, xi2yF) =>
 const reValue = m => m[0]
 const reIndex = m => m.index
 
-function reNext(m, re) {
+const reNext = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (m, re) => {
+  const res = fn(m, re)
+  if ("" === res)
+    warn(reNext, `\`matches(${re})\` traversal terminated due to empty match.  \`matches\` traversal shouldn't be used with regular expressions that can produce empty matches.`)
+  return res
+})((m, re) => {
   const lastIndex = re.lastIndex
   re.lastIndex = reIndex(m) + m[0].length
   const n = re.exec(m.input)
   re.lastIndex = lastIndex
-  if (n) {
-    if (n[0])
-      return n
-    if (process.env.NODE_ENV !== "production")
-      warn(reNext, `\`matches(${re})\` traversal terminated at index ${reIndex(n)} in ${JSON.stringify(n.input)} due to empty match.`)
-  }
-}
+  return n && n[0] && n
+})
 
 //
 
