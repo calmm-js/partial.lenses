@@ -198,7 +198,6 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-append" title="L.append: PLens [a] a"><code>L.append ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-filter" title="L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((maybeValue, index) =&gt; testable) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-find" title="L.find: ((Maybe a, Index, {hint: Index}) -&gt; Boolean[, {hint: Index}]) -&gt; PLens [a] a"><code>L.find((maybeValue, index, {hint: index}) =&gt; testable[, {hint: index}]) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
-<li><del><a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a> <small><sup>v10.1.0</sup></small></del></li>
 <li><a href="#L-findWith" title="L.findWith: (POptic s a[, {hint: Index}]) -&gt; POptic [s] a"><code>L.findWith(optic[, {hint: index}]) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></li>
@@ -393,7 +392,6 @@ such details along with the path to focus on.</p>
 <p>Let&#39;s then just <a href="#L-compose">compose</a> a parameterized lens for accessing the
 <code>text</code> of titles:</p>
 <pre><code class="hljs lang-js">var textIn = language =&gt; L.compose(L.prop(&quot;titles&quot;),
-                                     L.define([]),
                                      L.normalize(R.sortBy(L.get(&quot;language&quot;))),
                                      L.find(R.whereEq({language})),
                                      L.valueOr({language, text: &quot;&quot;}),
@@ -429,7 +427,7 @@ the specified value rather than <code>null</code> or <code>undefined</code>.  We
 if we query from <code>undefined</code>:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), undefined)
 </code></pre>
-<p>With partial lenses, <code>undefined</code> is the equivalent of empty or non-existent.</p>
+<p>With partial lenses, <code>undefined</code> is the equivalent of non-existent.</p>
 <h3><a id="updating-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#updating-data">■</a> Updating data</h3>
 <p>As with ordinary lenses, we can use the same lens to update titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, sampleTitles)
@@ -458,22 +456,20 @@ having the whole object vanish, rather than just the <code>text</code> property,
 <a href="#L-removable"><code>L.removable(&quot;text&quot;)</code></a> part of our lens composition.  It makes it
 so that when the <code>text</code> property is set to <code>undefined</code>, the result will be
 <code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
-<p>If we remove all of the titles, we get the required value:</p>
+<p>If we remove all of the titles, we get an empty array:</p>
 <pre><code class="hljs lang-js">L.set(L.seq(textIn(&quot;sv&quot;),
             textIn(&quot;en&quot;)),
       undefined,
       sampleTitles)
 </code></pre>
 <p>Above we use <a href="#L-seq"><code>L.seq</code></a> to run the <a href="#L-set"><code>L.set</code></a> operation over both
-of the focused titles.  The <code>titles</code> property is not removed thanks to the
-<a href="#L-define"><code>L.define([])</code></a> part of our lens composition.  It makes it so that
-when reading or writing through the lens, <code>undefined</code> becomes the given value.</p>
+of the focused titles.</p>
 <h3><a id="exercises"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#exercises">■</a> Exercises</h3>
-<p>Take out one (or more) <a href="#L-define"><code>L.define(...)</code></a>,
-<a href="#L-normalize"><code>L.normalize(...)</code></a>, <a href="#L-valueOr"><code>L.valueOr(...)</code></a> or
-<a href="#L-removable"><code>L.removable(...)</code></a> part(s) from the lens composition and try to
-predict what happens when you rerun the examples with the modified lens
-composition.  Verify your reasoning by actually rerunning the examples.</p>
+<p>Take out one (or more) <a href="#L-normalize"><code>L.normalize(...)</code></a>,
+<a href="#L-valueOr"><code>L.valueOr(...)</code></a> or <a href="#L-removable"><code>L.removable(...)</code></a> part(s)
+from the lens composition and try to predict what happens when you rerun the
+examples with the modified lens composition.  Verify your reasoning by actually
+rerunning the examples.</p>
 <h3><a id="shorthands"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#shorthands">■</a> Shorthands</h3>
 <p>For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,</p>
@@ -488,7 +484,6 @@ s)</code></a>.</li>
 <p>It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Recall the lens from the start of the example:</p>
 <pre><code class="hljs lang-jsx">L.compose(L.prop(&quot;titles&quot;),
-          L.define([]),
           L.normalize(R.sortBy(L.get(&quot;language&quot;))),
           L.find(R.whereEq({language})),
           L.valueOr({language, text: &quot;&quot;}),
@@ -515,7 +510,6 @@ var Titles = {
 
 var Model = {
   titles: [&quot;titles&quot;,
-           L.define([]),
            L.normalize(R.sortBy(L.get(&quot;language&quot;)))],
   textIn: language =&gt; [Model.titles,
                        Titles.titleIn(language),
@@ -833,11 +827,8 @@ VeryWellBehavedLens({
 <p>You might want to <a href="#on-lens-laws">▶
 play</a> with the laws in
 your browser.</p>
-<p><em>Note</em>, however, that <em>partial</em> lenses are not (total) lenses.  To support
-propagating removal, partial lenses treat empty objects, <code>{}</code>, and empty arrays,
-<code>[]</code>, as equivalent to <code>undefined</code> in certain contexts.  You need to account for
-this behaviour in laws or adjust the behaviour using combinators like
-<a href="#L-define"><code>L.define</code></a>.</p>
+<p><em>Note</em>, however, that <em>partial</em> lenses are not (total) lenses.  <code>undefined</code> is
+given special meaning and should not appear in the manipulated data.</p>
 <h5><a id="myth-partial-lenses-are-not-lawful"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#myth-partial-lenses-are-not-lawful">■</a> Myth: Partial Lenses are not lawful</h5>
 <p>For some reason there seems to be a persistent myth that partial lenses cannot
 obey <a href="http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf">lens laws</a>.  The
@@ -855,10 +846,7 @@ itself obey lens laws.  Here is an example:</p>
 <code>Put-Get</code> law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far
 from it.</p>
 <p>Consider the following lens:</p>
-<pre><code class="hljs lang-js">var valOf = key =&gt; [L.define([]),
-                      L.find(R.whereEq({key})),
-                      L.defaults({key}),
-                      &quot;val&quot;]
+<pre><code class="hljs lang-js">var valOf = key =&gt; [L.find(R.whereEq({key})), L.defaults({key}), &quot;val&quot;]
 </code></pre>
 <p>The <code>valOf</code> lens constructor is for accessing association arrays that contain
 <code>{key, val}</code> pairs.  For example:</p>
@@ -885,8 +873,8 @@ L.set(valOf(&quot;x&quot;), 101, [])
 supposed to work on valid association arrays.  A valid association array must
 not contain duplicate keys, <code>undefined</code> is not valid <code>val</code>, and the order of
 elements is not significant.  (Note that you could also add
-<a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code></a> to the composition after
-<a href="#L-define"><code>L.define([])</code></a> to ensure that elements stay in the same order.)</p>
+<a href="#L-rewrite"><code>L.rewrite(R.sortBy(L.get(&quot;key&quot;)))</code></a> to the composition to ensure
+that elements stay in the same order.)</p>
 <p>The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of <a href="#L-find"><code>L.find</code></a>
@@ -911,7 +899,7 @@ focused on by the given optic.</p>
 <h5><a id="L-remove"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-remove">■</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></h5>
 <p><code>L.remove</code> allows one to remove the elements focused on by the given optic.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.remove([0, &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
+<pre><code class="hljs lang-js">L.remove([0, L.defaults({}), &quot;x&quot;], [{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([L.elems, &quot;x&quot;, L.when(x =&gt; x &gt; 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 </code></pre>
@@ -1376,8 +1364,6 @@ expression gives over the focused string.  See also <a href="#L-matches"><code>L
                    value: L.matches(/[^=]+$/)})],
            &quot;?first=foo&amp;second=bar&quot;)
 </code></pre>
-<p>Note that when writing through <code>L.matches</code> and the result would be an empty
-string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
 <p>Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.</p>
@@ -1766,8 +1752,8 @@ elsewhere.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set([&quot;items&quot;, L.defaults([])], [], {items: [1, 2, 3]})
 </code></pre>
-<p>Note that <code>L.defaults(valueIn)</code> is equivalent
-to <a href="#L-replace"><code>L.replace(undefined, valueIn)</code></a>.</p>
+<p>Note that <code>L.defaults(valueIn)</code> is equivalent to <a href="#L-replace"><code>L.replace(undefined,
+valueIn)</code></a>.</p>
 <h5><a id="L-define"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-define">■</a> <a href="#L-define" title="L.define: s -&gt; PLens s s"><code>L.define(value) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.define</code> is used to specify a value to act as both the default value and the
 required value for an element.</p>
@@ -1788,11 +1774,9 @@ change, the data has actually changed.  By keeping the data normalized, a simple
 <p><code>L.required</code> is used to specify that an element is not to be removed; in case it
 is removed, the given value will be substituted instead.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.remove([&quot;items&quot;, 0], {items: [1]})
+<pre><code class="hljs lang-js">L.remove([&quot;item&quot;], {item: 1})
 </code></pre>
-<pre><code class="hljs lang-js">L.remove([L.required({}), &quot;items&quot;, 0], {items: [1]})
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([&quot;items&quot;, L.required([]), 0], {items: [1]})
+<pre><code class="hljs lang-js">L.remove([&quot;item&quot;, L.required(null)], {item: 1})
 </code></pre>
 <p>Note that <code>L.required(valueOut)</code> is equivalent to <a href="#L-replace"><code>L.replace(valueOut,
 undefined)</code></a>.</p>
@@ -1810,8 +1794,7 @@ changes.</p>
 considered <code>Object</code> instances in JavaScript, are considered <em>array-like</em> objects
 by partial optics.  See also <a href="#L-seemsArrayLike"><code>L.seemsArrayLike</code></a>.</p>
 <p>When writing through a lens or traversal that operates on array-like objects,
-the result is always either <code>undefined</code>, in case the result would be empty, or a
-plain <code>Array</code>.  For example:</p>
+the result is always a plain <code>Array</code>.  For example:</p>
 <pre><code class="hljs lang-js">L.set(1, &quot;a&quot;, &quot;LoLa&quot;)
 </code></pre>
 <p>It may seem like the result should be of the same type as the object being
@@ -1848,8 +1831,7 @@ defined array.</p>
 array-like object, the result is <code>undefined</code>.  When viewing an array-like
 object, only elements matching the given predicate will be returned.  When set,
 the resulting array will be formed by concatenating the elements of the set
-array-like object and the elements of the complement of the filtered focus.  If
-the resulting array would be empty, the whole result will be <code>undefined</code>.</p>
+array-like object and the elements of the complement of the filtered focus.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(L.filter(x =&gt; x &lt;= &quot;2&quot;), &quot;abcd&quot;, &quot;3141592&quot;)
 </code></pre>
@@ -1893,11 +1875,6 @@ allocating extra memory for it.</p>
 can e.g. post compose <code>L.find</code> with lenses that ensure that the property being
 tested by the predicate given to <code>L.find</code> cannot be written to.  See
 <a href="#myth-partial-lenses-are-not-lawful">here</a> for discussion and an example.</p>
-<h5><a id="L-findHint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findHint">■</a> <del><a href="#L-findHint" title="L.findHint: ((Maybe a, {hint: Index}) -&gt; Boolean, {hint: Index}) -&gt; PLens [a] a"><code>L.findHint((maybeValue, {hint: index}) =&gt; testable, {hint: index}) ~&gt; lens</code></a> <small><sup>v10.1.0</sup></small></del></h5>
-<p><strong>WARNING: <code>L.findHint</code> will be removed.  Use <a href="#L-find"><code>L.find</code></a>, which
-supports an optional hint.</strong></p>
-<p><code>L.findHint</code> is a wrapper around <a href="#L-find"><code>L.find</code></a> and is provided to ease
-transitioning.  Use <a href="#L-find"><code>L.find</code></a> in new code.</p>
 <h5><a id="L-findWith"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-findWith">■</a> <a href="#L-findWith" title="L.findWith: (POptic s a[, {hint: Index}]) -&gt; POptic [s] a"><code>L.findWith(optic[, {hint: index}]) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.findWith</code> chooses an index from an <a href="#array-like">array-like</a> object through
 which the given optic has a non-<code>undefined</code> view and then returns an optic that
@@ -1913,43 +1890,15 @@ index of an <a href="#array-like">array-like</a> object.</p>
 <ul>
 <li>When not viewing an index with a defined element, the result is <code>undefined</code>.</li>
 <li>When setting to <code>undefined</code>, the element is removed from the resulting array,
-shifting all higher indices down by one.  If the result would be an empty
-array, the whole result will be <code>undefined</code>.</li>
+shifting all higher indices down by one.</li>
 <li>When setting a defined value to an index that is higher than the length of the
 array-like object, the missing elements will be filled with <code>undefined</code>.</li>
 </ul>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(2, &quot;z&quot;, [&quot;x&quot;, &quot;y&quot;, &quot;c&quot;])
 </code></pre>
-<p><strong>NOTE:</strong> There is a gotcha related to removing elements from array-like
-objects.  Namely, when the last element is removed, the result is <code>undefined</code>
-rather than an empty array.  This is by design, because this allows the removal
-to propagate upwards.  It is not uncommon, however, to have cases where removing
-the last element from an array-like object must not remove the array itself.
-Consider the following examples without <a href="#L-required"><code>L.required([])</code></a>:</p>
-<pre><code class="hljs lang-js">L.remove(0, [&quot;a&quot;, &quot;b&quot;])
+<pre><code class="hljs lang-js">L.remove(0, [&quot;x&quot;])
 </code></pre>
-<pre><code class="hljs lang-js">L.remove(0, [&quot;b&quot;])
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, 0], {elems: [&quot;b&quot;], some: &quot;thing&quot;})
-</code></pre>
-<p>Then consider the same examples with <a href="#L-required"><code>L.required([])</code></a>:</p>
-<pre><code class="hljs lang-js">L.remove([L.required([]), 0], [&quot;a&quot;, &quot;b&quot;])
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([L.required([]), 0], [&quot;b&quot;])
-</code></pre>
-<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, L.required([]), 0], {elems: [&quot;b&quot;], some: &quot;thing&quot;})
-</code></pre>
-<p>There is a related gotcha with <a href="#L-required"><code>L.required</code></a>.  Consider the
-following example:</p>
-<pre><code class="hljs lang-js">L.remove(L.required([]), [])
-</code></pre>
-<pre><code class="hljs lang-js">L.get(L.required([]), [])
-</code></pre>
-<p>In other words, <a href="#L-required"><code>L.required</code></a> works in both directions.  Thanks to
-the handling of <code>undefined</code> within partial lenses, this is often not a problem,
-but sometimes you need the &quot;default&quot; value both ways.  In that case you can use
-<a href="#L-define"><code>L.define</code></a>.</p>
 <h5><a id="L-last"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-last">■</a> <a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.last</code> focuses on the last element of an <a href="#array-like">array-like</a> object or
 works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.</p>
@@ -2019,9 +1968,8 @@ beginning of <a href="#L-slice"><code>L.slice</code></a>.</p>
 <h4><a id="lensing-objects"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#lensing-objects">■</a> Lensing objects</h4>
 <p>Anything that is an <code>instanceof Object</code> is considered an object by partial
 lenses.</p>
-<p>When writing through an optic that operates on objects, the result is always
-either <code>undefined</code>, in case the result would be empty, or a plain <code>Object</code>.  For
-example:</p>
+<p>When writing through an optic that operates on objects, the result is always a
+plain <code>Object</code>.  For example:</p>
 <pre><code class="hljs lang-js">function Custom(gold, silver, bronze) {
   this.gold   = gold
   this.silver = silver
@@ -2059,8 +2007,7 @@ can effectively create a kind of filter for a nested object structure.  See also
 <ul>
 <li>When not viewing a defined object property, the result is <code>undefined</code>.</li>
 <li>When writing to a property, the result is always an <code>Object</code>.</li>
-<li>When setting property to <code>undefined</code>, the property is removed from the result.
-If the result would be an empty object, the whole result will be <code>undefined</code>.</li>
+<li>When setting property to <code>undefined</code>, the property is removed from the result.</li>
 </ul>
 <p>When setting or removing properties, the order of keys is preserved.</p>
 <p>For example:</p>
@@ -2076,7 +2023,8 @@ if necessary:</p>
 <h5><a id="L-props"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-props">■</a> <a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a> <small><sup>v1.4.0</sup></small></h5>
 <p><code>L.props</code> focuses on a subset of properties of an object, allowing one to treat
 the subset of properties as a unit.  The view of <code>L.props</code> is <code>undefined</code> when
-none of the properties is defined.  Otherwise the view is an object containing a
+none of the properties is defined.  This allows <code>L.props</code> to be used with
+e.g. <a href="#L-choices"><code>L.choices</code></a>.  Otherwise the view is an object containing a
 subset of the properties.  Setting through <code>L.props</code> updates the whole subset of
 properties, which means that any missing properties are removed if they did
 exists previously.  When set, any extra properties are ignored.</p>
@@ -2097,8 +2045,6 @@ objects.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove([L.removable(&quot;x&quot;), &quot;x&quot;], {x: 1, y: 2})
 </code></pre>
-<p>Note that <code>L.removable(...ps)</code> is roughly equivalent to <a href="#L-rewrite"><code>rewrite(y =&gt; y
-instanceof Object &amp;&amp; !L.get(L.props(...ps), y) ? undefined : y)</code></a>.</p>
 <p>Also note that, in a composition, <code>L.removable</code> is likely preceded by
 <a href="#L-valueOr"><code>L.valueOr</code></a> (or <a href="#L-defaults"><code>L.defaults</code></a>) like in the
 <a href="#tutorial">tutorial</a> example.  In such a pair, the preceding lens gives a
@@ -2119,8 +2065,6 @@ the target is not a string, then <code>L.matches</code> will be read-only.  See 
       &quot;.txt&quot;,
       &quot;/dir/file.ext&quot;)
 </code></pre>
-<p>Note that when writing through <code>L.matches</code> and the result would be an empty
-string, <code>&quot;&quot;</code>, the result will be <code>undefined</code> to support propagating removal.</p>
 <h4><a id="providing-defaults"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#providing-defaults">■</a> Providing defaults</h4>
 <h5><a id="L-valueOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-valueOr">■</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a> <small><sup>v3.5.0</sup></small></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
@@ -2137,11 +2081,12 @@ lens.</p>
 <h5><a id="L-pick"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-pick">■</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a> <small><sup>v1.2.0</sup></small></h5>
 <p><code>L.pick</code> creates a lens out of the given possibly nested object template of
 lenses and allows one to pick apart a data structure and then put it back
-together.  When viewed, an object is created, whose properties are obtained by
-viewing through the lenses of the template.  When set with an object, the
-properties of the object are set to the context via the lenses of the template.
-<code>undefined</code> is treated as the equivalent of empty or non-existent in both
-directions.</p>
+together.  When viewed, <code>undefined</code> properties are not added to the result and
+if the result would be an empty object, the result will be <code>undefined</code>.  This
+allows <code>L.pick</code> to be used with e.g. <a href="#L-choices"><code>L.choices</code></a>.  Otherwise an
+object is created, whose properties are obtained by viewing through the lenses
+of the template.  When set with an object, the properties of the object are set
+to the context via the lenses of the template.</p>
 <p>For example, let&#39;s say we need to deal with data and schema in need of some
 semantic restructuring:</p>
 <pre><code class="hljs lang-js">var sampleFlat = {px: 1, py: 2, vx: 1, vy: 0}
@@ -2253,12 +2198,7 @@ between an <a href="#array-like">array-like</a> object and an array of elements,
 <pre><code class="hljs lang-js">L.getInverse(L.array(L.pick({x: &quot;y&quot;, z: &quot;x&quot;})), [{x:2, z:1}, {x:4, z:3}])
 </code></pre>
 <p>Elements mapped to <code>undefined</code> by the isomorphism on elements are removed from
-the resulting array in both directions.  However, unlike with <a href="#array-like">lenses operating
-on elements or slices of arrays</a>, an empty array is not implicitly
-converted to <code>undefined</code>.  You can pre compose with
-<a href="#L-defaults"><code>L.defaults([])</code></a> and post compose with
-<a href="#L-required"><code>L.required([])</code></a> to convert empty arrays to <code>undefined</code> if
-desired.</p>
+the resulting array in both directions.</p>
 <h5><a id="L-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-inverse">■</a> <a href="#L-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v4.1.0</sup></small></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
 operation only makes sense on isomorphisms.</p>
@@ -2557,17 +2497,15 @@ var setList = i =&gt; (x, xs) =&gt; {
     xs = Immutable.List()
   if (x !== undefined)
     return xs.set(i, x)
-  xs = xs.delete(i)
-  return xs.size ? xs : undefined
+  return xs.delete(i)
 }
 
 var idxList = i =&gt; L.lens(getList(i), setList(i))
 </code></pre>
 <p>Note how the above uses <code>isList</code> to check the input.  When viewing, in case the
 input is not a <code>List</code>, the proper result is <code>undefined</code>.  When updating the
-proper way to handle a non-<code>List</code> is to treat it as empty and also to replace a
-resulting empty list with <code>undefined</code>.  Also, when updating, we treat
-<code>undefined</code> as a request to <code>delete</code> rather than <code>set</code>.</p>
+proper way to handle a non-<code>List</code> is to treat it as empty.  Also, when updating,
+we treat <code>undefined</code> as a request to <code>delete</code> rather than <code>set</code>.</p>
 <p>We can now view existing elements:</p>
 <pre><code class="hljs lang-js">var sampleList = Immutable.List([&quot;a&quot;, &quot;l&quot;, &quot;i&quot;, &quot;s&quot;, &quot;t&quot;])
 L.get(idxList(2), sampleList)
@@ -2575,12 +2513,8 @@ L.get(idxList(2), sampleList)
 <p>Update existing elements:</p>
 <pre><code class="hljs lang-js">L.modify(idxList(1), R.toUpper, sampleList)
 </code></pre>
-<p>Remove existing elements:</p>
+<p>And remove existing elements:</p>
 <pre><code class="hljs lang-js">L.remove(idxList(0), sampleList)
-</code></pre>
-<p>And removing the last element propagates removal:</p>
-<pre><code class="hljs lang-js">L.remove([&quot;elems&quot;, idxList(0)],
-         {elems: Immutable.List([&quot;x&quot;]), look: &quot;No elems!&quot;})
 </code></pre>
 <p>We can also create lists from non-lists:</p>
 <pre><code class="hljs lang-js">L.set(idxList(0), &quot;x&quot;, undefined)

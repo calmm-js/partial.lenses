@@ -130,10 +130,6 @@ search for an object with the given key.</span></li>
 <li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.removable</code></a>.</span></li>
 </ul>
 </li>
-<li>Make it so that the array does not become <code>undefined</code> once empty.<ul>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-define"><code>L.define</code></a>.</span></li>
-</ul>
-</li>
 <li>Support insertion and make it so that keys remain ordered.<ul>
 <li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.valueOr</code></a> to add the <code>key</code>
 property in case there is no matching object.</span></li>
@@ -196,10 +192,8 @@ test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;})
 <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-prop"><code>&#39;x&#39;</code></a>.</span></li>
 </ul>
 </li>
-<li>Support removal so that the whole coordinate pair is removed and removing the
-last one produces an empty array.<ul>
+<li>Support removal so that the whole coordinate pair is removed.<ul>
 <li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-removable"><code>L.removable</code></a>.</span></li>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-define"><code>L.define</code></a>.</span></li>
 </ul>
 </li>
 </ul>
