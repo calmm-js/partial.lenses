@@ -18,9 +18,9 @@
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha",
     "watch": "npm run watch:dist & npm run watch:docs & npm run watch:test & wait",
-    "watch:dist": "watch-run -i -p 'src/**' npm run dist",
-    "watch:docs": "livereload docs & watch-run -i -p '*.md,scripts/generate-docs.js' npm run docs & wait",
-    "watch:test": "watch-run -i -p 'dist/**,test/**' npm run test"
+    "watch:dist": "watch-run -d 500 -i -p 'src/*.js' npm run dist",
+    "watch:docs": "watch-run -d 500 -i -p '*.md,scripts/generate-docs.js' npm run docs & livereload docs & wait",
+    "watch:test": "watch-run -d 500    -p 'dist/partial.lenses.cjs.js,test/*.js' npm run test"
   },
   "repository": {
     "type": "git",
