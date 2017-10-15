@@ -18,6 +18,7 @@ window.klipse_settings = {
   codemirror_options_out: {
     lineWrapping: true
   },
+  eval_idle_msec: 150,
   selector_eval_js: '.lang-js'
 }
 
