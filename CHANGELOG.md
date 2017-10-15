@@ -11,7 +11,8 @@ complex.  In most cases this change means that uses of `L.define` or
 `L.define` and `L.required` now give a warning in case they are used with an
 empty value and a matching empty value passes through them redundantly.  In
 cases where removal of empty values is desired, one can e.g. compose with
-`L.defaults`.
+`L.defaults`.  In cases where some default value is needed, one can e.g. compose
+with `L.valueOr`.
 
 Removed previously obsoleted `L.findHint`.
 
