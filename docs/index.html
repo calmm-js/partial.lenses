@@ -918,8 +918,9 @@ the specified value.</p>
 R.always(maybeValue), maybeData)</code></a>.</p>
 <h5><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(algebra, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></h5>
 <p><code>L.traverse</code> maps each focus to an operation and returns an operation that runs
-those operations in-order and collects the results.  The <code>algebra</code> argument must
-be either a
+those operations in-order and collects the results.  The
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#algebra"><code>algebra</code></a>
+argument must be either a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a>,
 or

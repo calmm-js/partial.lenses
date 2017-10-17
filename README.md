@@ -1008,8 +1008,9 @@ R.always(maybeValue), maybeData)`](#L-modify).
 ##### <a id="L-traverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-traverse) [`L.traverse(algebra, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
 
 `L.traverse` maps each focus to an operation and returns an operation that runs
-those operations in-order and collects the results.  The `algebra` argument must
-be either a
+those operations in-order and collects the results.  The
+[`algebra`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#algebra)
+argument must be either a
 [`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor),
 [`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
 or
