@@ -38,7 +38,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s") <small><sup>v2.2.0</sup></small>
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s") <small><sup>v2.0.0</sup></small>
       * [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s") <small><sup>v1.0.0</sup></small>
-      * [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
+      * [`L.traverse(algebra, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
     * [Nesting](#nesting)
       * [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]` <small><sup>v1.0.0</sup></small>
     * [Recursing](#recursing)
@@ -1005,11 +1005,11 @@ L.set([L.elems, "x", L.when(x => x > 1)], -1, [{x: 1}, {x: 2, y: 1}, {x: 3}])
 Note that `L.set(lens, maybeValue, maybeData)` is equivalent to [`L.modify(lens,
 R.always(maybeValue), maybeData)`](#L-modify).
 
-##### <a id="L-traverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-traverse) [`L.traverse(category, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
+##### <a id="L-traverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#L-traverse) [`L.traverse(algebra, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
 
 `L.traverse` maps each focus to an operation and returns an operation that runs
-those operations in-order and collects the results.  The `category` argument
-must be either a
+those operations in-order and collects the results.  The `algebra` argument must
+be either a
 [`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor),
 [`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
 or

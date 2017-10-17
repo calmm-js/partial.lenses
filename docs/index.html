@@ -68,7 +68,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></li>
 <li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v1.0.0</sup></small></li>
-<li><a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></li>
+<li><a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(algebra, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#nesting">Nesting</a><ul>
@@ -916,10 +916,10 @@ the specified value.</p>
 </code></pre>
 <p>Note that <code>L.set(lens, maybeValue, maybeData)</code> is equivalent to <a href="#L-modify"><code>L.modify(lens,
 R.always(maybeValue), maybeData)</code></a>.</p>
-<h5><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(category, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></h5>
+<h5><a id="L-traverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-traverse">■</a> <a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(algebra, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></h5>
 <p><code>L.traverse</code> maps each focus to an operation and returns an operation that runs
-those operations in-order and collects the results.  The <code>category</code> argument
-must be either a
+those operations in-order and collects the results.  The <code>algebra</code> argument must
+be either a
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative"><code>Applicative</code></a>,
 or
