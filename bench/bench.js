@@ -368,6 +368,9 @@ R.forEach(bs => {
     `L.minimum(L.elems, xs10000)`,
     `L.minimumBy(x => -x, L.elems, xs10000)`,
     `R.reduce(R.min, -Infinity, xs10000)`,
+    `R.reduceRight(R.min, -Infinity, xs10000)`,
+    `R.reduce(R.minBy(x => -x), Infinity, xs10000)`,
+    `R.reduceRight(R.minBy(x => -x), Infinity, xs10000)`,
   ], [
     `L.mean(L.elems, xs1000)`,
     `R.mean(xs1000)`,
