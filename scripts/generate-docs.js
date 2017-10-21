@@ -141,7 +141,7 @@ function process({
 
   const scripts = [
     klipse && "https://unpkg.com/babel-polyfill/dist/polyfill.min.js",
-    klipse && "https://unpkg.com/infestines/dist/infestines.min.js",
+    klipse && "infestines.min.js",
     klipse && `${project}.js`,
     klipse && "https://unpkg.com/ramda/dist/ramda.min.js",
     klipse && "https://unpkg.com/immutable/dist/immutable.min.js",
