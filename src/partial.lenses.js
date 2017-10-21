@@ -19,7 +19,7 @@ const unto0 = /*#__PURE__*/unto(0)
 
 const notPartial = x => void 0 !== x ? !x : x
 
-const singletonPartial = x => void 0 !== x ? [x] : void 0
+const singletonPartial = x => void 0 !== x ? [x] : x
 
 const instanceofObject = x => x instanceof Object
 
