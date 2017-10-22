@@ -1,4 +1,6 @@
 (function () {
+  'use strict'
+
   function removeIds(elem) {
     elem.removeAttribute("id")
     for (var i=0, n=elem.childElementCount; i < n; ++i)
