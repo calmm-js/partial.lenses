@@ -16,7 +16,7 @@
 
   return [Object.assign({}, targetDefaults, {
     source: 'README.md',
-    target: 'docs/index.html',
+    target: 'index.html',
     title: 'Partial Lenses',
     stripComments: true,
     constToVar: true,
@@ -24,7 +24,7 @@
     tooltips: true
   }), Object.assign({}, targetDefaults, {
     source: 'EXERCISES.md',
-    target: 'docs/exercises.html',
+    target: 'exercises.html',
     title: 'Partial Lenses Exercises',
     menu: true
   })]
