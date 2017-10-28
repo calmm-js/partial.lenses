@@ -8,13 +8,13 @@ function tryRequire(name) {
   }
 }
 
-const I = require("infestines")
-const L = require("../dist/partial.lenses.cjs")
-const P = tryRequire("ramda-lens")
-const R = require("ramda")
-const O = tryRequire("flunc-optics")
-const K = tryRequire("optika")
-const sprintf = require("sprintf-js").sprintf
+const I = require('infestines')
+const L = require('../dist/partial.lenses.cjs')
+const P = tryRequire('ramda-lens')
+const R = require('ramda')
+const O = tryRequire('flunc-optics')
+const K = tryRequire('optika')
+const sprintf = require('sprintf-js').sprintf
 const _get = tryRequire('lodash.get')
 
 const xyz = {x: 1, y: 2, z: 3}
@@ -41,15 +41,15 @@ const xyzn = {x: {y: {z: 1}}}
 const l_0 = R.lensIndex(0)
 const l_1 = R.lensIndex(1)
 const l_50 = R.lensIndex(50)
-const l_x = R.lensProp("x")
-const l_y = R.lensProp("y")
-const l_z = R.lensProp("z")
+const l_x = R.lensProp('x')
+const l_y = R.lensProp('y')
+const l_z = R.lensProp('z')
 const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
-const l_0x0y = R.lensPath([0, "x", 0, "y"])
-const l_xyz = R.lensPath(["x", "y", "z"])
+const l_0x0y = R.lensPath([0, 'x', 0, 'y'])
+const l_xyz = R.lensPath(['x', 'y', 'z'])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
-const K_0_x_0_y = K && K.idx(0).key("x").idx(0).key("y")
-const K_xyz = K && K.key("x").key("y").key("z")
+const K_0_x_0_y = K && K.idx(0).key('x').idx(0).key('y')
+const K_xyz = K && K.key('x').key('y').key('z')
 const K_t_t_t = K && K.traversed().traversed().traversed()
 
 const L_e_e_e = L.toFunction([L.elems, L.elems, L.elems])
@@ -70,8 +70,8 @@ const addC = x => y => x+y
 const L_get_1 = L.get(1)
 const R_nth_1 = R.nth(1)
 
-const L_get_y = L.get("y")
-const R_prop_y = R.prop("y")
+const L_get_y = L.get('y')
+const R_prop_y = R.prop('y')
 
 const Sum = {empty: () => 0, concat: add}
 const List = {empty: always([]), concat: (x, y) => x.concat(y)}
@@ -81,9 +81,9 @@ const valueOr1 = L.valueOr(1)
 const define1 = L.define(1)
 const defaults1 = L.defaults(1)
 
-const valueOr0x0y = [L.valueOr([]), 0, "x", 0, "y"]
-const define0x0y = [L.define([]), 0, "x", 0, "y"]
-const defaults0x0y = [L.defaults([]), 0, "x", 0, "y"]
+const valueOr0x0y = [L.valueOr([]), 0, 'x', 0, 'y']
+const define0x0y = [L.define([]), 0, 'x', 0, 'y']
+const defaults0x0y = [L.defaults([]), 0, 'x', 0, 'y']
 
 const flatten = [L.optional, L.lazy(rec => {
   const elems = L.toFunction([L.elems, rec])
@@ -102,8 +102,8 @@ const naiveBST = L.rewrite(n => {
 })
 
 const search = key => L.lazy(rec => {
-  const smaller = ["smaller", rec]
-  const greater = ["greater", rec]
+  const smaller = ['smaller', rec]
+  const greater = ['greater', rec]
   const insert = L.defaults({key})
   return [naiveBST, L.choose(n => {
     if (!n || key === n.key)
@@ -112,7 +112,7 @@ const search = key => L.lazy(rec => {
   })]
 })
 
-const valueOf = key => [search(key), "value"]
+const valueOf = key => [search(key), 'value']
 
 const fromPairs =
   R.reduce((t, kv) => L.set(valueOf(kv[0]), kv[1], t), undefined)
@@ -124,10 +124,10 @@ const values = L.lazy(rec => [
             value: L.identity,
             greater: rec})])
 
-const bstPairs = [[3, "g"], [2, "a"], [1, "m"], [4, "i"], [5, "c"]]
+const bstPairs = [[3, 'g'], [2, 'a'], [1, 'm'], [4, 'i'], [5, 'c']]
 const bst = fromPairs(bstPairs)
 
-const incNum = x => typeof x === "number" ? x + 1 : x
+const incNum = x => typeof x === 'number' ? x + 1 : x
 const nested = [{x: 1, y: [2, {d: 3}, 4], z: {a: 5}}]
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)
@@ -137,27 +137,27 @@ const everywhere = [L.optional, L.lazy(rec => {
                   :                          L.identity)
 })]
 
-const xyzs = L.seq("x", "y", "z")
+const xyzs = L.seq('x', 'y', 'z')
 
 const pi = [3, 1, 4, 1, 5]
 
-const aEb = L.orElse("b", "a")
-const aEbEc = L.orElse(L.orElse("c", "b"), "a")
-const abM = L.choice("a", "b")
-const abS = L.choices("a", "b")
-const abcM = L.choice("a", "b", "c")
-const abcS = L.choices("a", "b", "c")
+const aEb = L.orElse('b', 'a')
+const aEbEc = L.orElse(L.orElse('c', 'b'), 'a')
+const abM = L.choice('a', 'b')
+const abS = L.choices('a', 'b')
+const abcM = L.choice('a', 'b', 'c')
+const abcS = L.choices('a', 'b', 'c')
 
-const Benchmark = require("benchmark")
+const Benchmark = require('benchmark')
 Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 
-const pattern = new RegExp(process.argv[3] || "")
+const pattern = new RegExp(process.argv[3] || '')
 
 const dropped = [
-  P    ? "" : "P",
-  O    ? "" : "O",
-  K    ? "" : "K",
-  _get ? "" : "_get"
+  P    ? '' : 'P',
+  O    ? '' : 'O',
+  K    ? '' : 'K',
+  _get ? '' : '_get'
 ].filter(I.id)
 
 R.forEach(bs => {
@@ -166,10 +166,10 @@ R.forEach(bs => {
     const s = new Benchmark.Suite()
     bs.reverse().forEach(b => {
       b = b instanceof Array ? b : [b]
-      const code = b[0].replace(/[ \n]+/g, " ")
-      const note = b[1] || ""
+      const code = b[0].replace(/[ \n]+/g, ' ')
+      const note = b[1] || ''
       if (-1 === dropped.findIndex(p => code.indexOf(p) === 0))
-        s.add(code, eval("() => " + code), {note})
+        s.add(code, eval('() => ' + code), {note})
     })
     s.on('complete', complete)
     s.run()
@@ -184,7 +184,7 @@ R.forEach(bs => {
     `xs100.reduceRight(add, 0)`,
   ], [
     `L.foldr(add, 0, L.elems, xs100000)`,
-    [`O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`, "STACK OVERFLOW"],
+    [`O.Fold.foldrOf(O.Traversal.traversed, addC, 0, xs100000)`, 'STACK OVERFLOW'],
     `R.reduceRight(add, 0, xs100000)`,
     `xs100000.reduceRight(add, 0)`,
   ], [
@@ -253,8 +253,8 @@ R.forEach(bs => {
   ], [
     `K.traversed().over(xs1000, inc)`,
     `L.modify(L.elems, inc, xs1000)`,
-    [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, "QUADRATIC"],
-    [`P.over(P.traversed, inc, xs1000)`, "QUADRATIC"],
+    [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, 'QUADRATIC'],
+    [`P.over(P.traversed, inc, xs1000)`, 'QUADRATIC'],
     `R.map(inc, xs1000)`,
     `xs1000.map(inc)`,
   ], [
@@ -289,58 +289,58 @@ R.forEach(bs => {
     `xs.map((x, i) => i === 1 ? 0 : x)`,
     `{let ys = xs.slice(); ys[1] = 0; return ys}`,
   ], [
-    `K.key("y").get(xyz)`,
-    `L.get("y", xyz)`,
-    `R.prop("y", xyz)`,
+    `K.key('y').get(xyz)`,
+    `L.get('y', xyz)`,
+    `R.prop('y', xyz)`,
     `R.view(l_y, xyz)`,
-    `_get(xyz, "y")`,
+    `_get(xyz, 'y')`,
   ], [
-    `L.get("y")(xyz)`,
+    `L.get('y')(xyz)`,
     `L_get_y(xyz)`,
-    `R.prop("y")(xyz)`,
+    `R.prop('y')(xyz)`,
     `R_prop_y(xyz)`,
   ], [
-    `K.key("y").set(xyz, 0)`,
-    `L.set("y", 0, xyz)`,
-    `R.assoc("y", 0, xyz)`,
+    `K.key('y').set(xyz, 0)`,
+    `L.set('y', 0, xyz)`,
+    `R.assoc('y', 0, xyz)`,
     `R.set(l_y, 0, xyz)`,
   ], [
     `K_0_x_0_y.get(axay)`,
-    `L.get([0, "x", 0, "y"], axay)`,
-    `R.path([0, "x", 0, "y"], axay)`,
+    `L.get([0, 'x', 0, 'y'], axay)`,
+    `R.path([0, 'x', 0, 'y'], axay)`,
     `R.view(l_0_x_0_y, axay)`,
     `R.view(l_0x0y, axay)`,
-    `_get(axay, [0, "x", 0, "y"])`,
+    `_get(axay, [0, 'x', 0, 'y'])`,
   ], [
     `K_0_x_0_y.set(axay, 0)`,
-    `L.set([0, "x", 0, "y"], 0, axay)`,
-    `R.assocPath([0, "x", 0, "y"], 0, axay)`,
+    `L.set([0, 'x', 0, 'y'], 0, axay)`,
+    `R.assocPath([0, 'x', 0, 'y'], 0, axay)`,
     `R.set(l_0_x_0_y, 0, axay)`,
     `R.set(l_0x0y, 0, axay)`,
   ], [
     `K_0_x_0_y.over(axay, inc)`,
-    `L.modify([0, "x", 0, "y"], inc, axay)`,
+    `L.modify([0, 'x', 0, 'y'], inc, axay)`,
     `R.over(l_0_x_0_y, inc, axay)`,
     `R.over(l_0x0y, inc, axay)`,
   ], [
     `L.remove(1, xs)`,
     `R.remove(1, 1, xs)`,
   ], [
-    `L.remove("y", xyz)`,
-    `R.dissoc("y", xyz)`,
+    `L.remove('y', xyz)`,
+    `R.dissoc('y', xyz)`,
   ], [
     `K_xyz.get(xyzn)`,
-    `L.get(["x", "y", "z"], xyzn)`,
+    `L.get(['x', 'y', 'z'], xyzn)`,
     `O.Getter.view(o_x_y_z, xyzn)`,
-    `R.path(["x", "y", "z"], xyzn)`,
+    `R.path(['x', 'y', 'z'], xyzn)`,
     `R.view(l_x_y_z, xyzn)`,
     `R.view(l_xyz, xyzn)`,
-    `_get(xyzn, ["x", "y", "z"])`,
+    `_get(xyzn, ['x', 'y', 'z'])`,
   ], [
     `K_xyz.set(xyzn, 0)`,
-    `L.set(["x", "y", "z"], 0, xyzn)`,
+    `L.set(['x', 'y', 'z'], 0, xyzn)`,
     `O.Setter.set(o_x_y_z, 0, xyzn)`,
-    `R.assocPath(["x", "y", "z"], 0, xyzn)`,
+    `R.assocPath(['x', 'y', 'z'], 0, xyzn)`,
     `R.set(l_x_y_z, 0, xyzn)`,
     `R.set(l_xyz, 0, xyzn)`,
   ], [
@@ -350,7 +350,7 @@ R.forEach(bs => {
   ], [
     `L.selectAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
     `R.find(x => x < 3, xs100)`,
-    [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, "NO SHORTCUT EVALUATION"],
+    [`O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`, 'NO SHORTCUT EVALUATION'],
   ], [
     `L.sum([L.elems, x => x+1, x => x*2, L.when(x => x%2 === 0)], xs1000)`,
     `R.pipe(R.map(x => x+1), R.map(x => x*2), R.filter(x => x%2 === 0), R.sum)(xs1000)`,
@@ -408,7 +408,7 @@ R.forEach(bs => {
     `L.modify(everywhere, incNum, xs1000)`,
     `L.modify(flatten, inc, xs1000)`,
   ], [
-    `L.set(L.seq("x", "y", "z"), 1, undefined)`,
+    `L.set(L.seq('x', 'y', 'z'), 1, undefined)`,
     `L.set(xyzs, 1, undefined)`,
   ], [
     `L.modify(values, x => x + x, bst)`,
@@ -474,21 +474,21 @@ R.forEach(bs => {
     `L.set(define0x0y, 1, undefined)`,
     `L.set(valueOr0x0y, 1, undefined)`,
   ], [
-    `L.set(L.findWith("x"), 2, axay)`,
+    `L.set(L.findWith('x'), 2, axay)`,
   ], [
-    `L.get(L.orElse("a", "b"), {x: 1})`,
-    `L.get(L.choices("a", "b"), {x: 1})`,
+    `L.get(L.orElse('a', 'b'), {x: 1})`,
+    `L.get(L.choices('a', 'b'), {x: 1})`,
     `L.get(abS, {x: 1})`,
     `L.get(abM, {x: 1})`,
     `L.get(aEb, {x: 1})`,
   ], [
-    `L.get(L.choice("a", "b", "c"), {x: 1})`,
-    `L.get(L.choices("a", "b", "c"), {x: 1})`,
+    `L.get(L.choice('a', 'b', 'c'), {x: 1})`,
+    `L.get(L.choices('a', 'b', 'c'), {x: 1})`,
     `L.get(aEbEc, {x: 1})`,
     `L.get(abcM, {x: 1})`,
     `L.get(abcS, {x: 1})`,
   ], [
-    `L.set(L.props("x", "y"), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`,
+    `L.set(L.props('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`,
   ]
 ])
 
@@ -496,17 +496,17 @@ function complete() {
   const bs = I.seq(this,
                    R.values,
                    R.filter(R.is(Benchmark)),
-                   R.sortBy(R.prop("hz")),
+                   R.sortBy(R.prop('hz')),
                    R.reverse)
   const fastest = I.seq(bs,
-                        R.map(R.prop("hz")),
+                        R.map(R.prop('hz')),
                         R.reduce(R.max, 0))
   bs.forEach(b => {
-    console.log(sprintf("%12s/s %8.2f   %s%s%s",
+    console.log(sprintf('%12s/s %8.2f   %s%s%s',
                         Math.round(b.hz).toLocaleString(),
                         fastest/b.hz,
                         b.name,
-                        b.options.note && " -- ",
+                        b.options.note && ' -- ',
                         b.options.note))
   })
   console.log()
