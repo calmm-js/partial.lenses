@@ -19,7 +19,7 @@
     "test": "nyc mocha",
     "watch": "npm run watch:dist & npm run watch:docs & npm run watch:test & wait",
     "watch:dist": "watch-run -d 500 -i -p 'src/*.js' npm run dist",
-    "watch:docs": "watch-run -d 500 -i -p '*.md,scripts/generate-docs.js' npm run docs & livereload docs & wait",
+    "watch:docs": "watch-run -d 500 -i -p '*.md' npm run docs & livereload docs & wait",
     "watch:test": "watch-run -d 500    -p 'dist/partial.lenses.cjs.js,test/*.js' npm run test"
   },
   "repository": {
