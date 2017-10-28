@@ -16,9 +16,10 @@
     if (!menuContents)
       return
     var contents = document.querySelector("#contents")
-    if (!contents)
-      return
-    contents = contents.parentNode
+    while (contents &&
+           contents.nextElementSibling &&
+           contents.nextElementSibling.tagName !== "UL")
+      contents = contents.parentNode
     if (!contents)
       return
     var tree = contents.nextElementSibling

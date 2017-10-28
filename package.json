@@ -70,7 +70,7 @@
     "benchmark": "^2.1.4",
     "codecov": "^3.0.0",
     "eslint": "^4.10.0",
-    "klipse-github-docs-generator": "^0.2.1",
+    "klipse-github-docs-generator": "^0.2.2",
     "livereload": "^0.6.3",
     "mocha": "^4.0.1",
     "nyc": "^11.2.1",
