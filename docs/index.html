@@ -2697,30 +2697,35 @@ export default {
 </code></pre>
 <h2><a id="background"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#background">■</a> Background</h2>
 <h3><a id="motivation"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#motivation">■</a> Motivation</h3>
-<p>Consider the following REPL session using Ramda:</p>
-<pre><code class="hljs lang-js">R.set(R.lensPath([&quot;x&quot;, &quot;y&quot;]), 1, {})
+<p>In late 2015, while implementing UIs for manipulating fairly complex JSON
+objects, we wrote a module of additional lens combinators on top of
+<a href="http://ramdajs.com">Ramda</a>&#39;s lenses.  Lenses allowed us to operate on nested
+objects in a <a href="#on-composability">compositional</a> manner and, thanks to treating
+data as <a href="#on-immutability">immutable</a>, also made it easy to provide undo-redo.
+Pretty quickly, however, it became evident that Ramda&#39;s support for lenses left
+room for improvement.</p>
+<p>First of all, upto and including Ramda version 0.24.1, Ramda&#39;s lenses didn&#39;t
+deal with non-existent focuses consistently:</p>
+<pre><code class="hljs lang-jsx">R.view(R.lensPath([&quot;x&quot;, &quot;y&quot;]), {})
+// undefined
+R.view(R.compose(R.lensProp(&quot;x&quot;), R.lensProp(&quot;y&quot;)), {})
+// TypeError: Cannot read property &#39;y&#39; of undefined
 </code></pre>
-<pre><code class="hljs lang-js">R.set(R.compose(R.lensProp(&quot;x&quot;), R.lensProp(&quot;y&quot;)), 1, {})
-</code></pre>
-<pre><code class="hljs lang-js">R.view(R.lensPath([&quot;x&quot;, &quot;y&quot;]), {})
-</code></pre>
-<pre><code class="hljs lang-js">R.view(R.compose(R.lensProp(&quot;x&quot;), R.lensProp(&quot;y&quot;)), {})
-</code></pre>
-<pre><code class="hljs lang-js">R.set(R.lensPath([&quot;x&quot;, &quot;y&quot;]), undefined, {x: {y: 1}})
-</code></pre>
-<pre><code class="hljs lang-js">R.set(R.compose(R.lensProp(&quot;x&quot;), R.lensProp(&quot;y&quot;)), undefined, {x: {y: 1}})
-</code></pre>
-<p>One might assume that <a href="http://ramdajs.com/docs/#lensPath"><code>R.lensPath([p0,
-...ps])</code></a> is equivalent to
-<code>R.compose(R.lensProp(p0), ...ps.map(R.lensProp))</code>, but that is not the case.</p>
-<p>With partial lenses you can robustly compose a path lens from prop lenses
-<a href="#L-compose"><code>L.compose(L.prop(p0), ...ps.map(L.prop))</code></a> or just use the
-shorthand notation <a href="#L-compose"><code>[p0, ...ps]</code></a>.  In JavaScript, missing (and
-mismatching) data can be mapped to <code>undefined</code>, which is what partial lenses
-also do, because <code>undefined</code> is not a valid <a href="http://json.org/">JSON</a> value.
-When a part of a data structure is missing, an attempt to view it returns
-<code>undefined</code>.  When a part is missing, setting it to a defined value inserts the
-new part.  Setting an existing part to <code>undefined</code> removes it.</p>
+<p><small>(In Ramda version 0.25.0, roughly two years later, both of the above now
+return <code>undefined</code>.)</small></p>
+<p>In addition to using lenses to <a href="#L-get">view</a> and <a href="#L-set">set</a>, we also wanted
+to have the ability to <a href="#L-append">insert</a> and <a href="#L-remove">remove</a>.  In other
+words, we wanted full <a href="https://en.wikipedia.org/wiki/CRUD">CRUD</a> semantics,
+because that is what our UIs also had to provide.</p>
+<p>We also wanted lenses to have the ability to <a href="#L-find">search</a> for things,
+because we often had to deal with e.g. arrays containing objects with unique IDs
+aka <a href="#myth-partial-lenses-are-not-lawful">association lists</a>.</p>
+<p>All of these considerations give rise to a notion of
+<a href="#on-partiality">partiality</a>, which is what the Partial Lenses library set out
+to explore in early 2016.  Since then the library has grown to a comprehensive,
+<a href="#benchmarks">high-performance</a>, <a href="#optics">optics</a> library, supporting not only
+partial <a href="#lenses">lenses</a>, but also <a href="#isomorphisms">isomorphisms</a>,
+<a href="#traversals">traversals</a>, and also a notion of <a href="#transforms">transforms</a>.</p>
 <h3><a id="design-choices"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#design-choices">■</a> Design choices</h3>
 <p>There are several lens and optics libraries for JavaScript.  In this section I&#39;d
 like to very briefly elaborate on a number design choices made during the course

@@ -3819,45 +3819,42 @@ export default {
 
 ### <a id="motivation"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#motivation) Motivation
 
-Consider the following REPL session using Ramda:
+In late 2015, while implementing UIs for manipulating fairly complex JSON
+objects, we wrote a module of additional lens combinators on top of
+[Ramda](http://ramdajs.com)'s lenses.  Lenses allowed us to operate on nested
+objects in a [compositional](#on-composability) manner and, thanks to treating
+data as [immutable](#on-immutability), also made it easy to provide undo-redo.
+Pretty quickly, however, it became evident that Ramda's support for lenses left
+room for improvement.
 
-```js
-R.set(R.lensPath(["x", "y"]), 1, {})
-// { x: { y: 1 } }
-```
-```js
-R.set(R.compose(R.lensProp("x"), R.lensProp("y")), 1, {})
-// TypeError: Cannot read property 'y' of undefined
-```
-```js
+First of all, upto and including Ramda version 0.24.1, Ramda's lenses didn't
+deal with non-existent focuses consistently:
+
+```jsx
 R.view(R.lensPath(["x", "y"]), {})
-// undefined
-```
-```js
+// undefined
 R.view(R.compose(R.lensProp("x"), R.lensProp("y")), {})
-// TypeError: Cannot read property 'y' of undefined
-```
-```js
-R.set(R.lensPath(["x", "y"]), undefined, {x: {y: 1}})
-// { x: { y: undefined } }
-```
-```js
-R.set(R.compose(R.lensProp("x"), R.lensProp("y")), undefined, {x: {y: 1}})
-// { x: { y: undefined } }
+// TypeError: Cannot read property 'y' of undefined
 ```
 
-One might assume that [`R.lensPath([p0,
-...ps])`](http://ramdajs.com/docs/#lensPath) is equivalent to
-`R.compose(R.lensProp(p0), ...ps.map(R.lensProp))`, but that is not the case.
+<small>(In Ramda version 0.25.0, roughly two years later, both of the above now
+return `undefined`.)</small>
 
-With partial lenses you can robustly compose a path lens from prop lenses
-[`L.compose(L.prop(p0), ...ps.map(L.prop))`](#L-compose) or just use the
-shorthand notation [`[p0, ...ps]`](#L-compose).  In JavaScript, missing (and
-mismatching) data can be mapped to `undefined`, which is what partial lenses
-also do, because `undefined` is not a valid [JSON](http://json.org/) value.
-When a part of a data structure is missing, an attempt to view it returns
-`undefined`.  When a part is missing, setting it to a defined value inserts the
-new part.  Setting an existing part to `undefined` removes it.
+In addition to using lenses to [view](#L-get) and [set](#L-set), we also wanted
+to have the ability to [insert](#L-append) and [remove](#L-remove).  In other
+words, we wanted full [CRUD](https://en.wikipedia.org/wiki/CRUD) semantics,
+because that is what our UIs also had to provide.
+
+We also wanted lenses to have the ability to [search](#L-find) for things,
+because we often had to deal with e.g. arrays containing objects with unique IDs
+aka [association lists](#myth-partial-lenses-are-not-lawful).
+
+All of these considerations give rise to a notion of
+[partiality](#on-partiality), which is what the Partial Lenses library set out
+to explore in early 2016.  Since then the library has grown to a comprehensive,
+[high-performance](#benchmarks), [optics](#optics) library, supporting not only
+partial [lenses](#lenses), but also [isomorphisms](#isomorphisms),
+[traversals](#traversals), and also a notion of [transforms](#transforms).
 
 ### <a id="design-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#design-choices) Design choices
 
