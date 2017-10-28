@@ -647,7 +647,7 @@ and `setText` when there isn't.  With partial optics, however, you separate the
 selection and data structure invariant maintenance from the operations as
 illustrated in the [tutorial](#tutorial) and due to the separation of concerns
 that tends to give you a lot of robust functionality in [a small amount of
-code](#a-partial-lens-to-access-title-texts).
+code](#a-partial-lens-to-access-titles).
 
 ## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#reference) Reference
 
