@@ -24,6 +24,17 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 ## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#contents) Contents
 
 * [Tutorial](#tutorial)
+  * [Getting started](#getting-started)
+  * [A partial lens to access title texts](#a-partial-lens-to-access-titles)
+    * [Querying data](#querying-data)
+      * [Missing data can be expected](#missing-data-can-be-expected)
+    * [Updating data](#updating-data)
+    * [Inserting data](#inserting-data)
+    * [Removing data](#removing-data)
+    * [Exercises](#exercises)
+  * [Shorthands](#shorthands)
+  * [Systematic decomposition](#systematic-decomposition)
+  * [Manipulating multiple items](#manipulating-multiple-items)
 * [The why of optics](#the-why-of-optics)
 * [Reference](#reference)
   * [Stable subset](#stable-subset)
@@ -33,6 +44,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [On immutability](#on-immutability)
     * [On composability](#on-composability)
     * [On lens laws](#on-lens-laws)
+      * [Myth: Partial Lenses are not lawful](#myth-partial-lenses-are-not-lawful)
     * [Operations on optics](#operations-on-optics)
       * [`L.assign(optic, object, maybeData) ~> maybeData`](#L-assign "L.assign: PLens s {p1: a1, ...ps, ...o} -> {p1: a1, ...ps} -> Maybe s -> Maybe s") <small><sup>v11.13.0</sup></small>
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s") <small><sup>v2.2.0</sup></small>
@@ -44,8 +56,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Recursing](#recursing)
       * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
     * [Adapting](#adapting)
-      * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
       * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
+      * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
       * [`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>
       * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
     * [Querying](#querying)
@@ -178,7 +190,10 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Dependent fields](#dependent-fields)
   * [Collection toggle](#collection-toggle)
   * [BST as a lens](#bst-as-a-lens)
+    * [BST traversal](#bst-traversal)
   * [Interfacing with Immutable.js](#interfacing)
+    * [`List` indexing](#list-indexing)
+    * [Interfacing traversals](#interfacing-traversals)
 * [Deepening topics](#deepening-topics)
   * [Understanding `L.filter`, `L.find`, `L.select`, and `L.when`](#understanding-filter-find-select-and-when)
 * [Advanced topics](#advanced-topics)
@@ -189,10 +204,26 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 * [Background](#background)
   * [Motivation](#motivation)
   * [Design choices](#design-choices)
+    * [Partiality](#partiality)
+    * [Focus on JSON](#focus-on-json)
+    * [Use of `undefined`](#use-of-undefined)
+    * [Allowing strings and integers as optics](#allowing-strings-and-integers-as-optics)
+    * [Treating an array of optics as a composition of optics](#treating-an-array-of-optics-as-a-composition-of-optics)
+    * [Applicatives](#applicatives)
+    * [Combinators for creating new optics](#combinators-for-creating-new-optics)
+    * [Indexing](#indexing)
+    * [Static Land](#static-land)
+    * [Performance](#performance)
   * [Benchmarks](#benchmarks)
   * [Lenses all the way](#lenses-all-the-way)
   * [Related work](#related-work)
+    * [Papers and other introductory material](#papers-and-other-introductory-material)
+    * [JavaScript / TypeScript / Flow libraries](#javascript-typescript-flow-libraries)
+    * [Libraries for other languages](#libraries-for-other-languages)
 * [Contributing](#contributing)
+  * [Building](#building)
+  * [Testing](#testing)
+  * [Documentation](#documentation)
 
 ## <a id="tutorial"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#tutorial) Tutorial
 
@@ -332,7 +363,7 @@ which the data structure must be treated at that point.  The
 [`L.prop(...)`](#L-prop) parts are already familiar.  The other parts we will
 mention below.
 
-### <a id="querying-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#querying-data) Querying data
+#### <a id="querying-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#querying-data) Querying data
 
 Thanks to the parameterized search part,
 [`L.find(R.whereEq({language}))`](#L-find), of the lens composition, we can use
@@ -348,7 +379,7 @@ element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda's [`R.whereEq`](http://ramdajs.com/docs/#whereEq) function
 that creates an equality predicate from a given template object.
 
-#### <a id="missing-data-can-be-expected"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#missing-data-can-be-expected) Missing data can be expected
+##### <a id="missing-data-can-be-expected"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#missing-data-can-be-expected) Missing data can be expected
 
 Partial lenses can generally deal with missing data.  In this case, when
 [`L.find`](#L-find) doesn't find an element, it instead works like a lens to
@@ -374,7 +405,7 @@ L.get(textIn("fi"), undefined)
 
 With partial lenses, `undefined` is the equivalent of non-existent.
 
-### <a id="updating-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#updating-data) Updating data
+#### <a id="updating-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#updating-data) Updating data
 
 As with ordinary lenses, we can use the same lens to update titles:
 
@@ -384,7 +415,7 @@ L.set(textIn("en"), "The title", sampleTitles)
 //             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-### <a id="inserting-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#inserting-data) Inserting data
+#### <a id="inserting-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#inserting-data) Inserting data
 
 The same partial lens also allows us to insert new titles:
 
@@ -409,7 +440,7 @@ written with the given function.  In this case we used Ramda's
 [`R.sortBy`](http://ramdajs.com/docs/#sortBy) to specify that we want the titles
 to be kept sorted by language.
 
-### <a id="removing-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#removing-data) Removing data
+#### <a id="removing-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#removing-data) Removing data
 
 Finally, we can use the same partial lens to remove titles:
 
@@ -437,7 +468,7 @@ L.set(L.seq(textIn("sv"),
 Above we use [`L.seq`](#L-seq) to run the [`L.set`](#L-set) operation over both
 of the focused titles.
 
-### <a id="exercises"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#exercises) Exercises
+#### <a id="exercises"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#exercises) Exercises
 
 Take out one (or more) [`L.normalize(...)`](#L-normalize),
 [`L.valueOr(...)`](#L-valueOr) or [`L.removable(...)`](#L-removable) part(s)
@@ -1585,7 +1616,6 @@ visited only once and can, for example, be [collected](#L-collect),
 [folded](#L-concatAs), [modified](#L-modify), [set](#L-set) and
 [removed](#L-remove).  Put in another way, a traversal specifies a set of paths
 to elements in a data structure.
-
 
 #### <a id="creating-new-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#creating-new-traversals) Creating new traversals
 

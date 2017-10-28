@@ -53,7 +53,24 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <a href="https://david-dm.org/calmm-js/partial.lenses?type=dev"><img src="https://david-dm.org/calmm-js/partial.lenses/dev-status.svg" alt=""></a></p>
 <h2><a id="contents"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#contents">■</a> Contents</h2>
 <ul>
-<li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#tutorial">Tutorial</a><ul>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#a-partial-lens-to-access-titles">A partial lens to access title texts</a><ul>
+<li><a href="#querying-data">Querying data</a><ul>
+<li><a href="#missing-data-can-be-expected">Missing data can be expected</a></li>
+</ul>
+</li>
+<li><a href="#updating-data">Updating data</a></li>
+<li><a href="#inserting-data">Inserting data</a></li>
+<li><a href="#removing-data">Removing data</a></li>
+<li><a href="#exercises">Exercises</a></li>
+</ul>
+</li>
+<li><a href="#shorthands">Shorthands</a></li>
+<li><a href="#systematic-decomposition">Systematic decomposition</a></li>
+<li><a href="#manipulating-multiple-items">Manipulating multiple items</a></li>
+</ul>
+</li>
 <li><a href="#the-why-of-optics">The why of optics</a></li>
 <li><a href="#reference">Reference</a><ul>
 <li><a href="#stable-subset">Stable subset</a></li>
@@ -62,7 +79,10 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#on-indexing">On indexing</a></li>
 <li><a href="#on-immutability">On immutability</a></li>
 <li><a href="#on-composability">On composability</a></li>
-<li><a href="#on-lens-laws">On lens laws</a></li>
+<li><a href="#on-lens-laws">On lens laws</a><ul>
+<li><a href="#myth-partial-lenses-are-not-lawful">Myth: Partial Lenses are not lawful</a></li>
+</ul>
+</li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
@@ -80,8 +100,8 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </ul>
 </li>
 <li><a href="#adapting">Adapting</a><ul>
-<li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a> <small><sup>v11.10.0</sup></small></li>
+<li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></li>
 <li><a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a> <small><sup>v2.1.0</sup></small></li>
 </ul>
@@ -275,8 +295,15 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#an-array-of-ids-as-boolean-flags">An array of ids as boolean flags</a></li>
 <li><a href="#dependent-fields">Dependent fields</a></li>
 <li><a href="#collection-toggle">Collection toggle</a></li>
-<li><a href="#bst-as-a-lens">BST as a lens</a></li>
-<li><a href="#interfacing">Interfacing with Immutable.js</a></li>
+<li><a href="#bst-as-a-lens">BST as a lens</a><ul>
+<li><a href="#bst-traversal">BST traversal</a></li>
+</ul>
+</li>
+<li><a href="#interfacing">Interfacing with Immutable.js</a><ul>
+<li><a href="#list-indexing"><code>List</code> indexing</a></li>
+<li><a href="#interfacing-traversals">Interfacing traversals</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#deepening-topics">Deepening topics</a><ul>
@@ -294,13 +321,35 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 </li>
 <li><a href="#background">Background</a><ul>
 <li><a href="#motivation">Motivation</a></li>
-<li><a href="#design-choices">Design choices</a></li>
-<li><a href="#benchmarks">Benchmarks</a></li>
-<li><a href="#lenses-all-the-way">Lenses all the way</a></li>
-<li><a href="#related-work">Related work</a></li>
+<li><a href="#design-choices">Design choices</a><ul>
+<li><a href="#partiality">Partiality</a></li>
+<li><a href="#focus-on-json">Focus on JSON</a></li>
+<li><a href="#use-of-undefined">Use of <code>undefined</code></a></li>
+<li><a href="#allowing-strings-and-integers-as-optics">Allowing strings and integers as optics</a></li>
+<li><a href="#treating-an-array-of-optics-as-a-composition-of-optics">Treating an array of optics as a composition of optics</a></li>
+<li><a href="#applicatives">Applicatives</a></li>
+<li><a href="#combinators-for-creating-new-optics">Combinators for creating new optics</a></li>
+<li><a href="#indexing">Indexing</a></li>
+<li><a href="#static-land">Static Land</a></li>
+<li><a href="#performance">Performance</a></li>
 </ul>
 </li>
-<li><a href="#contributing">Contributing</a></li>
+<li><a href="#benchmarks">Benchmarks</a></li>
+<li><a href="#lenses-all-the-way">Lenses all the way</a></li>
+<li><a href="#related-work">Related work</a><ul>
+<li><a href="#papers-and-other-introductory-material">Papers and other introductory material</a></li>
+<li><a href="#javascript-typescript-flow-libraries">JavaScript / TypeScript / Flow libraries</a></li>
+<li><a href="#libraries-for-other-languages">Libraries for other languages</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#contributing">Contributing</a><ul>
+<li><a href="#building">Building</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#documentation">Documentation</a></li>
+</ul>
+</li>
 </ul>
 <h2><a id="tutorial"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#tutorial">■</a> Tutorial</h2>
 <p>Let&#39;s look at an example that is based on an actual early use case that lead to
@@ -403,7 +452,7 @@ either specifies a step in the path to select the desired element or a way in
 which the data structure must be treated at that point.  The
 <a href="#L-prop"><code>L.prop(...)</code></a> parts are already familiar.  The other parts we will
 mention below.</p>
-<h3><a id="querying-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#querying-data">■</a> Querying data</h3>
+<h4><a id="querying-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#querying-data">■</a> Querying data</h4>
 <p>Thanks to the parameterized search part,
 <a href="#L-find"><code>L.find(R.whereEq({language}))</code></a>, of the lens composition, we can use
 it to query titles:</p>
@@ -413,7 +462,7 @@ it to query titles:</p>
 element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
 that creates an equality predicate from a given template object.</p>
-<h4><a id="missing-data-can-be-expected"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#missing-data-can-be-expected">■</a> Missing data can be expected</h4>
+<h5><a id="missing-data-can-be-expected"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#missing-data-can-be-expected">■</a> Missing data can be expected</h5>
 <p>Partial lenses can generally deal with missing data.  In this case, when
 <a href="#L-find"><code>L.find</code></a> doesn&#39;t find an element, it instead works like a lens to
 <a href="#L-append">append</a> a new element into an array.</p>
@@ -428,11 +477,11 @@ if we query from <code>undefined</code>:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&quot;fi&quot;), undefined)
 </code></pre>
 <p>With partial lenses, <code>undefined</code> is the equivalent of non-existent.</p>
-<h3><a id="updating-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#updating-data">■</a> Updating data</h3>
+<h4><a id="updating-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#updating-data">■</a> Updating data</h4>
 <p>As with ordinary lenses, we can use the same lens to update titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;en&quot;), &quot;The title&quot;, sampleTitles)
 </code></pre>
-<h3><a id="inserting-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#inserting-data">■</a> Inserting data</h3>
+<h4><a id="inserting-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#inserting-data">■</a> Inserting data</h4>
 <p>The same partial lens also allows us to insert new titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;fi&quot;), &quot;Otsikko&quot;, sampleTitles)
 </code></pre>
@@ -447,7 +496,7 @@ The <a href="#L-normalize"><code>L.normalize</code></a> lens transforms the data
 written with the given function.  In this case we used Ramda&#39;s
 <a href="http://ramdajs.com/docs/#sortBy"><code>R.sortBy</code></a> to specify that we want the titles
 to be kept sorted by language.</p>
-<h3><a id="removing-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#removing-data">■</a> Removing data</h3>
+<h4><a id="removing-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#removing-data">■</a> Removing data</h4>
 <p>Finally, we can use the same partial lens to remove titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&quot;sv&quot;), undefined, sampleTitles)
 </code></pre>
@@ -464,7 +513,7 @@ so that when the <code>text</code> property is set to <code>undefined</code>, th
 </code></pre>
 <p>Above we use <a href="#L-seq"><code>L.seq</code></a> to run the <a href="#L-set"><code>L.set</code></a> operation over both
 of the focused titles.</p>
-<h3><a id="exercises"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#exercises">■</a> Exercises</h3>
+<h4><a id="exercises"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#exercises">■</a> Exercises</h4>
 <p>Take out one (or more) <a href="#L-normalize"><code>L.normalize(...)</code></a>,
 <a href="#L-valueOr"><code>L.valueOr(...)</code></a> or <a href="#L-removable"><code>L.removable(...)</code></a> part(s)
 from the lens composition and try to predict what happens when you rerun the
