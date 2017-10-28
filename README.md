@@ -35,6 +35,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Shorthands](#shorthands)
   * [Systematic decomposition](#systematic-decomposition)
   * [Manipulating multiple items](#manipulating-multiple-items)
+  * [Next steps](#next-steps)
 * [The why of optics](#the-why-of-optics)
 * [Reference](#reference)
   * [Stable subset](#stable-subset)
@@ -593,11 +594,16 @@ L.remove([texts, L.when(t => t.length > 5)],
 // { titles: [ { language: 'en', text: 'Title' } ] }
 ```
 
+### <a id="next-steps"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#next-steps) Next steps
+
 This concludes the tutorial.  The reference documentation contains lots of tiny
 examples and a few [more involved examples](#L-lazy).  The [examples](#examples)
 section describes a couple of lens compositions we've found practical as well as
 examples that may help to see [possibilities beyond the immediately
-obvious](#bst-as-a-lens).  There is also a page of [Partial Lenses
+obvious](#bst-as-a-lens).  The
+[wiki](https://github.com/calmm-js/partial.lenses/wiki) contains further
+examples and playground links.  Last, but perhaps not least, there is also a
+page of [Partial Lenses
 Exercises](https://calmm-js.github.io/partial.lenses/exercises.html) to solve.
 
 ## <a id="the-why-of-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#the-why-of-optics) The why of optics

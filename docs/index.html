@@ -69,6 +69,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#shorthands">Shorthands</a></li>
 <li><a href="#systematic-decomposition">Systematic decomposition</a></li>
 <li><a href="#manipulating-multiple-items">Manipulating multiple items</a></li>
+<li><a href="#next-steps">Next steps</a></li>
 </ul>
 </li>
 <li><a href="#the-why-of-optics">The why of optics</a></li>
@@ -603,11 +604,15 @@ the texts that are longer than 5 characters:</p>
 <pre><code class="hljs lang-js">L.remove([texts, L.when(t =&gt; t.length &gt; 5)],
          sampleTitles)
 </code></pre>
+<h3><a id="next-steps"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#next-steps">■</a> Next steps</h3>
 <p>This concludes the tutorial.  The reference documentation contains lots of tiny
 examples and a few <a href="#L-lazy">more involved examples</a>.  The <a href="#examples">examples</a>
 section describes a couple of lens compositions we&#39;ve found practical as well as
 examples that may help to see <a href="#bst-as-a-lens">possibilities beyond the immediately
-obvious</a>.  There is also a page of <a href="exercises.html">Partial Lenses
+obvious</a>.  The
+<a href="https://github.com/calmm-js/partial.lenses/wiki">wiki</a> contains further
+examples and playground links.  Last, but perhaps not least, there is also a
+page of <a href="exercises.html">Partial Lenses
 Exercises</a> to solve.</p>
 <h2><a id="the-why-of-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#the-why-of-optics">■</a> The why of optics</h2>
 <p>Optics provide a way to decouple the operation to perform on an element or
@@ -778,7 +783,7 @@ on any new objects they create when <code>NODE_ENV</code> is not <code>productio
 <p>Why only non-<code>production</code> builds?  Because <code>Object.freeze</code> can be quite
 expensive and the main benefit is in catching potential bugs early during
 development.</p>
-<p>Also note that optics do not implicitly &#39;deep freeze&#39; data structures given to
+<p>Also note that optics do not implicitly &quot;deep freeze&quot; data structures given to
 them or freeze data returned by user defined functions.  Only objects newly
 created by optic functions themselves are frozen.</p>
 <h4><a id="on-composability"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#on-composability">■</a> On composability</h4>
@@ -1215,7 +1220,7 @@ will have the signature</p>
 <p>and for <a href="#transforms">transforms</a> the signature will be</p>
 <pre><code class="hljs lang-jsx">(Maybe s, Index, Monad c, (Maybe a, Index) -&gt; c b) -&gt; c t
 </code></pre>
-<p>Note that the above signatures are written using the &#39;tupled&#39; parameter notation
+<p>Note that the above signatures are written using the &quot;tupled&quot; parameter notation
 <code>(...) -&gt; ...</code> to denote that the functions are not curried.</p>
 <p>The
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>,
@@ -2163,7 +2168,7 @@ underlying object, so writing through the lens will give unpredictable results.<
 template doesn&#39;t mention.  Also note that the underlying data structure need not
 be an object.</p>
 <p>Note that the <code>sanitize</code> lens defined above can also been seen as an
-<a href="#isomorphisms">isomorphism</a> between the &#39;flat&#39; and &#39;nested&#39; forms of the data.
+<a href="#isomorphisms">isomorphism</a> between the &quot;flat&quot; and &quot;nested&quot; forms of the data.
 It can even be inverted using <a href="#L-inverse"><code>L.inverse</code></a>:</p>
 <pre><code class="hljs lang-js">L.get(L.inverse(sanitize), {pos: {x: 1, y: 2}, vel: {x: 1, y: 0}})
 </code></pre>
@@ -2192,8 +2197,8 @@ L.get(iso, L.set(iso, y, undefined)) = y
 undefined)</code> are inverses of each other.</p>
 <p>That is the general idea.  Strictly speaking it is not required that the two
 functions are precisely inverses of each other.  It can be useful to have
-&#39;isomorphisms&#39; that, when written through, actually change the data structure.
-For that reason the name &#39;adapter&#39;, rather than &#39;isomorphism&#39;, is sometimes used
+&quot;isomorphisms&quot; that, when written through, actually change the data structure.
+For that reason the name &quot;adapter&quot;, rather than &quot;isomorphism&quot;, is sometimes used
 for the concept.</p>
 <p>In this library there is no type distinction between partial lenses and partial
 isomorphisms.  Among other things this means that some lens combinators, such as
