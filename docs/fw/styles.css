@@ -136,6 +136,7 @@
   z-index: 10000;
   white-space: nowrap;
   font-size: 90%;
+  min-width: 20px;
   max-width: 20px;
   transition: all 250ms;
   box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.4);
@@ -145,6 +146,7 @@
 }
 
 .menu.open .menu-body {
+  min-width: 40%;
   max-width: 100%;
   background: #fff;
   color: #333;
@@ -179,7 +181,13 @@
 }
 
 .menu .menu-contents {
+  display: none;
   padding: 0 2em 0 20px;
+}
+
+.menu.open .menu-contents {
+  display: block;
+  margin-top: 1em;
 }
 
 .menu .menu-contents ul {
