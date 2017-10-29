@@ -39,6 +39,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 * [The why of optics](#the-why-of-optics)
 * [Reference](#reference)
   * [Stable subset](#stable-subset)
+  * [Additional libraries](#additional-libraries)
   * [Optics](#optics)
     * [On partiality](#on-partiality)
     * [On indexing](#on-indexing)
@@ -701,6 +702,18 @@ The main intention behind the stable subset is to enable a dependent library to
 make basic use of lenses created by client code using the dependent library.
 
 In retrospect, the stable subset has existed since version 2.2.0.
+
+### <a id="additional-libraries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#additional-libraries) Additional libraries
+
+The main Partial Lenses library aims to provide robust general purpose
+combinators for dealing with plain JavaScript data.  Combinators that are more
+experimental or specialized in purpose or would require additional dependencies
+aside from the [Infestines](https://github.com/polytypic/infestines) library,
+which is mainly used for the currying helpers it provides, are not provided.
+
+Currently the following additional Partial Lenses libraries exist:
+
+* [Partial Lenses Validation](https://github.com/calmm-js/partial.lenses.validation)
 
 ### <a id="optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/#optics) Optics
 
