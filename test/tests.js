@@ -201,6 +201,7 @@ describe("arities", () => {
     compose: 0,
     concat: 3,
     concatAs: 4,
+    contexts: 0,
     count: 2,
     countIf: 3,
     counts: 2,
@@ -1267,6 +1268,21 @@ describe("L.pointer", () => {
   testEq(`L.set(L.pointer("#/b/0"), 3, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
   testEq(`L.remove(L.pointer("#/b/0"), {a: 1, b: [2,3]})`, {a: 1, b: [3]})
   testEq(`L.modify(L.pointer("#/b/0"), R.inc, {a: 1, b: [2,3]})`, {a: 1, b: [3,3]})
+})
+
+describe("L.contexts", () => {
+  testEq(`L.get([L.contexts(),
+                 (value, contexts) => ({value, contexts})],
+                {a: {b: 24}})`,
+         {value: {a: {b: 24}}, contexts: []})
+  testEq(`L.get([L.contexts("a"),
+                 (value, contexts) => ({value, contexts})],
+                {a: {b: 24}})`,
+         {value: {b: 24}, contexts: [{a: {b: 24}}]})
+  testEq(`L.get([L.contexts("a", "b"),
+                 (value, contexts) => ({value, contexts})],
+                {a: {b: 24}})`,
+         {value: 24, contexts: [{a: {b: 24}}, {b: 24}]})
 })
 
 if (process.env.NODE_ENV !== "production") {

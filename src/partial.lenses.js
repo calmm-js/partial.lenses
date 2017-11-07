@@ -626,6 +626,17 @@ const matchesJoin = input => matchesIn => {
 
 //
 
+function copy(cs) {
+  const n = cs.length
+  return copyToFrom(Array(n), 0, cs, 0, n)
+}
+const context0 = (x, i, F, xi2yF) => xi2yF(x, I.array0)
+const contextN = (F, xi2yF, cs) => (x, _i) => xi2yF(x, copy(cs))
+const contextI = (n, r, o) => (F, xi2yF, cs) => (x, i) =>
+  o(cs[n] = x, i, F, r(F, xi2yF, cs))
+
+//
+
 const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
 const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
@@ -691,6 +702,17 @@ export function compose() {
       os[n] = arguments[n]
     return os
   }
+}
+
+export function contexts() {
+  let n = arguments.length
+  if (0 === n)
+    return context0
+  let r = contextN
+  while (--n)
+    r = contextI(n, r, toFunction(arguments[n]))
+  const o = toFunction(arguments[0])
+  return (x, i, F, xi2yF) => o(x, i, F, r(F, xi2yF, [x]))
 }
 
 // Recursing
