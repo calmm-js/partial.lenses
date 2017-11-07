@@ -168,6 +168,11 @@ function reqFunction(o) {
     errorGiven(expectedOptic, o, opticIsEither)
 }
 
+function reqFn(x) {
+  if (!(I.isFunction(x)))
+    errorGiven('Expected a function', x)
+}
+
 function reqArray(o) {
   if (!Array.isArray(o))
     errorGiven(expectedOptic, o, opticIsEither)
@@ -483,7 +488,7 @@ const branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id
   return r
 })
 
-const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_keys, vals]) => C.res(C.par(2, C.ef(reqApplicative(vals ? "branch" : "values"))))))((keys, vals) => (x, _i, A, xi2yA) => {
+const branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep((_keys, vals) => C.res(C.par(2, C.ef(reqApplicative(vals ? "branch" : "values"))))))((keys, vals) => (x, _i, A, xi2yA) => {
   const {of} = A
   let n = keys.length
   if (!n)
@@ -531,7 +536,7 @@ function findIndexHint(hint, xi2b, xs) {
   return n
 }
 
-const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([_xi2b, _xs, ts, fs]) => C.res(C.ef(() => {I.freeze(ts); I.freeze(fs)}))))((xi2b, xs, ts, fs) => {
+const partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep((_xi2b, _xs, ts, fs) => C.res(C.ef(() => {I.freeze(ts); I.freeze(fs)}))))((xi2b, xs, ts, fs) => {
   for (let i=0, n=xs.length, x; i<n; ++i)
     (xi2b(x = xs[i], i) ? ts : fs).push(x)
 })
@@ -709,13 +714,41 @@ export const choices = (o, ...os) =>
 export const choose = xiM2o => (x, i, C, xi2yC) =>
   toFunction(xiM2o(x, i))(x, i, C, xi2yC)
 
-export function iftes(_c, _t) {
+export const cond = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => (...cs) => {
+  const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
+  C.arr(pair)(cs.slice(0, -1))
+  C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
+  return fn(...cs)
+})(function () {
+  let n = arguments.length
+  let r = zero
+  if (n) {
+    const c = arguments[n-1]
+    if (c.length === 1) {
+      r = toFunction(c[0])
+      --n
+    }
+    while (n--) {
+      const c = arguments[n]
+      r = ifteU(c[0], toFunction(c[1]), r)
+    }
+  }
+  return r
+})
+
+export const ifElse =
+  /*#__PURE__*/I.curry((c, t, e) => ifteU(c, toFunction(t), toFunction(e)))
+
+export const iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : fn => function (_c, _t) {
+  warn(iftes, "`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.")
+  return fn.apply(null, arguments)
+}) (function (_c, _t) {
   let n = arguments.length
   let r = n & 1 ? toFunction(arguments[--n]) : zero
   while (0 <= (n -= 2))
     r = ifteU(arguments[n], toFunction(arguments[n+1]), r)
   return r
-}
+})
 
 export const orElse = /*#__PURE__*/I.curry(orElseU)
 
@@ -797,11 +830,11 @@ export const elems = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id 
 export const entries = /*#__PURE__*/toFunction([keyed, elems])
 
 export const flatten =
-  /*#__PURE__*/lazy(rec => iftes(Array.isArray, [elems, rec], identity))
+  /*#__PURE__*/lazy(rec => ifElse(Array.isArray, [elems, rec], identity))
 
 export const keys = /*#__PURE__*/toFunction([keyed, elems, 0])
 
-export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(([re]) => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
+export const matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : C.dep(re => re.global ? C.res(C.par(2, C.ef(reqApplicative("matches", re)))) : I.id))(re => {
   return (x, _i, C, xi2yC) => {
     if (I.isString(x)) {
       const {map} = C
@@ -1044,6 +1077,8 @@ export function findWith(o) {
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo]
 }
 
+export const first = 0
+
 export const index = process.env.NODE_ENV !== "production" ? C.ef(reqIndex) : I.id
 
 export const last = /*#__PURE__*/choose(maybeArray =>
@@ -1216,9 +1251,9 @@ export const pointer = s => {
     const t = ts[i]
     ts[i-1] =
       /^0|[1-9]\d*$/.test(t)
-        ? iftes(isArrayOrPrimitive, Number(t), t)
+        ? ifElse(isArrayOrPrimitive, Number(t), t)
         : '-' === t
-        ? iftes(isArrayOrPrimitive, append, t)
+        ? ifElse(isArrayOrPrimitive, append, t)
         : t.replace('~1', '/').replace('~0', '~')
   }
   ts.length = n-1
