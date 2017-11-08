@@ -104,7 +104,9 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#adapting">Adapting</a><ul>
 <li><a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a> <small><sup>v11.10.0</sup></small></li>
 <li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
-<li><a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></li>
+<li><a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></li>
+<li><a href="#L-ifElse" title="L.ifElse: ((Maybe s, Index) -&gt; Boolean) -&gt; POptic s a -&gt; POptic s a -&gt; POptic s a"><code>L.ifElse((maybeValue, index) =&gt; testable, optic, optic) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></li>
+<li><del><a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></del></li>
 <li><a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a> <small><sup>v2.1.0</sup></small></li>
 </ul>
 </li>
@@ -221,6 +223,7 @@ parts.  <a href="playground.html">Try Lenses!</a></p>
 <li><a href="#L-filter" title="L.filter: ((Maybe a, Index) -&gt; Boolean) -&gt; PLens [a] [a]"><code>L.filter((maybeValue, index) =&gt; testable) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-find" title="L.find: ((Maybe a, Index, {hint: Index}) -&gt; Boolean[, {hint: Index}]) -&gt; PLens [a] a"><code>L.find((maybeValue, index, {hint: index}) =&gt; testable[, {hint: index}]) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-findWith" title="L.findWith: (POptic s a[, {hint: Index}]) -&gt; POptic [s] a"><code>L.findWith(optic[, {hint: index}]) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
+<li><a href="#L-first" title="L.first: PLens [a] a"><code>L.first ~&gt; lens</code></a> <small><sup>v13.1.0</sup></small></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></li>
 <li><a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
@@ -1071,9 +1074,9 @@ immediate nor unconditional recursion.</p>
 data structure of nested arrays and objects:</p>
 <pre><code class="hljs lang-js">var primitives = [
   L.optional,
-  L.lazy(rec =&gt; L.iftes(R.is(Array),  [L.elems, rec],
-                        R.is(Object), [L.values, rec],
-                        L.identity))]
+  L.lazy(rec =&gt; L.cond([R.is(Array),  [L.elems, rec]],
+                       [R.is(Object), [L.values, rec]],
+                       [              L.identity]))]
 </code></pre>
 <p>Note that the above creates a cyclic representation of the traversal.</p>
 <p>Now, for example:</p>
@@ -1098,7 +1101,7 @@ of the given optics.  See also <a href="#L-choice"><code>L.choice</code></a>.</p
 <p><code>L.choose</code> creates an optic whose operation is determined by the given function
 that maps the underlying view, which can be <code>undefined</code>, to an optic.  In other
 words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
-examining the data structure being manipulated.  See also <a href="#L-iftes"><code>L.iftes</code></a>.</p>
+examining the data structure being manipulated.  See also <a href="#L-cond"><code>L.cond</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">var majorAxis =
   L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &#39;y&#39; : &#39;x&#39;)
@@ -1107,7 +1110,56 @@ L.get(majorAxis, {x: -3, y: 1})
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: -3, y: 1})
 </code></pre>
-<h5><a id="L-iftes"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-iftes">■</a> <a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></h5>
+<h5><a id="L-cond"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-cond">■</a> <a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></h5>
+<p><code>L.cond</code> creates an optic whose operation is selected from the given optics and
+predicates on the underlying view.  See also <a href="#L-choose"><code>L.choose</code></a> and
+<a href="#L-ifElse"><code>L.ifElse</code></a>.</p>
+<pre><code class="hljs lang-jsx">L.cond( [ predicate, consequent ]
+      , ...
+    [ , [ alternative ] ] )
+</code></pre>
+<p><code>L.cond</code> is not curried unlike most functions in this library.  <code>L.cond</code> can be
+given any number of <code>[predicate, consequent]</code> pairs.  The <em>predicates</em> are
+functions on the underlying view and are tested sequentially.  The <em>consequents</em>
+are optics and <code>L.cond</code> acts like the consequent corresponding to the first
+predicate that returns true.  The last argument to <code>L.cond</code> can be a
+<code>[alternative]</code> singleton, where the <em>alternative</em> is an optic to be used in
+case none of the predicates return true.  If all predicates return false and
+there is no alternative, <code>L.cond</code> acts like <a href="#L-zero"><code>L.zero</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">var minorAxis =
+  L.cond([({x, y} = {}) =&gt; Math.abs(y) &lt; Math.abs(x), &#39;y&#39;], [&#39;x&#39;])
+
+L.get(minorAxis, {x: -3, y: 1})
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(minorAxis, R.negate, {x: -3, y: 1})
+</code></pre>
+<p>Note that it is better to omit the predicate from the alternative</p>
+<pre><code class="hljs lang-jsx">L.cond(..., [alternative])
+</code></pre>
+<p>than to use a catch all predicate like <a href="http://ramdajs.com/docs/#T"><code>R.T</code></a></p>
+<pre><code class="hljs lang-jsx">L.cond(..., [R.T, alternative])
+</code></pre>
+<p>because in the latter case <code>L.cond</code> cannot determinate that a user defined
+predicate will always be true and has to construct a more expensive optic.</p>
+<p>Note that <code>L.cond</code> can be implemented using <a href="#L-choose"><code>L.choose</code></a>, but not
+vice versa.  <a href="#L-choose"><code>L.choose</code></a> not only allows the optic to be chosen
+dynamically, but also allows the optic to be constructed dynamically and using
+the data at the focus.</p>
+<h5><a id="L-ifElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-ifElse">■</a> <a href="#L-ifElse" title="L.ifElse: ((Maybe s, Index) -&gt; Boolean) -&gt; POptic s a -&gt; POptic s a -&gt; POptic s a"><code>L.ifElse((maybeValue, index) =&gt; testable, optic, optic) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></h5>
+<p><code>L.ifElse</code> creates an optic whose operation is selected based on the given
+predicate from the two given optics.  If the predicates is truthy on the value
+at focus, the first of the given optics is used.  Otherwise the second of the
+given optics is used.  See also <a href="#L-cond"><code>L.cond</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, [1, 2, 3])
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, {x: 1, y: 2, z: 3})
+</code></pre>
+<h5><a id="L-iftes"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-iftes">■</a> <del><a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></del></h5>
+<p><strong>WARNING: <code>L.iftes</code> has been obsoleted.  Use <a href="#L-ifElse"><code>L.ifElse</code></a> or
+<a href="#L-cond"><code>L.cond</code></a> instead.  See <a href="https://github.com/calmm-js/partial.lenses/blob/master/CHANGELOG.md#1310">CHANGELOG</a> for
+details.</strong></p>
 <p><code>L.iftes</code> creates an optic whose operation is selected from the given optics and
 predicates on the underlying view.</p>
 <pre><code class="hljs lang-jsx">L.iftes( predicate, consequent
@@ -1117,7 +1169,7 @@ predicates on the underlying view.</p>
 <p><code>L.iftes</code> is not curried unlike most functions in this library.  <code>L.iftes</code>
 requires at least two arguments and successive arguments form <em>predicate</em> -
 <em>consequent</em> pairs.  The predicates are functions on the underlying view and are
-tested sequentially.  The consequences are optics and <code>L.iftes</code> acts like the
+tested sequentially.  The consequents are optics and <code>L.iftes</code> acts like the
 consequent corresponding to the first predicate that returns true.  If <code>L.iftes</code>
 is given an odd number of arguments, the last argument is the <em>alternative</em>
 taken in case none of the predicates returns true.  If all predicates return
@@ -1197,9 +1249,9 @@ and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <cod
 lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([L.elems,
-           L.iftes(R.is(Array),  L.elems,
-                   R.is(Object), &#39;x&#39;,
-                   L.zero)],
+           L.cond([R.is(Array),  L.elems],
+                  [R.is(Object), &#39;x&#39;],
+                  [L.zero])],
           [1, {x: 2}, [3, 4]])
 </code></pre>
 <h4><a id="debugging"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#debugging">■</a> Debugging</h4>
@@ -1303,9 +1355,9 @@ transforms in sequence.</p>
 objects and arrays:</p>
 <pre><code class="hljs lang-js">var everywhere = [
   L.optional,
-  L.lazy(rec =&gt; L.iftes(R.is(Array),  L.seq([L.elems, rec], L.identity),
-                        R.is(Object), L.seq([L.values, rec], L.identity),
-                        L.identity))]
+  L.lazy(rec =&gt; L.cond([R.is(Array),  L.seq([L.elems, rec], L.identity)],
+                       [R.is(Object), L.seq([L.values, rec], L.identity)],
+                       [              L.identity]))]
 </code></pre>
 <p>The above <code>everywhere</code> transform is similar to the
 <a href="https://github.com/polytypic/fastener#F-everywhere"><code>F.everywhere</code></a> transform
@@ -1950,6 +2002,14 @@ focuses on that.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.findWith(&#39;x&#39;), 3, [{z: 6}, {x: 9}, {y: 6}])
 </code></pre>
+<h5><a id="L-first"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-first">■</a> <a href="#L-first" title="L.first: PLens [a] a"><code>L.first ~&gt; lens</code></a> <small><sup>v13.1.0</sup></small></h5>
+<p><code>L.first</code> is a synonym for <a href="#L-index"><code>L.index(0)</code></a> or <a href="#L-index"><code>0</code></a> and
+focuses on the first element of an <a href="#array-like">array-like</a> object or works
+like <a href="#L-append"><code>L.append</code></a> in case no such element exists.  See also
+<a href="#L-last"><code>L.last</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.first, [&#39;a&#39;, &#39;b&#39;])
+</code></pre>
 <h5><a id="L-index"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-index">■</a> <a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.index(elemIndex)</code> or just <code>elemIndex</code> focuses on the element at specified
 index of an <a href="#array-like">array-like</a> object.</p>
@@ -1967,7 +2027,8 @@ array-like object, the missing elements will be filled with <code>undefined</cod
 </code></pre>
 <h5><a id="L-last"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#L-last">■</a> <a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></h5>
 <p><code>L.last</code> focuses on the last element of an <a href="#array-like">array-like</a> object or
-works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.</p>
+works like <a href="#L-append"><code>L.append</code></a> in case no such element exists.  See also
+<a href="#L-first"><code>L.first</code></a>.</p>
 <p>Focusing on an empty array or <code>undefined</code> results in returning <code>undefined</code>.  For
 example:</p>
 <pre><code class="hljs lang-js">L.get(L.last, [1, 2, 3])
@@ -2466,15 +2527,15 @@ differ from <code>selectAll</code>?</p>
 lenses.  However, given basic BST operations, one could easily wrap them as a
 primitive partial lens.  But could we leverage lens combinators to build a BST
 lens more compositionally?</p>
-<p>We can.  The <a href="#L-iftes"><code>L.iftes</code></a> combinator allows for dynamic selection of
+<p>We can.  The <a href="#L-cond"><code>L.cond</code></a> combinator allows for dynamic selection of
 lenses based on examining the data structure being manipulated.  Using
-<a href="#L-iftes"><code>L.iftes</code></a> we can write the ordinary BST logic to pick the correct
+<a href="#L-cond"><code>L.cond</code></a> we can write the ordinary BST logic to pick the correct
 branch based on the key in the currently examined node and the key that we are
 looking for.  So, here is our first attempt at a BST lens:</p>
 <pre><code class="hljs lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; [
-  L.iftes(n =&gt; !n || key === n.key, L.defaults({key}),
-          n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec],
-          [&#39;greater&#39;, rec])])
+  L.cond([n =&gt; !n || key === n.key, L.defaults({key})],
+         [n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec]],
+         [                          [&#39;greater&#39;, rec]])])
 
 var valueOfAttempt = key =&gt; [searchAttempt(key), &#39;value&#39;]
 </code></pre>
@@ -2508,9 +2569,9 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 <p>Here is a working <code>search</code> lens and a <code>valueOf</code> lens constructor:</p>
 <pre><code class="hljs lang-js">var search = key =&gt; L.lazy(rec =&gt; [
   naiveBST,
-  L.iftes(n =&gt; !n || key === n.key, L.defaults({key}),
-          n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec],
-          [&#39;greater&#39;, rec])])
+  L.cond([n =&gt; !n || key === n.key, L.defaults({key})],
+         [n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec]],
+         [                          [&#39;greater&#39;, rec]])])
 
 var valueOf = key =&gt; [search(key), &#39;value&#39;]
 </code></pre>
@@ -2723,9 +2784,9 @@ by moving the allocation outside of <a href="#L-choose"><code>L.choose</code></a
 <pre><code class="hljs lang-jsx">var onArray = [L.elems, &#39;data&#39;]
 L.choose(x =&gt; Array.isArray(x) ? onArray : &#39;data&#39;)
 </code></pre>
-<p>In cases like above you can also use the more restricted <a href="#L-iftes"><code>L.iftes</code></a>
+<p>In cases like above you can also use the more restricted <a href="#L-cond"><code>L.cond</code></a>
 combinator:</p>
-<pre><code class="hljs lang-jsx">L.iftes(Array.isArray, [L.elems, &#39;data&#39;], &#39;data&#39;)
+<pre><code class="hljs lang-jsx">L.cond([Array.isArray, [L.elems, &#39;data&#39;]], [&#39;data&#39;])
 </code></pre>
 <p>This has the advantage that the optics are constructed only once.</p>
 <h3><a id="on-bundle-size-and-minification"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses#on-bundle-size-and-minification">■</a> On bundle size and minification</h3>

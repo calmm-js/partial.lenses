@@ -7,11 +7,7 @@ var I = require('infestines');
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
     return I.arityN(xsy.length, function () {
-      for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
-        xs[_key] = arguments[_key];
-      }
-
-      return xs2xsyC(xs)(xsy).apply(undefined, xs);
+      return xs2xsyC.apply(undefined, arguments)(xsy).apply(undefined, arguments);
     });
   };
 };
@@ -19,8 +15,8 @@ var dep = function dep(xs2xsyC) {
 var fn = function fn(xsC, yC) {
   return function (xsy) {
     return I.arityN(xsy.length, function () {
-      for (var _len2 = arguments.length, xs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-        xs[_key2] = arguments[_key2];
+      for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
+        xs[_key] = arguments[_key];
       }
 
       return yC(xsy.apply(null, xsC(xs)));
@@ -48,7 +44,35 @@ var par = function par(i, xC) {
   return args(nth(i, xC));
 };
 
+var and$1 = function and() {
+  for (var _len2 = arguments.length, xCs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+    xCs[_key2] = arguments[_key2];
+  }
 
+  return function (x) {
+    for (var i = 0, n = xCs.length; i < n; ++i) {
+      x = xCs[i](x);
+    }return x;
+  };
+};
+
+var or$1 = function or() {
+  for (var _len3 = arguments.length, xCs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    xCs[_key3] = arguments[_key3];
+  }
+
+  return function (x) {
+    var es = null;
+    for (var i = 0, n = xCs.length; i < n; ++i) {
+      try {
+        return xCs[i](x);
+      } catch (e) {
+        es = e;
+      }
+    }
+    throw es;
+  };
+};
 
 var ef = function ef(xE) {
   return function (x) {
@@ -57,7 +81,24 @@ var ef = function ef(xE) {
   };
 };
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+var tup = function tup() {
+  for (var _len4 = arguments.length, xCs = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+    xCs[_key4] = arguments[_key4];
+  }
+
+  return function (xs) {
+    if (xs.length !== xCs.length) throw Error("Expected array of " + xCs.length + " elements, but got " + xs.length);
+    return and$1.apply(null, xCs.map(function (xC, i) {
+      return nth(i, xC);
+    }))(xs);
+  };
+};
+
+var arr = function arr(xC) {
+  return function (xs) {
+    return xs.map(xC);
+  };
+};
 
 //
 
@@ -94,7 +135,7 @@ var notPartial = function notPartial(x) {
 };
 
 var singletonPartial = function singletonPartial(x) {
-  return void 0 !== x ? [x] : void 0;
+  return void 0 !== x ? [x] : x;
 };
 
 var instanceofObject = function instanceofObject(x) {
@@ -257,6 +298,10 @@ function reqIndex(x) {
 
 function reqFunction(o) {
   if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o, opticIsEither);
+}
+
+function reqFn(x) {
+  if (!I.isFunction(x)) errorGiven('Expected a function', x);
 }
 
 function reqArray(o) {
@@ -426,9 +471,9 @@ function composed(oi0, os) {
     };
     while (--n) {
       r = composedMiddle(toFunction(os[oi0 + n]), r);
-    }var first = toFunction(os[oi0]);
+    }var _first = toFunction(os[oi0]);
     return function (x, i, F, xi2yF) {
-      return first(x, i, F, r(F, xi2yF));
+      return _first(x, i, F, r(F, xi2yF));
     };
   }
 }
@@ -626,11 +671,7 @@ var branchOnMerge = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id :
   };
 });
 
-var branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref) {
-  var _ref2 = _slicedToArray(_ref, 2),
-      _keys = _ref2[0],
-      vals = _ref2[1];
-
+var branchOn = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_keys, vals) {
   return res(par(2, ef(reqApplicative(vals ? "branch" : "values"))));
 }))(function (keys$$1, vals) {
   return function (x, _i, A, xi2yA) {
@@ -682,13 +723,7 @@ function findIndexHint(hint, xi2b, xs) {
   }return n;
 }
 
-var partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref3) {
-  var _ref4 = _slicedToArray(_ref3, 4),
-      _xi2b = _ref4[0],
-      _xs = _ref4[1],
-      ts = _ref4[2],
-      fs = _ref4[3];
-
+var partitionIntoIndex = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_xi2b, _xs, ts, fs) {
   return res(ef(function () {
     I.freeze(ts);I.freeze(fs);
   }));
@@ -911,13 +946,51 @@ var choose = function choose(xiM2o) {
   };
 };
 
-function iftes(_c, _t) {
+var cond = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function () {
+    for (var _len2 = arguments.length, cs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      cs[_key2] = arguments[_key2];
+    }
+
+    var pair = tup(ef(reqFn), ef(reqOptic));
+    arr(pair)(cs.slice(0, -1));
+    arr(or$1(tup(ef(reqOptic)), pair))(cs.slice(-1));
+    return fn$$1.apply(undefined, cs);
+  };
+})(function () {
   var n = arguments.length;
-  var r = toFunction(n & 1 ? arguments[--n] : zero);
+  var r = zero;
+  if (n) {
+    var c = arguments[n - 1];
+    if (c.length === 1) {
+      r = toFunction(c[0]);
+      --n;
+    }
+    while (n--) {
+      var _c2 = arguments[n];
+      r = ifteU(_c2[0], toFunction(_c2[1]), r);
+    }
+  }
+  return r;
+});
+
+var ifElse =
+/*#__PURE__*/I.curry(function (c, t, e) {
+  return ifteU(c, toFunction(t), toFunction(e));
+});
+
+var iftes = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : function (fn$$1) {
+  return function (_c, _t) {
+    warn(iftes, "`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.");
+    return fn$$1.apply(null, arguments);
+  };
+})(function (_c, _t) {
+  var n = arguments.length;
+  var r = n & 1 ? toFunction(arguments[--n]) : zero;
   while (0 <= (n -= 2)) {
     r = ifteU(arguments[n], toFunction(arguments[n + 1]), r);
   }return r;
-}
+});
 
 var orElse = /*#__PURE__*/I.curry(orElseU);
 
@@ -930,8 +1003,8 @@ var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
 });
 
 var choice = function choice() {
-  for (var _len2 = arguments.length, os = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-    os[_key2] = arguments[_key2];
+  for (var _len3 = arguments.length, os = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    os[_key3] = arguments[_key3];
   }
 
   return os.reduceRight(orElseU, zero);
@@ -1030,15 +1103,12 @@ var entries = /*#__PURE__*/toFunction([keyed, elems]);
 
 var flatten =
 /*#__PURE__*/lazy(function (rec) {
-  return iftes(Array.isArray, [elems, rec], identity);
+  return ifElse(Array.isArray, [elems, rec], identity);
 });
 
 var keys$1 = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
-var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (_ref5) {
-  var _ref6 = _slicedToArray(_ref5, 1),
-      re = _ref6[0];
-
+var matches = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : dep(function (re) {
   return re.global ? res(par(2, ef(reqApplicative("matches", re)))) : I.id;
 }))(function (re) {
   return function (x, _i, C, xi2yC) {
@@ -1325,6 +1395,8 @@ function findWith(o) {
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo];
 }
 
+var first = 0;
+
 var index = process.env.NODE_ENV !== "production" ? ef(reqIndex) : I.id;
 
 var last = /*#__PURE__*/choose(function (maybeArray) {
@@ -1380,8 +1452,8 @@ var propsOf = function propsOf(o) {
 };
 
 function removable() {
-  for (var _len3 = arguments.length, ps = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-    ps[_key3] = arguments[_key3];
+  for (var _len4 = arguments.length, ps = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+    ps[_key4] = arguments[_key4];
   }
 
   function drop(y) {
@@ -1512,10 +1584,10 @@ var uriComponent =
 var json = /*#__PURE__*/(process.env.NODE_ENV === "production" ? I.id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, I.id)]);
 }))(function (options) {
-  var _ref7 = options || I.object0,
-      reviver = _ref7.reviver,
-      replacer = _ref7.replacer,
-      space = _ref7.space;
+  var _ref = options || I.object0,
+      reviver = _ref.reviver,
+      replacer = _ref.replacer,
+      space = _ref.space;
 
   return isoU(expect(I.isString, function (text) {
     return JSON.parse(text, reviver);
@@ -1532,7 +1604,7 @@ var pointer = function pointer(s) {
   var n = ts.length;
   for (var i = 1; i < n; ++i) {
     var t = ts[i];
-    ts[i - 1] = /^0|[1-9]\d*$/.test(t) ? iftes(isArrayOrPrimitive, Number(t), t) : '-' === t ? iftes(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
+    ts[i - 1] = /^0|[1-9]\d*$/.test(t) ? ifElse(isArrayOrPrimitive, Number(t), t) : '-' === t ? ifElse(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
   }
   ts.length = n - 1;
   return ts;
@@ -1550,6 +1622,8 @@ exports.compose = compose;
 exports.lazy = lazy;
 exports.choices = choices;
 exports.choose = choose;
+exports.cond = cond;
+exports.ifElse = ifElse;
 exports.iftes = iftes;
 exports.orElse = orElse;
 exports.chain = chain;
@@ -1617,6 +1691,7 @@ exports.append = append;
 exports.filter = filter;
 exports.find = find;
 exports.findWith = findWith;
+exports.first = first;
 exports.index = index;
 exports.last = last;
 exports.prefix = prefix;
