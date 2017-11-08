@@ -90,6 +90,8 @@ export const lazy = T.fn([T.fn([T_optic], T_optic)], T_optic)
 
 export const choices = T.fnVarN(1, T_optic, T_optic)
 export const choose = T.fn([T.fn([T_maybeDataO, T_index], T_optic)], T_optic)
+export const cond = T.fnVarN(0, T.any, T_optic)
+export const ifElse = T.fn([T.fn([T_maybeDataO, T_index], T.any), T_optic, T_optic], T_optic)
 export const iftes = T.fnVarN(2, T.any, T_optic)
 export const orElse = T.fn([T_optic, T_optic], T_optic)
 
@@ -266,6 +268,7 @@ export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findWith = T.fn([T_optic], T_optic)
+export const first = T_lens
 export const index = T.fn([T.nonNegative], T_lens)
 export const last = T_lens
 export const prefix = T.fn([T_sliceIndex], T_lens)

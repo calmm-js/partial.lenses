@@ -31,9 +31,9 @@ const offBy1 = L.iso(numeric(R.inc), numeric(R.dec))
 
 const flatten = [
   L.optional,
-  L.lazy(rec => L.iftes(R.is(Array),  [L.elems, rec],
-                        R.is(Object), [L.values, rec],
-                        L.identity))]
+  L.lazy(rec => L.cond([R.is(Array),  [L.elems, rec]],
+                       [R.is(Object), [L.values, rec]],
+                       [L.identity]))]
 
 const everywhere = [L.optional, L.lazy(rec => {
   const elems = L.seq([L.elems, rec], L.identity)
@@ -201,6 +201,7 @@ describe("arities", () => {
     compose: 0,
     concat: 3,
     concatAs: 4,
+    cond: 0,
     count: 2,
     countIf: 3,
     counts: 2,
@@ -212,6 +213,7 @@ describe("arities", () => {
     filter: 1,
     find: 1,
     findWith: 1,
+    first: undefined,
     flatten: 4,
     foldTraversalLens: 2,
     foldl: 4,
@@ -220,6 +222,7 @@ describe("arities", () => {
     get: 2,
     getInverse: 2,
     identity: 4,
+    ifElse: 3,
     iftes: 2,
     index: 1,
     indexed: 4,
@@ -1058,6 +1061,16 @@ describe("lazy folds", () => {
   testEq(`L.or(L.elems, [])`, false)
 })
 
+describe("L.first", () => {
+  testEq(`L.get(L.first, undefined)`, undefined)
+  testEq(`L.get(L.first, [])`, undefined)
+  testEq(`L.get(L.first, [5])`, 5)
+  testEq(`L.set(L.first, 5, undefined)`, [5])
+  testEq(`L.set(L.first, 5, [])`, [5])
+  testEq(`L.set(L.first, 5, [1,2])`, [5,2])
+  testEq(`L.get([L.first, (_, i) => i], ['a','b'])`, 0)
+})
+
 describe("L.last", () => {
   testEq(`L.get(L.last, undefined)`, undefined)
   testEq(`L.get(L.last, [])`, undefined)
@@ -1065,6 +1078,7 @@ describe("L.last", () => {
   testEq(`L.set(L.last, 5, undefined)`, [5])
   testEq(`L.set(L.last, 5, [])`, [5])
   testEq(`L.set(L.last, 5, [1,2])`, [1,5])
+  testEq(`L.get([L.last, (_, i) => i], ['a','b'])`, 1)
 })
 
 describe("standard isos", () => {
@@ -1129,6 +1143,35 @@ describe("transforming", () => {
          [3,1,1])
   testEq(`L.get(L.setOp(42), 101)`, 42)
   testEq(`L.set(L.setOp(42), 96, 101)`, 42)
+})
+
+describe("L.cond", () => {
+  testEq(`L.set(L.cond([R.not, L.setOp(1)]), 3, 2)`, 2)
+  testEq(`L.set(L.cond([R.not, L.setOp(1)]), 3, 0)`, 1)
+  testEq(`L.transform(L.cond([R.not, L.setOp(1)], [L.setOp(0)]), null)`, 1)
+  testEq(`L.transform(L.cond([R.not, L.setOp(1)], [L.setOp(0)]), 2)`, 0)
+  testEq(`L.transform(L.cond([R.equals(1), L.setOp(-1)],
+                             [R.equals(2), L.setOp(1)],
+                             [L.setOp(2)]),
+                      -1)`,
+         2)
+  testEq(`L.transform(L.cond([R.equals(1), L.setOp(-1)],
+                             [R.equals(2), L.setOp(1)],
+                             [R.T,         L.setOp(2)]),
+                      -1)`,
+         2)
+  testEq(`L.transform(L.cond([R.equals(1), L.setOp(-1)],
+                             [R.equals(2), L.setOp(1)],
+                             [L.setOp(2)]),
+                      2)`,
+         1)
+})
+
+describe("L.ifElse", () => {
+  testEq(`L.set(L.ifElse(R.not, L.setOp(1), L.zero), 3, 2)`, 2)
+  testEq(`L.set(L.ifElse(R.not, L.setOp(1), L.zero), 3, 0)`, 1)
+  testEq(`L.transform(L.ifElse(R.not, L.setOp(1), L.setOp(0)), null)`, 1)
+  testEq(`L.transform(L.ifElse(R.not, L.setOp(1), L.setOp(0)), 2)`, 0)
 })
 
 describe("L.iftes", () => {
@@ -1302,6 +1345,8 @@ if (process.env.NODE_ENV !== "production") {
     testThrows(`L.toFunction(-1)`)
 
     testThrows(`L.joinAs(I.id, 0)`)
+
+    testThrows(`L.cond([])`)
   })
 
   describe("diagnostics", () => {

@@ -1,5 +1,29 @@
 # Partial Lenses Changelog
 
+## 13.1.0
+
+Obsoleted `L.iftes` and added `L.ifElse` and `L.cond` as the replacements for
+it.  The motivation for the change is that formatting tools such as
+[Prettier](https://prettier.io/) cannot produce readable layouts for combinators
+that use such non-trivial argument patterns.  In cases where there is just a
+single predicate, use `L.ifElse`:
+
+```diff
+-L.iftes(predicate, consequent, alternative)
++L.ifElse(predicate, consequent, alternative)
+```
+
+In cases where there are multiple predicates, use `L.cond`:
+
+```diff
+-L.iftes(predicate1, consequent1,
+-        predicate2, consequent2,
+-        alternative)
++L.cond([predicate1, consequent1],
++       [predicate2, consequent2],
++       [alternative])
+```
+
 ## 13.0.0
 
 As discussed in issue
