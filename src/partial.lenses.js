@@ -138,7 +138,7 @@ const expectedOptic = "Expecting an optic"
 const opticIsEither = `An optic can be either
 - a string,
 - a non-negative integer,
-- a ternary optic function,
+- a quaternary optic function,
 - an ordinary unary or binary function, or
 - an array of optics.
 See documentation of \`toFunction\` and \`compose\` for details.`
