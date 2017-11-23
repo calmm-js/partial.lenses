@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-eslint": "^8.0.1",
+    "babel-eslint": "^8.0.2",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
     "babel-plugin-transform-es2015-block-scoped-functions": "^6.22.0",
@@ -69,19 +69,19 @@
     "babel-register": "^6.26.0",
     "benchmark": "^2.1.4",
     "codecov": "^3.0.0",
-    "eslint": "^4.10.0",
+    "eslint": "^4.11.0",
     "klipse-github-docs-generator": "^0.2.4",
     "livereload": "^0.6.3",
     "mocha": "^4.0.1",
-    "nyc": "^11.2.1",
+    "nyc": "^11.3.0",
     "ramda": "^0.25.0",
-    "rollup": "^0.50.0",
+    "rollup": "^0.51.8",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^2.0.1",
     "sprintf-js": "^1.1.1",
-    "uglify-js": "^3.1.6",
+    "uglify-js": "^3.1.10",
     "watch-run": "^1.2.5"
   }
 }
