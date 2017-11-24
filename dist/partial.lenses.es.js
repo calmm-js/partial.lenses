@@ -271,7 +271,7 @@ var traverseU = function traverseU(C, xi2yC, t, s) {
 //
 
 var expectedOptic = "Expecting an optic";
-var opticIsEither = "An optic can be either\n- a string,\n- a non-negative integer,\n- a ternary optic function,\n- an ordinary unary or binary function, or\n- an array of optics.\nSee documentation of `toFunction` and `compose` for details.";
+var opticIsEither = "An optic can be either\n- a string,\n- a non-negative integer,\n- a quaternary optic function,\n- an ordinary unary or binary function, or\n- an array of optics.\nSee documentation of `toFunction` and `compose` for details.";
 var header = "partial.lenses: ";
 
 function warn(f, m) {
@@ -1600,7 +1600,7 @@ var pointer = function pointer(s) {
   var n = ts.length;
   for (var i = 1; i < n; ++i) {
     var t = ts[i];
-    ts[i - 1] = /^0|[1-9]\d*$/.test(t) ? ifElse(isArrayOrPrimitive, Number(t), t) : '-' === t ? ifElse(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
+    ts[i - 1] = /^(0|[1-9]\d*)$/.test(t) ? ifElse(isArrayOrPrimitive, Number(t), t) : '-' === t ? ifElse(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
   }
   ts.length = n - 1;
   return ts;
