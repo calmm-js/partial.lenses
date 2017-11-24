@@ -14,7 +14,7 @@
     "dist:umd.min": "NODE_ENV=production rollup -c -n L -i src/partial.lenses.js -f umd -o dist/partial.lenses.min.js",
     "docs": "klipse-github-docs-generator && cp node_modules/infestines/dist/infestines.min.js docs/",
     "lint": "eslint src test",
-    "prepare": "npm run lint & npm run docs & (npm run dist && npm run test) & wait",
+    "prepare": "npm run lint && npm run docs && npm run dist && npm run test",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha",
     "watch": "npm run watch:dist & npm run watch:docs & npm run watch:test & wait",
