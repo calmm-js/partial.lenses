@@ -1291,6 +1291,8 @@ describe("L.reverse", () => {
 })
 
 describe("L.pointer", () => {
+  testEq(`L.get(L.pointer('/f1'), {f1: 101})`, 101)
+
   testEq(`L.get(L.pointer(""), {a: 1, b: 2})`, {a: 1, b: 2})
   testEq(`L.get(L.pointer("/"), {"": 1, b: 2})`, 1)
   testEq(`L.get(L.pointer("/ "), {" ": 1})`, 1)
