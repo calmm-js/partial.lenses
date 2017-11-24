@@ -1250,7 +1250,7 @@ export const pointer = s => {
   for (let i=1; i<n; ++i) {
     const t = ts[i]
     ts[i-1] =
-      /^0|[1-9]\d*$/.test(t)
+      /^(0|[1-9]\d*)$/.test(t)
         ? ifElse(isArrayOrPrimitive, Number(t), t)
         : '-' === t
         ? ifElse(isArrayOrPrimitive, append, t)
