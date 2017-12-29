@@ -13,6 +13,7 @@ const L = require('../dist/partial.lenses.cjs')
 const P = tryRequire('ramda-lens')
 const R = require('ramda')
 const O = tryRequire('flunc-optics')
+const U = tryRequire('unchanged')
 const K = tryRequire('optika')
 const sprintf = require('sprintf-js').sprintf
 const _get = tryRequire('lodash.get')
@@ -69,9 +70,11 @@ const addC = x => y => x+y
 
 const L_get_1 = L.get(1)
 const R_nth_1 = R.nth(1)
+const U_get_1 = U.get(1)
 
 const L_get_y = L.get('y')
 const R_prop_y = R.prop('y')
+const U_get_y = U.get('y')
 
 const Sum = {empty: () => 0, concat: add}
 const List = {empty: always([]), concat: (x, y) => x.concat(y)}
@@ -275,17 +278,21 @@ R.forEach(bs => {
     `L.get(1, xs)`,
     `R.nth(1, xs)`,
     `R.view(l_1, xs)`,
+    `U.get(1, xs)`,
     `_get(xs, 1)`,
   ], [
     `L.get(1)(xs)`,
     `L_get_1(xs)`,
     `R.nth(1)(xs)`,
     `R_nth_1(xs)`,
+    `U.get(1)(xs)`,
+    `U_get_1(xs)`,
   ], [
     `K.idx(1).set(xs, 0)`,
     `L.set(1, 0, xs)`,
     `R.set(l_1, 0, xs)`,
     `R.update(1, 0, xs)`,
+    `U.set(1, 0, xs)`,
     `xs.map((x, i) => i === 1 ? 0 : x)`,
     `{let ys = xs.slice(); ys[1] = 0; return ys}`,
   ], [
@@ -293,23 +300,28 @@ R.forEach(bs => {
     `L.get('y', xyz)`,
     `R.prop('y', xyz)`,
     `R.view(l_y, xyz)`,
+    `U.get('y', xyz)`,
     `_get(xyz, 'y')`,
   ], [
     `L.get('y')(xyz)`,
     `L_get_y(xyz)`,
     `R.prop('y')(xyz)`,
     `R_prop_y(xyz)`,
+    `U.get('y')(xyz)`,
+    `U_get_y(xyz)`,
   ], [
     `K.key('y').set(xyz, 0)`,
     `L.set('y', 0, xyz)`,
     `R.assoc('y', 0, xyz)`,
     `R.set(l_y, 0, xyz)`,
+    `U.set('y', 0, xyz)`,
   ], [
     `K_0_x_0_y.get(axay)`,
     `L.get([0, 'x', 0, 'y'], axay)`,
     `R.path([0, 'x', 0, 'y'], axay)`,
     `R.view(l_0_x_0_y, axay)`,
     `R.view(l_0x0y, axay)`,
+    `U.get([0, 'x', 0, 'y'], axay)`,
     `_get(axay, [0, 'x', 0, 'y'])`,
   ], [
     `K_0_x_0_y.set(axay, 0)`,
@@ -317,6 +329,7 @@ R.forEach(bs => {
     `R.assocPath([0, 'x', 0, 'y'], 0, axay)`,
     `R.set(l_0_x_0_y, 0, axay)`,
     `R.set(l_0x0y, 0, axay)`,
+    `U.set([0, 'x', 0, 'y'], 0, axay)`,
   ], [
     `K_0_x_0_y.over(axay, inc)`,
     `L.modify([0, 'x', 0, 'y'], inc, axay)`,
@@ -325,9 +338,11 @@ R.forEach(bs => {
   ], [
     `L.remove(1, xs)`,
     `R.remove(1, 1, xs)`,
+    `U.remove(1, xs)`,
   ], [
     `L.remove('y', xyz)`,
     `R.dissoc('y', xyz)`,
+    `U.remove('y', xyz)`,
   ], [
     `K_xyz.get(xyzn)`,
     `L.get(['x', 'y', 'z'], xyzn)`,
@@ -335,6 +350,7 @@ R.forEach(bs => {
     `R.path(['x', 'y', 'z'], xyzn)`,
     `R.view(l_x_y_z, xyzn)`,
     `R.view(l_xyz, xyzn)`,
+    `U.get(['x', 'y', 'z'], xyzn)`,
     `_get(xyzn, ['x', 'y', 'z'])`,
   ], [
     `K_xyz.set(xyzn, 0)`,
@@ -343,6 +359,7 @@ R.forEach(bs => {
     `R.assocPath(['x', 'y', 'z'], 0, xyzn)`,
     `R.set(l_x_y_z, 0, xyzn)`,
     `R.set(l_xyz, 0, xyzn)`,
+    `U.set(['x', 'y', 'z'], 0, xyzn)`,
   ], [
     `L.selectAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
     `R.find(x => x > 3, xs100)`,
