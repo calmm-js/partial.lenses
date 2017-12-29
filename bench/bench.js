@@ -70,11 +70,11 @@ const addC = x => y => x+y
 
 const L_get_1 = L.get(1)
 const R_nth_1 = R.nth(1)
-const U_get_1 = U.get(1)
+const U_get_1 = U && U.get(1)
 
 const L_get_y = L.get('y')
 const R_prop_y = R.prop('y')
-const U_get_y = U.get('y')
+const U_get_y = U && U.get('y')
 
 const Sum = {empty: () => 0, concat: add}
 const List = {empty: always([]), concat: (x, y) => x.concat(y)}
@@ -160,6 +160,7 @@ const dropped = [
   P    ? '' : 'P',
   O    ? '' : 'O',
   K    ? '' : 'K',
+  U    ? '' : 'U',
   _get ? '' : '_get'
 ].filter(I.id)
 
