@@ -44,44 +44,36 @@ window.klipse_settings = {
 }
 
 function accelerate_klipse() {
-  const all = Array.prototype.slice.call(document.querySelectorAll('.klipse-container'), 0, -1).map(function (e) {
-    const pre = e.parentNode
-    const cm1 = pre.children[0]
-    const cm2 = pre.children[1]
-    return [pre, cm1, cm2]
-  })
+  const all = Array.prototype.slice.call(document.querySelectorAll('.CodeMirror'), 0, -1)
 
   function hide(i) {
-    const pcc = all[i]
-    pcc[0].style.cssText = 'min-height: ' + pcc[0].getBoundingClientRect().height + 'px;'
-    pcc[1].style.cssText = ''
-    pcc[2].style.cssText = ''
+    const e = all[i]
+    e.parentNode.style.cssText = 'min-height: ' + e.getBoundingClientRect().height + 'px;'
+    e.style.cssText = ''
   }
   function show(i) {
-    const pcc = all[i]
-    pcc[0].style.cssText = ''
-    pcc[1].style.cssText = 'display: block;'
-    pcc[2].style.cssText = 'display: block;'
-    pcc[1].CodeMirror.refresh()
-    pcc[2].CodeMirror.refresh()
+    const e = all[i]
+    e.parentNode.style.cssText = ''
+    e.style.cssText = 'display: block;'
+    e.CodeMirror.refresh()
   }
   function hasBeenShown(i) {
-    const pcc = all[i]
-    return pcc[0].style.length || pcc[1].style.length
+    const e = all[i]
+    return e.style.length
   }
 
   let oldVisStart = 0
   let oldVisStop = 0
 
   function visibility(i, height) {
-    const pcc = all[i]
-    const r = pcc[0].getBoundingClientRect()
+    const e = all[i]
+    const r = e.parentNode.getBoundingClientRect()
     return height <= r.top ? 1 : r.bottom < 0 ? -1 : 0
   }
 
   function findFirst(i, height) {
     while (0 < i && 0 === visibility(i-1, height))
-      --i;
+      --i
     return i
   }
 

@@ -48,7 +48,7 @@
   display: block;
 }
 
-.CodeMirror:first-of-type {
+.klipse-snippet .CodeMirror {
   border: 1px #f7f7f7 solid;
   border-radius: 5px;
 }
@@ -58,15 +58,15 @@
   padding: 5px;
 }
 
-.CodeMirror:first-of-type:hover {
+.klipse-snippet .CodeMirror:hover {
   border: 1px #ddd solid;
 }
 
-.CodeMirror:last-of-type {
+.klipse-result .CodeMirror {
   background: #f7f7f7;
 }
 
-.CodeMirror:last-of-type {
+.klipse-result .CodeMirror {
   background: transparent;
   filter: brightness(50%);
   opacity: 0.85;
