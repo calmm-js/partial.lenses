@@ -254,7 +254,7 @@ const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
 
 //
 
-const getProp = (k, o) => o instanceof Object ? o[k] : void 0
+const getProp = (k, o) => null != o ? o[k] : void 0
 
 const setProp = (process.env.NODE_ENV === "production" ? I.id : C.res(I.freeze))((k, v, o) =>
   void 0 !== v ? I.assocPartialU(k, v, o) : I.dissocPartialU(k, o) || I.object0)
@@ -651,8 +651,7 @@ const pickInAux = (t, k) => [k, pickIn(t)]
 // Auxiliary
 
 export const seemsArrayLike = x =>
-  x instanceof Object && (x = x.length, x === (x >> 0) && 0 <= x) ||
-  I.isString(x)
+  null != x && (x = x.length, x === (x >> 0) && 0 <= x)
 
 // Internals
 
