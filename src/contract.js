@@ -1,10 +1,10 @@
-import * as I from "infestines"
+import * as I from 'infestines'
 
-export const dep = xs2xsyC => xsy => I.arityN(xsy.length, (...xs) =>
-  xs2xsyC(...xs)(xsy)(...xs))
+export const dep = xs2xsyC => xsy =>
+  I.arityN(xsy.length, (...xs) => xs2xsyC(...xs)(xsy)(...xs))
 
-export const fn = (xsC, yC) => xsy => I.arityN(xsy.length, (...xs) =>
-  yC(xsy.apply(null, xsC(xs))))
+export const fn = (xsC, yC) => xsy =>
+  I.arityN(xsy.length, (...xs) => yC(xsy.apply(null, xsC(xs))))
 
 export const res = yC => fn(I.id, yC)
 
@@ -19,14 +19,13 @@ export const nth = (i, xC) => xs => {
 export const par = (i, xC) => args(nth(i, xC))
 
 export const and = (...xCs) => x => {
-  for (let i=0, n=xCs.length; i<n; ++i)
-    x = xCs[i](x)
+  for (let i = 0, n = xCs.length; i < n; ++i) x = xCs[i](x)
   return x
 }
 
 export const or = (...xCs) => x => {
   let es = null
-  for (let i=0, n=xCs.length; i<n; ++i) {
+  for (let i = 0, n = xCs.length; i < n; ++i) {
     try {
       return xCs[i](x)
     } catch (e) {
@@ -43,7 +42,9 @@ export const ef = xE => x => {
 
 export const tup = (...xCs) => xs => {
   if (xs.length !== xCs.length)
-    throw Error(`Expected array of ${xCs.length} elements, but got ${xs.length}`)
+    throw Error(
+      `Expected array of ${xCs.length} elements, but got ${xs.length}`
+    )
   return and.apply(null, xCs.map((xC, i) => nth(i, xC)))(xs)
 }
 
