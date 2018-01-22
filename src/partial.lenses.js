@@ -47,9 +47,9 @@ const rev = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.res(I.freeze))(xs => {
   if (seemsArrayLike(xs)) {
-    let n = xs.length,
-      ys = Array(n),
-      i = 0
+    let n = xs.length
+    const ys = Array(n)
+    let i = 0
     while (n) ys[i++] = xs[--n]
     return ys
   }
@@ -75,8 +75,8 @@ const warnEmpty = (o, v, f) => {
 const mapPartialIndexU = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.res(I.freeze))((xi2y, xs) => {
-  const n = xs.length,
-    ys = Array(n)
+  const n = xs.length
+  const ys = Array(n)
   let j = 0
   for (let i = 0, y; i < n; ++i)
     if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y
@@ -124,8 +124,8 @@ const Sum = ConcatOf((x, y) => x + y, 0)
 
 const mumBy = ord =>
   I.curry((xi2y, t, s) => {
-    let minX = void 0,
-      minY = void 0
+    let minX = void 0
+    let minY = void 0
     traverseU(
       Select,
       (x, i) => {
@@ -303,8 +303,8 @@ const setIndex = (process.env.NODE_ENV === 'production'
   if (!seemsArrayLike(xs)) xs = ''
   const n = xs.length
   if (void 0 !== x) {
-    const m = Math.max(i + 1, n),
-      ys = Array(m)
+    const m = Math.max(i + 1, n)
+    const ys = Array(m)
     for (let j = 0; j < m; ++j) ys[j] = xs[j]
     ys[i] = x
     return ys
@@ -511,8 +511,8 @@ const mapPartialObjectU = (process.env.NODE_ENV === 'production'
 const branchOnMerge = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.res(C.res(I.freeze)))((x, keys) => xs => {
-  const o = {},
-    n = keys.length
+  const o = {}
+  const n = keys.length
   for (let i = n; i; xs = xs[1]) {
     const v = xs[0]
     o[keys[--i]] = void 0 !== v ? v : o
@@ -545,8 +545,8 @@ const branchOn = (process.env.NODE_ENV === 'production'
   if (!(x instanceof Object)) x = I.object0
   if (Select === A) {
     for (let i = 0; i < n; ++i) {
-      const k = keys[i],
-        v = x[k]
+      const k = keys[i]
+      const v = x[k]
       const y = vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)
       if (void 0 !== y) return y
     }
@@ -554,8 +554,8 @@ const branchOn = (process.env.NODE_ENV === 'production'
     const {map, ap} = A
     let xsA = of(cpair)
     for (let i = 0; i < n; ++i) {
-      const k = keys[i],
-        v = x[k]
+      const k = keys[i]
+      const v = x[k]
       xsA = ap(map(cpair, xsA), vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k))
     }
     return map(branchOnMerge(x, keys), xsA)
@@ -681,8 +681,8 @@ const matchesJoin = input => matchesIn => {
   const matches = iterToArray(matchesIn)
   const n = matches.length
   for (let j = n - 2; j !== -2; j += -2) {
-    const m = matches[j],
-      i = reIndex(m)
+    const m = matches[j]
+    const i = reIndex(m)
     result += input.slice(lastIndex, i)
     const s = matches[j + 1]
     if (void 0 !== s) result += s
@@ -876,8 +876,8 @@ export function log() {
 export const seq = (process.env.NODE_ENV === 'production'
   ? I.id
   : fn => (...xMs) => C.par(2, C.ef(reqMonad('seq')))(fn(...xMs)))(function() {
-  const n = arguments.length,
-    xMs = Array(n)
+  const n = arguments.length
+  const xMs = Array(n)
   for (let i = 0; i < n; ++i) xMs[i] = toFunction(arguments[i])
   function loop(M, xi2xM, i, j) {
     return j === n
@@ -892,8 +892,8 @@ export const seq = (process.env.NODE_ENV === 'production'
 export const branch = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.par(0, C.ef(reqTemplate('branch'))))(template => {
-  const keys = [],
-    vals = []
+  const keys = []
+  const vals = []
   for (const k in template) {
     keys.push(k)
     const t = template[k]
@@ -1031,8 +1031,8 @@ export const countsAs = I.curry((xi2k, t, s) => {
   traverseU(
     Select,
     (x, i) => {
-      const k = xi2k(x, i),
-        n = counts.get(k)
+      const k = xi2k(x, i)
+      const n = counts.get(k)
       counts.set(k, void 0 !== n ? n + 1 : 1)
     },
     t,
@@ -1056,8 +1056,8 @@ export const foldl = I.curry((f, r, t, s) => {
 })
 
 export const foldr = I.curry((f, r, t, s) => {
-  const is = [],
-    xs = []
+  const is = []
+  const xs = []
   traverseU(
     Select,
     (x, i) => {
@@ -1246,9 +1246,9 @@ export const filter = (process.env.NODE_ENV === 'production'
   let ts, fs
   if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, (ts = []), (fs = []))
   return F.map(ts => {
-    const tsN = ts ? ts.length : 0,
-      fsN = fs ? fs.length : 0,
-      n = tsN + fsN
+    const tsN = ts ? ts.length : 0
+    const fsN = fs ? fs.length : 0
+    const n = tsN + fsN
     return n === fsN
       ? fs
       : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
@@ -1258,15 +1258,15 @@ export const filter = (process.env.NODE_ENV === 'production'
 export function find(xih2b) {
   const hint = arguments.length > 1 ? arguments[1] : {hint: 0}
   return (xs, _i, F, xi2yF) => {
-    const ys = seemsArrayLike(xs) ? xs : '',
-      i = (hint.hint = findIndexHint(hint, xih2b, ys))
+    const ys = seemsArrayLike(xs) ? xs : ''
+    const i = (hint.hint = findIndexHint(hint, xih2b, ys))
     return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
   }
 }
 
 export function findWith(o) {
-  const oo = toFunction(o),
-    p = isDefined(oo)
+  const oo = toFunction(o)
+  const p = isDefined(oo)
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo]
 }
 
@@ -1297,14 +1297,14 @@ export const slice = (process.env.NODE_ENV === 'production'
         )
       ])
     ))((begin, end) => (xs, i, F, xsi2yF) => {
-  const seems = seemsArrayLike(xs),
-    xsN = seems && xs.length,
-    b = sliceIndex(0, xsN, 0, begin),
-    e = sliceIndex(b, xsN, xsN, end)
+  const seems = seemsArrayLike(xs)
+  const xsN = seems && xs.length
+  const b = sliceIndex(0, xsN, 0, begin)
+  const e = sliceIndex(b, xsN, xsN, end)
   return F.map(zs => {
-    const zsN = zs ? zs.length : 0,
-      bPzsN = b + zsN,
-      n = xsN - e + bPzsN
+    const zsN = zs ? zs.length : 0
+    const bPzsN = b + zsN
+    const n = xsN - e + bPzsN
     return copyToFrom(
       copyToFrom(copyToFrom(Array(n), 0, xs, 0, b), b, zs, 0, zsN),
       bPzsN,
@@ -1331,8 +1331,8 @@ export const prop =
       }
 
 export function props() {
-  const n = arguments.length,
-    template = {}
+  const n = arguments.length
+  const template = {}
   for (let i = 0, k; i < n; ++i) template[(k = arguments[i])] = k
   return pick(template)
 }
@@ -1380,9 +1380,9 @@ export const iso = I.curry(isoU)
 // Isomorphism combinators
 
 export const array = elem => {
-  const fwd = getInverse(elem),
-    bwd = get(elem),
-    mapFwd = x => mapIfArrayLike(fwd, x)
+  const fwd = getInverse(elem)
+  const bwd = get(elem)
+  const mapFwd = x => mapIfArrayLike(fwd, x)
   return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
 }
 
@@ -1401,8 +1401,8 @@ export const indexed = isoU(
     (process.env.NODE_ENV === 'production'
       ? I.id
       : C.res(freezeArrayOfObjects))(xs => {
-      const n = xs.length,
-        xis = Array(n)
+      const n = xs.length
+      const xis = Array(n)
       for (let i = 0; i < n; ++i) xis[i] = [i, xs[i]]
       return xis
     })
@@ -1410,8 +1410,8 @@ export const indexed = isoU(
   expect(
     I.isArray,
     (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(xis => {
-      let n = xis.length,
-        xs = Array(n)
+      let n = xis.length
+      let xs = Array(n)
       for (let i = 0; i < n; ++i) {
         const xi = xis[i]
         if (xi.length === 2) xs[xi[0]] = xi[1]
