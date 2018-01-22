@@ -1,13 +1,10 @@
-import * as I from 'infestines'
+import * as I from './ext/infestines'
 
 import * as C from './contract'
 
 //
 
 const toStringPartial = x => (void 0 !== x ? String(x) : '')
-
-const lt = (x, y) => x < y
-const gt = (x, y) => x > y
 
 const sliceIndex = (m, l, d, i) =>
   void 0 !== i ? Math.min(Math.max(m, i < 0 ? l + i : i), l) : d
@@ -20,8 +17,6 @@ const unto0 = unto(0)
 const notPartial = x => (void 0 !== x ? !x : x)
 
 const singletonPartial = x => (void 0 !== x ? [x] : x)
-
-const instanceofObject = x => x instanceof Object
 
 const expect = (p, f) => x => (p(x) ? f(x) : void 0)
 
@@ -650,7 +645,7 @@ function iterEager(map, ap, of, xi2yA, t, s) {
 
 const keyed = isoU(
   expect(
-    instanceofObject,
+    I.isInstanceOf(Object),
     (process.env.NODE_ENV === 'production'
       ? I.id
       : C.res(freezeArrayOfObjects))(x => {
@@ -1106,7 +1101,7 @@ export const joinAs = mkTraverse(
 
 export const join = joinAs(I.id)
 
-export const maximumBy = mumBy(gt)
+export const maximumBy = mumBy(I.gtU)
 
 export const maximum = maximumBy(I.id)
 
@@ -1130,7 +1125,7 @@ export const meanAs = I.curry((xi2y, t, s) => {
 
 export const mean = meanAs(I.id)
 
-export const minimumBy = mumBy(lt)
+export const minimumBy = mumBy(I.ltU)
 
 export const minimum = minimumBy(I.id)
 
