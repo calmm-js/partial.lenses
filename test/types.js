@@ -139,6 +139,7 @@ export const seq = T.fnVarN(0, T_optic, T_transform)
 
 // Creating new traversals
 
+export const branchOr = T.fn([T_optic, template(T_traversal)], T_traversal)
 export const branch = T.fn([template(T_traversal)], T_traversal)
 
 // Traversals and combinators

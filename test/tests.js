@@ -205,6 +205,7 @@ describe('arities', () => {
     assign: 3,
     assignOp: 1,
     branch: 1,
+    branchOr: 2,
     chain: 2,
     choice: 0,
     choices: 1,
@@ -1078,6 +1079,15 @@ describe('L.branch', () => {
               R.negate,
               {x: {a: 1}, y: 2})`,
     {x: {a: -1}, y: -2}
+  )
+})
+
+describe('L.branchOr', () => {
+  testEq(
+    `L.transform(L.branchOr(L.modifyOp(R.inc),
+                            {x: L.modifyOp(R.dec)}),
+                 {x: 1, y: 1})`,
+    {x: 0, y: 2}
   )
 })
 
