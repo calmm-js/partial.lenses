@@ -11,15 +11,16 @@ import * as T from './types'
 const id = I.id
 const X = L
 
-class XYZ {
-  constructor(x, y, z) {
-    this.x = x
-    this.y = y
-    this.z = z
-  }
-  norm() {
-    return this.x * this.x + this.y * this.y + this.z * this.z
-  }
+function XYZ(x, y, z) {
+  this.x = x
+  this.y = y
+  this.z = z
+}
+
+// Note that `norm` is intentionally an enumerable property.  Do not convert
+// `XYZ` into an ES2015 class!
+XYZ.prototype.norm = function norm() {
+  return this.x * this.x + this.y * this.y + this.z * this.z
 }
 
 const a100000 = Array(100000).fill(1)
