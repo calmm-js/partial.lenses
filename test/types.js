@@ -291,6 +291,7 @@ export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 export const append = T_lens
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
+export const findWhereEq = T.fn([T.instanceOf(Object)], T_lens)
 export const findWith = T.fn([T_optic], T_optic)
 export const first = T_lens
 export const index = T.fn([T.nonNegative], T_lens)

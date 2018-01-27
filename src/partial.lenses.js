@@ -1259,6 +1259,11 @@ export function find(xih2b) {
   }
 }
 
+export function findWhereEq(template) {
+  const p = I.whereEq(template)
+  return arguments.length > 1 ? find(p, arguments[1]) : find(p)
+}
+
 export function findWith(o) {
   const oo = toFunction(o)
   const p = isDefined(oo)
