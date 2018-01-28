@@ -30,10 +30,10 @@ const ids = R.range(0, 10000).map(i => ({id: i, value: i}))
 
 const L_find_id_5000 = L.find(o => o.id === 5000, {hint: 5000})
 
-const xs10o = Object.assign(xs10)
-const xs100o = Object.assign(xs100)
-const xs1000o = Object.assign(xs1000)
-const xs10000o = Object.assign(xs10000)
+const xs10o = Object.assign({}, xs10)
+const xs100o = Object.assign({}, xs100)
+const xs1000o = Object.assign({}, xs1000)
+const xs10000o = Object.assign({}, xs10000)
 
 const xsss100 = Array(100).fill([[1]])
 
@@ -459,13 +459,11 @@ R.forEach(
     ],
     [`L.remove(5000, xs10000)`, `R.remove(5000, 1, xs10000)`],
     [`L.set(5000, 2, xs10000)`, `R.update(5000, 2, xs10000)`],
-    [`L.modify(L.values, inc, xyz)`],
-    [
-      `L.modify(L.values, inc, xs10o)`,
-      `L.modify(L.values, inc, xs100o)`,
-      `L.modify(L.values, inc, xs1000o)`,
-      `L.modify(L.values, inc, xs10000o)`
-    ],
+    [`L.modify(L.values, inc, xyz)`, `R.map(inc, xyz)`],
+    [`L.modify(L.values, inc, xs10o)`, `R.map(inc, xs10o)`],
+    [`L.modify(L.values, inc, xs100o)`, `R.map(inc, xs100o)`],
+    [`L.modify(L.values, inc, xs1000o)`, `R.map(inc, xs1000o)`],
+    [`L.modify(L.values, inc, xs10000o)`, `R.map(inc, xs10000o)`],
     [`L.modify(everywhere, incNum, nested)`, `L.modify(flatten, inc, nested)`],
     [`L.modify(everywhere, incNum, xs10)`, `L.modify(flatten, inc, xs10)`],
     [`L.modify(everywhere, incNum, xs100)`, `L.modify(flatten, inc, xs100)`],
