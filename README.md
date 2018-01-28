@@ -88,6 +88,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Traversals](#traversals)
     * [Creating new traversals](#creating-new-traversals)
       * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
+      * [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal s a -> {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v13.2.0</sup></small>
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
       * [`L.entries ~> traversal`](#L-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>
@@ -1740,6 +1741,8 @@ property is mapped to [`L.identity`](#L-identity) in the template given to
 `L.branch`, it means that the element is to be visited by the resulting
 traversal.
 
+Note that `L.branch` is equivalent to [`L.branchOr(L.zero)`](#L-branchOr).
+
 Note that you can also compose `L.branch` with other optics.  For example, you
 can compose with [`L.pick`](#L-pick) to create a traversal over specific
 elements of an array:
@@ -1753,6 +1756,23 @@ L.modify([L.pick({z: 2, x: 0}),
 ```
 
 See the [BST traversal](#bst-traversal) section for a more meaningful example.
+
+##### <a id="L-branchOr"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branchOr) [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal s a -> {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v13.2.0</sup></small>
+
+`L.branchOr` creates a new traversal from a given traversal and a given possibly
+nested template object.  The template specifies how the new traversal should
+visit the corresponding properties of an object.  The separate traversal is used
+for properties not defined in the template.
+
+For example:
+
+```js
+L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
+// { x: -1, y: 1 }
+```
+
+Note that [`L.branch`](#L-branch) is equivalent to `L.branchOr(L.zero)` and
+[`L.values`](#L-values) is equivalent to `L.branchOr(L.identity, {})`.
 
 #### <a id="traversals-and-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#traversals-and-combinators) Traversals and combinators
 
@@ -1876,6 +1896,9 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          new XYZ(1, 2, 3))
 // XYZ { x: -1, y: -2, z: -3 }
 ```
+
+Note that `L.values` is equivalent to [`L.branchOr(L.identity,
+{})`](#L-branchOr).
 
 #### <a id="folds-over-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#folds-over-traversals) Folds over traversals
 

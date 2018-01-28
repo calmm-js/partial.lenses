@@ -492,70 +492,83 @@ const toObject = x => (I.constructorOf(x) !== Object ? I.toObject(x) : x)
 
 //
 
-const mapPartialObjectU = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(I.freeze))((xi2y, o) => {
-  const r = {}
-  for (const k in o) {
-    const v = xi2y(o[k], k)
-    if (void 0 !== v) r[k] = v
-  }
-  return r
-})
+const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
-const branchOnMerge = (process.env.NODE_ENV === 'production'
+//
+
+const branchAssemble = (process.env.NODE_ENV === 'production'
   ? I.id
-  : C.res(C.res(I.freeze)))((x, keys) => xs => {
-  const o = {}
-  const n = keys.length
-  for (let i = n; i; xs = xs[1]) {
+  : C.res(C.res(I.freeze)))(ks => xs => {
+  const r = {}
+  let i = ks.length
+  while (i--) {
     const v = xs[0]
-    o[keys[--i]] = void 0 !== v ? v : o
-  }
-  const r = {}
-  x = toObject(x)
-  for (const k in x) {
-    const v = o[k]
-    if (o !== v) {
-      o[k] = o
-      r[k] = void 0 !== v ? v : x[k]
+    if (void 0 !== v) {
+      r[ks[i]] = v
     }
-  }
-  for (let i = 0; i < n; ++i) {
-    const k = keys[i]
-    const v = o[k]
-    if (o !== v) r[k] = v
+    xs = xs[1]
   }
   return r
 })
 
-const branchOn = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.dep((_keys, vals) =>
-      C.res(C.par(2, C.ef(reqApplicative(vals ? 'branch' : 'values'))))
-    ))((keys, vals) => (x, _i, A, xi2yA) => {
-  const {of} = A
-  let n = keys.length
-  if (!n) return of(x)
-  if (!(x instanceof Object)) x = I.object0
-  if (Select === A) {
-    for (let i = 0; i < n; ++i) {
-      const k = keys[i]
-      const v = x[k]
-      const y = vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k)
+const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
+  const xO = x instanceof Object ? toObject(x) : I.object0
+
+  if (Ident === A) {
+    let written = void 0
+    const r = {}
+    for (const k in k2o) {
+      written = 1
+      const y = k2o[k](xO[k], k, A, xi2yA)
+      if (void 0 !== y) r[k] = y
+    }
+    const t = written
+    for (const k in xO) {
+      if (void 0 === (t && k2o[k])) {
+        written = 1
+        const y = otherwise(xO[k], k, A, xi2yA)
+        if (void 0 !== y) r[k] = y
+      }
+    }
+    return written ? r : x
+  } else if (Select === A) {
+    for (const k in k2o) {
+      const y = k2o[k](xO[k], k, A, xi2yA)
       if (void 0 !== y) return y
     }
-  } else {
-    const {map, ap} = A
-    let xsA = of(cpair)
-    for (let i = 0; i < n; ++i) {
-      const k = keys[i]
-      const v = x[k]
-      xsA = ap(map(cpair, xsA), vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k))
+    for (const k in xO) {
+      if (void 0 === k2o[k]) {
+        const y = otherwise(xO[k], k, A, xi2yA)
+        if (void 0 !== y) return y
+      }
     }
-    return map(branchOnMerge(x, keys), xsA)
+  } else {
+    const {map, ap, of} = A
+    let xsA = of(cpair)
+    const ks = []
+    for (const k in k2o) {
+      ks.push(k)
+      xsA = ap(map(cpair, xsA), k2o[k](xO[k], k, A, xi2yA))
+    }
+    const t = ks.length ? true : void 0
+    for (const k in xO) {
+      if (void 0 === (t && k2o[k])) {
+        ks.push(k)
+        xsA = ap(map(cpair, xsA), otherwise(xO[k], k, A, xi2yA))
+      }
+    }
+    return ks.length ? map(branchAssemble(ks), xsA) : of(x)
   }
-})
+}
+
+function branchOrU(otherwise, template) {
+  const k2o = I.create(null)
+  for (const k in template) {
+    const v = template[k]
+    k2o[k] = I.isObject(v) ? branchOrU(otherwise, v) : toFunction(v)
+  }
+  return branchOr1Level(otherwise, k2o)
+}
 
 const replaced = (inn, out, x) => (I.acyclicEqualsU(x, inn) ? out : x)
 
@@ -689,8 +702,6 @@ const matchesJoin = input => matchesIn => {
 }
 
 //
-
-const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 
 const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
 
@@ -884,18 +895,19 @@ export const seq = (process.env.NODE_ENV === 'production'
 
 // Creating new traversals
 
-export const branch = (process.env.NODE_ENV === 'production'
+export const branchOr = (process.env.NODE_ENV === 'production'
   ? I.id
-  : C.par(0, C.ef(reqTemplate('branch'))))(template => {
-  const keys = []
-  const vals = []
-  for (const k in template) {
-    keys.push(k)
-    const t = template[k]
-    vals.push(I.isObject(t) ? branch(t) : toFunction(t))
-  }
-  return branchOn(keys, vals)
-})
+  : C.par(1, C.ef(reqTemplate('branchOr'))))(
+  I.curryN(
+    2,
+    otherwise => (
+      (otherwise = toFunction(otherwise)),
+      template => branchOrU(otherwise, template)
+    )
+  )
+)
+
+export const branch = branchOr(zero)
 
 // Traversals and combinators
 
@@ -955,15 +967,9 @@ export const matches = (process.env.NODE_ENV === 'production'
 
 export const values = (process.env.NODE_ENV === 'production'
   ? I.id
-  : C.par(2, C.ef(reqApplicative('values'))))((xs, _i, A, xi2yA) => {
-  if (xs instanceof Object) {
-    return A === Ident
-      ? mapPartialObjectU(xi2yA, toObject(xs))
-      : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA)
-  } else {
-    return A.of(xs)
-  }
-})
+  : C.par(2, C.ef(reqApplicative('values'))))(
+  branchOr1Level(identity, I.protoless0)
+)
 
 // Folds over traversals
 
@@ -1315,7 +1321,7 @@ export const suffix = n => slice(0 === n ? Infinity : !n ? 0 : -n, void 0)
 // Lensing objects
 
 export const pickIn = t =>
-  I.isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t
+  I.isObject(t) ? pick(modify(values, pickInAux, t)) : t
 
 export const prop =
   process.env.NODE_ENV === 'production'
