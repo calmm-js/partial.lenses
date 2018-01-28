@@ -150,6 +150,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#traversals">Traversals</a><ul>
 <li><a href="#creating-new-traversals">Creating new traversals</a><ul>
 <li><a href="#L-branch" title="L.branch: {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branch({prop: traversal, ...props}) ~&gt; traversal</code></a> <small><sup>v5.1.0</sup></small></li>
+<li><a href="#L-branchOr" title="L.branchOr: PTraversal s a -&gt; {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branchOr(traversal, {prop: traversal, ...props}) ~&gt; traversal</code></a> <small><sup>v13.2.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
@@ -1430,6 +1431,7 @@ be seen as mapping each property to a set of paths to traverse.</p>
 property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given to
 <code>L.branch</code>, it means that the element is to be visited by the resulting
 traversal.</p>
+<p>Note that <code>L.branch</code> is equivalent to <a href="#L-branchOr"><code>L.branchOr(L.zero)</code></a>.</p>
 <p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
 can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
 elements of an array:</p>
@@ -1439,6 +1441,16 @@ elements of an array:</p>
          [1, 2, 3])
 </code></pre>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
+<h5><a id="L-branchOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-branchOr">■</a> <a href="#L-branchOr" title="L.branchOr: PTraversal s a -&gt; {p1: PTraversal s a, ...pts} -&gt; PTraversal s a"><code>L.branchOr(traversal, {prop: traversal, ...props}) ~&gt; traversal</code></a> <small><sup>v13.2.0</sup></small></h5>
+<p><code>L.branchOr</code> creates a new traversal from a given traversal and a given possibly
+nested template object.  The template specifies how the new traversal should
+visit the corresponding properties of an object.  The separate traversal is used
+for properties not defined in the template.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
+</code></pre>
+<p>Note that <a href="#L-branch"><code>L.branch</code></a> is equivalent to <code>L.branchOr(L.zero)</code> and
+<a href="#L-values"><code>L.values</code></a> is equivalent to <code>L.branchOr(L.identity, {})</code>.</p>
 <h4><a id="traversals-and-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#traversals-and-combinators">■</a> Traversals and combinators</h4>
 <h5><a id="L-elems"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-elems">■</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></h5>
 <p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
@@ -1512,6 +1524,8 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
          R.negate,
          new XYZ(1, 2, 3))
 </code></pre>
+<p>Note that <code>L.values</code> is equivalent to <a href="#L-branchOr"><code>L.branchOr(L.identity,
+{})</code></a>.</p>
 <h4><a id="folds-over-traversals"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#folds-over-traversals">■</a> Folds over traversals</h4>
 <h5><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
 <p><code>L.all</code> determines whether all of the elements focused on by the given traversal

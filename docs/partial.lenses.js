@@ -4,6 +4,23 @@
 	(factory((global.L = {}),global.I));
 }(this, (function (exports,I) { 'use strict';
 
+var ltU = function ltU(x, y) {
+  return x < y;
+};
+var gtU = function gtU(x, y) {
+  return x > y;
+};
+
+var isInstanceOf = /*#__PURE__*/I.curry(function (Class, x) {
+  return x instanceof Class;
+});
+
+var create = Object.create;
+var protoless = function protoless(o) {
+  return I.assign(create(null), o);
+};
+var protoless0 = /*#__PURE__*/I.freeze( /*#__PURE__*/protoless(0));
+
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
     return I.arityN(xsy.length, function () {
@@ -44,7 +61,7 @@ var par = function par(i, xC) {
   return args(nth(i, xC));
 };
 
-var and$1 = function and() {
+var and = function and() {
   for (var _len2 = arguments.length, xCs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
     xCs[_key2] = arguments[_key2];
   }
@@ -56,7 +73,7 @@ var and$1 = function and() {
   };
 };
 
-var or$1 = function or() {
+var or = function or() {
   for (var _len3 = arguments.length, xCs = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
     xCs[_key3] = arguments[_key3];
   }
@@ -87,8 +104,8 @@ var tup = function tup() {
   }
 
   return function (xs) {
-    if (xs.length !== xCs.length) throw Error("Expected array of " + xCs.length + " elements, but got " + xs.length);
-    return and$1.apply(null, xCs.map(function (xC, i) {
+    if (xs.length !== xCs.length) throw Error('Expected array of ' + xCs.length + ' elements, but got ' + xs.length);
+    return and.apply(null, xCs.map(function (xC, i) {
       return nth(i, xC);
     }))(xs);
   };
@@ -103,14 +120,7 @@ var arr = function arr(xC) {
 //
 
 var toStringPartial = function toStringPartial(x) {
-  return void 0 !== x ? String(x) : "";
-};
-
-var lt = function lt(x, y) {
-  return x < y;
-};
-var gt = function gt(x, y) {
-  return x > y;
+  return void 0 !== x ? String(x) : '';
 };
 
 var sliceIndex = function sliceIndex(m, l, d, i) {
@@ -136,10 +146,6 @@ var notPartial = function notPartial(x) {
 
 var singletonPartial = function singletonPartial(x) {
   return void 0 !== x ? [x] : x;
-};
-
-var instanceofObject = function instanceofObject(x) {
-  return x instanceof Object;
 };
 
 var expect = function expect(p, f) {
@@ -171,9 +177,9 @@ var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
 
 var rev = /*#__PURE__*/(res(I.freeze))(function (xs) {
   if (seemsArrayLike(xs)) {
-    var n = xs.length,
-        ys = Array(n),
-        i = 0;
+    var n = xs.length;
+    var ys = Array(n);
+    var i = 0;
     while (n) {
       ys[i++] = xs[--n];
     }return ys;
@@ -183,11 +189,11 @@ var rev = /*#__PURE__*/(res(I.freeze))(function (xs) {
 //
 
 var isEmptyArrayStringOrObject = function isEmptyArrayStringOrObject(x) {
-  return I.acyclicEqualsU(I.array0, x) || I.acyclicEqualsU(I.object0, x) || x === "";
+  return I.acyclicEqualsU(I.array0, x) || I.acyclicEqualsU(I.object0, x) || x === '';
 };
 
 var warnEmpty = function warnEmpty(o, v, f) {
-  var msg = "`" + f + "(" + JSON.stringify(v) + ")` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.";
+  var msg = '`' + f + '(' + JSON.stringify(v) + ')` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.';
   return function (x) {
     if (I.acyclicEqualsU(v, x)) warn(o, msg);
     return x;
@@ -197,8 +203,8 @@ var warnEmpty = function warnEmpty(o, v, f) {
 //
 
 var mapPartialIndexU = /*#__PURE__*/(res(I.freeze))(function (xi2y, xs) {
-  var n = xs.length,
-      ys = Array(n);
+  var n = xs.length;
+  var ys = Array(n);
   var j = 0;
   for (var i = 0, y; i < n; ++i) {
     if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y;
@@ -253,8 +259,8 @@ var Sum = /*#__PURE__*/ConcatOf(function (x, y) {
 
 var mumBy = function mumBy(ord) {
   return I.curry(function (xi2y, t, s) {
-    var minX = void 0,
-        minY = void 0;
+    var minX = void 0;
+    var minY = void 0;
     traverseU(Select, function (x, i) {
       var y = xi2y(x, i);
       if (void 0 !== y && (void 0 === minY || ord(y, minY))) {
@@ -274,9 +280,9 @@ var traverseU = function traverseU(C, xi2yC, t, s) {
 
 //
 
-var expectedOptic = "Expecting an optic";
-var opticIsEither = "An optic can be either\n- a string,\n- a non-negative integer,\n- a quaternary optic function,\n- an ordinary unary or binary function, or\n- an array of optics.\nSee documentation of `toFunction` and `compose` for details.";
-var header = "partial.lenses: ";
+var expectedOptic = 'Expecting an optic';
+var opticIsEither = 'An optic can be either\n- a string,\n- a non-negative integer,\n- a quaternary optic function,\n- an ordinary unary or binary function, or\n- an array of optics.\nSee documentation of `toFunction` and `compose` for details.';
+var header = 'partial.lenses: ';
 
 function warn(f, m) {
   if (!f.warned) {
@@ -286,14 +292,14 @@ function warn(f, m) {
 }
 
 function errorGiven(m, o, e) {
-  m = header + m + ".";
-  e = e ? "\n" + e : "";
-  console.error(m, "Given:", o, e);
+  m = header + m + '.';
+  e = e ? '\n' + e : '';
+  console.error(m, 'Given:', o, e);
   throw Error(m + e);
 }
 
 function reqIndex(x) {
-  if (!Number.isInteger(x) || x < 0) errorGiven("`index` expects a non-negative integer", x);
+  if (!Number.isInteger(x) || x < 0) errorGiven('`index` expects a non-negative integer', x);
 }
 
 function reqFunction(o) {
@@ -310,17 +316,19 @@ function reqArray(o) {
 
 function reqOptic(o) {
   switch (typeof o) {
-    case "string":
+    case 'string':
       break;
-    case "number":
-      reqIndex(o);break;
-    case "object":
+    case 'number':
+      reqIndex(o);
+      break;
+    case 'object':
       reqArray(o);
       for (var i = 0, n = o.length; i < n; ++i) {
         reqOptic(o[i]);
       }break;
     default:
-      reqFunction(o);break;
+      reqFunction(o);
+      break;
   }
 }
 
@@ -342,13 +350,13 @@ var reqMaybeArray = function reqMaybeArray(msg) {
 
 var reqApplicative = function reqApplicative(name, arg) {
   return function (C) {
-    if (!C.of) errorGiven("`" + name + (arg ? "(" + arg + ")" : "") + "` requires an applicative", C, "Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?");
+    if (!C.of) errorGiven('`' + name + (arg ? '(' + arg + ')' : '') + '` requires an applicative', C, 'Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?');
   };
 };
 
 var reqMonad = function reqMonad(name) {
   return function (C) {
-    if (!C.chain) errorGiven("`" + name + "` requires a monad", C, "Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.");
+    if (!C.chain) errorGiven('`' + name + '` requires a monad', C, 'Note that you can only `modify`, `remove`, `set`, and `traverse` a transform.');
   };
 };
 
@@ -378,7 +386,7 @@ var consTo = /*#__PURE__*/(res(I.freeze))(function (n) {
   return xs.reverse();
 });
 
-var traversePartialIndex = /*#__PURE__*/(par(0, ef(reqApplicative("elems"))))(function (A, xi2yA, xs) {
+var traversePartialIndex = /*#__PURE__*/(par(0, ef(reqApplicative('elems'))))(function (A, xi2yA, xs) {
   var map = A.map,
       ap = A.ap;
 
@@ -426,11 +434,11 @@ var getIndex = function getIndex(i, xs) {
 };
 
 var setIndex = /*#__PURE__*/(fn(nth(0, ef(reqIndex)), I.freeze))(function (i, x, xs) {
-  if (!seemsArrayLike(xs)) xs = "";
+  if (!seemsArrayLike(xs)) xs = '';
   var n = xs.length;
   if (void 0 !== x) {
-    var m = Math.max(i + 1, n),
-        ys = Array(m);
+    var m = Math.max(i + 1, n);
+    var ys = Array(m);
     for (var j = 0; j < m; ++j) {
       ys[j] = xs[j];
     }ys[i] = x;
@@ -480,11 +488,11 @@ function composed(oi0, os) {
 
 var setU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o, x, s) {
   switch (typeof o) {
-    case "string":
+    case 'string':
       return setProp(o, x, s);
-    case "number":
+    case 'number':
       return setIndex(o, x, s);
-    case "object":
+    case 'object':
       return modifyComposed(o, 0, s, x);
     default:
       return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s;
@@ -493,11 +501,11 @@ var setU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o, x, s) {
 
 var modifyU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o, xi2x, s) {
   switch (typeof o) {
-    case "string":
+    case 'string':
       return setProp(o, xi2x(getProp(o, s), o), s);
-    case "number":
+    case 'number':
       return setIndex(o, xi2x(getIndex(o, s), o), s);
-    case "object":
+    case 'object':
       return modifyComposed(o, xi2x, s);
     default:
       return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
@@ -515,13 +523,13 @@ function makeIx(i) {
 function getNestedU(l, s, j, ix) {
   for (var n = l.length, o; j < n; ++j) {
     switch (typeof (o = l[j])) {
-      case "string":
+      case 'string':
         s = getProp(ix.v = o, s);
         break;
-      case "number":
+      case 'number':
         s = getIndex(ix.v = o, s);
         break;
-      case "object":
+      case 'object':
         s = getNestedU(o, s, 0, ix);
         break;
       default:
@@ -532,17 +540,19 @@ function getNestedU(l, s, j, ix) {
 
 var getU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (l, s) {
   switch (typeof l) {
-    case "string":
+    case 'string':
       return getProp(l, s);
-    case "number":
+    case 'number':
       return getIndex(l, s);
-    case "object":
+    case 'object':
       for (var i = 0, n = l.length, o; i < n; ++i) {
         switch (typeof (o = l[i])) {
-          case "string":
-            s = getProp(o, s);break;
-          case "number":
-            s = getIndex(o, s);break;
+          case 'string':
+            s = getProp(o, s);
+            break;
+          case 'number':
+            s = getIndex(o, s);
+            break;
           default:
             return getNestedU(l, s, i, makeIx(l[i - 1]));
         }
@@ -558,10 +568,10 @@ function modifyComposed(os, xi2y, x, y) {
   for (var i = 0, o; i < n; ++i) {
     xs[i] = x;
     switch (typeof (o = os[i])) {
-      case "string":
+      case 'string':
         x = getProp(o, x);
         break;
-      case "number":
+      case 'number':
         x = getIndex(o, x);
         break;
       default:
@@ -609,7 +619,7 @@ var getPick = /*#__PURE__*/(res(I.freeze))(function (template, x) {
 
 var reqTemplate = function reqTemplate(name) {
   return function (template) {
-    if (!I.isObject(template)) errorGiven("`" + name + "` expects a plain Object template", template);
+    if (!I.isObject(template)) errorGiven('`' + name + '` expects a plain Object template', template);
   };
 };
 
@@ -619,7 +629,7 @@ var reqObject = function reqObject(msg) {
   };
 };
 
-var setPick = /*#__PURE__*/(par(1, ef(reqObject("`pick` must be set with undefined or an object"))))(function (template, value, x) {
+var setPick = /*#__PURE__*/(par(1, ef(reqObject('`pick` must be set with undefined or an object'))))(function (template, value, x) {
   for (var k in template) {
     var v = value && value[k];
     var t = template[k];
@@ -630,77 +640,96 @@ var setPick = /*#__PURE__*/(par(1, ef(reqObject("`pick` must be set with undefin
 
 //
 
-var toObject$1 = function toObject$$1(x) {
+var toObject = function toObject(x) {
   return I.constructorOf(x) !== Object ? I.toObject(x) : x;
 };
 
 //
 
-var mapPartialObjectU = /*#__PURE__*/(res(I.freeze))(function (xi2y, o) {
-  var r = {};
-  for (var k in o) {
-    var v = xi2y(o[k], k);
-    if (void 0 !== v) r[k] = v;
-  }
-  return r;
-});
+var identity = function identity(x, i, _F, xi2yF) {
+  return xi2yF(x, i);
+};
 
-var branchOnMerge = /*#__PURE__*/(res(res(I.freeze)))(function (x, keys$$1) {
+//
+
+var branchAssemble = /*#__PURE__*/(res(res(I.freeze)))(function (ks) {
   return function (xs) {
-    var o = {},
-        n = keys$$1.length;
-    for (var i = n; i; xs = xs[1]) {
-      var v = xs[0];
-      o[keys$$1[--i]] = void 0 !== v ? v : o;
-    }
     var r = {};
-    x = toObject$1(x);
-    for (var k in x) {
-      var _v = o[k];
-      if (o !== _v) {
-        o[k] = o;
-        r[k] = void 0 !== _v ? _v : x[k];
+    var i = ks.length;
+    while (i--) {
+      var v = xs[0];
+      if (void 0 !== v) {
+        r[ks[i]] = v;
       }
-    }
-    for (var _i3 = 0; _i3 < n; ++_i3) {
-      var _k = keys$$1[_i3];
-      var _v2 = o[_k];
-      if (o !== _v2) r[_k] = _v2;
+      xs = xs[1];
     }
     return r;
   };
 });
 
-var branchOn = /*#__PURE__*/(dep(function (_keys, vals) {
-  return res(par(2, ef(reqApplicative(vals ? "branch" : "values"))));
-}))(function (keys$$1, vals) {
+var branchOr1Level = function branchOr1Level(otherwise, k2o) {
   return function (x, _i, A, xi2yA) {
-    var of = A.of;
+    var xO = x instanceof Object ? toObject(x) : I.object0;
 
-    var n = keys$$1.length;
-    if (!n) return of(x);
-    if (!(x instanceof Object)) x = I.object0;
-    if (Select === A) {
-      for (var i = 0; i < n; ++i) {
-        var k = keys$$1[i],
-            v = x[k];
-        var y = vals ? vals[i](v, k, A, xi2yA) : xi2yA(v, k);
-        if (void 0 !== y) return y;
+    if (Ident === A) {
+      var written = void 0;
+      var r = {};
+      for (var k in k2o) {
+        written = 1;
+        var y = k2o[k](xO[k], k, A, xi2yA);
+        if (void 0 !== y) r[k] = y;
+      }
+      var t = written;
+      for (var _k in xO) {
+        if (void 0 === (t && k2o[_k])) {
+          written = 1;
+          var _y = otherwise(xO[_k], _k, A, xi2yA);
+          if (void 0 !== _y) r[_k] = _y;
+        }
+      }
+      return written ? r : x;
+    } else if (Select === A) {
+      for (var _k2 in k2o) {
+        var _y2 = k2o[_k2](xO[_k2], _k2, A, xi2yA);
+        if (void 0 !== _y2) return _y2;
+      }
+      for (var _k3 in xO) {
+        if (void 0 === k2o[_k3]) {
+          var _y3 = otherwise(xO[_k3], _k3, A, xi2yA);
+          if (void 0 !== _y3) return _y3;
+        }
       }
     } else {
       var map = A.map,
-          ap = A.ap;
+          ap = A.ap,
+          of = A.of;
 
       var xsA = of(cpair);
-      for (var _i4 = 0; _i4 < n; ++_i4) {
-        var _k2 = keys$$1[_i4],
-            _v3 = x[_k2];
-        xsA = ap(map(cpair, xsA), vals ? vals[_i4](_v3, _k2, A, xi2yA) : xi2yA(_v3, _k2));
+      var ks = [];
+      for (var _k4 in k2o) {
+        ks.push(_k4);
+        xsA = ap(map(cpair, xsA), k2o[_k4](xO[_k4], _k4, A, xi2yA));
       }
-      return map(branchOnMerge(x, keys$$1), xsA);
+      var _t2 = ks.length ? true : void 0;
+      for (var _k5 in xO) {
+        if (void 0 === (_t2 && k2o[_k5])) {
+          ks.push(_k5);
+          xsA = ap(map(cpair, xsA), otherwise(xO[_k5], _k5, A, xi2yA));
+        }
+      }
+      return ks.length ? map(branchAssemble(ks), xsA) : of(x);
     }
   };
-});
+};
+
+function branchOrU(otherwise, template) {
+  var k2o = create(null);
+  for (var k in template) {
+    var v = template[k];
+    k2o[k] = I.isObject(v) ? branchOrU(otherwise, v) : toFunction(v);
+  }
+  return branchOr1Level(otherwise, k2o);
+}
 
 var replaced = function replaced(inn, out, x) {
   return I.acyclicEqualsU(x, inn) ? out : x;
@@ -725,7 +754,8 @@ function findIndexHint(hint, xi2b, xs) {
 
 var partitionIntoIndex = /*#__PURE__*/(dep(function (_xi2b, _xs, ts, fs) {
   return res(ef(function () {
-    I.freeze(ts);I.freeze(fs);
+    I.freeze(ts);
+    I.freeze(fs);
   }));
 }))(function (xi2b, xs, ts, fs) {
   for (var i = 0, n = xs.length, x; i < n; ++i) {
@@ -751,7 +781,7 @@ var reIndex = function reIndex(m) {
 var reNext = /*#__PURE__*/(function (fn$$1) {
   return function (m, re) {
     var res$$1 = fn$$1(m, re);
-    if ("" === res$$1) warn(reNext, "`matches(" + re + ")` traversal terminated due to empty match.  `matches` traversal shouldn't be used with regular expressions that can produce empty matches.");
+    if ('' === res$$1) warn(reNext, '`matches(' + re + ')` traversal terminated due to empty match.  `matches` traversal shouldn\'t be used with regular expressions that can produce empty matches.');
     return res$$1;
   };
 })(function (m, re) {
@@ -797,13 +827,13 @@ function iterEager(map, ap, of, xi2yA, t, s) {
 
 //
 
-var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (res(freezeArrayOfObjects))(function (x) {
-  x = toObject$1(x);
+var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(res(freezeArrayOfObjects))(function (x) {
+  x = toObject(x);
   var es = [];
   for (var key in x) {
     es.push([key, x[key]]);
   }return es;
-})), expect(I.isArray, (res(I.freeze))(function (es) {
+})), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(res(I.freeze))(function (es) {
   var o = {};
   for (var i = 0, n = es.length; i < n; ++i) {
     var entry = es[i];
@@ -816,13 +846,13 @@ var keyed = /*#__PURE__*/isoU(expect(instanceofObject, (res(freezeArrayOfObjects
 
 var matchesJoin = function matchesJoin(input) {
   return function (matchesIn) {
-    var result = "";
+    var result = '';
     var lastIndex = 0;
     var matches = iterToArray(matchesIn);
     var n = matches.length;
     for (var j = n - 2; j !== -2; j += -2) {
-      var m = matches[j],
-          i = reIndex(m);
+      var m = matches[j];
+      var i = reIndex(m);
       result += input.slice(lastIndex, i);
       var s = matches[j + 1];
       if (void 0 !== s) result += s;
@@ -836,10 +866,6 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
-var identity = function identity(x, i, _F, xi2yF) {
-  return xi2yF(x, i);
-};
-
 var ifteU = function ifteU(c, t, e) {
   return function (x, i, C, xi2yC) {
     return (c(x, i) ? t : e)(x, i, C, xi2yC);
@@ -848,7 +874,7 @@ var ifteU = function ifteU(c, t, e) {
 
 var orElseU = function orElseU(back, prim) {
   return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
-    return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
+    return (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC);
   };
 };
 
@@ -873,11 +899,11 @@ var seemsArrayLike = function seemsArrayLike(x) {
 
 var toFunction = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o) {
   switch (typeof o) {
-    case "string":
+    case 'string':
       return funProp(o);
-    case "number":
+    case 'number':
       return funIndex(o);
-    case "object":
+    case 'object':
       return composed(0, o);
     default:
       return o.length === 4 ? o : fromReader(o);
@@ -954,7 +980,7 @@ var cond = /*#__PURE__*/(function (fn$$1) {
 
     var pair = tup(ef(reqFn), ef(reqOptic));
     arr(pair)(cs.slice(0, -1));
-    arr(or$1(tup(ef(reqOptic)), pair))(cs.slice(-1));
+    arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
     return fn$$1.apply(undefined, cs);
   };
 })(function () {
@@ -974,14 +1000,13 @@ var cond = /*#__PURE__*/(function (fn$$1) {
   return r;
 });
 
-var ifElse =
-/*#__PURE__*/I.curry(function (c, t, e) {
+var ifElse = /*#__PURE__*/I.curry(function (c, t, e) {
   return ifteU(c, toFunction(t), toFunction(e));
 });
 
 var iftes = /*#__PURE__*/(function (fn$$1) {
   return function (_c, _t) {
-    warn(iftes, "`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.");
+    warn(iftes, '`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.');
     return fn$$1.apply(null, arguments);
   };
 })(function (_c, _t) {
@@ -1052,18 +1077,18 @@ function log() {
   var show = I.curry(function (dir, x) {
     return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
   });
-  return isoU(show("get"), show("set"));
+  return isoU(show('get'), show('set'));
 }
 
 // Sequencing
 
 var seq = /*#__PURE__*/(function (fn$$1) {
   return function () {
-    return par(2, ef(reqMonad("seq")))(fn$$1.apply(undefined, arguments));
+    return par(2, ef(reqMonad('seq')))(fn$$1.apply(undefined, arguments));
   };
 })(function () {
-  var n = arguments.length,
-      xMs = Array(n);
+  var n = arguments.length;
+  var xMs = Array(n);
   for (var i = 0; i < n; ++i) {
     xMs[i] = toFunction(arguments[i]);
   }function loop(M, xi2xM, i, j) {
@@ -1078,20 +1103,17 @@ var seq = /*#__PURE__*/(function (fn$$1) {
 
 // Creating new traversals
 
-var branch = /*#__PURE__*/(par(0, ef(reqTemplate("branch"))))(function (template) {
-  var keys$$1 = [],
-      vals = [];
-  for (var k in template) {
-    keys$$1.push(k);
-    var t = template[k];
-    vals.push(I.isObject(t) ? branch(t) : toFunction(t));
-  }
-  return branchOn(keys$$1, vals);
-});
+var branchOr = /*#__PURE__*/(par(1, ef(reqTemplate('branchOr'))))( /*#__PURE__*/I.curryN(2, function (otherwise) {
+  return otherwise = toFunction(otherwise), function (template) {
+    return branchOrU(otherwise, template);
+  };
+}));
+
+var branch = /*#__PURE__*/branchOr(zero);
 
 // Traversals and combinators
 
-var elems = /*#__PURE__*/(par(2, ef(reqApplicative("elems"))))(function (xs, _i, A, xi2yA) {
+var elems = /*#__PURE__*/(par(2, ef(reqApplicative('elems'))))(function (xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
     return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
@@ -1101,22 +1123,21 @@ var elems = /*#__PURE__*/(par(2, ef(reqApplicative("elems"))))(function (xs, _i,
 
 var entries = /*#__PURE__*/toFunction([keyed, elems]);
 
-var flatten =
-/*#__PURE__*/lazy(function (rec) {
+var flatten = /*#__PURE__*/lazy(function (rec) {
   return ifElse(Array.isArray, [elems, rec], identity);
 });
 
-var keys$1 = /*#__PURE__*/toFunction([keyed, elems, 0]);
+var keys = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
 var matches = /*#__PURE__*/(dep(function (re) {
-  return re.global ? res(par(2, ef(reqApplicative("matches", re)))) : I.id;
+  return re.global ? res(par(2, ef(reqApplicative('matches', re)))) : I.id;
 }))(function (re) {
   return function (x, _i, C, xi2yC) {
     if (I.isString(x)) {
       var map = C.map;
 
       if (re.global) {
-        var m0 = [""];
+        var m0 = [''];
         m0.input = x;
         m0.index = 0;
         if (Select === C) {
@@ -1130,7 +1151,7 @@ var matches = /*#__PURE__*/(dep(function (re) {
       } else {
         var m = x.match(re);
         if (m) return map(function (y) {
-          return x.replace(re, void 0 !== y ? y : "");
+          return x.replace(re, void 0 !== y ? y : '');
         }, xi2yC(m[0], reIndex(m)));
       }
     }
@@ -1138,13 +1159,7 @@ var matches = /*#__PURE__*/(dep(function (re) {
   };
 });
 
-var values = /*#__PURE__*/(par(2, ef(reqApplicative("values"))))(function (xs, _i, A, xi2yA) {
-  if (xs instanceof Object) {
-    return A === Ident ? mapPartialObjectU(xi2yA, toObject$1(xs)) : branchOn(I.keys(xs), void 0)(xs, void 0, A, xi2yA);
-  } else {
-    return A.of(xs);
-  }
-});
+var values = /*#__PURE__*/(par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
 
 // Folds over traversals
 
@@ -1154,7 +1169,7 @@ var all = /*#__PURE__*/I.curry(function (xi2b, t, s) {
   }, t, s);
 });
 
-var and = /*#__PURE__*/all(I.id);
+var and$1 = /*#__PURE__*/all(I.id);
 
 var any = /*#__PURE__*/I.curry(function (xi2b, t, s) {
   return !!traverseU(Select, function (x, i) {
@@ -1173,8 +1188,7 @@ var collectAs = /*#__PURE__*/(res(I.freeze))(function (xi2y, t, s) {
 
 var collect = /*#__PURE__*/collectAs(I.id);
 
-var concatAs =
-/*#__PURE__*/mkTraverse(I.id, function (m) {
+var concatAs = /*#__PURE__*/mkTraverse(I.id, function (m) {
   return ConcatOf(m.concat, m.empty());
 });
 
@@ -1191,8 +1205,8 @@ var count = /*#__PURE__*/countIf(I.isDefined);
 var countsAs = /*#__PURE__*/I.curry(function (xi2k, t, s) {
   var counts = new Map();
   traverseU(Select, function (x, i) {
-    var k = xi2k(x, i),
-        n = counts.get(k);
+    var k = xi2k(x, i);
+    var n = counts.get(k);
     counts.set(k, void 0 !== n ? n + 1 : 1);
   }, t, s);
   return counts;
@@ -1208,10 +1222,11 @@ var foldl = /*#__PURE__*/I.curry(function (f, r, t, s) {
 });
 
 var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
-  var is = [],
-      xs = [];
+  var is = [];
+  var xs = [];
   traverseU(Select, function (x, i) {
-    xs.push(x);is.push(i);
+    xs.push(x);
+    is.push(i);
   }, t, s);
   for (var i = xs.length - 1; 0 <= i; --i) {
     r = f(r, xs[i], is[i]);
@@ -1224,7 +1239,7 @@ var forEach = /*#__PURE__*/I.curry(function (f, t, s) {
   }, t, s);
 });
 
-var isDefined$1 = /*#__PURE__*/I.curry(function (t, s) {
+var isDefined = /*#__PURE__*/I.curry(function (t, s) {
   return void 0 !== traverseU(Select, I.id, t, s);
 });
 
@@ -1232,7 +1247,7 @@ var isEmpty = /*#__PURE__*/I.curry(function (t, s) {
   return !traverseU(Select, I.always(true), t, s);
 });
 
-var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (par(0, ef(reqString("`join` and `joinAs` expect a string delimiter"))))(function (d) {
+var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, /*#__PURE__*/(par(0, ef(reqString('`join` and `joinAs` expect a string delimiter'))))(function (d) {
   return ConcatOf(function (x, y) {
     return void 0 !== x ? void 0 !== y ? x + d + y : x : y;
   });
@@ -1240,7 +1255,7 @@ var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, (par(0, ef(reqString("`joi
 
 var join = /*#__PURE__*/joinAs(I.id);
 
-var maximumBy = /*#__PURE__*/mumBy(gt);
+var maximumBy = /*#__PURE__*/mumBy(gtU);
 
 var maximum = /*#__PURE__*/maximumBy(I.id);
 
@@ -1259,7 +1274,7 @@ var meanAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
 
 var mean = /*#__PURE__*/meanAs(I.id);
 
-var minimumBy = /*#__PURE__*/mumBy(lt);
+var minimumBy = /*#__PURE__*/mumBy(ltU);
 
 var minimum = /*#__PURE__*/minimumBy(I.id);
 
@@ -1269,13 +1284,13 @@ var none = /*#__PURE__*/I.curry(function (xi2b, t, s) {
   }, t, s);
 });
 
-var or = /*#__PURE__*/any(I.id);
+var or$1 = /*#__PURE__*/any(I.id);
 
-var productAs = /*#__PURE__*/traverse(ConcatOf(function (x, y) {
+var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(function (x, y) {
   return x * y;
 }, 1));
 
-var product = /*#__PURE__*/productAs(unto(1));
+var product = /*#__PURE__*/productAs( /*#__PURE__*/unto(1));
 
 var selectAs = /*#__PURE__*/traverse(Select);
 
@@ -1317,7 +1332,7 @@ function defaults(out) {
 var define = /*#__PURE__*/(function (fn$$1) {
   return function (inn) {
     var res$$1 = fn$$1(inn);
-    if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, "define"), I.id), res$$1, isoU(I.id, warnEmpty(define, inn, "define"))]);else return res$$1;
+    if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, 'define'), I.id), res$$1, isoU(I.id, warnEmpty(define, inn, 'define'))]);else return res$$1;
   };
 })(function (v) {
   var untoV = unto(v);
@@ -1333,7 +1348,7 @@ var normalize = function normalize(xi2x) {
 var required = /*#__PURE__*/(function (fn$$1) {
   return function (inn) {
     var res$$1 = fn$$1(inn);
-    if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(I.id, warnEmpty(required, inn, "required"))]);else return res$$1;
+    if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(I.id, warnEmpty(required, inn, 'required'))]);else return res$$1;
   };
 })(function (inn) {
   return replace(inn, void 0);
@@ -1363,16 +1378,16 @@ function append(xs, _, F, xi2yF) {
 }
 
 var filter = /*#__PURE__*/(res(function (lens) {
-  return toFunction([lens, isoU(I.id, ef(reqMaybeArray("`filter` must be set with undefined or an array-like object")))]);
+  return toFunction([lens, isoU(I.id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
 }))(function (xi2b) {
   return function (xs, i, F, xi2yF) {
     var ts = void 0,
         fs = void 0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
     return F.map(function (ts) {
-      var tsN = ts ? ts.length : 0,
-          fsN = fs ? fs.length : 0,
-          n = tsN + fsN;
+      var tsN = ts ? ts.length : 0;
+      var fsN = fs ? fs.length : 0;
+      var n = tsN + fsN;
       return n === fsN ? fs : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN);
     }, xi2yF(ts, i));
   };
@@ -1381,8 +1396,8 @@ var filter = /*#__PURE__*/(res(function (lens) {
 function find(xih2b) {
   var hint = arguments.length > 1 ? arguments[1] : { hint: 0 };
   return function (xs, _i, F, xi2yF) {
-    var ys = seemsArrayLike(xs) ? xs : "",
-        i = hint.hint = findIndexHint(hint, xih2b, ys);
+    var ys = seemsArrayLike(xs) ? xs : '';
+    var i = hint.hint = findIndexHint(hint, xih2b, ys);
     return F.map(function (v) {
       return setIndex(i, v, ys);
     }, xi2yF(ys[i], i));
@@ -1390,8 +1405,8 @@ function find(xih2b) {
 }
 
 function findWith(o) {
-  var oo = toFunction(o),
-      p = isDefined$1(oo);
+  var oo = toFunction(o);
+  var p = isDefined(oo);
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo];
 }
 
@@ -1408,17 +1423,17 @@ var prefix = function prefix(n) {
 };
 
 var slice = /*#__PURE__*/(res(function (lens) {
-  return toFunction([lens, isoU(I.id, ef(reqMaybeArray("`slice` must be set with undefined or an array-like object")))]);
+  return toFunction([lens, isoU(I.id, ef(reqMaybeArray('`slice` must be set with undefined or an array-like object')))]);
 }))(function (begin, end) {
   return function (xs, i, F, xsi2yF) {
-    var seems = seemsArrayLike(xs),
-        xsN = seems && xs.length,
-        b = sliceIndex(0, xsN, 0, begin),
-        e = sliceIndex(b, xsN, xsN, end);
+    var seems = seemsArrayLike(xs);
+    var xsN = seems && xs.length;
+    var b = sliceIndex(0, xsN, 0, begin);
+    var e = sliceIndex(b, xsN, xsN, end);
     return F.map(function (zs) {
-      var zsN = zs ? zs.length : 0,
-          bPzsN = b + zsN,
-          n = xsN - e + bPzsN;
+      var zsN = zs ? zs.length : 0;
+      var bPzsN = b + zsN;
+      var n = xsN - e + bPzsN;
       return copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b), b, zs, 0, zsN), bPzsN, xs, e, xsN);
     }, xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) : void 0, i));
   };
@@ -1431,17 +1446,17 @@ var suffix = function suffix(n) {
 // Lensing objects
 
 var pickIn = function pickIn(t) {
-  return I.isObject(t) ? pick(mapPartialObjectU(pickInAux, t)) : t;
+  return I.isObject(t) ? pick(modify(values, pickInAux, t)) : t;
 };
 
 var prop = function (x) {
-  if (!I.isString(x)) errorGiven("`prop` expects a string", x);
+  if (!I.isString(x)) errorGiven('`prop` expects a string', x);
   return x;
 };
 
 function props() {
-  var n = arguments.length,
-      template = {};
+  var n = arguments.length;
+  var template = {};
   for (var i = 0, k; i < n; ++i) {
     template[k = arguments[i]] = k;
   }return pick(template);
@@ -1477,7 +1492,7 @@ var valueOr = function valueOr(v) {
 
 // Transforming data
 
-var pick = /*#__PURE__*/(par(0, ef(reqTemplate("pick"))))(function (template) {
+var pick = /*#__PURE__*/(par(0, ef(reqTemplate('pick'))))(function (template) {
   return function (x, i, F, xi2yF) {
     return F.map(function (v) {
       return setPick(template, v, x);
@@ -1509,9 +1524,9 @@ var iso = /*#__PURE__*/I.curry(isoU);
 // Isomorphism combinators
 
 var array = function array(elem) {
-  var fwd = getInverse(elem),
-      bwd = get(elem),
-      mapFwd = function mapFwd(x) {
+  var fwd = getInverse(elem);
+  var bwd = get(elem);
+  var mapFwd = function mapFwd(x) {
     return mapIfArrayLike(fwd, x);
   };
   return function (x, i, F, xi2yF) {
@@ -1531,25 +1546,25 @@ var inverse = function inverse(iso) {
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
-var indexed = /*#__PURE__*/isoU(expect(seemsArrayLike, (res(freezeArrayOfObjects))(function (xs) {
-  var n = xs.length,
-      xis = Array(n);
+var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeArrayOfObjects))(function (xs) {
+  var n = xs.length;
+  var xis = Array(n);
   for (var i = 0; i < n; ++i) {
     xis[i] = [i, xs[i]];
   }return xis;
-})), expect(I.isArray, (res(I.freeze))(function (xis) {
-  var n = xis.length,
-      xs = Array(n);
+})), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(res(I.freeze))(function (xis) {
+  var n = xis.length;
+  var xs = Array(n);
   for (var i = 0; i < n; ++i) {
     var xi = xis[i];
     if (xi.length === 2) xs[xi[0]] = xi[1];
   }
   n = xs.length;
   var j = 0;
-  for (var _i5 = 0; _i5 < n; ++_i5) {
-    var x = xs[_i5];
+  for (var _i3 = 0; _i3 < n; ++_i3) {
+    var x = xs[_i3];
     if (void 0 !== x) {
-      if (_i5 !== j) xs[j] = x;
+      if (_i3 !== j) xs[j] = x;
       ++j;
     }
   }
@@ -1575,11 +1590,9 @@ var singleton = /*#__PURE__*/(function (iso) {
 
 // Standard isomorphisms
 
-var uri =
-/*#__PURE__*/isoU(expect(I.isString, decodeURI), expect(I.isString, encodeURI));
+var uri = /*#__PURE__*/isoU( /*#__PURE__*/expect(I.isString, decodeURI), /*#__PURE__*/expect(I.isString, encodeURI));
 
-var uriComponent =
-/*#__PURE__*/isoU(expect(I.isString, decodeURIComponent), expect(I.isString, encodeURIComponent));
+var uriComponent = /*#__PURE__*/isoU( /*#__PURE__*/expect(I.isString, decodeURIComponent), /*#__PURE__*/expect(I.isString, encodeURIComponent));
 
 var json = /*#__PURE__*/(res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, I.id)]);
@@ -1638,15 +1651,16 @@ exports.setOp = setOp;
 exports.removeOp = removeOp;
 exports.log = log;
 exports.seq = seq;
+exports.branchOr = branchOr;
 exports.branch = branch;
 exports.elems = elems;
 exports.entries = entries;
 exports.flatten = flatten;
-exports.keys = keys$1;
+exports.keys = keys;
 exports.matches = matches;
 exports.values = values;
 exports.all = all;
-exports.and = and;
+exports.and = and$1;
 exports.any = any;
 exports.collectAs = collectAs;
 exports.collect = collect;
@@ -1659,7 +1673,7 @@ exports.counts = counts;
 exports.foldl = foldl;
 exports.foldr = foldr;
 exports.forEach = forEach;
-exports.isDefined = isDefined$1;
+exports.isDefined = isDefined;
 exports.isEmpty = isEmpty;
 exports.joinAs = joinAs;
 exports.join = join;
@@ -1670,7 +1684,7 @@ exports.mean = mean;
 exports.minimumBy = minimumBy;
 exports.minimum = minimum;
 exports.none = none;
-exports.or = or;
+exports.or = or$1;
 exports.productAs = productAs;
 exports.product = product;
 exports.selectAs = selectAs;
