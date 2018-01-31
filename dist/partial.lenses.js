@@ -885,6 +885,16 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+var seq2U = function seq2U(l, r) {
+  return function (x, i, M, xi2yM) {
+    return M.chain(function (x) {
+      return r(x, i, M, xi2yM);
+    }, l(x, i, M, xi2yM));
+  };
+};
+
+//
+
 var pickInAux = function pickInAux(t, k) {
   return [k, pickIn(t)];
 };
@@ -1088,17 +1098,14 @@ var seq = /*#__PURE__*/(function (fn$$1) {
   };
 })(function () {
   var n = arguments.length;
-  var xMs = Array(n);
-  for (var i = 0; i < n; ++i) {
-    xMs[i] = toFunction(arguments[i]);
-  }function loop(M, xi2xM, i, j) {
-    return j === n ? M.of : function (x) {
-      return M.chain(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM));
-    };
+  var r = zero;
+  if (n) {
+    r = toFunction(arguments[--n]);
+    while (n) {
+      r = seq2U(toFunction(arguments[--n]), r);
+    }
   }
-  return function (x, i, M, xi2xM) {
-    return loop(M, xi2xM, i, 0)(x);
-  };
+  return r;
 });
 
 // Creating new traversals
