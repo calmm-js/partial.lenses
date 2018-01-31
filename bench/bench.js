@@ -82,6 +82,7 @@ const o_x_y_z =
 const id = I.id
 const always = I.always
 const inc = x => x + 1
+const dec = x => x - 1
 const add = (x, y) => x + y
 const addC = x => y => x + y
 
@@ -536,7 +537,14 @@ R.forEach(
       `L.get(abcM, {x: 1})`,
       `L.get(abcS, {x: 1})`
     ],
-    [`L.set(L.props('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`]
+    [`L.set(L.props('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`],
+    [
+      `L.transform(
+        L.lazy(rec =>
+          L.seq(L.modifyOp(dec),
+                L.choose(n => n === 0 ? L.identity : rec))),
+        100)`
+    ]
   ]
 )
 
