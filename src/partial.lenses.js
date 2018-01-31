@@ -38,17 +38,17 @@ function freezeArrayOfObjects(xs) {
 
 const isArrayOrPrimitive = x => !(x instanceof Object) || Array.isArray(x)
 
-const rev = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
-  xs => {
-    if (seemsArrayLike(xs)) {
-      let n = xs.length
-      const ys = Array(n)
-      let i = 0
-      while (n) ys[i++] = xs[--n]
-      return ys
-    }
+const rev = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.res(I.freeze))(xs => {
+  if (seemsArrayLike(xs)) {
+    let n = xs.length
+    const ys = Array(n)
+    let i = 0
+    while (n) ys[i++] = xs[--n]
+    return ys
   }
-)
+})
 
 //
 
@@ -242,16 +242,16 @@ const mkTraverse = (after, toC) =>
 //
 
 const cons = t => h => (void 0 !== h ? [h, t] : t)
-const consTo = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
-  n => {
-    const xs = []
-    while (cons !== n) {
-      xs.push(n[0])
-      n = n[1]
-    }
-    return xs.reverse()
+const consTo = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.res(I.freeze))(n => {
+  const xs = []
+  while (cons !== n) {
+    xs.push(n[0])
+    n = n[1]
   }
-)
+  return xs.reverse()
+})
 
 const traversePartialIndex = (process.env.NODE_ENV === 'production'
   ? I.id
