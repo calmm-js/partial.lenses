@@ -718,6 +718,11 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+const seq2U = (l, r) => (x, i, M, xi2yM) =>
+  M.chain(x => r(x, i, M, xi2yM), l(x, i, M, xi2yM))
+
+//
+
 const pickInAux = (t, k) => [k, pickIn(t)]
 
 // Auxiliary
@@ -882,15 +887,13 @@ export function log() {
 export const seq = (process.env.NODE_ENV === 'production'
   ? I.id
   : fn => (...xMs) => C.par(2, C.ef(reqMonad('seq')))(fn(...xMs)))(function() {
-  const n = arguments.length
-  const xMs = Array(n)
-  for (let i = 0; i < n; ++i) xMs[i] = toFunction(arguments[i])
-  function loop(M, xi2xM, i, j) {
-    return j === n
-      ? M.of
-      : x => M.chain(loop(M, xi2xM, i, j + 1), xMs[j](x, i, M, xi2xM))
+  let n = arguments.length
+  let r = zero
+  if (n) {
+    r = toFunction(arguments[--n])
+    while (n) r = seq2U(toFunction(arguments[--n]), r)
   }
-  return (x, i, M, xi2xM) => loop(M, xi2xM, i, 0)(x)
+  return r
 })
 
 // Creating new traversals
