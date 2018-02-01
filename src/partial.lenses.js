@@ -253,9 +253,7 @@ const consTo = (process.env.NODE_ENV === 'production'
   return xs.reverse()
 })
 
-const traversePartialIndex = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(0, C.ef(reqApplicative('elems'))))((A, xi2yA, xs) => {
+function traversePartialIndex(A, xi2yA, xs) {
   const {map, ap} = A
   let xsA = A.of(cons)
   const n = xs.length
@@ -266,7 +264,7 @@ const traversePartialIndex = (process.env.NODE_ENV === 'production'
     for (let i = 0; i < n; ++i) xsA = ap(map(cons, xsA), xi2yA(xs[i], i))
     return map(consTo, xsA)
   }
-})
+}
 
 //
 
