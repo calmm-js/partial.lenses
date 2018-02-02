@@ -80,6 +80,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.transform(optic, maybeData) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s") <small><sup>v11.7.0</sup></small>
     * [Sequencing](#sequencing)
       * [`L.seq(...transforms) ~> transform`](#L-seq "L.seq: (...PTransform s a) -> PTransform s a") <small><sup>v9.4.0</sup></small>
+    * [Backtracking](#backtracking)
+      * [`L.retry((maybeValue, index) => transform, transform) ~> transform`](#L-retry "L.retry: ((Maybe t, Index) -> PTransform s u) -> PTransform s t -> PTransform s u") <small><sup>v13.3.0</sup></small>
     * [Transforming](#transforming)
       * [`L.assignOp(object) ~> optic`](#L-assignOp "L.assignOp: {p1: a1, ...ps} -> POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v11.13.0</sup></small>
       * [`L.modifyOp((maybeValue, index) => maybeValue) ~> optic`](#L-modifyOp "L.modifyOp: ((Maybe a, Index) -> Maybe a) -> POptic a a") <small><sup>v11.7.0</sup></small>
@@ -856,15 +858,16 @@ Now, optics are composable in several ways and in each of those ways there is an
 operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:
 
-|                           | Operation(s)                                                                        | Semantics
-| ------------------------- | ----------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
-| [Nesting](#nesting)       | [`L.compose(...optics)`](#L-compose) or `[...optics]`                               | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) [optics](#optics)
-| [Recursing](#recursing)   | [`L.lazy(optic => optic)`](#L-lazy)                                                 | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
-| [Adapting](#adapting)     | [`L.choices(optic, ...optics)`](#L-choices)                                         | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [optics](#optics)
-| [Querying](#querying)     | [`L.choice(...optics)`](#L-choice) and [`L.chain(value => optic, optic)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [optics](#optics)
-| Picking                   | [`L.pick({...prop:lens})`](#L-pick)                                                 | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
-| Branching                 | [`L.branch({...prop:traversal})`](#L-branch)                                        | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
-| [Sequencing](#sequencing) | [`L.seq(...transforms)`](#L-seq)                                                    | <a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over [transforms](#transforms)
+|                               | Operation(s)                                                                        | Semantics
+| ----------------------------- | ----------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
+| [Nesting](#nesting)           | [`L.compose(...optics)`](#L-compose) or `[...optics]`                               | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) [optics](#optics)
+| [Recursing](#recursing)       | [`L.lazy(optic => optic)`](#L-lazy)                                                 | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)
+| [Adapting](#adapting)         | [`L.choices(optic, ...optics)`](#L-choices)                                         | [Semigroup](https://en.wikipedia.org/wiki/Semigroup) over [optics](#optics)
+| [Querying](#querying)         | [`L.choice(...optics)`](#L-choice) and [`L.chain(value => optic, optic)`](#L-chain) | [MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus) over [optics](#optics)
+| Picking                       | [`L.pick({...prop:lens})`](#L-pick)                                                 | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of [lenses](#lenses)
+| Branching                     | [`L.branch({...prop:traversal})`](#L-branch)                                        | [Coproduct](https://en.wikipedia.org/wiki/Coproduct) of [traversals](#traversals)
+| [Sequencing](#sequencing)     | [`L.seq(...transforms)`](#L-seq)                                                    | <a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over [transforms](#transforms)
+| [Backtracking](#backtracking) | [`L.retry((maybeValue, index) => transform, transform)`](#L-retry)                  | <a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over [transforms](#transforms)
 
 The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
@@ -1381,18 +1384,23 @@ empty or read-only [zero](#L-zero).
 
 `L.chain` provides a monadic
 [chain](https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain)
-combinator for querying with optics.  `L.chain(toOptic, optic)` is equivalent to
+combinator for querying with optics.  `L.chain(y2yzO, xyO)` is equivalent to
 
 ```jsx
-L.compose(optic, L.choose((maybeValue, index) =>
-  maybeValue === undefined
+L.compose(xyO, L.choose((yMaybe, index) =>
+  yMaybe === undefined
   ? L.zero
-  : toOptic(maybeValue, index)))
+  : y2yzO(yMaybe, index)))
 ```
 
 Note that with the [`R.always`](http://ramdajs.com/docs/#always), `L.chain`,
 [`L.choice`](#L-choice) and [`L.zero`](#L-zero) combinators, one can consider
-optics as subsuming the maybe monad.
+optics as providing a
+[Monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
+and
+[Alternative](https://github.com/rpominov/static-land/blob/master/docs/spec.md#alternative)
+aka
+[MonadPlus](https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus#MonadPlus).
 
 ##### <a id="L-choice"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-choice) [`L.choice(...optics) ~> optic`](#L-choice "L.choice: (...POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
 
@@ -1645,11 +1653,42 @@ combined together as a
 [`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
 
 ```jsx
-chain(x2t, t) = L.seq(t, L.choose(x2t))
-        of(x) = L.setOp(x)
+chain(y2yzt, xyT) = L.seq(xyT, L.choose(y2yzT))
+            of(x) = L.setOp(x)
 ```
 
-which is not the same as the [querying monad](#L-chain).
+which is not the same as the [querying monad](#L-chain) or the [backtracking
+monad](#L-retry).
+
+#### <a id="backtracking"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#backtracking) Backtracking
+
+The [`L.retry`](#L-retry) combinator allows one to build
+[transforms](#transforms) that modify their focus in multiple different ways and
+choose one of the results.
+
+##### <a id="L-retry"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-retry) [`L.retry((maybeValue, index) => transform, transform) ~> transform`](#L-retry "L.retry: ((Maybe t, Index) -> PTransform s u) -> PTransform s t -> PTransform s u") <small><sup>v13.3.0</sup></small>
+
+`L.retry` creates a transform that first modifies the data in the focus with
+given transform and then modifies the same data in the focus with the transform
+returned by the given function.
+
+Note that `L.retry` with [`L.seqOp`](#L-setOp) forms another
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad):
+
+```jsx
+chain(y2xyT, xyT) = L.retry(x2xyT, xyT)
+            of(x) = L.setOp(x)
+```
+
+which is not the same as the [querying monad](#L-chain) or the [sequencing
+monad](#L-seq).
+
+Note that `L.retry(t2suT, stT)` can be implemented using [`L.choose`](#L-choose)
+and [`L.seq`](#L-seq):
+
+```jsx
+L.choose((s, i) => L.seq(stT, L.choose(t => L.seq(L.setOp(s), t2suT(t, i)))))
+```
 
 #### <a id="transforming"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming) Transforming
 

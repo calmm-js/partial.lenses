@@ -894,6 +894,21 @@ export const seq = (process.env.NODE_ENV === 'production'
   return r
 })
 
+// Backtracking
+
+export const retry = (process.env.NODE_ENV === 'production'
+  ? I.curry
+  : C.res(C.par(2, C.ef(reqMonad('retry')))))(
+  (yi2xzT, xyT) => (
+    (xyT = toFunction(xyT)),
+    (x, i, M, xi2yM) =>
+      M.chain(
+        y => toFunction(yi2xzT(y, i))(x, i, M, xi2yM),
+        xyT(x, i, M, xi2yM)
+      )
+  )
+)
+
 // Creating new traversals
 
 export const branchOr = (process.env.NODE_ENV === 'production'

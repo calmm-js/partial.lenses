@@ -544,6 +544,15 @@ R.forEach(
           L.seq(L.modifyOp(dec),
                 L.choose(n => n === 0 ? L.identity : rec))),
         100)`
+    ],
+    [
+      `L.transform(I.seq(L.identity,
+                         L.retry(L.setOp),
+                         L.retry(L.setOp),
+                         L.retry(L.setOp),
+                         L.retry(L.setOp),
+                         L.retry(L.setOp)),
+                   101)`
     ]
   ]
 )
