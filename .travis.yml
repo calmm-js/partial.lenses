@@ -8,4 +8,4 @@ node_js:
   - "6"
 script:
   - npm run report-coverage
-  - npm run bench 0.125
+  - npm run bench 0.25
