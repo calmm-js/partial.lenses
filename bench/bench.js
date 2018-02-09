@@ -297,7 +297,11 @@ R.forEach(
       `R.chain(R.chain(R.identity), xsss100)`,
       `{let acc=[]; xsss100.forEach(x0 => {x0.forEach(x1 => {acc = acc.concat(x1)})}); return acc}`
     ],
-    [`L.collect(L.flatten, xsss100)`, `R.flatten(xsss100)`],
+    [
+      `L.collect(L.flatten, xsss100)`,
+      `L.collect(L.leafs, xsss100)`,
+      `R.flatten(xsss100)`
+    ],
     [
       `K.traversed().over(xs, inc)`,
       `L.modify(L.elems, inc, xs)`,
@@ -497,28 +501,36 @@ R.forEach(
       `R.map(inc, xs10000o)`
     ],
     [
+      `L.modify(L.leafs, inc, nested)`,
       `L.modify(everywhere, incNum, nested)`,
       `L.modify(flatten, inc, nested)`,
-      `L.traverse(Ident, incNum, everywhere, nested)`,
-      `L.traverse(Ident, incNum, flatten, nested)`
+      `L.traverse(Ident, inc, L.leafs, nested)`,
+      `L.traverse(Ident, inc, flatten, nested)`,
+      `L.traverse(Ident, incNum, everywhere, nested)`
     ],
     [
+      `L.modify(L.leafs, inc, xs10)`,
       `L.modify(everywhere, incNum, xs10)`,
       `L.modify(flatten, inc, xs10)`,
-      `L.traverse(Ident, incNum, everywhere, xs10)`,
-      `L.traverse(Ident, incNum, flatten, xs10)`
+      `L.traverse(Ident, inc, L.leafs, xs10)`,
+      `L.traverse(Ident, inc, flatten, xs10)`,
+      `L.traverse(Ident, incNum, everywhere, xs10)`
     ],
     [
+      `L.modify(L.leafs, inc, xs100)`,
       `L.modify(everywhere, incNum, xs100)`,
       `L.modify(flatten, inc, xs100)`,
-      `L.traverse(Ident, incNum, everywhere, xs100)`,
-      `L.traverse(Ident, incNum, flatten, xs100)`
+      `L.traverse(Ident, inc, L.leafs, xs100)`,
+      `L.traverse(Ident, inc, flatten, xs100)`,
+      `L.traverse(Ident, incNum, everywhere, xs100)`
     ],
     [
+      `L.modify(L.leafs, inc, xs1000)`,
       `L.modify(everywhere, incNum, xs1000)`,
       `L.modify(flatten, inc, xs1000)`,
-      `L.traverse(Ident, incNum, everywhere, xs1000)`,
-      `L.traverse(Ident, incNum, flatten, xs1000)`
+      `L.traverse(Ident, inc, L.leafs, xs1000)`,
+      `L.traverse(Ident, inc, flatten, xs1000)`,
+      `L.traverse(Ident, incNum, everywhere, xs1000)`
     ],
     [`L.set(L.seq('x', 'y', 'z'), 1, undefined)`, `L.set(xyzs, 1, undefined)`],
     [
@@ -547,7 +559,9 @@ R.forEach(
     [`L.concatAs(toList, List, L.elems, xs100)`],
     [
       `L.modify(L.flatten, inc, xsss100)`,
-      `L.traverse(Ident, inc, L.flatten, xsss100)`
+      `L.modify(L.leafs, inc, xsss100)`,
+      `L.traverse(Ident, inc, L.flatten, xsss100)`,
+      `L.traverse(Ident, inc, L.leafs, xsss100)`
     ],
     [
       `L.selectAs(x => x > 3 ? x : undefined, L.elems, pi)`,

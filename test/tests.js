@@ -207,6 +207,7 @@ describe('arities', () => {
     branch: 1,
     branchOr: 2,
     chain: 2,
+    children: 4,
     choice: 0,
     choices: 1,
     choose: 1,
@@ -253,6 +254,7 @@ describe('arities', () => {
     keys: 4,
     last: 4,
     lazy: 1,
+    leafs: 4,
     lens: 2,
     log: 0,
     matches: 1,
@@ -286,6 +288,7 @@ describe('arities', () => {
     reread: 1,
     reverse: 4,
     rewrite: 1,
+    satisfying: 1,
     seemsArrayLike: 1,
     select: 2,
     selectAs: 3,
@@ -1463,6 +1466,25 @@ describe('L.flatten', () => {
     1,
     {y: 2},
     false
+  ])
+})
+
+describe('L.leafs', () => {
+  testEq(`L.collect(L.leafs, 101)`, [101])
+  testEq(`L.collect(L.leafs, new XYZ(1, 2, 3))`, [new XYZ(1, 2, 3)])
+  testEq(`L.collect(L.leafs, [["x"], [1, [], {y: 2}], [[false]]])`, [
+    'x',
+    1,
+    2,
+    false
+  ])
+})
+
+describe('L.satisfying', () => {
+  testEq(`L.collect(L.satisfying(R.is(Number)), [3, '1', 4, {x: 1}])`, [
+    3,
+    4,
+    1
   ])
 })
 
