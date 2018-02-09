@@ -1458,7 +1458,13 @@ describe('L.singleton', () => {
 
 describe('L.flatten', () => {
   testEq(`L.collect(L.flatten, 101)`, [101])
-  testEq(`L.collect(L.flatten, [["x"], [1, []], [[false]]])`, ['x', 1, false])
+  testEq(`L.collect(L.flatten, [["x"], [1, [], {y: 2}], [[false]]])`, [
+    'x',
+    1,
+    {y: 2},
+    false
+  ])
+})
 })
 
 describe('L.array', () => {
