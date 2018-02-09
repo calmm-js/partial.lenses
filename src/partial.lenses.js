@@ -38,17 +38,17 @@ function freezeArrayOfObjects(xs) {
 
 const isArrayOrPrimitive = x => !(x instanceof Object) || Array.isArray(x)
 
-const rev = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(I.freeze))(xs => {
-  if (seemsArrayLike(xs)) {
-    let n = xs.length
-    const ys = Array(n)
-    let i = 0
-    while (n) ys[i++] = xs[--n]
-    return ys
+const rev = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
+  xs => {
+    if (seemsArrayLike(xs)) {
+      let n = xs.length
+      const ys = Array(n)
+      let i = 0
+      while (n) ys[i++] = xs[--n]
+      return ys
+    }
   }
-})
+)
 
 //
 
