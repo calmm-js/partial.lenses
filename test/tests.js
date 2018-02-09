@@ -1465,7 +1465,6 @@ describe('L.flatten', () => {
     false
   ])
 })
-})
 
 describe('L.array', () => {
   testEq(`L.get(L.array(L.pick({x:"y", z:"x"})), [{x:1, y:2}, {x:3, y:4}])`, [
