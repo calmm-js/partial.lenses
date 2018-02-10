@@ -154,11 +154,14 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#traversals-and-combinators">Traversals and combinators</a><ul>
+<li><a href="#L-children" title="L.children: PTraversal ([a] | {p: a, ...ps}) a"><code>L.children ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></li>
 <li><a href="#L-entries" title="L.entries: PTraversal {p: a, ...ps} [String, a]"><code>L.entries ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#L-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></li>
 <li><a href="#L-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
+<li><a href="#L-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></li>
+<li><a href="#L-satisfying" title="L.satisfying: ((Maybe s, Index) -&gt; Boolean) -&gt; PTraversal JSON a"><code>L.satisfying((maybeValue, index) =&gt; testable) ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></li>
 </ul>
 </li>
@@ -1452,6 +1455,10 @@ for properties not defined in the template.</p>
 <p>Note that <a href="#L-branch"><code>L.branch</code></a> is equivalent to <code>L.branchOr(L.zero)</code> and
 <a href="#L-values"><code>L.values</code></a> is equivalent to <code>L.branchOr(L.identity, {})</code>.</p>
 <h4><a id="traversals-and-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#traversals-and-combinators">■</a> Traversals and combinators</h4>
+<h5><a id="L-children"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-children">■</a> <a href="#L-children" title="L.children: PTraversal ([a] | {p: a, ...ps}) a"><code>L.children ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
+<p><code>L.children</code> is a traversal over the immediate children of the ordinary array or
+plain object in focus.  Children of objects whose constructor is neither <code>Array</code>
+nor <code>Object</code> are not traversed.</p>
 <h5><a id="L-elems"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-elems">■</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></h5>
 <p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
 object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
@@ -1483,6 +1490,9 @@ In case the immediate target of <code>L.flatten</code> is not an array, it is tr
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 </code></pre>
+<h5><a id="L-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-leafs">■</a> <a href="#L-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
+<p><code>L.leafs</code> is a traversal that descends into ordinary arrays and plain objects
+and focuses on the elements whose constructor is neither <code>Array</code> nor <code>Object</code>.</p>
 <h5><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></h5>
 <p><code>L.matches</code>, when given a regular expression with the
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a>
@@ -1497,6 +1507,11 @@ expression gives over the focused string.  See also <a href="#L-matches"><code>L
 <p>Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.</p>
+<h5><a id="L-satisfying"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-satisfying">■</a> <a href="#L-satisfying" title="L.satisfying: ((Maybe s, Index) -&gt; Boolean) -&gt; PTraversal JSON a"><code>L.satisfying((maybeValue, index) =&gt; testable) ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
+<p><code>L.satisfying</code> is a traversal that focuses on elements that satisfy the given
+predicate within a nested data structure of ordinary arrays and plain objects.
+Children of objects whose constructor is neither <code>Array</code> nor <code>Object</code> are not
+traversed.</p>
 <h5><a id="L-values"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-values">■</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></h5>
 <p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
 written through, <code>L.values</code> always produces an <code>Object</code>.</p>

@@ -1,4 +1,4 @@
-import { freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, applyU, always, curry, isFunction, isString, curryN, assocPartialU, dissocPartialU, constructorOf, toObject, isArray, isDefined, keys, hasU, assign, arityN } from 'infestines';
+import { isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, applyU, always, curry, isFunction, isString, curryN, assocPartialU, dissocPartialU, constructorOf, toObject, isDefined, keys, hasU, assign, arityN } from 'infestines';
 
 var ltU = function ltU(x, y) {
   return x < y;
@@ -151,7 +151,7 @@ var expect = function expect(p, f) {
 };
 
 function deepFreeze(x) {
-  if (Array.isArray(x)) {
+  if (isArray(x)) {
     x.forEach(deepFreeze);
     freeze(x);
   } else if (isObject(x)) {
@@ -168,7 +168,7 @@ function freezeArrayOfObjects(xs) {
 }
 
 var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
-  return !(x instanceof Object) || Array.isArray(x);
+  return !(x instanceof Object) || isArray(x);
 };
 
 var rev = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freeze))(function (xs) {
@@ -307,7 +307,7 @@ function reqFn(x) {
 }
 
 function reqArray(o) {
-  if (!Array.isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
+  if (!isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
 }
 
 function reqOptic(o) {
@@ -382,7 +382,7 @@ var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(free
   return xs.reverse();
 });
 
-var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(reqApplicative('elems'))))(function (A, xi2yA, xs) {
+function traversePartialIndex(A, xi2yA, xs) {
   var map = A.map,
       ap = A.ap;
 
@@ -397,7 +397,7 @@ var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === 'production' ?
       xsA = ap(map(cons, xsA), xi2yA(xs[_i2], _i2));
     }return map(consTo, xsA);
   }
-});
+}
 
 //
 
@@ -881,6 +881,14 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+var recWithUnless = /*#__PURE__*/curry(function (t, p) {
+  return lazy(function (r) {
+    return ifElse(p, identity, [t, r]);
+  });
+});
+
+//
+
 var seq2U = function seq2U(l, r) {
   return function (x, i, M, xi2yM) {
     return M.chain(function (x) {
@@ -1126,10 +1134,6 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef
 
 var entries = /*#__PURE__*/toFunction([keyed, elems]);
 
-var flatten = /*#__PURE__*/lazy(function (rec) {
-  return ifElse(Array.isArray, [elems, rec], identity);
-});
-
 var keys$1 = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
 var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : dep(function (re) {
@@ -1163,6 +1167,18 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : dep(fun
 });
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
+
+var children = /*#__PURE__*/ifElse(isArray, elems, /*#__PURE__*/ifElse(isObject, values, zero));
+
+var satisfying = /*#__PURE__*/recWithUnless(children);
+
+var flatten = /*#__PURE__*/recWithUnless(elems, function (x) {
+  return !isArray(x);
+});
+
+var leafs = /*#__PURE__*/satisfying(function (x) {
+  return !isArray(x) && !isObject(x);
+});
 
 // Folds over traversals
 
@@ -1626,4 +1642,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, elems, entries, flatten, keys$1 as keys, matches, values, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, elems, entries, keys$1 as keys, matches, values, children, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };

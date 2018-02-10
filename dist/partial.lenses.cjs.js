@@ -155,7 +155,7 @@ var expect = function expect(p, f) {
 };
 
 function deepFreeze(x) {
-  if (Array.isArray(x)) {
+  if (I.isArray(x)) {
     x.forEach(deepFreeze);
     I.freeze(x);
   } else if (I.isObject(x)) {
@@ -172,7 +172,7 @@ function freezeArrayOfObjects(xs) {
 }
 
 var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
-  return !(x instanceof Object) || Array.isArray(x);
+  return !(x instanceof Object) || I.isArray(x);
 };
 
 var rev = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : res(I.freeze))(function (xs) {
@@ -311,7 +311,7 @@ function reqFn(x) {
 }
 
 function reqArray(o) {
-  if (!Array.isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
+  if (!I.isArray(o)) errorGiven(expectedOptic, o, opticIsEither);
 }
 
 function reqOptic(o) {
@@ -386,7 +386,7 @@ var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : res(I.
   return xs.reverse();
 });
 
-var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(0, ef(reqApplicative('elems'))))(function (A, xi2yA, xs) {
+function traversePartialIndex(A, xi2yA, xs) {
   var map = A.map,
       ap = A.ap;
 
@@ -401,7 +401,7 @@ var traversePartialIndex = /*#__PURE__*/(process.env.NODE_ENV === 'production' ?
       xsA = ap(map(cons, xsA), xi2yA(xs[_i2], _i2));
     }return map(consTo, xsA);
   }
-});
+}
 
 //
 
@@ -885,6 +885,14 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+var recWithUnless = /*#__PURE__*/I.curry(function (t, p) {
+  return lazy(function (r) {
+    return ifElse(p, identity, [t, r]);
+  });
+});
+
+//
+
 var seq2U = function seq2U(l, r) {
   return function (x, i, M, xi2yM) {
     return M.chain(function (x) {
@@ -1130,10 +1138,6 @@ var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, 
 
 var entries = /*#__PURE__*/toFunction([keyed, elems]);
 
-var flatten = /*#__PURE__*/lazy(function (rec) {
-  return ifElse(Array.isArray, [elems, rec], identity);
-});
-
 var keys = /*#__PURE__*/toFunction([keyed, elems, 0]);
 
 var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : dep(function (re) {
@@ -1167,6 +1171,18 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : dep(f
 });
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
+
+var children = /*#__PURE__*/ifElse(I.isArray, elems, /*#__PURE__*/ifElse(I.isObject, values, zero));
+
+var satisfying = /*#__PURE__*/recWithUnless(children);
+
+var flatten = /*#__PURE__*/recWithUnless(elems, function (x) {
+  return !I.isArray(x);
+});
+
+var leafs = /*#__PURE__*/satisfying(function (x) {
+  return !I.isArray(x) && !I.isObject(x);
+});
 
 // Folds over traversals
 
@@ -1662,10 +1678,13 @@ exports.branchOr = branchOr;
 exports.branch = branch;
 exports.elems = elems;
 exports.entries = entries;
-exports.flatten = flatten;
 exports.keys = keys;
 exports.matches = matches;
 exports.values = values;
+exports.children = children;
+exports.satisfying = satisfying;
+exports.flatten = flatten;
+exports.leafs = leafs;
 exports.all = all;
 exports.and = and$1;
 exports.any = any;
