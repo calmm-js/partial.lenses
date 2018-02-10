@@ -21,7 +21,7 @@ const singletonPartial = x => (void 0 !== x ? [x] : x)
 const expect = (p, f) => x => (p(x) ? f(x) : void 0)
 
 function deepFreeze(x) {
-  if (Array.isArray(x)) {
+  if (I.isArray(x)) {
     x.forEach(deepFreeze)
     I.freeze(x)
   } else if (I.isObject(x)) {
@@ -36,7 +36,7 @@ function freezeArrayOfObjects(xs) {
   return I.freeze(xs)
 }
 
-const isArrayOrPrimitive = x => !(x instanceof Object) || Array.isArray(x)
+const isArrayOrPrimitive = x => !(x instanceof Object) || I.isArray(x)
 
 const rev = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
   xs => {
@@ -181,7 +181,7 @@ function reqFn(x) {
 }
 
 function reqArray(o) {
-  if (!Array.isArray(o)) errorGiven(expectedOptic, o, opticIsEither)
+  if (!I.isArray(o)) errorGiven(expectedOptic, o, opticIsEither)
 }
 
 function reqOptic(o) {
@@ -242,16 +242,16 @@ const mkTraverse = (after, toC) =>
 //
 
 const cons = t => h => (void 0 !== h ? [h, t] : t)
-const consTo = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(I.freeze))(n => {
-  const xs = []
-  while (cons !== n) {
-    xs.push(n[0])
-    n = n[1]
+const consTo = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
+  n => {
+    const xs = []
+    while (cons !== n) {
+      xs.push(n[0])
+      n = n[1]
+    }
+    return xs.reverse()
   }
-  return xs.reverse()
-})
+)
 
 function traversePartialIndex(A, xi2yA, xs) {
   const {map, ap} = A
@@ -716,6 +716,10 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+const recWithUnless = I.curry((t, p) => lazy(r => ifElse(p, identity, [t, r])))
+
+//
+
 const seq2U = (l, r) => (x, i, M, xi2yM) =>
   M.chain(x => r(x, i, M, xi2yM), l(x, i, M, xi2yM))
 
@@ -928,10 +932,6 @@ export const elems = (process.env.NODE_ENV === 'production'
 
 export const entries = toFunction([keyed, elems])
 
-export const flatten = lazy(rec =>
-  ifElse(Array.isArray, [elems, rec], identity)
-)
-
 export const keys = toFunction([keyed, elems, 0])
 
 export const matches = (process.env.NODE_ENV === 'production'
@@ -971,6 +971,18 @@ export const values = (process.env.NODE_ENV === 'production'
   : C.par(2, C.ef(reqApplicative('values'))))(
   branchOr1Level(identity, I.protoless0)
 )
+
+export const children = ifElse(
+  I.isArray,
+  elems,
+  ifElse(I.isObject, values, zero)
+)
+
+export const satisfying = recWithUnless(children)
+
+export const flatten = recWithUnless(elems, x => !I.isArray(x))
+
+export const leafs = satisfying(x => !I.isArray(x) && !I.isObject(x))
 
 // Folds over traversals
 
