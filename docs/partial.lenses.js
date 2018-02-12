@@ -1262,6 +1262,14 @@ var forEach = /*#__PURE__*/I.curry(function (f, t, s) {
   }, t, s);
 });
 
+var forEachWith = /*#__PURE__*/I.curry(function (newC, ef$$1, t, s) {
+  var c = newC();
+  traverseU(Select, function (x, i) {
+    ef$$1(c, x, i);
+  }, t, s);
+  return c;
+});
+
 var isDefined = /*#__PURE__*/I.curry(function (t, s) {
   return void 0 !== traverseU(Select, I.id, t, s);
 });
@@ -1699,6 +1707,7 @@ exports.counts = counts;
 exports.foldl = foldl;
 exports.foldr = foldr;
 exports.forEach = forEach;
+exports.forEachWith = forEachWith;
 exports.isDefined = isDefined;
 exports.isEmpty = isEmpty;
 exports.joinAs = joinAs;

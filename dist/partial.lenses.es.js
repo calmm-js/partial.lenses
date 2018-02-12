@@ -1258,6 +1258,14 @@ var forEach = /*#__PURE__*/curry(function (f, t, s) {
   }, t, s);
 });
 
+var forEachWith = /*#__PURE__*/curry(function (newC, ef$$1, t, s) {
+  var c = newC();
+  traverseU(Select, function (x, i) {
+    ef$$1(c, x, i);
+  }, t, s);
+  return c;
+});
+
 var isDefined$1 = /*#__PURE__*/curry(function (t, s) {
   return void 0 !== traverseU(Select, id, t, s);
 });
@@ -1642,4 +1650,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, elems, entries, keys$1 as keys, matches, values, children, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, elems, entries, keys$1 as keys, matches, values, children, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
