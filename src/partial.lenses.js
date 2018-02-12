@@ -805,16 +805,9 @@ export const cond = (process.env.NODE_ENV === 'production'
     })(function() {
   let n = arguments.length
   let r = zero
-  if (n) {
-    const c = arguments[n - 1]
-    if (c.length === 1) {
-      r = toFunction(c[0])
-      --n
-    }
-    while (n--) {
-      const c = arguments[n]
-      r = ifteU(c[0], toFunction(c[1]), r)
-    }
+  while (n--) {
+    const c = arguments[n]
+    r = c.length < 2 ? toFunction(c[0]) : ifteU(c[0], toFunction(c[1]), r)
   }
   return r
 })
