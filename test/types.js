@@ -209,8 +209,8 @@ export const forEach = T.fn(
 
 export const forEachWith = T.fn(
   [
-    T.fn([T.any, T_maybeDataO, T_index], T.any),
     T.fn([], T.any),
+    T.fn([T.any, T_maybeDataO, T_index], T.any),
     T_traversal,
     T_maybeDataI
   ],

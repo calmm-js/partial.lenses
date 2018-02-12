@@ -1552,8 +1552,8 @@ describe('L.forEach', () => {
 describe('L.forEachWith', () => {
   testEq(
     `L.forEachWith(
-       (o, v, k) => o[R.toUpper(k)] = v,
        () => ({}),
+       (o, v, k) => o[R.toUpper(k)] = v,
        L.values,
        {x: 2, y: 1})`,
     {X: 2, Y: 1}

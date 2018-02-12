@@ -114,7 +114,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.forEach((maybeValue, index) => undefined, traversal, maybeData) ~> undefined`](#L-forEach "L.forEach: ((Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> Undefined") <small><sup>v11.20.0</sup></small>
-      * [`L.forEachWith((context, maybeValue, index) => undefined, () => context, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: ((c, Maybe a, Index) -> Undefined) -> (() -> c) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
+      * [`L.forEachWith(() => context, (context, maybeValue, index) => undefined, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: (() -> c) -> ((c, Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
       * [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.8.0</sup></small>
       * [`L.isEmpty(traversal, maybeData) ~> boolean`](#L-isEmpty "L.isEmpty: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.5.0</sup></small>
       * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
@@ -2160,7 +2160,7 @@ L.forEach(console.log, [L.elems, 'x', L.elems], [{x: [3]}, {x: [1, 4]}, {x: [1]}
 // 1 0
 ```
 
-##### <a id="L-forEachWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-forEachWith) [`L.forEachWith((context, maybeValue, index) => undefined, () => context, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: ((c, Maybe a, Index) -> Undefined) -> (() -> c) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
+##### <a id="L-forEachWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-forEachWith) [`L.forEachWith(() => context, (context, maybeValue, index) => undefined, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: (() -> c) -> ((c, Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
 
 `L.forEachWith` first calls the given thunk to get or create a context.  Then it
 calls the given function, with context as the first argument, for each focus of
@@ -2170,7 +2170,7 @@ imperative version of [`L.foldl`](#L-foldl).
 For example:
 
 ```js
-L.forEachWith((m, v, k) => m.set(k, v), () => new Map(), L.values, {x: 2, y: 1})
+L.forEachWith(() => new Map(), (m, v, k) => m.set(k, v), L.values, {x: 2, y: 1})
 // Map { 'x' => 2, 'y' => 1 }
 ```
 

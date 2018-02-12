@@ -1096,7 +1096,7 @@ export const forEach = I.curry((f, t, s) =>
   )
 )
 
-export const forEachWith = I.curry((ef, newC, t, s) => {
+export const forEachWith = I.curry((newC, ef, t, s) => {
   const c = newC()
   traverseU(
     Select,
