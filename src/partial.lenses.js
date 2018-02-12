@@ -907,6 +907,13 @@ export const branchOr = (process.env.NODE_ENV === 'production'
 
 export const branch = branchOr(zero)
 
+export function branches() {
+  const n = arguments.length
+  const template = {}
+  for (let i = 0; i < n; ++i) template[arguments[i]] = identity
+  return branch(template)
+}
+
 // Traversals and combinators
 
 export const elems = (process.env.NODE_ENV === 'production'
