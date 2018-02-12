@@ -1096,6 +1096,19 @@ export const forEach = I.curry((f, t, s) =>
   )
 )
 
+export const forEachWith = I.curry((ef, newC, t, s) => {
+  const c = newC()
+  traverseU(
+    Select,
+    (x, i) => {
+      ef(c, x, i)
+    },
+    t,
+    s
+  )
+  return c
+})
+
 export const isDefined = I.curry(
   (t, s) => void 0 !== traverseU(Select, I.id, t, s)
 )
