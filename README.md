@@ -114,6 +114,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.forEach((maybeValue, index) => undefined, traversal, maybeData) ~> undefined`](#L-forEach "L.forEach: ((Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> Undefined") <small><sup>v11.20.0</sup></small>
+      * [`L.forEachWith((context, maybeValue, index) => undefined, () => context, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: ((c, Maybe a, Index) -> Undefined) -> (() -> c) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
       * [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.8.0</sup></small>
       * [`L.isEmpty(traversal, maybeData) ~> boolean`](#L-isEmpty "L.isEmpty: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.5.0</sup></small>
       * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
@@ -2116,7 +2117,9 @@ Array.from(L.countsAs(Math.abs, L.elems, [3, -1, 4, 1]).entries())
 ##### <a id="L-foldl"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-foldl) [`L.foldl((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldl "L.foldl: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
 
 `L.foldl` performs a fold from left over the elements focused on by the given
-traversal.
+traversal.  This is much like the
+[`reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce)
+method of JavaScript arrays.
 
 For example:
 
@@ -2125,10 +2128,16 @@ L.foldl((x, y) => x + y, 0, L.elems, [1, 2, 3])
 // 6
 ```
 
+Note that [`L.forEachWith`](#L-forEachWith) is much like an imperative version
+of `L.foldl`.  Consider using it instead of using `L.foldl` with an imperative
+accumulator procedure.
+
 ##### <a id="L-foldr"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-foldr) [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
 
 `L.foldr` performs a fold from right over the elements focused on by the given
-traversal.
+traversal.  This is much like the
+[`reduceRight`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/ReduceRight)
+method of JavaScript arrays.
 
 For example:
 
@@ -2150,6 +2159,22 @@ L.forEach(console.log, [L.elems, 'x', L.elems], [{x: [3]}, {x: [1, 4]}, {x: [1]}
 // 4 1
 // 1 0
 ```
+
+##### <a id="L-forEachWith"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-forEachWith) [`L.forEachWith((context, maybeValue, index) => undefined, () => context, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: ((c, Maybe a, Index) -> Undefined) -> (() -> c) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
+
+`L.forEachWith` first calls the given thunk to get or create a context.  Then it
+calls the given function, with context as the first argument, for each focus of
+the traversal.  Finally the context is returned.  This is much like an
+imperative version of [`L.foldl`](#L-foldl).
+
+For example:
+
+```js
+L.forEachWith((m, v, k) => m.set(k, v), () => new Map(), L.values, {x: 2, y: 1})
+// Map { 'x' => 2, 'y' => 1 }
+```
+
+Note that a new `Map` is returned each time the above expression is evaluated.
 
 ##### <a id="L-isDefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-isDefined) [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.8.0</sup></small>
 

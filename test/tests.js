@@ -235,6 +235,7 @@ describe('arities', () => {
     foldl: 4,
     foldr: 4,
     forEach: 3,
+    forEachWith: 4,
     get: 2,
     getInverse: 2,
     identity: 4,
@@ -1545,6 +1546,17 @@ describe('L.forEach', () => {
                  {x: ["a", "b", "c"], y: 4});
        return xs}`,
     [[4, 'y'], ['a', 0], ['b', 1], ['c', 2]]
+  )
+})
+
+describe('L.forEachWith', () => {
+  testEq(
+    `L.forEachWith(
+       (o, v, k) => o[R.toUpper(k)] = v,
+       () => ({}),
+       L.values,
+       {x: 2, y: 1})`,
+    {X: 2, Y: 1}
   )
 })
 
