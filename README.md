@@ -1,4 +1,4 @@
-# <a id="partial-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#) Partial Lenses &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses) [![npm](https://img.shields.io/npm/dm/partial.lenses.svg)](https://www.npmjs.com/package/partial.lenses)
+# <a id="partial-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#) [Partial Lenses](#partial-lenses) &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses) [![npm](https://img.shields.io/npm/dm/partial.lenses.svg)](https://www.npmjs.com/package/partial.lenses)
 
 Lenses are basically an abstraction for simultaneously specifying operations to
 [update](#L-modify) and [query](#L-get) [immutable](#on-immutability) data
@@ -234,7 +234,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Testing](#testing)
   * [Documentation](#documentation)
 
-## <a id="tutorial"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#tutorial) Tutorial
+## <a id="tutorial"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#tutorial) [Tutorial](#tutorial)
 
 Let's look at an example that is based on an actual early use case that lead to
 the development of this library.  What we have is an external HTTP API that both
@@ -274,7 +274,7 @@ the data structure to the desired element.  Given a lens, one can then perform
 operations, like [`get`](#L-get) and [`set`](#L-set), on the element that the
 lens focuses on.
 
-### <a id="getting-started"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#getting-started) Getting started
+### <a id="getting-started"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#getting-started) [Getting started](#getting-started)
 
 Let's first import the libraries
 
@@ -352,7 +352,7 @@ existing text, it doesn't know enough about the data structure to be able to
 properly insert new and remove existing texts.  So, we will also need to specify
 such details along with the path to focus on.
 
-### <a id="a-partial-lens-to-access-titles"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#a-partial-lens-to-access-titles) A partial lens to access title texts
+### <a id="a-partial-lens-to-access-titles"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#a-partial-lens-to-access-titles) [A partial lens to access title texts](#a-partial-lens-to-access-titles)
 
 Let's then just [compose](#L-compose) a parameterized lens for accessing the
 `text` of titles:
@@ -372,7 +372,7 @@ which the data structure must be treated at that point.  The
 [`L.prop(...)`](#L-prop) parts are already familiar.  The other parts we will
 mention below.
 
-#### <a id="querying-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#querying-data) Querying data
+#### <a id="querying-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#querying-data) [Querying data](#querying-data)
 
 Thanks to the parameterized search part,
 [`L.find(R.whereEq({language}))`](#L-find), of the lens composition, we can use
@@ -388,7 +388,7 @@ element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda's [`R.whereEq`](http://ramdajs.com/docs/#whereEq) function
 that creates an equality predicate from a given template object.
 
-##### <a id="missing-data-can-be-expected"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#missing-data-can-be-expected) Missing data can be expected
+##### <a id="missing-data-can-be-expected"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#missing-data-can-be-expected) [Missing data can be expected](#missing-data-can-be-expected)
 
 Partial lenses can generally deal with missing data.  In this case, when
 [`L.find`](#L-find) doesn't find an element, it instead works like a lens to
@@ -414,7 +414,7 @@ L.get(textIn('fi'), undefined)
 
 With partial lenses, `undefined` is the equivalent of non-existent.
 
-#### <a id="updating-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#updating-data) Updating data
+#### <a id="updating-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#updating-data) [Updating data](#updating-data)
 
 As with ordinary lenses, we can use the same lens to update titles:
 
@@ -424,7 +424,7 @@ L.set(textIn('en'), 'The title', sampleTitles)
 //             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-#### <a id="inserting-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#inserting-data) Inserting data
+#### <a id="inserting-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#inserting-data) [Inserting data](#inserting-data)
 
 The same partial lens also allows us to insert new titles:
 
@@ -449,7 +449,7 @@ written with the given function.  In this case we used Ramda's
 [`R.sortBy`](http://ramdajs.com/docs/#sortBy) to specify that we want the titles
 to be kept sorted by language.
 
-#### <a id="removing-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#removing-data) Removing data
+#### <a id="removing-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#removing-data) [Removing data](#removing-data)
 
 Finally, we can use the same partial lens to remove titles:
 
@@ -477,7 +477,7 @@ L.set(L.seq(textIn('sv'),
 Above we use [`L.seq`](#L-seq) to run the [`L.set`](#L-set) operation over both
 of the focused titles.
 
-#### <a id="exercises"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#exercises) Exercises
+#### <a id="exercises"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#exercises) [Exercises](#exercises)
 
 Take out one (or more) [`L.normalize(...)`](#L-normalize),
 [`L.valueOr(...)`](#L-valueOr) or [`L.removable(...)`](#L-removable) part(s)
@@ -485,7 +485,7 @@ from the lens composition and try to predict what happens when you rerun the
 examples with the modified lens composition.  Verify your reasoning by actually
 rerunning the examples.
 
-### <a id="shorthands"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#shorthands) Shorthands
+### <a id="shorthands"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#shorthands) [Shorthands](#shorthands)
 
 For clarity, the previous code snippets avoided some of the shorthands that this
 library supports.  In particular,
@@ -495,7 +495,7 @@ library supports.  In particular,
 * [`L.set(l, undefined, s)`](#L-set) can be abbreviated as [`L.remove(l,
   s)`](#L-remove).
 
-### <a id="systematic-decomposition"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#systematic-decomposition) Systematic decomposition
+### <a id="systematic-decomposition"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#systematic-decomposition) [Systematic decomposition](#systematic-decomposition)
 
 It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Recall the lens from the start of the example:
@@ -550,7 +550,7 @@ Also, rather than composing a lens, like `Model.textIn` above, to access a leaf
 property from the root of our object, we might actually compose lenses
 incrementally as we inspect the model structure.
 
-### <a id="manipulating-multiple-items"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#manipulating-multiple-items) Manipulating multiple items
+### <a id="manipulating-multiple-items"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#manipulating-multiple-items) [Manipulating multiple items](#manipulating-multiple-items)
 
 So far we have used a lens to manipulate individual items.  This library also
 supports [traversals](#traversals) that compose with lenses and can target
@@ -602,7 +602,7 @@ L.remove([texts, L.when(t => t.length > 5)],
 // { titles: [ { language: 'en', text: 'Title' } ] }
 ```
 
-### <a id="next-steps"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#next-steps) Next steps
+### <a id="next-steps"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#next-steps) [Next steps](#next-steps)
 
 This concludes the tutorial.  The reference documentation contains lots of tiny
 examples and a few [more involved examples](#L-lazy).  The [examples](#examples)
@@ -614,7 +614,7 @@ examples and playground links.  Last, but perhaps not least, there is also a
 page of [Partial Lenses
 Exercises](https://calmm-js.github.io/partial.lenses/exercises.html) to solve.
 
-## <a id="the-why-of-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#the-why-of-optics) The why of optics
+## <a id="the-why-of-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#the-why-of-optics) [The why of optics](#the-why-of-optics)
 
 Optics provide a way to decouple the operation to perform on an element or
 elements of a data structure from the details of selecting the element or
@@ -657,7 +657,7 @@ illustrated in the [tutorial](#tutorial) and due to the separation of concerns
 that tends to give you a lot of robust functionality in [a small amount of
 code](#a-partial-lens-to-access-titles).
 
-## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#reference) Reference
+## <a id="reference"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#reference) [Reference](#reference)
 
 The [combinators](https://wiki.haskell.org/Combinator) provided by this library
 are available as named imports.  Typically one just imports the library as:
@@ -666,7 +666,7 @@ are available as named imports.  Typically one just imports the library as:
 import * as L from 'partial.lenses'
 ```
 
-### <a id="stable-subset"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#stable-subset) Stable subset
+### <a id="stable-subset"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#stable-subset) [Stable subset](#stable-subset)
 
 This library has historically been developed in a fairly aggressive manner so
 that features have been marked as obsolete and removed in subsequent major
@@ -710,7 +710,7 @@ make basic use of lenses created by client code using the dependent library.
 
 In retrospect, the stable subset has existed since version 2.2.0.
 
-### <a id="additional-libraries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#additional-libraries) Additional libraries
+### <a id="additional-libraries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#additional-libraries) [Additional libraries](#additional-libraries)
 
 The main Partial Lenses library aims to provide robust general purpose
 combinators for dealing with plain JavaScript data.  Combinators that are more
@@ -722,7 +722,7 @@ Currently the following additional Partial Lenses libraries exist:
 
 * [Partial Lenses Validation](https://github.com/calmm-js/partial.lenses.validation)
 
-### <a id="optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#optics) Optics
+### <a id="optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#optics) [Optics](#optics)
 
 The abstractions, [traversals](#traversals), [lenses](#lenses), and
 [isomorphisms](#isomorphisms), provided by this library are collectively known
@@ -750,7 +750,7 @@ property, for example.  We can exploit this to our advantage by considering all
 optics as *partial* and manage with a smaller amount of distinct classes of
 optics.
 
-#### <a id="on-partiality"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-partiality) On partiality
+#### <a id="on-partiality"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-partiality) [On partiality](#on-partiality)
 
 By [definition](https://en.wikipedia.org/wiki/Partial_function), a *total
 function*, or just a *function*, is defined for all possible inputs.  A *partial
@@ -780,7 +780,7 @@ insertion and removal.  It also allows to reduce the number of necessary
 abstractions and it tends to make compositions of optics more concise with fewer
 required parts, which both help to avoid bugs.
 
-#### <a id="on-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-indexing) On indexing
+#### <a id="on-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-indexing) [On indexing](#on-indexing)
 
 Optics in this library support a simple unnested form of indexing.  When
 focusing on an array element or a object property, the index of the array
@@ -825,7 +825,7 @@ is that doing so would be relatively expensive due to additional allocations.
 The [`L.choose`](#L-choose) combinator can be useful in cases where there is a
 need to access some index or context along the path to a focus.
 
-#### <a id="on-immutability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-immutability) On immutability
+#### <a id="on-immutability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-immutability) [On immutability](#on-immutability)
 
 Starting with version [10.0.0](./CHANGELOG.md#1000), to strongly guide away from
 mutating data structures, optics call
@@ -840,7 +840,7 @@ Also note that optics do not implicitly "deep freeze" data structures given to
 them or freeze data returned by user defined functions.  Only objects newly
 created by optic functions themselves are frozen.
 
-#### <a id="on-composability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-composability) On composability
+#### <a id="on-composability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-composability) [On composability](#on-composability)
 
 A lot of libraries these days claim to be
 [composable](https://en.wikipedia.org/wiki/Composability).  Is any collection of
@@ -873,7 +873,7 @@ The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.
 
-#### <a id="on-lens-laws"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-lens-laws) On lens laws
+#### <a id="on-lens-laws"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-lens-laws) [On lens laws](#on-lens-laws)
 
 Aside from understanding laws on how forms of composition behave, it is useful
 to understand laws that are specific to operations on lenses and optics, in
@@ -913,7 +913,7 @@ your browser.
 *Note*, however, that *partial* lenses are not (total) lenses.  `undefined` is
 given special meaning and should not appear in the manipulated data.
 
-##### <a id="myth-partial-lenses-are-not-lawful"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#myth-partial-lenses-are-not-lawful) Myth: Partial Lenses are not lawful
+##### <a id="myth-partial-lenses-are-not-lawful"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#myth-partial-lenses-are-not-lawful) [Myth: Partial Lenses are not lawful](#myth-partial-lenses-are-not-lawful)
 
 For some reason there seems to be a persistent myth that partial lenses cannot
 obey [lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf).  The
@@ -991,7 +991,7 @@ as a whole obeys lens laws.  The reason why this use of [`L.find`](#L-find)
 results in a lawful partial lens is that the lenses composed after it restrict
 the scope of the lens so that one cannot modify the `key`.
 
-#### <a id="operations-on-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-optics) Operations on optics
+#### <a id="operations-on-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-optics) [Operations on optics](#operations-on-optics)
 
 ##### <a id="L-assign"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-assign) [`L.assign(optic, object, maybeData) ~> maybeData`](#L-assign "L.assign: PLens s {p1: a1, ...ps, ...o} -> {p1: a1, ...ps} -> Maybe s -> Maybe s") <small><sup>v11.13.0</sup></small>
 
@@ -1100,7 +1100,7 @@ State.run({}, L.traverse(State, count, L.elems, [1, 2, 1, 1, 2, 3, 4, 3, 4, 5]))
 // [1, 1, 2, 3, 2, 1, 1, 2, 2, 1]
 ```
 
-#### <a id="nesting"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#nesting) Nesting
+#### <a id="nesting"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#nesting) [Nesting](#nesting)
 
 The [`L.compose`](#L-compose) combinator allows one to build optics that deal
 with nested data structures.
@@ -1166,7 +1166,7 @@ first two.
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
 
-#### <a id="recursing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#recursing) Recursing
+#### <a id="recursing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#recursing) [Recursing](#recursing)
 
 The [`L.lazy`](#L-lazy) combinator allows one to build optics that deal with
 nested or recursive data structures of arbitrary depth.  It also allows one to
@@ -1212,7 +1212,7 @@ L.remove([primitives, L.when(x => 3 <= x && x <= 4)],
 // [ [ [ 1 ], 2 ], {}, [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
-#### <a id="adapting"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#adaptning) Adapting
+#### <a id="adapting"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#adaptning) [Adapting](#adapting)
 
 Adapting combinators allow one to build optics that adapt to their input.
 
@@ -1374,7 +1374,7 @@ Note that [`L.choice(...optics)`](#L-choice) is equivalent to
 `optics.reduceRight(L.orElse, L.zero)` and [`L.choices(...optics)`](#L-choices)
 is equivalent to `optics.reduce(L.orElse)`.
 
-#### <a id="querying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#querying) Querying
+#### <a id="querying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#querying) [Querying](#querying)
 
 Querying combinators allow one to use optics to query data structures.  Querying
 is distinguished from [adapting](#adapting) in that querying defaults to an
@@ -1482,7 +1482,7 @@ L.collect([L.elems,
 // [ 2, 3, 4 ]
 ```
 
-#### <a id="debugging"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#debugging) Debugging
+#### <a id="debugging"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#debugging) [Debugging](#debugging)
 
 ##### <a id="L-log"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-log) [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
 
@@ -1507,7 +1507,7 @@ L.set(['x', L.log('%s x: %j')], '11', {x: 10})
 // { x: '11' }
 ```
 
-#### <a id="internals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#internals) Internals
+#### <a id="internals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#internals) [Internals](#internals)
 
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
 
@@ -1559,7 +1559,7 @@ expressive power of the underlying lens encoding, you should use
 encoding, while `L.toFunction` essentially exposes the underlying encoding and
 it is better to avoid depending on that.
 
-### <a id="transforms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforms) Transforms
+### <a id="transforms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforms) [Transforms](#transforms)
 
 Ordinary [optics](#optics) are passive and bidirectional in such a way that the
 same optic can be both read and written through.  The underlying implementation
@@ -1591,7 +1591,7 @@ within an ordinary optic definition.  Furthermore, it is also possible to use
 operated upon.  The results of such uses don't quite follow the laws of ordinary
 optics, but may sometimes be useful.
 
-#### <a id="operations-on-transforms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-transforms) Operations on transforms
+#### <a id="operations-on-transforms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-transforms) [Operations on transforms](#operations-on-transforms)
 
 ##### <a id="L-transform"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-transform) [`L.transform(optic, maybeData) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s") <small><sup>v11.7.0</sup></small>
 
@@ -1610,7 +1610,7 @@ Note that
 * [`L.remove(o, s)`](#L-remove) is equivalent to [`L.transform([o, L.removeOp],
   s)`](#L-removeOp).
 
-#### <a id="sequencing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#sequencing) Sequencing
+#### <a id="sequencing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#sequencing) [Sequencing](#sequencing)
 
 The [`L.seq`](#L-seq) combinator allows one to build [transforms](#transforms)
 that modify their focus more than once.
@@ -1654,7 +1654,7 @@ chain(x2t, t) = L.seq(t, L.choose(x2t))
 
 which is not the same as the [querying monad](#L-chain).
 
-#### <a id="transforming"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming) Transforming
+#### <a id="transforming"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming) [Transforming](#transforming)
 
 ##### <a id="L-assignOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-assignOp) [`L.assignOp(object) ~> optic`](#L-assignOp "L.assignOp: {p1: a1, ...ps} -> POptic {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v11.13.0</sup></small>
 
@@ -1713,7 +1713,7 @@ The idea is to filter the data both by `time` and by `subelements`.
 
 `L.setOp(x)` is shorthand for [`L.modifyOp(R.always(x))`](#L-modifyOp).
 
-### <a id="traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#traversals) Traversals
+### <a id="traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#traversals) [Traversals](#traversals)
 
 A traversal operates over a collection of non-overlapping focuses that are
 visited only once and can, for example, be [collected](#L-collect),
@@ -1721,7 +1721,7 @@ visited only once and can, for example, be [collected](#L-collect),
 [removed](#L-remove).  Put in another way, a traversal specifies a set of paths
 to elements in a data structure.
 
-#### <a id="creating-new-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-traversals) Creating new traversals
+#### <a id="creating-new-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-traversals) [Creating new traversals](#creating-new-traversals)
 
 ##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
 
@@ -1777,7 +1777,7 @@ L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 Note that [`L.branch`](#L-branch) is equivalent to `L.branchOr(L.zero)` and
 [`L.values`](#L-values) is equivalent to `L.branchOr(L.identity, {})`.
 
-#### <a id="traversals-and-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#traversals-and-combinators) Traversals and combinators
+#### <a id="traversals-and-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#traversals-and-combinators) [Traversals and combinators](#traversals-and-combinators)
 
 ##### <a id="L-children"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-children) [`L.children ~> traversal`](#L-children "L.children: PTraversal ([a] | {p: a, ...ps}) a") <small><sup>v13.3.0</sup></small>
 
@@ -1921,7 +1921,7 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values],
 Note that `L.values` is equivalent to [`L.branchOr(L.identity,
 {})`](#L-branchOr).
 
-#### <a id="folds-over-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#folds-over-traversals) Folds over traversals
+#### <a id="folds-over-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#folds-over-traversals) [Folds over traversals](#folds-over-traversals)
 
 ##### <a id="L-all"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-all) [`L.all((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#L-all "L.all: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean") <small><sup>v9.6.0</sup></small>
 
@@ -2418,12 +2418,12 @@ Note that unlike many other folds, `L.sumAs` expects the function to only return
 numbers and `undefined` is not treated in a special way.  If you need to skip
 elements, you can return the number `0`.
 
-### <a id="lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lenses) Lenses
+### <a id="lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lenses) [Lenses](#lenses)
 
 Lenses always have a single focus which can be [viewed](#L-get) directly.  Put
 in another way, a lens specifies a path to a single element in a data structure.
 
-#### <a id="operations-on-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-lenses) Operations on lenses
+#### <a id="operations-on-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-lenses) [Operations on lenses](#operations-on-lenses)
 
 ##### <a id="L-get"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-get) [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a") <small><sup>v2.2.0</sup></small>
 
@@ -2439,7 +2439,7 @@ L.get('y', {x: 112, y: 101})
 
 Note that `L.get` does not work on [traversals](#traversals).
 
-#### <a id="creating-new-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-lenses) Creating new lenses
+#### <a id="creating-new-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-lenses) [Creating new lenses](#creating-new-lenses)
 
 ##### <a id="L-lens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-lens) [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
 
@@ -2528,7 +2528,7 @@ L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
 See the [Collection toggle](#collection-toggle) section for a more interesting
 example.
 
-#### <a id="enforcing-invariants"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#enforcing-invariants) Enforcing invariants
+#### <a id="enforcing-invariants"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#enforcing-invariants) [Enforcing invariants](#enforcing-invariants)
 
 ##### <a id="L-defaults"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-defaults) [`L.defaults(valueIn) ~> lens`](#L-defaults "L.defaults: s -> PLens s s") <small><sup>v2.0.0</sup></small>
 
@@ -2617,7 +2617,7 @@ changes.
 
 See the [BST as a lens](#bst-as-a-lens) section for a meaningful example.
 
-#### <a id="array-like"></a> Lensing array-like objects
+#### <a id="array-like"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#array-like) [Lensing array-like objects](#array-like)
 
 Objects that have a non-negative integer `length` and strings, which are not
 considered `Object` instances in JavaScript, are considered *array-like* objects
@@ -2903,7 +2903,7 @@ L.set(L.suffix(1), [4, 1], [3, 1, 3])
 // [ 3, 1, 4, 1 ]
 ```
 
-#### <a id="lensing-objects"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lensing-objects) Lensing objects
+#### <a id="lensing-objects"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lensing-objects) [Lensing objects](#lensing-objects)
 
 Anything that is an `instanceof Object` is considered an object by partial
 lenses.
@@ -3044,7 +3044,7 @@ focused property (or properties) should remove the whole object.  In cases where
 the shape of the incoming object is know, [`L.defaults`](#L-defaults) can
 replace such a pair.
 
-#### <a id="lensing-strings"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lensing-strings) Lensing strings
+#### <a id="lensing-strings"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lensing-strings) [Lensing strings](#lensing-strings)
 
 ##### <a id="L-matches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-matches) [`L.matches(/.../) ~> lens`](#L-matches "L.matches: RegExp -> PLens String String") <small><sup>v10.4.0</sup></small>
 
@@ -3063,7 +3063,7 @@ L.set(L.matches(/\.[^./]+$/),
 // '/dir/file.txt'
 ```
 
-#### <a id="providing-defaults"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#providing-defaults) Providing defaults
+#### <a id="providing-defaults"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#providing-defaults) [Providing defaults](#providing-defaults)
 
 ##### <a id="L-valueOr"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-valueOr) [`L.valueOr(valueOut) ~> lens`](#L-valueOr "L.valueOr: s -> PLens s s") <small><sup>v3.5.0</sup></small>
 
@@ -3086,7 +3086,7 @@ L.remove(L.valueOr(0), 1)
 // undefined
 ```
 
-#### <a id="transforming-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming-data) Transforming data
+#### <a id="transforming-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming-data) [Transforming data](#transforming-data)
 
 ##### <a id="L-pick"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-pick) [`L.pick({prop: lens, ...props}) ~> lens`](#L-pick "L.pick: {p1: PLens s a1, ...pls} -> PLens s {p1: a1, ...pls}") <small><sup>v1.2.0</sup></small>
 
@@ -3171,7 +3171,7 @@ and elements.  In most cases, rather than using `replace`, you will make
 selective use of [`defaults`](#L-defaults), [`required`](#L-required) and
 [`define`](#L-define).
 
-### <a id="isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphisms) Isomorphisms
+### <a id="isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphisms) [Isomorphisms](#isomorphisms)
 
 [Isomorphisms](https://en.wikipedia.org/wiki/Isomorphism) are [lenses](#lenses)
 with a kind of [inverse](#L-inverse).  The focus of an isomorphism is the whole
@@ -3200,7 +3200,7 @@ isomorphisms.  Among other things this means that some lens combinators, such as
 hand, some forms of optic composition, particularly [adapting](#adapting) and
 [querying](#querying), do not work properly on (inverted) isomorphisms.
 
-#### <a id="operations-on-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-isomorphisms) Operations on isomorphisms
+#### <a id="operations-on-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-isomorphisms) [Operations on isomorphisms](#operations-on-isomorphisms)
 
 ##### <a id="L-getInverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-getInverse) [`L.getInverse(isomorphism, maybeData) ~> maybeData`](#L-getInverse "L.getInverse: PIso a b -> Maybe b -> Maybe a") <small><sup>v5.0.0</sup></small>
 
@@ -3231,7 +3231,7 @@ L.getInverse('meaning', 42)
 // { meaning: 42 }
 ```
 
-#### <a id="creating-new-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-isomorphisms) Creating new isomorphisms
+#### <a id="creating-new-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-isomorphisms) [Creating new isomorphisms](#creating-new-isomorphisms)
 
 ##### <a id="L-iso"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-iso) [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a") <small><sup>v5.3.0</sup></small>
 
@@ -3258,7 +3258,7 @@ L.modify([L.uriComponent,
 // '%7B%22bottle%22%3A%22egasseM%22%7D'
 ```
 
-#### <a id="isomorphism-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphism-combinators) Isomorphism combinators
+#### <a id="isomorphism-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphism-combinators) [Isomorphism combinators](#isomorphism-combinators)
 
 ##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
 
@@ -3288,7 +3288,7 @@ L.get(L.inverse(offBy1), 1)
 // 0
 ```
 
-#### <a id="basic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#basic-isomorphisms) Basic isomorphisms
+#### <a id="basic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#basic-isomorphisms) [Basic isomorphisms](#basic-isomorphisms)
 
 ##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
 
@@ -3387,7 +3387,7 @@ for this behaviour is that it allows `L.singleton` to not only be used to access
 the first element of an array-like object, but to also check that the object is
 of the expected form.
 
-#### <a id="standard-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standard-isomorphisms) Standard isomorphisms
+#### <a id="standard-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standard-isomorphisms) [Standard isomorphisms](#standard-isomorphisms)
 
 ##### <a id="L-uri"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uri) [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
 
@@ -3417,7 +3417,7 @@ functions.  The optional `reviver` is passed to
 and the optional `replacer` and `space` are passed to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
 
-### <a id="interop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interop) Interop
+### <a id="interop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interop) [Interop](#interop)
 
 #### <a id="L-pointer"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-pointer) [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
 
@@ -3437,7 +3437,7 @@ L.modify(L.pointer('#/foo/1'), x => x + 1, {foo: [1, 2]})
 // {foo: [1, 3]}
 ```
 
-### <a id="auxiliary"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#auxiliary) Auxiliary
+### <a id="auxiliary"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#auxiliary) [Auxiliary](#auxiliary)
 
 #### <a id="L-seemsArrayLike"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-seemsArrayLike) [`L.seemsArrayLike(anything) ~> boolean`](#L-seemsArrayLike "L.seemsArrayLike: any -> Boolean") <small><sup>v11.4.0</sup></small>
 
@@ -3460,12 +3460,12 @@ and might not cover user defined types.  Fortunately, optics are targeting
 specific paths inside data-structures, rather than completely arbitrary values,
 which means that even a loose test can be accurate enough.
 
-## <a id="examples"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#examples) Examples
+## <a id="examples"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#examples) [Examples](#examples)
 
 Note that if you are new to lenses, then you probably want to start with the
 [tutorial](#tutorial).
 
-### <a id="an-array-of-ids-as-boolean-flags"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#an-array-of-ids-as-boolean-flags) An array of ids as boolean flags
+### <a id="an-array-of-ids-as-boolean-flags"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#an-array-of-ids-as-boolean-flags) [An array of ids as boolean flags](#an-array-of-ids-as-boolean-flags)
 
 A case that we have run into multiple times is where we have an array of
 constant strings that we wish to manipulate as if it was a collection of boolean
@@ -3505,7 +3505,7 @@ L.set(flag('id-76'), false, sampleFlags)
 // ['id-19']
 ```
 
-### <a id="dependent-fields"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#dependent-fields) Dependent fields
+### <a id="dependent-fields"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#dependent-fields) [Dependent fields](#dependent-fields)
 
 It is not atypical to have UIs where one selection has an effect on other
 selections.  For example, you could have an UI where you can specify `maximum`
@@ -3542,7 +3542,7 @@ L.set(maximum,
 // {maximum: 5, initial: 5, something: 'else'}
 ```
 
-### <a id="collection-toggle"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#collection-toggle) Collection toggle
+### <a id="collection-toggle"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#collection-toggle) [Collection toggle](#collection-toggle)
 
 A typical element of UIs that display a list of selectable items is a checkbox
 to select or unselect all items.  For example, the
@@ -3585,7 +3585,7 @@ L.set(selectAll(completedFlags), true, sampleTodos)
 As an exercise define `unselectAll` using the [`L.or`](#L-or) fold.  How does it
 differ from `selectAll`?
 
-### <a id="bst-as-a-lens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#bst-as-a-lens) BST as a lens
+### <a id="bst-as-a-lens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#bst-as-a-lens) [BST as a lens](#bst-as-a-lens)
 
 Binary search trees might initially seem to be outside the scope of definable
 lenses.  However, given basic BST operations, one could easily wrap them as a
@@ -3683,7 +3683,7 @@ Perhaps you might even enhance it to maintain a balance condition such as
 worthy exercise would be to make it so that the empty binary tree is `null`
 rather than `undefined`.
 
-#### <a id="bst-traversal"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#bst-traversal) BST traversal
+#### <a id="bst-traversal"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#bst-traversal) [BST traversal](#bst-traversal)
 
 What about [traversals](#traversals) over BSTs?  We can use the
 [`L.branch`](#L-branch) combinator to define an in-order traversal over the
@@ -3717,7 +3717,7 @@ L.remove([values, L.when(x => x > 'e')], sampleBST)
 // { key: 5, value: 'c', smaller: { key: 2, value: 'a' } }
 ```
 
-### <a id="interfacing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interfacing) Interfacing with Immutable.js
+### <a id="interfacing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interfacing) [Interfacing with Immutable.js](#interfacing)
 
 [Immutable.js](http://facebook.github.io/immutable-js/) is a popular library
 providing immutable data structures.  As argued in [Lenses with
@@ -3730,7 +3730,7 @@ consider whether and how to support partiality.  Partial lenses allow one to
 insert new and remove existing elements rather than just view and update
 existing elements.
 
-#### <a id="list-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#list-indexing) `List` indexing
+#### <a id="list-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#list-indexing) [`List` indexing](#list-indexing)
 
 Here is a primitive partial lens for indexing
 [`List`](http://facebook.github.io/immutable-js/docs/#/List) written using
@@ -3797,7 +3797,7 @@ the last element.  Both the [`L.index`](#L-index) lens and the above lens add
 special treatment of `undefined`.  In practise, however, it is not typical to
 `set` elements except to append just after the last element.
 
-#### <a id="interfacing-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interfacing-traversals) Interfacing traversals
+#### <a id="interfacing-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interfacing-traversals) [Interfacing traversals](#interfacing-traversals)
 
 Fortunately we do not need Immutable.js data structures to provide a compatible
 *partial*
@@ -3836,9 +3836,9 @@ L.joinAs(R.toUpper,
 // 'AI'
 ```
 
-## <a id="deepening-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#deepening-topics) Deepening topics
+## <a id="deepening-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#deepening-topics) [Deepening topics](#deepening-topics)
 
-### <a id="understanding-filter-find-select-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#understanding-filter-find-select-and-when) Understanding [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.select`](#L-select), and [`L.when`](#L-when)
+### <a id="understanding-filter-find-select-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#understanding-filter-find-select-and-when) [Understanding `L.filter`, `L.find`, `L.select`, and `L.when`](#understanding-filter-find-select-and-when)
 
 The [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.select`](#L-select), and
 [`L.when`](#L-when) serve related, but different, purposes and it is important
@@ -3891,11 +3891,11 @@ of [`L.elems`](#L-elems) and [`L.when`](#L-when), because then [no intermediate
 array of the elements is
 computed](#nesting-traversals-does-not-create-intermediate-aggregates).
 
-## <a id="advanced-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#advanced-topics) Advanced topics
+## <a id="advanced-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#advanced-topics) [Advanced topics](#advanced-topics)
 
-### <a id="performance-tips"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#performance-tips) Performance tips
+### <a id="performance-tips"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#performance-tips) [Performance tips](#performance-tips)
 
-#### <a id="nesting-traversals-does-not-create-intermediate-aggregates"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#nesting-traversals-does-not-create-intermediate-aggregates) Nesting traversals does not create intermediate aggregates
+#### <a id="nesting-traversals-does-not-create-intermediate-aggregates"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#nesting-traversals-does-not-create-intermediate-aggregates) [Nesting traversals does not create intermediate aggregates](#nesting-traversals-does-not-create-intermediate-aggregates)
 
 Traversals do not materialize intermediate aggregates and it is useful to
 understand this performance characteristic.
@@ -3938,7 +3938,7 @@ L.sum([L.flatten, 'x', L.when(R.lt(0))], sampleXs)
 and, thankfully, it doesn't create intermediate arrays.  This is the case with
 traversals in general.
 
-#### <a id="avoid-reallocating-optics-in-l-choose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#avoid-reallocating-optics-in-l-choose) Avoid reallocating optics in [`L.choose`](#L-choose)
+#### <a id="avoid-reallocating-optics-in-l-choose"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#avoid-reallocating-optics-in-l-choose) [Avoid reallocating optics in `L.choose`](#avoid-reallocating-optics-in-l-choose)
 
 The function given to [`L.choose`](#L-choose) is called each time the optic is
 used and any allocations done by the function are consequently repeated.
@@ -3967,7 +3967,7 @@ L.cond([Array.isArray, [L.elems, 'data']], ['data'])
 
 This has the advantage that the optics are constructed only once.
 
-### <a id="on-bundle-size-and-minification"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-bundle-size-and-minification) On bundle size and minification
+### <a id="on-bundle-size-and-minification"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-bundle-size-and-minification) [On bundle size and minification](#on-bundle-size-and-minification)
 
 The distribution of this library includes a [prebuilt and minified browser
 bundle](https://unpkg.com/partial.lenses/dist/partial.lenses.min.js).  However,
@@ -4004,9 +4004,9 @@ export default {
 }
 ```
 
-## <a id="background"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#background) Background
+## <a id="background"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#background) [Background](#background)
 
-### <a id="motivation"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#motivation) Motivation
+### <a id="motivation"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#motivation) [Motivation](#motivation)
 
 In late 2015, while implementing UIs for manipulating fairly complex JSON
 objects, we wrote a module of additional lens combinators on top of
@@ -4045,13 +4045,13 @@ to explore in early 2016.  Since then the library has grown to a comprehensive,
 partial [lenses](#lenses), but also [isomorphisms](#isomorphisms),
 [traversals](#traversals), and also a notion of [transforms](#transforms).
 
-### <a id="design-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#design-choices) Design choices
+### <a id="design-choices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#design-choices) [Design choices](#design-choices)
 
 There are several lens and optics libraries for JavaScript.  In this section I'd
 like to very briefly elaborate on a number design choices made during the course
 of developing this library.
 
-#### <a id="partiality"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#partiality) Partiality
+#### <a id="partiality"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#partiality) [Partiality](#partiality)
 
 Making all optics partial allows optics to not only view and update existing
 elements, but also to insert, replace (as in replace with data of different
@@ -4063,7 +4063,7 @@ complex, but can also have a significant negative effect on performance.
 The downside of implicit partiality is the potential to create incorrect optics
 that signal errors later than when using total optics.
 
-#### <a id="focus-on-json"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#focus-on-json) Focus on JSON
+#### <a id="focus-on-json"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#focus-on-json) [Focus on JSON](#focus-on-json)
 
 JSON is the data-interchange format of choice today.  By being able to
 effectively and efficiently manipulate JSON data structures directly, one can
@@ -4071,7 +4071,7 @@ avoid using special internal representations of data and make things simpler
 (e.g. no need to convert from JSON to efficient [immutable](#on-immutability)
 collections and back).
 
-#### <a id="use-of-undefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#use-of-undefined) Use of `undefined`
+#### <a id="use-of-undefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#use-of-undefined) [Use of `undefined`](#use-of-undefined)
 
 `undefined` is a natural choice in JavaScript, especially when dealing with
 JSON, to represent nothingness.  Some libraries use `null`, but that is arguably
@@ -4087,28 +4087,28 @@ efficient.
 Not having an explicit `Just` object means that dealing with values such as
 `Just Nothing` requires special consideration.
 
-#### <a id="allowing-strings-and-integers-as-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#allowing-strings-and-integers-as-optics) Allowing [strings](#L-prop) and [integers](#L-index) as optics
+#### <a id="allowing-strings-and-integers-as-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#allowing-strings-and-integers-as-optics) [Allowing strings and integers as optics](#allowing-strings-and-integers-as-optics)
 
-Aside from the brevity, allowing strings and non-negative integers to be
-directly used as optics allows one to avoid allocating closures for such optics.
-This can provide significant time and, more importantly, space savings in
-applications that create large numbers of lenses to address elements in data
-structures.
+Aside from the brevity, allowing [strings](#L-prop) and non-negative
+[integers](#L-index) to be directly used as optics allows one to avoid
+allocating closures for such optics.  This can provide significant time and,
+more importantly, space savings in applications that create large numbers of
+lenses to address elements in data structures.
 
 The downside of allowing such special values as optics is that the internal
 implementation needs to be careful to deal with them at any point a user given
 value needs to be interpreted as an optic.
 
-#### <a id="treating-an-array-of-optics-as-a-composition-of-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#treating-an-array-of-optics-as-a-composition-of-optics) Treating an [array of optics as a composition](#L-compose) of optics
+#### <a id="treating-an-array-of-optics-as-a-composition-of-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#treating-an-array-of-optics-as-a-composition-of-optics) [Treating an array of optics as a composition of optics](#treating-an-array-of-optics-as-a-composition-of-optics)
 
-Aside from the brevity, treating an array of optics as a composition allows the
-library to be optimized to deal with simple paths highly efficiently and
-eliminate the need for separate primitives like
+Aside from the brevity, treating [an array of optics as a
+composition](#L-compose) allows the library to be optimized to deal with simple
+paths highly efficiently and eliminate the need for separate primitives like
 [`assocPath`](http://ramdajs.com/docs/#assocPath) and
 [`dissocPath`](http://ramdajs.com/docs/#dissocPath) for performance reasons.
 Client code can also manipulate such simple paths as data.
 
-#### <a id="applicatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#applicatives) Applicatives
+#### <a id="applicatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#applicatives) [Applicatives](#applicatives)
 
 One interesting consequence of partiality is that it becomes possible to [invert
 isomorphisms](#isomorphisms) without explicitly making it possible to extract
@@ -4116,7 +4116,7 @@ the forward and backward functions from an isomorphism.  A simple internal
 implementation based on functors and applicatives seems to be expressive enough
 for a wide variety of operations.
 
-#### <a id="combinators-for-creating-new-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#combinators-for-creating-new-optics) Combinators for creating new optics
+#### <a id="combinators-for-creating-new-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#combinators-for-creating-new-optics) [Combinators for creating new optics](#combinators-for-creating-new-optics)
 
 By providing combinators for creating new [traversals](#L-branch),
 [lenses](#L-lens) and [isomorphisms](#L-iso), client code need not depend on the
@@ -4125,7 +4125,7 @@ the internal implementation via [`L.toFunction`](#L-toFunction), but it would
 not be unreasonable to not provide such an operation.  Only very few
 applications need to know the internal representation of optics.
 
-#### <a id="indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#indexing) Indexing
+#### <a id="indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#indexing) [Indexing](#indexing)
 
 [Indexing](#on-indexing) in partial lenses is unnested, very simple and based on
 the indices and keys of the underlying data structures.  When indexing was
@@ -4134,7 +4134,7 @@ few operations have been added that do require extra allocations to support
 indexing.  It is also possible to compose optics so as to create nested indices
 or paths, but currently no combinator is directly provided for that.
 
-#### <a id="static-land"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#static-land) Static Land
+#### <a id="static-land"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#static-land) [Static Land](#static-land)
 
 The algebraic structures used in partial lenses follow the [Static
 Land](https://github.com/rpominov/static-land) specification rather than the
@@ -4154,7 +4154,7 @@ Fantasy Land.  In Static Land, which can basically be seen as using the
 dictionary translation of type classes, one already passes the algebra module to
 combinators.
 
-#### <a id="performance"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#performance) Performance
+#### <a id="performance"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#performance) [Performance](#performance)
 
 Concern for performance has been a part of the work on partial lenses for some
 time.  The basic principles can be summarized in order of importance:
@@ -4166,7 +4166,7 @@ time.  The basic principles can be summarized in order of importance:
 * Avoid optimizations that require large amounts of code
 * Run [benchmarks](#benchmarks) continuously to detect performance regressions
 
-### <a id="benchmarks"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#benchmarks) Benchmarks
+### <a id="benchmarks"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#benchmarks) [Benchmarks](#benchmarks)
 
 Here are a few benchmark results on partial lenses (as `L` version 13.1.1) with
 Node.js v8.9.3 and some roughly equivalent operations using
@@ -4498,7 +4498,7 @@ use them.
 
 See [bench.js](./bench/bench.js) for details.
 
-### <a id="lenses-all-the-way"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lenses-all-the-way) Lenses all the way
+### <a id="lenses-all-the-way"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#lenses-all-the-way) [Lenses all the way](#lenses-all-the-way)
 
 As said in the first sentence of this document, lenses are convenient for
 performing updates on individual elements of [immutable](#on-immutability) data
@@ -4564,13 +4564,13 @@ transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
 //                   including: {the: 'following'} } ] }
 ```
 
-### <a id="related-work"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#related-work) Related work
+### <a id="related-work"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#related-work) [Related work](#related-work)
 
 Lenses are an old concept and there are dozens of academic papers on lenses and
 dozens of lens libraries for various languages.  Below are just a few
 links&mdash;feel free to suggest more!
 
-#### <a id="papers-and-other-introductory-material"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#papers-and-other-introductory-material) Papers and other introductory material
+#### <a id="papers-and-other-introductory-material"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#papers-and-other-introductory-material) [Papers and other introductory material](#papers-and-other-introductory-material)
 
 * [A Little Lens Starter Tutorial](https://www.schoolofhaskell.com/school/to-infinity-and-beyond/pick-of-the-week/a-little-lens-starter-tutorial)
 * [A clear picture of lens laws](http://sebfisch.github.io/research/pub/Fischer+MPC15.pdf)
@@ -4580,7 +4580,7 @@ links&mdash;feel free to suggest more!
 * [Polymorphic Update with van Laarhoven Lenses](http://r6.ca/blog/20120623T104901Z.html)
 * [Profunctor Optics: Modular Data Accessors](https://arxiv.org/abs/1703.10857)
 
-#### <a id="javascript-typescript-flow-libraries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#javascript-typescript-flow-libraries) JavaScript / TypeScript / Flow libraries
+#### <a id="javascript-typescript-flow-libraries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#javascript-typescript-flow-libraries) [JavaScript / TypeScript / Flow libraries](#javascript-typescript-flow-libraries)
 
 * [5outh/nanoscope](https://github.com/5outh/nanoscope)
 * [DrBoolean/lenses](https://github.com/DrBoolean/lenses)
@@ -4593,14 +4593,14 @@ links&mdash;feel free to suggest more!
 * [ramda/ramda-lens](https://github.com/ramda/ramda-lens)
 * [thisismN/lentil](https://github.com/thisismN/lentil)
 
-#### <a id="libraries-for-other-languages"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#libraries-for-other-languages) Libraries for other languages
+#### <a id="libraries-for-other-languages"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#libraries-for-other-languages) [Libraries for other languages](#libraries-for-other-languages)
 
 * [ekmett/lens](https://github.com/ekmett/lens)
 * [julien-truffaut/Monocle](https://github.com/julien-truffaut/Monocle)
 * [purescript-contrib/purescript-profunctor-lenses](https://github.com/purescript-contrib/purescript-profunctor-lenses)
 * [xyncro/aether](https://github.com/xyncro/aether)
 
-## <a id="contributing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#contributing) Contributing
+## <a id="contributing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#contributing) [Contributing](#contributing)
 
 Contributions in the form of pull requests are welcome!
 
@@ -4624,7 +4624,7 @@ tested.
 It is best not to commit changes to generated files in PRs.  Some of the files
 in `docs`, and `dist` directories are generated.
 
-### <a id="building"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#building) Building
+### <a id="building"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#building) [Building](#building)
 
 The `prepare` script is the usual way to build after changes:
 
@@ -4644,7 +4644,7 @@ npm run watch
 It starts watching the source files and runs dist and docs builds and tests
 after changes.
 
-### <a id="testing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#testing) Testing
+### <a id="testing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#testing) [Testing](#testing)
 
 The [tests](./test/tests.js) in this library are written in an atypical manner.
 
@@ -4666,7 +4666,7 @@ more importantly, write behaviour including attempts to read `undefined` or
 unexpected data (both of these should be handled as `undefined`) and writing
 `undefined`.
 
-### <a id="documentation"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#documentation) Documentation
+### <a id="documentation"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#documentation) [Documentation](#documentation)
 
 The `docs` folder contains the generated documentation.  You can open the file
 locally:
