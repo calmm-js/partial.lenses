@@ -218,6 +218,7 @@ describe('arities', () => {
     concat: 3,
     concatAs: 4,
     cond: 0,
+    condOf: 1,
     count: 2,
     countIf: 3,
     counts: 2,
@@ -1419,6 +1420,46 @@ describe('L.cond', () => {
                         [L.setOp(2)]),
                  2)`,
     1
+  )
+})
+
+describe('L.condOf', () => {
+  testEq(
+    `L.collect(
+       [
+         L.elems,
+         L.condOf(
+           'type',
+           [R.equals('a'), 'foo'],
+           [R.equals('b'), 'bar'],
+           ['lol']
+         )
+       ],
+       [
+         {type: 'a', foo: 42},
+         {type: 'b', bar: 101},
+         {type: 'c', lol: 76}
+       ]
+     )`,
+    [42, 101, 76]
+  )
+  testEq(
+    `L.collect(
+       [
+         L.elems,
+         L.condOf(
+           'type',
+           [R.equals('a'), 'foo'],
+           [R.equals('b'), 'bar']
+         )
+       ],
+       [
+         {type: 'a', foo: 42},
+         {type: 'b', bar: 101},
+         {type: 'c', lol: 76}
+       ]
+     )`,
+    [42, 101]
   )
 })
 

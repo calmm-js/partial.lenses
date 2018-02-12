@@ -61,6 +61,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
       * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
       * [`L.cond(...[(maybeValue, index) => testable, consequentOptic][, [alternativeOptic]]) ~> optic`](#L-cond "L.cond: (...[(Maybe s, Index) -> Boolean, PLens s a][, [PLens s a]]) -> PLens s a") <small><sup>v13.1.0</sup></small>
+      * [`L.condOf(lens, ...[(maybeValue, index) => testable, consequentOptic][, [alternativeOptic]]) ~> optic`](#L-condOf "L.condOf: (PLens s c, ...[(Maybe c, Index) -> Boolean, PLens s a][, [PLens s a]]) -> PLens s a") <small><sup>v13.5.0</sup></small>
       * [`L.ifElse((maybeValue, index) => testable, optic, optic) ~> optic`](#L-ifElse "L.ifElse: ((Maybe s, Index) -> Boolean) -> POptic s a -> POptic s a -> POptic s a") <small><sup>v13.1.0</sup></small>
       * ~~[`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>~~
       * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
@@ -1255,8 +1256,8 @@ L.modify(majorAxis, R.negate, {x: -3, y: 1})
 ##### <a id="L-cond"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-cond) [`L.cond(...[(maybeValue, index) => testable, consequentOptic][, [alternativeOptic]]) ~> optic`](#L-cond "L.cond: (...[(Maybe s, Index) -> Boolean, PLens s a][, [PLens s a]]) -> PLens s a") <small><sup>v13.1.0</sup></small>
 
 `L.cond` creates an optic whose operation is selected from the given optics and
-predicates on the underlying view.  See also [`L.choose`](#L-choose) and
-[`L.ifElse`](#L-ifElse).
+predicates on the underlying view.  See also [`L.condOf`](#L-condOf),
+[`L.choose`](#L-choose) and [`L.ifElse`](#L-ifElse).
 
 ```jsx
 L.cond( [ predicate, consequent ]
@@ -1306,6 +1307,25 @@ Note that `L.cond` can be implemented using [`L.choose`](#L-choose), but not
 vice versa.  [`L.choose`](#L-choose) not only allows the optic to be chosen
 dynamically, but also allows the optic to be constructed dynamically and using
 the data at the focus.
+
+##### <a id="L-condOf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-condOf) [`L.condOf(lens, ...[(maybeValue, index) => testable, consequentOptic][, [alternativeOptic]]) ~> optic`](#L-condOf "L.condOf: (PLens s c, ...[(Maybe c, Index) -> Boolean, PLens s a][, [PLens s a]]) -> PLens s a") <small><sup>v13.5.0</sup></small>
+
+`L.condOf` is like [`L.cond`](#L-cond) except the first argument to `L.condOf`
+is a lens to get the parameters for the predicates from the underlying view.
+
+For example:
+
+```js
+L.get(
+  L.condOf(
+    'type',
+    [R.equals('title'), 'text'],
+    [R.equals('text'), 'body']
+  ),
+  {type: 'text', body: 'Try writing this with `L.cond`.'}
+)
+// 'Try writing this with `L.cond`.'
+```
 
 ##### <a id="L-ifElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-ifElse) [`L.ifElse((maybeValue, index) => testable, optic, optic) ~> optic`](#L-ifElse "L.ifElse: ((Maybe s, Index) -> Boolean) -> POptic s a -> POptic s a -> POptic s a") <small><sup>v13.1.0</sup></small>
 

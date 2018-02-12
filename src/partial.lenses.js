@@ -727,6 +727,10 @@ const seq2U = (l, r) => (x, i, M, xi2yM) =>
 
 const pickInAux = (t, k) => [k, pickIn(t)]
 
+//
+
+const condOfCase = (p, o, r) => (y, j) => (p(y, j) ? o : r(y, j))
+
 // Auxiliary
 
 export const seemsArrayLike = x =>
@@ -810,6 +814,27 @@ export const cond = (process.env.NODE_ENV === 'production'
     r = c.length < 2 ? toFunction(c[0]) : ifteU(c[0], toFunction(c[1]), r)
   }
   return r
+})
+
+export const condOf = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : fn => (of, ...cs) => {
+      const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
+      C.arr(pair)(cs.slice(0, -1))
+      C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
+      return fn(of, ...cs)
+    })(function(of) {
+  of = toFunction(of)
+  let op = undefined
+  let n = arguments.length
+  while (--n) {
+    const c = arguments[n]
+    op =
+      c.length === 1
+        ? I.always(toFunction(c[0]))
+        : condOfCase(c[0], toFunction(c[1]), op || I.always(zero))
+  }
+  return (x, i, C, xi2yC) => of(x, i, Const, op)(x, i, C, xi2yC)
 })
 
 export const ifElse = I.curry((c, t, e) =>
