@@ -206,6 +206,7 @@ describe('arities', () => {
     assignOp: 1,
     branch: 1,
     branchOr: 2,
+    branches: 0,
     chain: 2,
     children: 4,
     choice: 0,
@@ -1094,6 +1095,10 @@ describe('L.branchOr', () => {
                  {x: 1, y: 1})`,
     {x: 0, y: 2}
   )
+})
+
+describe('L.branches', () => {
+  testEq(`L.collect(L.branches('a', 'b'), {a: 2, b: 3})`, [2, 3])
 })
 
 describe('L.removable', () => {
