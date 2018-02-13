@@ -903,6 +903,14 @@ var pickInAux = function pickInAux(t, k) {
   return [k, pickIn(t)];
 };
 
+//
+
+var condOfCase = function condOfCase(p, o, r) {
+  return function (y, j) {
+    return p(y, j) ? o : r(y, j);
+  };
+};
+
 // Auxiliary
 
 var seemsArrayLike = function seemsArrayLike(x) {
@@ -1000,18 +1008,35 @@ var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (
 })(function () {
   var n = arguments.length;
   var r = zero;
-  if (n) {
-    var c = arguments[n - 1];
-    if (c.length === 1) {
-      r = toFunction(c[0]);
-      --n;
-    }
-    while (n--) {
-      var _c2 = arguments[n];
-      r = ifteU(_c2[0], toFunction(_c2[1]), r);
-    }
+  while (n--) {
+    var c = arguments[n];
+    r = c.length < 2 ? toFunction(c[0]) : ifteU(c[0], toFunction(c[1]), r);
   }
   return r;
+});
+
+var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+  return function (of) {
+    for (var _len3 = arguments.length, cs = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+      cs[_key3 - 1] = arguments[_key3];
+    }
+
+    var pair = tup(ef(reqFn), ef(reqOptic));
+    arr(pair)(cs.slice(0, -1));
+    arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
+    return fn$$1.apply(undefined, [of].concat(cs));
+  };
+})(function (of) {
+  of = toFunction(of);
+  var op = undefined;
+  var n = arguments.length;
+  while (--n) {
+    var c = arguments[n];
+    op = c.length === 1 ? always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op || always(zero));
+  }
+  return function (x, i, C, xi2yC) {
+    return of(x, i, Const, op)(x, i, C, xi2yC);
+  };
 });
 
 var ifElse = /*#__PURE__*/curry(function (c, t, e) {
@@ -1042,8 +1067,8 @@ var chain = /*#__PURE__*/curry(function (xi2yO, xO) {
 });
 
 var choice = function choice() {
-  for (var _len3 = arguments.length, os = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
-    os[_key3] = arguments[_key3];
+  for (var _len4 = arguments.length, os = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+    os[_key4] = arguments[_key4];
   }
 
   return os.reduceRight(orElseU, zero);
@@ -1121,6 +1146,14 @@ var branchOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(1,
 }));
 
 var branch = /*#__PURE__*/branchOr(zero);
+
+function branches() {
+  var n = arguments.length;
+  var template = {};
+  for (var i = 0; i < n; ++i) {
+    template[arguments[i]] = identity;
+  }return branch(template);
+}
 
 // Traversals and combinators
 
@@ -1494,8 +1527,8 @@ var propsOf = function propsOf(o) {
 };
 
 function removable() {
-  for (var _len4 = arguments.length, ps = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-    ps[_key4] = arguments[_key4];
+  for (var _len5 = arguments.length, ps = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+    ps[_key5] = arguments[_key5];
   }
 
   function drop(y) {
@@ -1650,4 +1683,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, elems, entries, keys$1 as keys, matches, values, children, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
