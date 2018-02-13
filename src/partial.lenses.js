@@ -781,6 +781,13 @@ export function compose() {
   }
 }
 
+export function flat() {
+  const r = [flatten]
+  for (let i = 0, n = arguments.length; i < n; ++i)
+    r.push(arguments[i], flatten)
+  return r
+}
+
 // Recursing
 
 export function lazy(o2o) {

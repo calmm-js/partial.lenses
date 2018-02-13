@@ -55,6 +55,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.traverse(algebra, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
     * [Nesting](#nesting)
       * [`L.compose(...optics) ~> optic`](#L-compose "L.compose: (POptic s s1, ...POptic sN a) -> POptic s a") or `[...optics]` <small><sup>v1.0.0</sup></small>
+      * [`L.flat(...optics) ~> optic`](#L-flat "L.flat: (POptic s [...s1...], ...POptic sN [...a...]) -> POptic [...s...] a") <small><sup>v13.6.0</sup></small>
     * [Recursing](#recursing)
       * [`L.lazy(optic => optic) ~> optic`](#L-lazy "L.lazy: (POptic s a -> POptic s a) -> POptic s a") <small><sup>v5.1.0</sup></small>
     * [Adapting](#adapting)
@@ -1168,6 +1169,13 @@ first two.
 
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
 `L.compose`.
+
+##### <a id="L-flat"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-flat) [`L.flat(...optics) ~> optic`](#L-flat "L.flat: (POptic s [...s1...], ...POptic sN [...a...]) -> POptic [...s...] a") <small><sup>v13.6.0</sup></small>
+
+`L.flat` is like [`L.compose`](#L-compose) except that [`L.flatten`](#L-flatten)
+is composed around and between the given optics.  In other words, `L.flat(o1,
+..., oN)` is equivalent to `L.compose(L.flatten, o1, L.flatten, ..., L.flatten,
+oN, L.flatten)`.
 
 #### <a id="recursing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#recursing) [Recursing](#recursing)
 
