@@ -1010,6 +1010,15 @@ export const children = ifElse(
   ifElse(I.isObject, values, zero)
 )
 
+export function query() {
+  const r = []
+  for (let i = 0, n = arguments.length; i < n; ++i) {
+    const o = toFunction(arguments[i])
+    r.push(satisfying(isDefined(o)), o)
+  }
+  return r
+}
+
 export const satisfying = recWithUnless(children)
 
 export const flatten = recWithUnless(elems, x => !I.isArray(x))

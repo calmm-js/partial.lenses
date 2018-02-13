@@ -154,6 +154,7 @@ export const flatten = T_traversal
 export const keys = T_traversal
 export const leafs = T_traversal
 export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
+export const query = T.fnVarN(0, T_optic, T_optic)
 export const satisfying = T.fn(
   [T.fn([T_maybeDataI, T_index], T.any)],
   T_traversal
