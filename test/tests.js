@@ -283,6 +283,7 @@ describe('arities', () => {
     prop: 1,
     props: 0,
     propsOf: 1,
+    query: 0,
     removable: 0,
     remove: 2,
     removeOp: 4,
@@ -1525,6 +1526,21 @@ describe('L.leafs', () => {
     2,
     false
   ])
+})
+
+describe('L.query', () => {
+  testEq(
+    `L.modify(
+       L.query(L.choice('a', 'b')),
+       R.inc,
+       [
+         {foo: [{a: 1}, {b: 2}]},
+         {bar: {b: 3}},
+         {a: 4}
+       ]
+     )`,
+    [{foo: [{a: 2}, {b: 3}]}, {bar: {b: 4}}, {a: 5}]
+  )
 })
 
 describe('L.satisfying', () => {

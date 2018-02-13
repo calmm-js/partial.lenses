@@ -99,6 +99,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.keys ~> traversal`](#L-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
       * [`L.leafs ~> traversal`](#L-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
+      * [`L.query(...traversals) ~> traversal`](#L-query "L.query: (PTraversal s1 s2, ...PTraversal sN a) ~> PTraversal JSON a") <small><sup>v13.6.0</sup></small>
       * [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#L-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
       * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
     * [Folds over traversals](#folds-over-traversals)
@@ -1899,12 +1900,32 @@ Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.
 
+##### <a id="L-query"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-query) [`L.query(...traversals) ~> traversal`](#L-query "L.query: (PTraversal s1 s2, ...PTraversal sN a) ~> PTraversal JSON a") <small><sup>v13.6.0</sup></small>
+
+`L.query(...ts)` is shorthand for [`ts.map(t => [L.satisfying(L.isDefined(t)),
+t])`](#L-satisfying) and is basically a traversal that searches for elements
+within a nested data structure of ordinary arrays and plain objects that are
+focused on by the given sequence of traversals.
+
+For example:
+
+```js
+L.modify(
+  L.query('a', 'b'),
+  R.inc,
+  [{a: [{foo: {b: 1}}]}, {b: 'not matched'}]
+)
+// [{a: [{foo: {b: 2}}]}, {b: 'not matched'}]
+```
+
+`L.query` can be quite convenient, but should be used with care.
+
 ##### <a id="L-satisfying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-satisfying) [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#L-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
 
 `L.satisfying` is a traversal that focuses on elements that satisfy the given
 predicate within a nested data structure of ordinary arrays and plain objects.
 Children of objects whose constructor is neither `Array` nor `Object` are not
-traversed.
+traversed.  See also [`L.query`](#L-query).
 
 ##### <a id="L-values"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-values) [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
 
