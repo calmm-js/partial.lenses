@@ -93,6 +93,7 @@ export const traverse = T.fn(
 // Nesting
 
 export const compose = T.fnVarN(0, T_optic, T_optic)
+export const flat = T.fnVarN(0, T_optic, T_optic)
 
 // Recursing
 

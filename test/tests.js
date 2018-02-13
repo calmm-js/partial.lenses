@@ -232,6 +232,7 @@ describe('arities', () => {
     find: 1,
     findWith: 1,
     first: undefined,
+    flat: 0,
     flatten: 4,
     foldTraversalLens: 2,
     foldl: 4,
@@ -1703,6 +1704,21 @@ describe('L.pointer', () => {
     a: 1,
     b: [3, 3]
   })
+})
+
+describe('L.flat', () => {
+  testEq(
+    `L.modify(
+      L.flat(
+        'a',
+        'b',
+        'c'
+      ),
+      R.negate,
+      [{a: [[{b: {c: 1}}], [{b: [{c: 2}]}]]}, {a: {b: {c: [[[3]]]}}}]
+    )`,
+    [{a: [[{b: {c: -1}}], [{b: [{c: -2}]}]]}, {a: {b: {c: [[[-3]]]}}}]
+  )
 })
 
 if (process.env.NODE_ENV !== 'production') {
