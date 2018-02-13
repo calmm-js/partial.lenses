@@ -970,6 +970,13 @@ function compose() {
   }
 }
 
+function flat() {
+  var r = [flatten];
+  for (var i = 0, n = arguments.length; i < n; ++i) {
+    r.push(arguments[i], flatten);
+  }return r;
+}
+
 // Recursing
 
 function lazy(o2o) {
@@ -1206,6 +1213,15 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : dep(f
 var values = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
 
 var children = /*#__PURE__*/ifElse(I.isArray, elems, /*#__PURE__*/ifElse(I.isObject, values, zero));
+
+function query() {
+  var r = [];
+  for (var i = 0, n = arguments.length; i < n; ++i) {
+    var o = toFunction(arguments[i]);
+    r.push(satisfying(isDefined(o)), o);
+  }
+  return r;
+}
 
 var satisfying = /*#__PURE__*/recWithUnless(children);
 
@@ -1696,6 +1712,7 @@ exports.set = set;
 exports.transform = transform;
 exports.traverse = traverse;
 exports.compose = compose;
+exports.flat = flat;
 exports.lazy = lazy;
 exports.choices = choices;
 exports.choose = choose;
@@ -1725,6 +1742,7 @@ exports.keys = keys;
 exports.matches = matches;
 exports.values = values;
 exports.children = children;
+exports.query = query;
 exports.satisfying = satisfying;
 exports.flatten = flatten;
 exports.leafs = leafs;
