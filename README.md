@@ -88,9 +88,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.setOp(maybeValue) ~> optic`](#L-setOp "L.setOp: Maybe a -> POptic a a") <small><sup>v11.7.0</sup></small>
   * [Traversals](#traversals)
     * [Creating new traversals](#creating-new-traversals)
-      * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
-      * [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal s a -> {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v13.2.0</sup></small>
-      * [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal a a, ...ps) -> PTraversal {p1: a, ...ps} a") <small><sup>v13.5.0</sup></small>
+      * [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal p1 a, ...pts} -> PTraversal {p1: p1, ...ps} a") <small><sup>v5.1.0</sup></small>
+      * [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal p a -> {p1: PTraversal p1 a, ...pts} -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.2.0</sup></small>
+      * [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal p1 a, ...pts) -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.5.0</sup></small>
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.children ~> traversal`](#L-children "L.children: PTraversal ([a] | {p: a, ...ps}) a") <small><sup>v13.3.0</sup></small>
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
@@ -1745,7 +1745,7 @@ to elements in a data structure.
 
 #### <a id="creating-new-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-traversals) [Creating new traversals](#creating-new-traversals)
 
-##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v5.1.0</sup></small>
+##### <a id="L-branch"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branch) [`L.branch({prop: traversal, ...props}) ~> traversal`](#L-branch "L.branch: {p1: PTraversal p1 a, ...pts} -> PTraversal {p1: p1, ...ps} a") <small><sup>v5.1.0</sup></small>
 
 `L.branch` creates a new traversal from a given possibly nested template object
 that specifies how the new traversal should visit the properties of an object.
@@ -1782,7 +1782,7 @@ L.modify([L.pick({z: 2, x: 0}),
 
 See the [BST traversal](#bst-traversal) section for a more meaningful example.
 
-##### <a id="L-branchOr"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branchOr) [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal s a -> {p1: PTraversal s a, ...pts} -> PTraversal s a") <small><sup>v13.2.0</sup></small>
+##### <a id="L-branchOr"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branchOr) [`L.branchOr(traversal, {prop: traversal, ...props}) ~> traversal`](#L-branchOr "L.branchOr: PTraversal p a -> {p1: PTraversal p1 a, ...pts} -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.2.0</sup></small>
 
 `L.branchOr` creates a new traversal from a given traversal and a given possibly
 nested template object.  The template specifies how the new traversal should
@@ -1799,7 +1799,7 @@ L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 Note that [`L.branch`](#L-branch) is equivalent to `L.branchOr(L.zero)` and
 [`L.values`](#L-values) is equivalent to `L.branchOr(L.identity, {})`.
 
-##### <a id="L-branches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branches) [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal a a, ...ps) -> PTraversal {p1: a, ...ps} a") <small><sup>v13.5.0</sup></small>
+##### <a id="L-branches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branches) [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal p1 a, ...pts) -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.5.0</sup></small>
 
 `L.branches` creates a new traversal that visits the specified properties of an
 object.  `L.branches(p1, ..., pN)` is equivalent to [`L.branch({[p1]: [],
