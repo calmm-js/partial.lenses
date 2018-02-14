@@ -1310,7 +1310,7 @@ than to use a catch all predicate like [`R.T`](http://ramdajs.com/docs/#T)
 L.cond(..., [R.T, alternative])
 ```
 
-because in the latter case `L.cond` cannot determinate that a user defined
+because in the latter case `L.cond` cannot determine that a user defined
 predicate will always be true and has to construct a more expensive optic.
 
 Note that `L.cond` can be implemented using [`L.choose`](#L-choose), but not
@@ -1340,9 +1340,9 @@ L.get(
 ##### <a id="L-ifElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-ifElse) [`L.ifElse((maybeValue, index) => testable, optic, optic) ~> optic`](#L-ifElse "L.ifElse: ((Maybe s, Index) -> Boolean) -> POptic s a -> POptic s a -> POptic s a") <small><sup>v13.1.0</sup></small>
 
 `L.ifElse` creates an optic whose operation is selected based on the given
-predicate from the two given optics.  If the predicates is truthy on the value
-at focus, the first of the given optics is used.  Otherwise the second of the
-given optics is used.  See also [`L.cond`](#L-cond).
+predicate from the two given optics.  If the predicate is truthy on the value at
+focus, the first of the given optics is used.  Otherwise the second of the given
+optics is used.  See also [`L.cond`](#L-cond).
 
 For example:
 
@@ -1910,23 +1910,58 @@ incorrect regular expression that can match the empty string.
 
 ##### <a id="L-query"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-query) [`L.query(...traversals) ~> traversal`](#L-query "L.query: (PTraversal s1 s2, ...PTraversal sN a) ~> PTraversal JSON a") <small><sup>v13.6.0</sup></small>
 
-`L.query(...ts)` is shorthand for [`ts.map(t => [L.satisfying(L.isDefined(t)),
-t])`](#L-satisfying) and is basically a traversal that searches for elements
-within a nested data structure of ordinary arrays and plain objects that are
-focused on by the given sequence of traversals.
+`L.query` is a [traversal](#traversals) that searches for
+[defined](#L-isDefined) elements within a nested data structure of ordinary
+arrays and plain objects that are focused on by the given sequence of
+traversals.  `L.query` gives similar power as the [descendant
+combinator](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors)
+of CSS selectors.
 
-For example:
+Recall the [tutorial](#tutorial) example.  Perhaps the easiest way to focus on
+all the texts is to just query for them:
+
+```js
+L.collect(L.query('text'), sampleTitles)
+// [ 'Title', 'Rubrik' ]
+```
+
+So, to convert all the texts to upper case, one could write:
+
+```js
+L.modify(L.query('text'), R.toUpper, sampleTitles)
+// { titles: [
+//     { language: 'en', text: 'TITLE' },
+//     { language: 'sv', text: 'RUBRIK' } ] }
+```
+
+To only modify the text of a specific language, one could write:
 
 ```js
 L.modify(
-  L.query('a', 'b'),
-  R.inc,
-  [{a: [{foo: {b: 1}}]}, {b: 'not matched'}]
+  L.query(L.when(R.propEq('language', 'en')), 'text'),
+  R.toUpper,
+  sampleTitles
 )
-// [{a: [{foo: {b: 2}}]}, {b: 'not matched'}]
+// { titles: [
+//     { language: 'en', text: 'TITLE' },
+//     { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-`L.query` can be quite convenient, but should be used with care.
+And one can also view the text of a specific language using [select](#L-select):
+
+```js
+L.select(L.query(L.when(R.propEq('language', 'sv')), 'text'), sampleTitles)
+// 'Rubrik'
+```
+
+Like CSS selectors, `L.query` can be quite convenient, but should be used with
+care.  The search for matching elements can be expensive and specifying a query
+that matches precisely the desired elements can be difficult.
+
+Note that `L.query(...ts)`, in general, is equivalent to [`ts.map(t =>
+[L.satisfying(L.isDefined(t)), t])`](#L-satisfying) and
+[`L.query(L.when(predicate))`](#L-when) is equivalent to
+[`L.satisfying(predicate)`](#L-satisfying).
 
 ##### <a id="L-satisfying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-satisfying) [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#L-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
 

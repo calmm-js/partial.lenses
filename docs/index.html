@@ -1154,7 +1154,7 @@ L.get(minorAxis, {x: -3, y: 1})
 <p>than to use a catch all predicate like <a href="http://ramdajs.com/docs/#T"><code>R.T</code></a></p>
 <pre><code class="hljs lang-jsx">L.cond(..., [R.T, alternative])
 </code></pre>
-<p>because in the latter case <code>L.cond</code> cannot determinate that a user defined
+<p>because in the latter case <code>L.cond</code> cannot determine that a user defined
 predicate will always be true and has to construct a more expensive optic.</p>
 <p>Note that <code>L.cond</code> can be implemented using <a href="#L-choose"><code>L.choose</code></a>, but not
 vice versa.  <a href="#L-choose"><code>L.choose</code></a> not only allows the optic to be chosen
@@ -1175,9 +1175,9 @@ is a lens to get the parameters for the predicates from the underlying view.</p>
 </code></pre>
 <h5><a id="L-ifElse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-ifElse">■</a> <a href="#L-ifElse" title="L.ifElse: ((Maybe s, Index) -&gt; Boolean) -&gt; POptic s a -&gt; POptic s a -&gt; POptic s a"><code>L.ifElse((maybeValue, index) =&gt; testable, optic, optic) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></h5>
 <p><code>L.ifElse</code> creates an optic whose operation is selected based on the given
-predicate from the two given optics.  If the predicates is truthy on the value
-at focus, the first of the given optics is used.  Otherwise the second of the
-given optics is used.  See also <a href="#L-cond"><code>L.cond</code></a>.</p>
+predicate from the two given optics.  If the predicate is truthy on the value at
+focus, the first of the given optics is used.  Otherwise the second of the given
+optics is used.  See also <a href="#L-cond"><code>L.cond</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, [1, 2, 3])
 </code></pre>
@@ -1535,18 +1535,36 @@ expression gives over the focused string.  See also <a href="#L-matches"><code>L
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.</p>
 <h5><a id="L-query"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-query">■</a> <a href="#L-query" title="L.query: (PTraversal s1 s2, ...PTraversal sN a) ~&gt; PTraversal JSON a"><code>L.query(...traversals) ~&gt; traversal</code></a> <small><sup>v13.6.0</sup></small></h5>
-<p><code>L.query(...ts)</code> is shorthand for <a href="#L-satisfying"><code>ts.map(t =&gt; [L.satisfying(L.isDefined(t)),
-t])</code></a> and is basically a traversal that searches for elements
-within a nested data structure of ordinary arrays and plain objects that are
-focused on by the given sequence of traversals.</p>
-<p>For example:</p>
+<p><code>L.query</code> is a <a href="#traversals">traversal</a> that searches for
+<a href="#L-isDefined">defined</a> elements within a nested data structure of ordinary
+arrays and plain objects that are focused on by the given sequence of
+traversals.  <code>L.query</code> gives similar power as the <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_selectors">descendant
+combinator</a>
+of CSS selectors.</p>
+<p>Recall the <a href="#tutorial">tutorial</a> example.  Perhaps the easiest way to focus on
+all the texts is to just query for them:</p>
+<pre><code class="hljs lang-js">L.collect(L.query(&#39;text&#39;), sampleTitles)
+</code></pre>
+<p>So, to convert all the texts to upper case, one could write:</p>
+<pre><code class="hljs lang-js">L.modify(L.query(&#39;text&#39;), R.toUpper, sampleTitles)
+</code></pre>
+<p>To only modify the text of a specific language, one could write:</p>
 <pre><code class="hljs lang-js">L.modify(
-  L.query(&#39;a&#39;, &#39;b&#39;),
-  R.inc,
-  [{a: [{foo: {b: 1}}]}, {b: &#39;not matched&#39;}]
+  L.query(L.when(R.propEq(&#39;language&#39;, &#39;en&#39;)), &#39;text&#39;),
+  R.toUpper,
+  sampleTitles
 )
 </code></pre>
-<p><code>L.query</code> can be quite convenient, but should be used with care.</p>
+<p>And one can also view the text of a specific language using <a href="#L-select">select</a>:</p>
+<pre><code class="hljs lang-js">L.select(L.query(L.when(R.propEq(&#39;language&#39;, &#39;sv&#39;)), &#39;text&#39;), sampleTitles)
+</code></pre>
+<p>Like CSS selectors, <code>L.query</code> can be quite convenient, but should be used with
+care.  The search for matching elements can be expensive and specifying a query
+that matches precisely the desired elements can be difficult.</p>
+<p>Note that <code>L.query(...ts)</code>, in general, is equivalent to <a href="#L-satisfying"><code>ts.map(t =&gt;
+[L.satisfying(L.isDefined(t)), t])</code></a> and
+<a href="#L-when"><code>L.query(L.when(predicate))</code></a> is equivalent to
+<a href="#L-satisfying"><code>L.satisfying(predicate)</code></a>.</p>
 <h5><a id="L-satisfying"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-satisfying">■</a> <a href="#L-satisfying" title="L.satisfying: ((Maybe s, Index) -&gt; Boolean) -&gt; PTraversal JSON a"><code>L.satisfying((maybeValue, index) =&gt; testable) ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.satisfying</code> is a traversal that focuses on elements that satisfy the given
 predicate within a nested data structure of ordinary arrays and plain objects.
