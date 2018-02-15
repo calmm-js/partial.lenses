@@ -604,6 +604,7 @@ describe('L.findWith', () => {
 })
 
 describe('L.filter', () => {
+  testEq(`L.set(L.filter(R.T), [], undefined)`, [])
   testEq(`L.get(L.filter(R.lt(9)), [3,1,4,1,5,9,2])`, [])
   testEq(`L.get(L.filter(R.lt(2)), undefined)`, undefined)
   testEq(`L.get(L.filter(R.lt(2)), [3,1,4,1,5,9,2])`, [3, 4, 5, 9])
