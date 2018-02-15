@@ -109,10 +109,6 @@ const Select = {
   ap: (l, r) => (void 0 !== l ? l : r)
 }
 
-const Ident = {map: I.applyU, of: I.id, ap: I.applyU, chain: I.applyU}
-
-const Const = {map: I.sndU}
-
 const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
 
 const Sum = ConcatOf((x, y) => x + y, 0)
@@ -342,7 +338,7 @@ const setU = (process.env.NODE_ENV === 'production'
     case 'object':
       return modifyComposed(o, 0, s, x)
     default:
-      return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s
+      return o.length === 4 ? o(s, void 0, Identity, I.always(x)) : s
   }
 })
 
@@ -358,7 +354,7 @@ const modifyU = (process.env.NODE_ENV === 'production'
       return modifyComposed(o, xi2x, s)
     default:
       return o.length === 4
-        ? o(s, void 0, Ident, xi2x)
+        ? o(s, void 0, Identity, xi2x)
         : (xi2x(o(s, void 0), void 0), s)
   }
 })
@@ -382,7 +378,7 @@ function getNestedU(l, s, j, ix) {
         s = getNestedU(o, s, 0, ix)
         break
       default:
-        s = o(s, ix.v, Const, ix)
+        s = o(s, ix.v, Constant, ix)
     }
   return s
 }
@@ -409,7 +405,7 @@ const getU = (process.env.NODE_ENV === 'production'
         }
       return s
     default:
-      return l(s, void 0, Const, I.id)
+      return l(s, void 0, Constant, I.id)
   }
 })
 
@@ -426,7 +422,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x)
         break
       default:
-        x = composed(i, os)(x, os[i - 1], Ident, xi2y || I.always(y))
+        x = composed(i, os)(x, os[i - 1], Identity, xi2y || I.always(y))
         n = i
         break
     }
@@ -512,7 +508,7 @@ const branchAssemble = (process.env.NODE_ENV === 'production'
 const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
   const xO = x instanceof Object ? toObject(x) : I.object0
 
-  if (Ident === A) {
+  if (Identity === A) {
     let written = void 0
     const r = {}
     for (const k in k2o) {
@@ -740,6 +736,21 @@ export const seemsArrayLike = x =>
 
 // Internals
 
+export const Identity = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : I.freeze)({
+  map: I.applyU,
+  of: I.id,
+  ap: I.applyU,
+  chain: I.applyU
+})
+
+export const Constant = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : I.freeze)({
+  map: I.sndU
+})
+
 export const toFunction = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.par(0, C.ef(reqOptic)))(o => {
@@ -842,7 +853,7 @@ export const condOf = (process.env.NODE_ENV === 'production'
         ? I.always(toFunction(c[0]))
         : condOfCase(c[0], toFunction(c[1]), op)
   }
-  return (x, i, C, xi2yC) => of(x, i, Const, op)(x, i, C, xi2yC)
+  return (x, i, C, xi2yC) => of(x, i, Constant, op)(x, i, C, xi2yC)
 })
 
 export const ifElse = I.curry((c, t, e) =>
@@ -953,7 +964,7 @@ export const elems = (process.env.NODE_ENV === 'production'
   ? I.id
   : C.par(2, C.ef(reqApplicative('elems'))))((xs, _i, A, xi2yA) => {
   if (seemsArrayLike(xs)) {
-    return A === Ident
+    return A === Identity
       ? mapPartialIndexU(xi2yA, xs)
       : A === Select
         ? selectInArrayLike(xi2yA, xs)

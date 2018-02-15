@@ -197,6 +197,8 @@ describe('L.identity', () => {
 
 describe('arities', () => {
   const arities = {
+    Constant: undefined,
+    Identity: undefined,
     all: 3,
     and: 2,
     any: 3,
