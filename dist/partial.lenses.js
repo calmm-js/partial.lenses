@@ -1462,12 +1462,12 @@ var filter = /*#__PURE__*/(res(function (lens) {
   return toFunction([lens, isoU(I.id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
 }))(function (xi2b) {
   return function (xs, i, F, xi2yF) {
-    var ts = void 0,
-        fs = void 0;
+    var ts = void 0;
+    var fs = I.array0;
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
     return F.map(function (ts) {
       var tsN = ts ? ts.length : 0;
-      var fsN = fs ? fs.length : 0;
+      var fsN = fs.length;
       var n = tsN + fsN;
       return n === fsN ? fs : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN);
     }, xi2yF(ts, i));
