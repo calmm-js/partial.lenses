@@ -1,5 +1,9 @@
 # Partial Lenses Changelog
 
+## 13.6.1
+
+Fixed a bug in `L.condOf`, which didn't handle the case of zero cases correctly.
+
 ## 13.1.0
 
 Obsoleted `L.iftes` and added `L.ifElse` and `L.cond` as the replacements for

@@ -909,6 +909,7 @@ var pickInAux = function pickInAux(t, k) {
 
 //
 
+var condOfDefault = /*#__PURE__*/I.always(zeroOp);
 var condOfCase = function condOfCase(p, o, r) {
   return function (y, j) {
     return p(y, j) ? o : r(y, j);
@@ -1039,11 +1040,11 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : functi
   };
 })(function (of) {
   of = toFunction(of);
-  var op = undefined;
+  var op = condOfDefault;
   var n = arguments.length;
   while (--n) {
     var c = arguments[n];
-    op = c.length === 1 ? I.always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op || I.always(zero));
+    op = c.length === 1 ? I.always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op);
   }
   return function (x, i, C, xi2yC) {
     return of(x, i, Const, op)(x, i, C, xi2yC);
