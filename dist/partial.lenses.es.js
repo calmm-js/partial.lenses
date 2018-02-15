@@ -1,4 +1,4 @@
-import { isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, applyU, always, curry, isFunction, isString, curryN, assocPartialU, dissocPartialU, constructorOf, toObject, isDefined, keys, hasU, assign, arityN } from 'infestines';
+import { isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, isFunction, isString, curryN, assocPartialU, dissocPartialU, constructorOf, toObject, applyU, isDefined, keys, hasU, assign, arityN } from 'infestines';
 
 var ltU = function ltU(x, y) {
   return x < y;
@@ -240,10 +240,6 @@ var Select = {
     return void 0 !== l ? l : r;
   }
 };
-
-var Ident = { map: applyU, of: id, ap: applyU, chain: applyU };
-
-var Const = { map: sndU };
 
 var ConcatOf = function ConcatOf(ap, empty) {
   return { map: sndU, ap: ap, of: always(empty) };
@@ -491,7 +487,7 @@ var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(
     case 'object':
       return modifyComposed(o, 0, s, x);
     default:
-      return o.length === 4 ? o(s, void 0, Ident, always(x)) : s;
+      return o.length === 4 ? o(s, void 0, Identity, always(x)) : s;
   }
 });
 
@@ -504,7 +500,7 @@ var modifyU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, 
     case 'object':
       return modifyComposed(o, xi2x, s);
     default:
-      return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
+      return o.length === 4 ? o(s, void 0, Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
 });
 
@@ -529,7 +525,7 @@ function getNestedU(l, s, j, ix) {
         s = getNestedU(o, s, 0, ix);
         break;
       default:
-        s = o(s, ix.v, Const, ix);
+        s = o(s, ix.v, Constant, ix);
     }
   }return s;
 }
@@ -554,7 +550,7 @@ var getU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(
         }
       }return s;
     default:
-      return l(s, void 0, Const, id);
+      return l(s, void 0, Constant, id);
   }
 });
 
@@ -571,7 +567,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(x, os[i - 1], Ident, xi2y || always(y));
+        x = composed(i, os)(x, os[i - 1], Identity, xi2y || always(y));
         n = i;
         break;
     }
@@ -667,7 +663,7 @@ var branchOr1Level = function branchOr1Level(otherwise, k2o) {
   return function (x, _i, A, xi2yA) {
     var xO = x instanceof Object ? toObject$1(x) : object0;
 
-    if (Ident === A) {
+    if (Identity === A) {
       var written = void 0;
       var r = {};
       for (var k in k2o) {
@@ -920,6 +916,17 @@ var seemsArrayLike = function seemsArrayLike(x) {
 
 // Internals
 
+var Identity = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : freeze)({
+  map: applyU,
+  of: id,
+  ap: applyU,
+  chain: applyU
+});
+
+var Constant = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : freeze)({
+  map: sndU
+});
+
 var toFunction = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(reqOptic)))(function (o) {
   switch (typeof o) {
     case 'string':
@@ -1043,7 +1050,7 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function
     op = c.length === 1 ? always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op);
   }
   return function (x, i, C, xi2yC) {
-    return of(x, i, Const, op)(x, i, C, xi2yC);
+    return of(x, i, Constant, op)(x, i, C, xi2yC);
   };
 });
 
@@ -1167,7 +1174,7 @@ function branches() {
 
 var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef(reqApplicative('elems'))))(function (xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
-    return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+    return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
     return A.of(xs);
   }
@@ -1700,4 +1707,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, query, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, query, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };

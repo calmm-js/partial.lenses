@@ -245,10 +245,6 @@ var Select = {
   }
 };
 
-var Ident = { map: I.applyU, of: I.id, ap: I.applyU, chain: I.applyU };
-
-var Const = { map: I.sndU };
-
 var ConcatOf = function ConcatOf(ap, empty) {
   return { map: I.sndU, ap: ap, of: I.always(empty) };
 };
@@ -495,7 +491,7 @@ var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(0, e
     case 'object':
       return modifyComposed(o, 0, s, x);
     default:
-      return o.length === 4 ? o(s, void 0, Ident, I.always(x)) : s;
+      return o.length === 4 ? o(s, void 0, Identity, I.always(x)) : s;
   }
 });
 
@@ -508,7 +504,7 @@ var modifyU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(0
     case 'object':
       return modifyComposed(o, xi2x, s);
     default:
-      return o.length === 4 ? o(s, void 0, Ident, xi2x) : (xi2x(o(s, void 0), void 0), s);
+      return o.length === 4 ? o(s, void 0, Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
 });
 
@@ -533,7 +529,7 @@ function getNestedU(l, s, j, ix) {
         s = getNestedU(o, s, 0, ix);
         break;
       default:
-        s = o(s, ix.v, Const, ix);
+        s = o(s, ix.v, Constant, ix);
     }
   }return s;
 }
@@ -558,7 +554,7 @@ var getU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(0, e
         }
       }return s;
     default:
-      return l(s, void 0, Const, I.id);
+      return l(s, void 0, Constant, I.id);
   }
 });
 
@@ -575,7 +571,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(x, os[i - 1], Ident, xi2y || I.always(y));
+        x = composed(i, os)(x, os[i - 1], Identity, xi2y || I.always(y));
         n = i;
         break;
     }
@@ -671,7 +667,7 @@ var branchOr1Level = function branchOr1Level(otherwise, k2o) {
   return function (x, _i, A, xi2yA) {
     var xO = x instanceof Object ? toObject(x) : I.object0;
 
-    if (Ident === A) {
+    if (Identity === A) {
       var written = void 0;
       var r = {};
       for (var k in k2o) {
@@ -924,6 +920,17 @@ var seemsArrayLike = function seemsArrayLike(x) {
 
 // Internals
 
+var Identity = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : I.freeze)({
+  map: I.applyU,
+  of: I.id,
+  ap: I.applyU,
+  chain: I.applyU
+});
+
+var Constant = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : I.freeze)({
+  map: I.sndU
+});
+
 var toFunction = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(0, ef(reqOptic)))(function (o) {
   switch (typeof o) {
     case 'string':
@@ -1047,7 +1054,7 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : functi
     op = c.length === 1 ? I.always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op);
   }
   return function (x, i, C, xi2yC) {
-    return of(x, i, Const, op)(x, i, C, xi2yC);
+    return of(x, i, Constant, op)(x, i, C, xi2yC);
   };
 });
 
@@ -1171,7 +1178,7 @@ function branches() {
 
 var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('elems'))))(function (xs, _i, A, xi2yA) {
   if (seemsArrayLike(xs)) {
-    return A === Ident ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+    return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
   } else {
     return A.of(xs);
   }
@@ -1705,6 +1712,8 @@ var pointer = function pointer(s) {
 };
 
 exports.seemsArrayLike = seemsArrayLike;
+exports.Identity = Identity;
+exports.Constant = Constant;
 exports.toFunction = toFunction;
 exports.assign = assign;
 exports.modify = modify;

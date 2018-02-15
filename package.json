@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "13.6.2",
+  "version": "13.7.0",
   "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "module": "dist/partial.lenses.es.js",
   "main": "dist/partial.lenses.cjs.js",

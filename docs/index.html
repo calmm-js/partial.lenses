@@ -126,6 +126,8 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#internals">Internals</a><ul>
+<li><a href="#L-Constant" title="L.Constant: Functor"><code>L.Constant ~&gt; Functor</code></a> <small><sup>v13.7.0</sup></small></li>
+<li><a href="#L-Identity" title="L.Identity: Monad"><code>L.Identity ~&gt; Monad</code></a> <small><sup>v13.7.0</sup></small></li>
 <li><a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></li>
 </ul>
 </li>
@@ -1294,6 +1296,18 @@ data flows in either direction, <code>get</code> or <code>set</code>, through th
 <pre><code class="hljs lang-js">L.set([&#39;x&#39;, L.log(&#39;%s x: %j&#39;)], &#39;11&#39;, {x: 10})
 </code></pre>
 <h4><a id="internals"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#internals">■</a> <a href="#internals">Internals</a></h4>
+<h5><a id="L-Constant"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-Constant">■</a> <a href="#L-Constant" title="L.Constant: Functor"><code>L.Constant ~&gt; Functor</code></a> <small><sup>v13.7.0</sup></small></h5>
+<p><code>L.Constant</code> is the <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
+Land</a>
+compatible constant
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor"><code>Functor</code></a>
+definition used by Partial Lenses.</p>
+<h5><a id="L-Identity"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-Identity">■</a> <a href="#L-Identity" title="L.Identity: Monad"><code>L.Identity ~&gt; Monad</code></a> <small><sup>v13.7.0</sup></small></h5>
+<p><code>L.Identity</code> is the <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
+Land</a>
+compatible identity
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a>
+definition used by Partial Lenses.</p>
 <h5><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>, an
 <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.  This
