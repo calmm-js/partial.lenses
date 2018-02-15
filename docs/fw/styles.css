@@ -76,6 +76,10 @@
   display: none;
 }
 
+.klipse-separator {
+  display: none;
+}
+
 .preview-anchor {
   position: relative;
 }
