@@ -729,6 +729,7 @@ const pickInAux = (t, k) => [k, pickIn(t)]
 
 //
 
+const condOfDefault = I.always(zeroOp)
 const condOfCase = (p, o, r) => (y, j) => (p(y, j) ? o : r(y, j))
 
 // Auxiliary
@@ -832,14 +833,14 @@ export const condOf = (process.env.NODE_ENV === 'production'
       return fn(of, ...cs)
     })(function(of) {
   of = toFunction(of)
-  let op = undefined
+  let op = condOfDefault
   let n = arguments.length
   while (--n) {
     const c = arguments[n]
     op =
       c.length === 1
         ? I.always(toFunction(c[0]))
-        : condOfCase(c[0], toFunction(c[1]), op || I.always(zero))
+        : condOfCase(c[0], toFunction(c[1]), op)
   }
   return (x, i, C, xi2yC) => of(x, i, Const, op)(x, i, C, xi2yC)
 })
