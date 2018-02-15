@@ -1468,6 +1468,7 @@ describe('L.condOf', () => {
      )`,
     [42, 101]
   )
+  testEq(`L.get(L.condOf([]), 'anything')`, undefined)
 })
 
 describe('L.ifElse', () => {
