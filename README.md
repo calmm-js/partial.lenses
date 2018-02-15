@@ -76,6 +76,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
+      * [`L.Constant ~> Functor`](#L-Constant "L.Constant: Functor") <small><sup>v13.7.0</sup></small>
+      * [`L.Identity ~> Monad`](#L-Identity "L.Identity: Monad") <small><sup>v13.7.0</sup></small>
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
   * [Transforms](#transforms)
     * [Operations on transforms](#operations-on-transforms)
@@ -1539,6 +1541,22 @@ L.set(['x', L.log('%s x: %j')], '11', {x: 10})
 ```
 
 #### <a id="internals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#internals) [Internals](#internals)
+
+##### <a id="L-Constant"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-Constant) [`L.Constant ~> Functor`](#L-Constant "L.Constant: Functor") <small><sup>v13.7.0</sup></small>
+
+`L.Constant` is the [Static
+Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
+compatible constant
+[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor)
+definition used by Partial Lenses.
+
+##### <a id="L-Identity"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-Identity) [`L.Identity ~> Monad`](#L-Identity "L.Identity: Monad") <small><sup>v13.7.0</sup></small>
+
+`L.Identity` is the [Static
+Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
+compatible identity
+[`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
+definition used by Partial Lenses.
 
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
 

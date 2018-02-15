@@ -62,6 +62,10 @@ const template = c => T.lazy(rec => T.props(T.or(c, rec)))
 
 // Internals
 
+export const Constant = T_functor
+
+export const Identity = T_monad
+
 export const toFunction = T.fn(
   [T_optic],
   T_opticFnOf(T.or(T_applicative, T_functor))
