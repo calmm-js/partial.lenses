@@ -1312,11 +1312,12 @@ export const filter = (process.env.NODE_ENV === 'production'
         )
       ])
     ))(xi2b => (xs, i, F, xi2yF) => {
-  let ts, fs
+  let ts
+  let fs = I.array0
   if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, (ts = []), (fs = []))
   return F.map(ts => {
     const tsN = ts ? ts.length : 0
-    const fsN = fs ? fs.length : 0
+    const fsN = fs.length
     const n = tsN + fsN
     return n === fsN
       ? fs

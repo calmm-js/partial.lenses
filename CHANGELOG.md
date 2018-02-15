@@ -1,5 +1,10 @@
 # Partial Lenses Changelog
 
+## 13.6.2
+
+Fixed a bug in `L.filter`, which didn't correctly handle the case of writing an
+empty array correctly in case the focus wasn't an array-like object.
+
 ## 13.6.1
 
 Fixed a bug in `L.condOf`, which didn't handle the case of zero cases correctly.
