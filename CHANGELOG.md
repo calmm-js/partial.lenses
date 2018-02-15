@@ -3,7 +3,7 @@
 ## 13.6.2
 
 Fixed a bug in `L.filter`, which didn't correctly handle the case of writing an
-empty array correctly in case the focus wasn't an array-like object.
+empty array in case the focus wasn't an array-like object.
 
 ## 13.6.1
 
