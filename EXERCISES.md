@@ -113,8 +113,9 @@ test('ins',    L.set(valOf('fi'), 'Otsikko',   data), [{key: 'en', val: 'Title'}
   of two different forms.
   * <span class="hint">Using [`L.lens`](/#L-lens), write a custom lens
     to access the end of `{start, num}` pair.</span>
-  * <span class="hint">Use [`L.iftes`](/#L-lens) or [`L.choices`](/#L-choices)
-    to select between `'end'` and the custom lens.</span>
+  * <span class="hint">Use [`L.ifElse`](/#L-ifElse) or
+    [`L.choices`](/#L-choices) to select between `'end'` and the custom
+    lens.</span>
 * Enhance the lens to allow additional fields beyond `start`, `end` / `num` in a
   range object.
   * <span class="hint">Use [`L.props`](/#L-props) to limit the fields that the
@@ -183,7 +184,7 @@ test('emp', L.remove([xs, L.when(x => 0 < x)], coords), [])
 
 * Implement a `nonObject` traversal that targets all non-object or primitive
   properties of arbitrarily nested objects.
-  * <span class="hint">Use [`L.iftes`](/#L-iftes) to select whether to treat
+  * <span class="hint">Use [`L.ifElse`](/#L-ifElse) to select whether to treat
     target as an object or primitive.</span>
   * <span class="hint">Use [`L.values`](/#L-values) to traverse through all
     properties of an object.</span>
