@@ -66,6 +66,8 @@ export const Constant = T_functor
 
 export const Identity = T_monad
 
+export const IdentityAsync = T_monad
+
 export const toFunction = T.fn(
   [T_optic],
   T_opticFnOf(T.or(T_monad, T_applicative, T_functor))
@@ -81,9 +83,11 @@ export const modify = T.fn(
   [T_optic, T.fn([T_maybeDataO, T_index], T_maybeDataI), T_maybeDataI],
   T_maybeDataO
 )
+export const modifyAsync = modify
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
 export const transform = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
+export const transformAsync = transform
 export const traverse = T.fn(
   [
     T.or(T_monad, T_applicative, T_functor),

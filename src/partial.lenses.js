@@ -9,6 +9,15 @@ const toRegExpU = (str, flags) =>
     ? new RegExp(I.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags)
     : str
 
+//
+
+const returnAsync = x => Promise.resolve(x)
+
+const chainAsync = (xyP, xP) =>
+  null != xP && I.isFunction(xP.then) ? xP.then(xyP) : xyP(xP)
+
+//
+
 const toStringPartial = x => (void 0 !== x ? String(x) : '')
 
 const sliceIndex = (m, l, d, i) =>
@@ -382,6 +391,9 @@ const modifyU = (process.env.NODE_ENV === 'production'
         : (xi2x(o(s, void 0), void 0), s)
   }
 })
+
+const modifyAsyncU = (o, f, s) =>
+  returnAsync(toFunction(o)(s, void 0, IdentityAsync, f))
 
 function makeIx(i) {
   const ix = (s, j) => ((ix.v = j), s)
@@ -807,6 +819,15 @@ export const Identity = (process.env.NODE_ENV === 'production'
   chain: I.applyU
 })
 
+export const IdentityAsync = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : I.freeze)({
+  map: chainAsync,
+  ap: (xyP, xP) => chainAsync(xP => chainAsync(xyP => xyP(xP), xyP), xP),
+  of: I.id,
+  chain: chainAsync
+})
+
 export const Constant = (process.env.NODE_ENV === 'production'
   ? I.id
   : I.freeze)({
@@ -834,11 +855,15 @@ export const assign = I.curry((o, x, s) => setU([o, propsOf(x)], x, s))
 
 export const modify = I.curry(modifyU)
 
+export const modifyAsync = I.curry(modifyAsyncU)
+
 export const remove = I.curry((o, s) => setU(o, void 0, s))
 
 export const set = I.curry(setU)
 
 export const transform = I.curry((o, s) => modifyU(o, I.id, s))
+
+export const transformAsync = I.curry((o, s) => modifyAsyncU(o, I.id, s))
 
 export const traverse = I.curry(traverseU)
 

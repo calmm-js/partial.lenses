@@ -15,6 +15,12 @@ const typedL = R.mapObjIndexed((val, key) => {
   return type(val)
 }, PL)
 
+const later = I.curry(
+  (ms, v) => new Promise(resolve => setTimeout(() => resolve(v), ms))
+)
+
+//
+
 const id = I.id
 const X = L
 
@@ -138,14 +144,14 @@ const toExpr = f =>
     .replace(/{\s*return\s*([^{;]+)\s*;\s*}/g, '$1')
 
 function testEq(thunk, expect) {
-  it(`${toExpr(thunk)} => ${show(expect)}`, () => {
-    const actual = thunk()
+  it(`${toExpr(thunk)} => ${show(expect)}`, async () => {
+    const actual = await thunk()
     if (!equals(actual, expect))
       throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 
     toggleEnv()
     try {
-      const actual = thunk()
+      const actual = await thunk()
       if (!equals(actual, expect))
         throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
     } finally {
@@ -154,7 +160,7 @@ function testEq(thunk, expect) {
 
     L = typedL
     try {
-      const typed = thunk()
+      const typed = await thunk()
       if (!equals(actual, typed))
         throw Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
     } finally {
@@ -164,11 +170,11 @@ function testEq(thunk, expect) {
 }
 
 const testThrows = thunk =>
-  it(`${toExpr(thunk)} => throws`, () => {
+  it(`${toExpr(thunk)} => throws`, async () => {
     let raised
     let result
     try {
-      result = thunk()
+      result = await thunk()
       raised = false
     } catch (e) {
       result = e
@@ -204,6 +210,7 @@ describe('arities', () => {
   const arities = {
     Constant: undefined,
     Identity: undefined,
+    IdentityAsync: undefined,
     add: 1,
     all: 3,
     and: 2,
@@ -281,6 +288,7 @@ describe('arities', () => {
     minimum: 2,
     minimumBy: 3,
     modify: 3,
+    modifyAsync: 3,
     modifyOp: 1,
     multiply: 1,
     negate: 4,
@@ -325,6 +333,7 @@ describe('arities', () => {
     sumAs: 3,
     toFunction: 1,
     transform: 2,
+    transformAsync: 2,
     traverse: 4,
     uncouple: 1,
     unless: 1,
@@ -2005,6 +2014,41 @@ describe('L.flat', () => {
         {a: {b: {c: [[[3]]]}}}
       ]),
     [{a: [[{b: {c: -1}}], [{b: [{c: -2}]}]]}, {a: {b: {c: [[[-3]]]}}}]
+  )
+})
+
+describe('async', () => {
+  testEq(() => L.modifyAsync(L.elems, x => later(5, -x), [3, 1, 4]), [
+    -3,
+    -1,
+    -4
+  ])
+
+  testEq(
+    () => L.transformAsync([L.elems, L.modifyOp(x => later(5, -x))], [3, 1, 4]),
+    [-3, -1, -4]
+  )
+
+  testEq(
+    () =>
+      L.modifyAsync(
+        L.elems,
+        async _ => {
+          throw Error('error')
+        },
+        [1]
+      ) instanceof Promise,
+    true
+  )
+
+  testThrows(() =>
+    L.modifyAsync(
+      L.elems,
+      async _ => {
+        throw Error('error')
+      },
+      [1]
+    )
   )
 })
 

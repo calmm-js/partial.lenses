@@ -67,6 +67,15 @@ export const arity = n => fromPredicate(x => x.length === n)
 
 export const props = R.map
 
+const isThenable = x => null != x && I.isFunction(x.then)
+
+export const maybeThenable = t => v => (isThenable(v) ? v.then(t) : t(v))
+
+export const thenable = t => v => {
+  if (!isThenable(v)) throw Error(`Expected thenable, but got ${v}`)
+  return v.then(t)
+}
+
 export const object = template => object => {
   const result = {}
   if (!I.isObject(object)) throw Error(`Expected object, got ${object}`)
