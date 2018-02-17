@@ -142,13 +142,13 @@ function testEq(exprIn, expect) {
   it(`${expr} => ${show(expect)}`, () => {
     const actual = run(expr)
     if (!equals(actual, expect))
-      throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+      throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 
     toggleEnv()
     try {
       const actual = run(expr)
       if (!equals(actual, expect))
-        throw new Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
+        throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
     } finally {
       toggleEnv()
     }
@@ -156,7 +156,7 @@ function testEq(exprIn, expect) {
     const exprTy = expr.replace(/\bL\.([a-zA-Z0-9]*)/g, 'T.$1(L.$1)')
     const typed = run(exprTy)
     if (!equals(actual, typed))
-      throw new Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
+      throw Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
   })
 }
 
@@ -172,7 +172,7 @@ const testThrows = expr =>
       raised = true
     }
     if (!raised)
-      throw new Error(`Expected ${expr} to throw, returned ${show(result)}`)
+      throw Error(`Expected ${expr} to throw, returned ${show(result)}`)
   })
 
 const empties = [undefined, null, false, true, '', 0, 0.0 / 0.0, {}, []]
@@ -1174,7 +1174,7 @@ describe('BST', () => {
     let key
 
     const error = () => {
-      throw new Error(
+      throw Error(
         'From ' +
           show(before) +
           ' ' +
