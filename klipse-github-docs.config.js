@@ -10,22 +10,33 @@
       'partial.lenses.js',
       'https://unpkg.com/ramda/dist/ramda.min.js',
       'https://unpkg.com/immutable/dist/immutable.min.js',
-      'https://unpkg.com/moment/min/moment.min.js',
+      'https://unpkg.com/moment/min/moment.min.js'
     ]
   }
 
-  return [Object.assign({}, targetDefaults, {
-    source: 'README.md',
-    target: 'index.html',
-    title: 'Partial Lenses',
-    stripComments: true,
-    constToVar: true,
-    menu: true,
-    tooltips: true
-  }), Object.assign({}, targetDefaults, {
-    source: 'EXERCISES.md',
-    target: 'exercises.html',
-    title: 'Partial Lenses Exercises',
-    menu: true
-  })]
+  return [
+    Object.assign({}, targetDefaults, {
+      source: 'README.md',
+      target: 'index.html',
+      title: 'Partial Lenses',
+      stripComments: true,
+      constToVar: true,
+      menu: true,
+      tooltips: true
+    }),
+    Object.assign({}, targetDefaults, {
+      source: 'EXERCISES.md',
+      target: 'exercises.html',
+      title: 'Partial Lenses Exercises',
+      menu: true
+    }),
+    Object.assign({}, targetDefaults, {
+      source: 'IMPLEMENTATION.md',
+      target: 'implementation.html',
+      title: 'Partial Lenses Implementation',
+      stripComments: true,
+      constToVar: true,
+      menu: true
+    })
+  ]
 }
