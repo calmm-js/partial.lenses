@@ -474,7 +474,7 @@ mention below.</p>
 it to query titles:</p>
 <pre><code class="hljs lang-js">L.get(textIn(&#39;sv&#39;), sampleTitles)
 </code></pre>
-<p>The <a href="#L-find"><code>L.find</code></a> lens is a given a predicate that it then uses to find an
+<p>The <a href="#L-find"><code>L.find</code></a> lens is given a predicate that it then uses to find an
 element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda&#39;s <a href="http://ramdajs.com/docs/#whereEq"><code>R.whereEq</code></a> function
 that creates an equality predicate from a given template object.</p>
@@ -501,7 +501,7 @@ if we query from <code>undefined</code>:</p>
 <p>The same partial lens also allows us to insert new titles:</p>
 <pre><code class="hljs lang-js">L.set(textIn(&#39;fi&#39;), &#39;Otsikko&#39;, sampleTitles)
 </code></pre>
-<p>There are couple of things here that require attention.</p>
+<p>There are a couple of things here that require attention.</p>
 <p>The reason that the newly inserted object not only has the <code>text</code> property, but
 also the <code>language</code> property is due to the <a href="#L-valueOr"><code>L.valueOr({language, text:
 &#39;&#39;})</code></a> part that we used to provide a default.</p>
@@ -772,7 +772,7 @@ abstractions and it tends to make compositions of optics more concise with fewer
 required parts, which both help to avoid bugs.</p>
 <h4><a id="on-indexing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#on-indexing">■</a> <a href="#on-indexing">On indexing</a></h4>
 <p>Optics in this library support a simple unnested form of indexing.  When
-focusing on an array element or a object property, the index of the array
+focusing on an array element or an object property, the index of the array
 element or the key of the object property is passed as the index to user defined
 functions operating on that focus.</p>
 <p>For example:</p>
@@ -957,7 +957,7 @@ that elements stay in the same order.)</p>
 <p>The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of <a href="#L-find"><code>L.find</code></a>
-results in a lawful partial lens is that the lenses composed after it restrict
+results in a lawful partial lens is that the lenses composed after it restricts
 the scope of the lens so that one cannot modify the <code>key</code>.</p>
 <h4><a id="operations-on-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#operations-on-optics">■</a> <a href="#operations-on-optics">Operations on optics</a></h4>
 <h5><a id="L-assign"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-assign">■</a> <a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></h5>
@@ -1138,7 +1138,7 @@ predicates on the underlying view.  See also <a href="#L-condOf"><code>L.condOf<
 given any number of <code>[predicate, consequent]</code> pairs.  The <em>predicates</em> are
 functions on the underlying view and are tested sequentially.  The <em>consequents</em>
 are optics and <code>L.cond</code> acts like the consequent corresponding to the first
-predicate that returns true.  The last argument to <code>L.cond</code> can be a
+predicate that returns true.  The last argument to <code>L.cond</code> can be an
 <code>[alternative]</code> singleton, where the <em>alternative</em> is an optic to be used in
 case none of the predicates return true.  If all predicates return false and
 there is no alternative, <code>L.cond</code> acts like <a href="#L-zero"><code>L.zero</code></a>.</p>
