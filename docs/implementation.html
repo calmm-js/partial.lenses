@@ -33,14 +33,14 @@
     <hr>
     <h1><a href="https://github.com/calmm-js/partial.lenses/blob/master/IMPLEMENTATION.md#">■</a> Partial Lenses Implementation &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/partial.lenses"><img src="https://img.shields.io/npm/dm/partial.lenses.svg" alt="npm"></a></h1>
 <p>This document describes a simplified implementation of lenses and traversals
-using a similar approach as Partial Lenses.  The implementation of Partial
-Lenses is far from simplified.  It lifts strings, numbers, and arrays to optics
-for notational convenience, it has been manually tweaked for size, optimized for
-performance, and it also tries to handle a lot of corner cases induced by
-JavaScript.  All of this makes the implementation difficult to understand on its
-own.  The intention behind this document is to describe a simple implementation
-based on which it should be easier to look at the Partial Lenses source code and
-understand what is going on.</p>
+using a similar approach as <a href="index.html">Partial Lenses</a>.  The implementation of
+Partial Lenses is far from simplified.  It lifts strings, numbers, and arrays to
+optics for notational convenience, it has been manually tweaked for size,
+optimized for performance, and it also tries to handle a lot of corner cases
+induced by JavaScript.  All of this makes the implementation difficult to
+understand on its own.  The intention behind this document is to describe a
+simple implementation based on which it should be easier to look at the Partial
+Lenses source code and understand what is going on.</p>
 <p>There are many approaches to optics.  Partial Lenses is based on the ideas
 described by Twan van Laarhoven in <a href="https://www.twanvl.nl/blog/haskell/cps-functional-references">CPS based functional
 references</a> and

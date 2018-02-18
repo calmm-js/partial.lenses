@@ -626,8 +626,10 @@ section describes a couple of lens compositions we&#39;ve found practical as wel
 examples that may help to see <a href="#bst-as-a-lens">possibilities beyond the immediately
 obvious</a>.  The
 <a href="https://github.com/calmm-js/partial.lenses/wiki">wiki</a> contains further
-examples and playground links.  Last, but perhaps not least, there is also a
-page of <a href="https://calmm-js.github.io/partial.lenses/exercises.html">Partial Lenses
+examples and playground links.  There is also a document that describe <a href="implementation.html">a
+simplified implementation of optics</a> in a similar style as
+the implementation of this library.  Last, but perhaps not least, there is also
+a page of <a href="https://calmm-js.github.io/partial.lenses/exercises.html">Partial Lenses
 Exercises</a> to solve.</p>
 <h2><a id="the-why-of-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#the-why-of-optics">■</a> <a href="#the-why-of-optics">The why of optics</a></h2>
 <p>Optics provide a way to decouple the operation to perform on an element or
@@ -1345,11 +1347,11 @@ encoding, while <code>L.toFunction</code> essentially exposes the underlying enc
 it is better to avoid depending on that.</p>
 <h3><a id="transforms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#transforms">■</a> <a href="#transforms">Transforms</a></h3>
 <p>Ordinary <a href="#optics">optics</a> are passive and bidirectional in such a way that the
-same optic can be both read and written through.  The underlying implementation
-of this library also allows one to implement active operations that don&#39;t quite
-provide the same kind of passive bidirectionality, but can be used to flexibly
-<a href="#L-modifyOp">modify</a> data structures.  Such operations are called <em>transforms</em>
-in this library.</p>
+same optic can be both read and written through.  The underlying
+<a href="implementation.html">implementation</a> of this library also allows one to implement
+active operations that don&#39;t quite provide the same kind of passive
+bidirectionality, but can be used to flexibly <a href="#L-modifyOp">modify</a> data
+structures.  Such operations are called <em>transforms</em> in this library.</p>
 <p>Unlike ordinary optics, transforms allow for monadic <a href="#L-seq">sequencing</a>, which
 makes it possible to operate on a part of data structure multiple times.  This
 allows operations that are impossible to implement using ordinary optics, but
@@ -1669,7 +1671,7 @@ var toCollect = x =&gt; x !== undefined ? [x] : []
            {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
-above naïve implementation.</p>
+above <a href="implementation.html">naïve implementation</a>.</p>
 <h5><a id="L-concat"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-concat">■</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
@@ -3008,8 +3010,8 @@ allocating closures for such optics.  This can provide significant time and,
 more importantly, space savings in applications that create large numbers of
 lenses to address elements in data structures.</p>
 <p>The downside of allowing such special values as optics is that the internal
-implementation needs to be careful to deal with them at any point a user given
-value needs to be interpreted as an optic.</p>
+<a href="implementation.html">implementation</a> needs to be careful to deal with them at any
+point a user given value needs to be interpreted as an optic.</p>
 <h4><a id="treating-an-array-of-optics-as-a-composition-of-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#treating-an-array-of-optics-as-a-composition-of-optics">■</a> <a href="#treating-an-array-of-optics-as-a-composition-of-optics">Treating an array of optics as a composition of optics</a></h4>
 <p>Aside from the brevity, treating <a href="#L-compose">an array of optics as a
 composition</a> allows the library to be optimized to deal with simple
@@ -3021,8 +3023,8 @@ Client code can also manipulate such simple paths as data.</p>
 <p>One interesting consequence of partiality is that it becomes possible to <a href="#isomorphisms">invert
 isomorphisms</a> without explicitly making it possible to extract
 the forward and backward functions from an isomorphism.  A simple internal
-implementation based on functors and applicatives seems to be expressive enough
-for a wide variety of operations.</p>
+<a href="implementation.html">implementation</a> based on functors and applicatives seems to
+be expressive enough for a wide variety of operations.</p>
 <h4><a id="combinators-for-creating-new-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#combinators-for-creating-new-optics">■</a> <a href="#combinators-for-creating-new-optics">Combinators for creating new optics</a></h4>
 <p>By providing combinators for creating new <a href="#L-branch">traversals</a>,
 <a href="#L-lens">lenses</a> and <a href="#L-iso">isomorphisms</a>, client code need not depend on the
@@ -3046,14 +3048,14 @@ significant performance advantage throughout the library, because fewer
 allocations are required.</p>
 <p>However, the <a href="https://github.com/rpominov/static-land/issues/36#issuecomment-285938602">original
 reason</a>
-for switching to use Static Land was that correct implementation of
-<a href="#L-traverse"><code>traverse</code></a> requires the ability to construct a value of a given
-applicative type without having any instance of said applicative type.  This
-means that one has to explicitly pass something, e.g. a function <code>of</code>, through
-optics to make that possible.  This eliminates a major notational advantage of
-Fantasy Land.  In Static Land, which can basically be seen as using the
-dictionary translation of type classes, one already passes the algebra module to
-combinators.</p>
+for switching to use Static Land was that correct
+<a href="implementation.html">implementation</a> of <a href="#L-traverse"><code>traverse</code></a> requires the
+ability to construct a value of a given applicative type without having any
+instance of said applicative type.  This means that one has to explicitly pass
+something, e.g. a function <code>of</code>, through optics to make that possible.  This
+eliminates a major notational advantage of Fantasy Land.  In Static Land, which
+can basically be seen as using the dictionary translation of type classes, one
+already passes the algebra module to combinators.</p>
 <h4><a id="performance"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#performance">■</a> <a href="#performance">Performance</a></h4>
 <p>Concern for performance has been a part of the work on partial lenses for some
 time.  The basic principles can be summarized in order of importance:</p>

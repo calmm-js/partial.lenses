@@ -1,14 +1,14 @@
 # [▶](https://calmm-js.github.io/partial.lenses/implementation.html#) Partial Lenses Implementation &middot; [![Gitter](https://img.shields.io/gitter/room/calmm-js/chat.js.svg)](https://gitter.im/calmm-js/chat) [![GitHub stars](https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social)](https://github.com/calmm-js/partial.lenses) [![npm](https://img.shields.io/npm/dm/partial.lenses.svg)](https://www.npmjs.com/package/partial.lenses)
 
 This document describes a simplified implementation of lenses and traversals
-using a similar approach as Partial Lenses.  The implementation of Partial
-Lenses is far from simplified.  It lifts strings, numbers, and arrays to optics
-for notational convenience, it has been manually tweaked for size, optimized for
-performance, and it also tries to handle a lot of corner cases induced by
-JavaScript.  All of this makes the implementation difficult to understand on its
-own.  The intention behind this document is to describe a simple implementation
-based on which it should be easier to look at the Partial Lenses source code and
-understand what is going on.
+using a similar approach as [Partial Lenses](README.md).  The implementation of
+Partial Lenses is far from simplified.  It lifts strings, numbers, and arrays to
+optics for notational convenience, it has been manually tweaked for size,
+optimized for performance, and it also tries to handle a lot of corner cases
+induced by JavaScript.  All of this makes the implementation difficult to
+understand on its own.  The intention behind this document is to describe a
+simple implementation based on which it should be easier to look at the Partial
+Lenses source code and understand what is going on.
 
 There are many approaches to optics.  Partial Lenses is based on the ideas
 described by Twan van Laarhoven in [CPS based functional
