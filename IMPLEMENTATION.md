@@ -91,8 +91,8 @@ const Identity = {map: (x2y, x) => x2y(x), ap: (x2y, x) => x2y(x), of: x => x}
 ```
 
 The identity applicative performs no interesting computation by itself.  Any
-value is taken as such and both `map` and `ap` simply apply the second argument
-to the first argument.
+value is taken as such and both `map` and `ap` simply apply their first argument
+to their second argument.
 
 By supplying the `Identity` applicative to `traverse` we get a mapping function
 over a given traversal:

@@ -99,8 +99,8 @@ the most straightforward example is using the identity applicative:</p>
 <pre><code class="hljs lang-js">var Identity = {map: (x2y, x) =&gt; x2y(x), ap: (x2y, x) =&gt; x2y(x), of: x =&gt; x}
 </code></pre>
 <p>The identity applicative performs no interesting computation by itself.  Any
-value is taken as such and both <code>map</code> and <code>ap</code> simply apply the second argument
-to the first argument.</p>
+value is taken as such and both <code>map</code> and <code>ap</code> simply apply their first argument
+to their second argument.</p>
 <p>By supplying the <code>Identity</code> applicative to <code>traverse</code> we get a mapping function
 over a given traversal:</p>
 <pre><code class="hljs lang-js">var map = traverse(Identity)
