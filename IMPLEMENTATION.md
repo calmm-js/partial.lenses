@@ -253,7 +253,7 @@ const foldWith = M => traverse({...Constant, ap: M.concat, of: _ => M.empty()})
 
 The above `foldWith` function takes a Static Land
 [monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid)
-and creates a applicative whose `ap` and `of` methods essentially ignore their
+and creates an applicative whose `ap` and `of` methods essentially ignore their
 arguments and use the monoid.
 
 Using different monoids we get different operations.  For example, we can define
@@ -268,7 +268,7 @@ collect(compose([at('xs'), elems, at('x')]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
 // [3, 1, 4]
 ```
 
-Ans we can define an operation to sum all the elements targeted by a traversal:
+And we can define an operation to sum all the elements targeted by a traversal:
 
 ```js
 const sum = foldWith({empty: () => 0, concat: (x, y) => x + y})(x => x)

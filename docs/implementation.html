@@ -197,7 +197,7 @@ and use those to fold over the elements targeted by a traversal:</p>
 </code></pre>
 <p>The above <code>foldWith</code> function takes a Static Land
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
-and creates a applicative whose <code>ap</code> and <code>of</code> methods essentially ignore their
+and creates an applicative whose <code>ap</code> and <code>of</code> methods essentially ignore their
 arguments and use the monoid.</p>
 <p>Using different monoids we get different operations.  For example, we can define
 an operation to collect all the elements targeted by a traversal:</p>
@@ -205,7 +205,7 @@ an operation to collect all the elements targeted by a traversal:</p>
 </code></pre>
 <pre><code class="hljs lang-js">collect(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
 </code></pre>
-<p>Ans we can define an operation to sum all the elements targeted by a traversal:</p>
+<p>And we can define an operation to sum all the elements targeted by a traversal:</p>
 <pre><code class="hljs lang-js">var sum = foldWith({empty: () =&gt; 0, concat: (x, y) =&gt; x + y})(x =&gt; x)
 </code></pre>
 <pre><code class="hljs lang-js">sum(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
