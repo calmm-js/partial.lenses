@@ -390,7 +390,7 @@ L.get(textIn('sv'), sampleTitles)
 // 'Rubrik'
 ```
 
-The [`L.find`](#L-find) lens is a given a predicate that it then uses to find an
+The [`L.find`](#L-find) lens is given a predicate that it then uses to find an
 element from an array to focus on.  In this case the predicate is specified with
 the help of Ramda's [`R.whereEq`](http://ramdajs.com/docs/#whereEq) function
 that creates an equality predicate from a given template object.
@@ -442,7 +442,7 @@ L.set(textIn('fi'), 'Otsikko', sampleTitles)
 //             { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-There are couple of things here that require attention.
+There are a couple of things here that require attention.
 
 The reason that the newly inserted object not only has the `text` property, but
 also the `language` property is due to the [`L.valueOr({language, text:
@@ -790,7 +790,7 @@ required parts, which both help to avoid bugs.
 #### <a id="on-indexing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-indexing) [On indexing](#on-indexing)
 
 Optics in this library support a simple unnested form of indexing.  When
-focusing on an array element or a object property, the index of the array
+focusing on an array element or an object property, the index of the array
 element or the key of the object property is passed as the index to user defined
 functions operating on that focus.
 
@@ -995,7 +995,7 @@ that elements stay in the same order.)
 The gist of this example is important.  Even if it is the case that not all
 parts of a lens composition obey lens laws, it can be that a composition taken
 as a whole obeys lens laws.  The reason why this use of [`L.find`](#L-find)
-results in a lawful partial lens is that the lenses composed after it restrict
+results in a lawful partial lens is that the lenses composed after it restricts
 the scope of the lens so that one cannot modify the `key`.
 
 #### <a id="operations-on-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-optics) [Operations on optics](#operations-on-optics)
@@ -1281,7 +1281,7 @@ L.cond( [ predicate, consequent ]
 given any number of `[predicate, consequent]` pairs.  The *predicates* are
 functions on the underlying view and are tested sequentially.  The *consequents*
 are optics and `L.cond` acts like the consequent corresponding to the first
-predicate that returns true.  The last argument to `L.cond` can be a
+predicate that returns true.  The last argument to `L.cond` can be an
 `[alternative]` singleton, where the *alternative* is an optic to be used in
 case none of the predicates return true.  If all predicates return false and
 there is no alternative, `L.cond` acts like [`L.zero`](#L-zero).
@@ -1355,7 +1355,7 @@ L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, [1, 2, 3])
 
 ```js
 L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, {x: 1, y: 2, z: 3})
-// {x: 2, y: 3, z: 4}
+// { x: 2, y: 3, z: 4 }
 ```
 
 ##### <a id="L-iftes"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-iftes) ~~[`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>~~
@@ -1689,7 +1689,7 @@ structure while `everywhere` also targets those.
 
 ```js
 L.modify(everywhere, x => [x], {xs: [{x: 1}, {x: 2}]})
-// [ {xs: [ [ [ { x: [ 1 ] } ], [ { x: [ 2 ] } ] ] ] } ]
+// [ { xs: [ [ [ { x: [ 1 ] } ], [ { x: [ 2 ] } ] ] ] } ]
 ```
 
 Note that `L.seq`, [`L.choose`](#L-choose), and [`L.setOp`](#L-setOp) can be
