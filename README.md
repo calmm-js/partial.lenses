@@ -617,7 +617,7 @@ section describes a couple of lens compositions we've found practical as well as
 examples that may help to see [possibilities beyond the immediately
 obvious](#bst-as-a-lens).  The
 [wiki](https://github.com/calmm-js/partial.lenses/wiki) contains further
-examples and playground links.  There is also a document that describe [a
+examples and playground links.  There is also a document that describes [a
 simplified implementation of optics](IMPLEMENTATION.md) in a similar style as
 the implementation of this library.  Last, but perhaps not least, there is also
 a page of [Partial Lenses
