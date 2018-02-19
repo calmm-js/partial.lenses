@@ -68,7 +68,7 @@ export const Identity = T_monad
 
 export const toFunction = T.fn(
   [T_optic],
-  T_opticFnOf(T.or(T_applicative, T_functor))
+  T_opticFnOf(T.or(T_monad, T_applicative, T_functor))
 )
 
 // Operations on optics
