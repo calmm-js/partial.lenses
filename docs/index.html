@@ -3507,8 +3507,8 @@ can also run the scripts for those subtasks separately.</p>
 <p>It starts watching the source files and runs dist and docs builds and tests
 after changes.</p>
 <h3><a id="testing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#testing">■</a> <a href="#testing">Testing</a></h3>
-<p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/tests.js">tests</a> in this library are written in an atypical manner.</p>
-<p>First of all, the tests are written as strings that are <code>eval</code>ed.  This way one
+<p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/tests.js">tests</a> in this library are written in a slightly atypical
+manner using thunks that are also used as the test descriptions.  This way one
 doesn&#39;t need to invent names or write prose for tests.</p>
 <p>There is also a special test that checks the arity of the exports.  You&#39;ll
 notice it immediately if you add an export.</p>

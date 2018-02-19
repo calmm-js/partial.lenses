@@ -4782,9 +4782,8 @@ after changes.
 
 ### <a id="testing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#testing) [Testing](#testing)
 
-The [tests](./test/tests.js) in this library are written in an atypical manner.
-
-First of all, the tests are written as strings that are `eval`ed.  This way one
+The [tests](./test/tests.js) in this library are written in a slightly atypical
+manner using thunks that are also used as the test descriptions.  This way one
 doesn't need to invent names or write prose for tests.
 
 There is also a special test that checks the arity of the exports.  You'll
