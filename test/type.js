@@ -71,7 +71,9 @@ export const object = template => object => {
   const result = {}
   if (!I.isObject(object)) throw Error(`Expected object, got ${object}`)
   if (!I.hasKeysOfU(template, object))
-    throw Error(`Expected object with keys ${I.keys(template)}, got ${object}`)
+    throw Error(
+      `Expected object with keys ${I.keys(template)}, got ${I.keys(object)}`
+    )
   for (const k in template) result[k] = template[k](object[k])
   return result
 }
