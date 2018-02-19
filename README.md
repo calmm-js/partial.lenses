@@ -4792,10 +4792,8 @@ notice it immediately if you add an export.
 
 The [`test/types.js`](./test/types.js) file contains contract or type predicates
 for the library primitives.  Those are also used when running tests to check
-that the implementation matches the contracts.
-
-When you implement a new combinator, you will need to also add a type contract
-and a shadow implementation for the primitive.
+that the implementation matches the contracts.  When you implement a new
+combinator, you will also need to add a contract for the combinator.
 
 When testing a partial optics, you should generally test both read and, usually
 more importantly, write behaviour including attempts to read `undefined` or

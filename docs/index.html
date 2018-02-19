@@ -3514,9 +3514,8 @@ doesn&#39;t need to invent names or write prose for tests.</p>
 notice it immediately if you add an export.</p>
 <p>The <a href="https://github.com/calmm-js/partial.lenses/blob/master/test/types.js"><code>test/types.js</code></a> file contains contract or type predicates
 for the library primitives.  Those are also used when running tests to check
-that the implementation matches the contracts.</p>
-<p>When you implement a new combinator, you will need to also add a type contract
-and a shadow implementation for the primitive.</p>
+that the implementation matches the contracts.  When you implement a new
+combinator, you will also need to add a contract for the combinator.</p>
 <p>When testing a partial optics, you should generally test both read and, usually
 more importantly, write behaviour including attempts to read <code>undefined</code> or
 unexpected data (both of these should be handled as <code>undefined</code>) and writing
