@@ -712,6 +712,15 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
+const elemsI = (xs, _i, A, xi2yA) =>
+  A === Identity
+    ? mapPartialIndexU(xi2yA, xs)
+    : A === Select
+      ? selectInArrayLike(xi2yA, xs)
+      : traversePartialIndex(A, xi2yA, xs)
+
+//
+
 const recWithUnless = I.curry((t, p) => lazy(r => ifElse(p, identity, [t, r])))
 
 //
@@ -962,17 +971,9 @@ export function branches() {
 
 export const elems = (process.env.NODE_ENV === 'production'
   ? I.id
-  : C.par(2, C.ef(reqApplicative('elems'))))((xs, _i, A, xi2yA) => {
-  if (seemsArrayLike(xs)) {
-    return A === Identity
-      ? mapPartialIndexU(xi2yA, xs)
-      : A === Select
-        ? selectInArrayLike(xi2yA, xs)
-        : traversePartialIndex(A, xi2yA, xs)
-  } else {
-    return A.of(xs)
-  }
-})
+  : C.par(2, C.ef(reqApplicative('elems'))))(
+  (xs, i, A, xi2yA) => (seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs))
+)
 
 export const entries = toFunction([keyed, elems])
 
@@ -1018,9 +1019,14 @@ export const values = (process.env.NODE_ENV === 'production'
 
 export const children = ifElse(
   I.isArray,
-  elems,
+  elemsI,
   ifElse(I.isObject, values, zero)
 )
+
+export function flatten(x, i, C, xi2yC) {
+  const rec = (x, i) => (I.isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i))
+  return rec(x, i)
+}
 
 export function query() {
   const r = []
@@ -1032,8 +1038,6 @@ export function query() {
 }
 
 export const satisfying = recWithUnless(children)
-
-export const flatten = recWithUnless(elems, x => !I.isArray(x))
 
 export const leafs = satisfying(x => !I.isArray(x) && !I.isObject(x))
 
