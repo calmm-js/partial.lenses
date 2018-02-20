@@ -25,11 +25,18 @@ function of the `Traversable` constructor class
 traverse :: (Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
 ```
 
-is a kind of mapping function.  It takes some kind of traversable data structure
-of type `t a` containing values type `a`.  It maps those values to operations of
-type `f b` in some applicative functor using the given mapping function of type
-`a -> f b`.  Finally it returns an operation of type `f (t b)` that constructs a
-new data structure of type `t b`.
+is a kind of mapping function.  Indeed, if you specialize the `t` type
+constructor to list, `[]`, and `f` to identity, you get list map:
+
+```haskell
+traverse :: {-  t = []  and  f = identity  -} (a ->   b) -> [a] ->    [b]
+```
+
+`traverse` takes some kind of traversable data structure of type `t a`
+containing values type `a`.  It maps those values to operations of type `f b` in
+some applicative functor using the given mapping function of type `a -> f b`.
+Finally it returns an operation of type `f (t b)` that constructs a new data
+structure of type `t b`.
 
 The optical version of `traverse` replaces the second class `Traversable`
 constructor class with a first class traversal function

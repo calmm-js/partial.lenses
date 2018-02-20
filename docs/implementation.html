@@ -52,11 +52,15 @@ generalized <code>traverse</code> function.  The
 function of the <code>Traversable</code> constructor class</p>
 <pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
 </code></pre>
-<p>is a kind of mapping function.  It takes some kind of traversable data structure
-of type <code>t a</code> containing values type <code>a</code>.  It maps those values to operations of
-type <code>f b</code> in some applicative functor using the given mapping function of type
-<code>a -&gt; f b</code>.  Finally it returns an operation of type <code>f (t b)</code> that constructs a
-new data structure of type <code>t b</code>.</p>
+<p>is a kind of mapping function.  Indeed, if you specialize the <code>t</code> type
+constructor to list, <code>[]</code>, and <code>f</code> to identity, you get list map:</p>
+<pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (a -&gt;   b) -&gt; [a] -&gt;    [b]
+</code></pre>
+<p><code>traverse</code> takes some kind of traversable data structure of type <code>t a</code>
+containing values type <code>a</code>.  It maps those values to operations of type <code>f b</code> in
+some applicative functor using the given mapping function of type <code>a -&gt; f b</code>.
+Finally it returns an operation of type <code>f (t b)</code> that constructs a new data
+structure of type <code>t b</code>.</p>
 <p>The optical version of <code>traverse</code> replaces the second class <code>Traversable</code>
 constructor class with a first class traversal function</p>
 <pre><code class="hljs lang-haskell">type Traversal s t a b = forall f. Applicative f =&gt; (a -&gt; f b) -&gt; s -&gt; f t
