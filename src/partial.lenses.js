@@ -721,10 +721,6 @@ const elemsI = (xs, _i, A, xi2yA) =>
 
 //
 
-const recWithUnless = I.curry((t, p) => lazy(r => ifElse(p, identity, [t, r])))
-
-//
-
 const seq2U = (l, r) => (x, i, M, xi2yM) =>
   M.chain(x => r(x, i, M, xi2yM), l(x, i, M, xi2yM))
 
@@ -1017,11 +1013,10 @@ export const values = (process.env.NODE_ENV === 'production'
   branchOr1Level(identity, I.protoless0)
 )
 
-export const children = ifElse(
-  I.isArray,
-  elemsI,
-  ifElse(I.isObject, values, zero)
-)
+export const children = (x, i, C, xi2yC) =>
+  I.isArray(x)
+    ? elemsI(x, i, C, xi2yC)
+    : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
 
 export function flatten(x, i, C, xi2yC) {
   const rec = (x, i) => (I.isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i))
@@ -1037,7 +1032,10 @@ export function query() {
   return r
 }
 
-export const satisfying = recWithUnless(children)
+export const satisfying = p => (x, i, C, xi2yC) => {
+  const rec = (x, i) => (p(x, i) ? xi2yC(x, i) : children(x, i, C, rec))
+  return rec(x, i)
+}
 
 export const leafs = satisfying(x => !I.isArray(x) && !I.isObject(x))
 
