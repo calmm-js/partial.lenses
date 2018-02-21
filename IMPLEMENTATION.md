@@ -79,15 +79,15 @@ built-in indexing, and the lifting of strings, numbers, and arrays to optics.
 Here is an example of an `elems` traversal over the elements of an array:
 
 ```js
-const elems = A => x2yA => xs => xs.reduce(
-  (ysA, x) => A.ap(A.map(ys => y => [...ys, y], ysA), x2yA(x)),
-  A.of([])
+const elems = F => x2yF => xs => xs.reduce(
+  (ysF, x) => F.ap(F.map(ys => y => [...ys, y], ysF), x2yF(x)),
+  F.of([])
 )
 ```
 
-Above, `A` is a Static Land [applicative
+Above, `F` is a Static Land [applicative
 functor](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
-`x2yA` is the function mapping array elements to applicative operations, and
+`x2yF` is the function mapping array elements to applicative operations, and
 `xs` is an array.
 
 To actually use `elems` with `traverse` we need an applicative functor.  Perhaps
@@ -125,15 +125,15 @@ case, as an argument.  We can compose optics and get different behavior.
 The following `o` function composes two optics `outer` and `inner`:
 
 ```js
-const o = (outer, inner) => C => x2yC => outer(C)(inner(C)(x2yC))
+const o = (outer, inner) => F => x2yF => outer(F)(inner(F)(x2yF))
 ```
 
 If you look closely, you'll notice that the above function really is just a
 variation of ordinary function composition.  Consider what we get if we drop the
-`C` argument:
+`F` argument:
 
 ```jsx
-const o = (outer, inner) =>      x2yC => outer   (inner   (x2yC))
+const o = (outer, inner) =>      x2yF => outer   (inner   (x2yF))
 ```
 
 That is exactly the same as ordinary single argument function composition.
@@ -141,7 +141,7 @@ That is exactly the same as ordinary single argument function composition.
 We can also define an identity optic function:
 
 ```js
-const identity = C => x2yC => x => x2yC(x)
+const identity = F => x2yF => x => x2yF(x)
 ```
 
 And a function to compose any number of optics:
@@ -175,7 +175,7 @@ const ObjectIx = {
 }
 ```
 
-The `atOf` function then takes an `Ix` module and a key and return a lens:
+The `atOf` function then takes an `Ix` module and a key and returns a lens:
 
 ```js
 const atOf = Ix => k => F => x2yF => x => F.map(
@@ -184,7 +184,7 @@ const atOf = Ix => k => F => x2yF => x => F.map(
 )
 ```
 
-Notice that we only use the `map` function from the `F` functor argument.  In
+Notice that we only use the `map` function from the functor argument `F`.  In
 other words, lenses do not require an applicative functor.  Lenses only require
 a functor.  Otherwise lens functions are just like traversal functions.
 
@@ -291,4 +291,4 @@ library simply provides you with a large number of predefined lens and traversal
 functions and operations, such as folds, over optics.
 
 Here is a [playground with all of the code from this
-document](https://calmm-js.github.io/partial.lenses/playground.html#MYewdgzgLgBFBOBDAbgU3hVMC8MBiOAfDIgEwBGB2xIRMIAFHgJQNmXMBQnoksqAG1QBbCDhgBBOgA9SATynUY0sUpUA6eKgAmAV2CoGnBnIgSANMuZ0J6xAAcGt4Q5OricugG11v05bkAXQCzZktZBQZpZjDOWxAAMwYvQK4uHnBoGABJbVQwKABLKE9cAG8XewAuGCj5cOs1eSiwkmraiIaZZujLRJrpGQBfbl4syvEEFHRMBlz8opL0gRAAcwYYSqiZGABqGABGVkERCFYvAGZLA8sAFlSYdLHYWlwGEF0odEtCsDB0RrEADC3TkIKUHy+8AYQNYv3+0NhdTBMVGmVghTyBWKpRg4OIEXxylBQJaaL4MFAwnsIEw4hA9iKwHc9EZhWZmh0+kMIB+WMWcmWaw2W0Gaj2h1YVJpsy8J1ElnlEEVQlEqXOXi8B0CwRgmtIlguuq89x11ie6Mk8CQcmyYpgZU4mCgNQYhUsyEsiEBet8dnUEAE7MMAAYfq1PTA-YgA0GDG7dkdgpxVqgXbV3SQfYgvIVApwRhkKQB5cgAK1QwCgdvEjudrrAHr6PoYZT9vL1YECNWQQ1iqfTDEb9B9IC8XYL5KyiCgxYS4hrSgA1nQqAT5GviUo8OotpxSsQ7QG0wwlwEGuZOBE8HNpOoB6eGmkp7AZ+IV0oZ3OGCV7KhEjAH7YLgADkYC6MI5DoCBMAAPxWjaNY1KWFZVnarBLkK6ybK4YrEAAtNEbBQAwIHkCBMStogNQ3DA5A1AalI1BcfaPJwKzYaKdCEVKIDUrShhyqqyokCRIHSBR6rJGU0g0UMlgyQxQwPFwHEirhMjqFAIAAKr2H+8BAogsyUdKAnJDOpEqBRKqnFJMkQDUXggYgIGWGRIGBKxFoUkC6KIAUtaVK6nSUj6wCFs8MADpMSBoBghh+XwAVQKweFWNwanRSeZmypZRxemJEnMFJXiKYc8kOrJMCkJV5UsSpL4wAkIACNoADqxQABbiAAsnQUzxbMba+El0ApV67S9eovDADOfQJDUAD6dDTSIjJyAwzB9k1oACEIVbiC1bWdVAXWtutJSuj6KSWLNM6ugIljwDdfpPVGvjwF5aXeNIqSZcKlKtQdJG5YJlniRANkwEqhVWZJlEOU59V1dVByozUtzKd5TUQBBR2tR13UXdSV21D6YZA2Ac2DtIAQ+oM+xyH22xqFhGx48IDBgxZRVQ60sOifDJWIyoyPVSxCloxjMBY99jxAA).
+document](https://calmm-js.github.io/partial.lenses/playground.html#MYewdgzgLgBFBOBDAbgU3hVMC8MBiOAfDIgEwBGB2xIRMIAFHgJQNmXMBQnoksqAG1QBbCDnx0AHqQCeVYpLHUYigHTxUAEwCuwVA04MZEPABoVzOnlWIADk1XC7RpcRl0A2qu-HzMgLp+Jszm0nIMkswhnNYgAGYMHv5cXDzg0DAAkpqoYFAAllDuuADeTrYAXDARsqGWymERISSV1WF1UrJN5vFVklIAvty8GeXiCCjomAzZuQVFqQIgAOYMMOURUjAA1DAAjKyCIhCsHgDM5nvmACzJMKkjsLS4DCDaUOjm+WBg6PXE8hUskBbw+8CYrG+v3BLBqciiw3SsHyOTyhWKEgawK2WPCkURfBgoGEthAmHEIFsBWArnoVPyNPUWl0+hAX1R8xkixWaw2-QaO32rGJpOmHiOonMEogUqEomSpw8Hj2-kCMCVpHMZzVHluqssDyRMAAgvAkDJMvyYCVOJgoFUGPlzMhzIh-urvDZVBABAz9AAGL7NF0wT2Ib2+vSO7YHQKcZaoe3VJ0kd2IDz5fycIZpQkAeXIACtUMAoJbxDa7Q6wM6eu6GCVPWz1WB-FVkANogmkwwa-R3SAPK3swSMogoHm4uJy8oANZWTpyHEAxzOTjFYiW72Jhizvx1UycMJ4GaSVTd3d1FKj2Dj8Tz5TjycMIq2VDxGAP7C4ADkYG0wjkOgP4wAA-CaZqIBa-RVAWxalparCztyqzrM4-LEAAtJEbBQAwP7kD+UQNogVRXDA5BVJqRJVGcnb3JwSyoXydDYcKIAkmS+jinKMokHhP6SERCqJCUkhkQM5hiVRAx3FwTG8uhUiqFAIAAKq2G+8AAMKINMxEilxiTjvhihEbKxwiWJEBVB4P6ID+5gET+-j0YahLaUiiB5BW5QOu0RLusAOaPDA3bjEgaAYPonl8N5UCsBhFjcApYU7oZYomQcroCUJzAiR40n7JJ1riTApAlUVdFyTeMBxCAAiaAA6oUAAW4gALJ0BMUXTI23ixdA8Wuq0HWqLwwDjj0cRVAA+nQY0iFSMgMMwna1aAAhCKW4j1Y1LVQK1DZLUUDrukk5gTeODoCOY8DnZ6t2ht48CuYlniSMkKU8kSDXbXhGXcSZgkQOZMDSjlpnCcR1m2VVlVlXsCNVNcslubVEAAbtDXNW1x0kqd1TuoGv1gJNPaSH47r9LsMidpsDQoWsmPCAwgPGbloPNBD-FQ-lMOKHDZV0VJiPIzAqNvfcQA).
