@@ -881,11 +881,9 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
-var recWithUnless = /*#__PURE__*/I.curry(function (t, p) {
-  return lazy(function (r) {
-    return ifElse(p, identity, [t, r]);
-  });
-});
+var elemsI = function elemsI(xs, _i, A, xi2yA) {
+  return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+};
 
 //
 
@@ -1176,12 +1174,8 @@ function branches() {
 
 // Traversals and combinators
 
-var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('elems'))))(function (xs, _i, A, xi2yA) {
-  if (seemsArrayLike(xs)) {
-    return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
-  } else {
-    return A.of(xs);
-  }
+var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('elems'))))(function (xs, i, A, xi2yA) {
+  return seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs);
 });
 
 var entries = /*#__PURE__*/toFunction([keyed, elems]);
@@ -1220,7 +1214,16 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : dep(f
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
 
-var children = /*#__PURE__*/ifElse(I.isArray, elems, /*#__PURE__*/ifElse(I.isObject, values, zero));
+var children = function children(x, i, C, xi2yC) {
+  return I.isArray(x) ? elemsI(x, i, C, xi2yC) : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x);
+};
+
+function flatten(x, i, C, xi2yC) {
+  var rec = function rec(x, i) {
+    return I.isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i);
+  };
+  return rec(x, i);
+}
 
 function query() {
   var r = [];
@@ -1231,11 +1234,14 @@ function query() {
   return r;
 }
 
-var satisfying = /*#__PURE__*/recWithUnless(children);
-
-var flatten = /*#__PURE__*/recWithUnless(elems, function (x) {
-  return !I.isArray(x);
-});
+var satisfying = function satisfying(p) {
+  return function (x, i, C, xi2yC) {
+    var rec = function rec(x, i) {
+      return p(x, i) ? xi2yC(x, i) : children(x, i, C, rec);
+    };
+    return rec(x, i);
+  };
+};
 
 var leafs = /*#__PURE__*/satisfying(function (x) {
   return !I.isArray(x) && !I.isObject(x);
@@ -1752,9 +1758,9 @@ exports.keys = keys;
 exports.matches = matches;
 exports.values = values;
 exports.children = children;
+exports.flatten = flatten;
 exports.query = query;
 exports.satisfying = satisfying;
-exports.flatten = flatten;
 exports.leafs = leafs;
 exports.all = all;
 exports.and = and$1;

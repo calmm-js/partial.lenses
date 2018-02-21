@@ -877,11 +877,9 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 //
 
-var recWithUnless = /*#__PURE__*/curry(function (t, p) {
-  return lazy(function (r) {
-    return ifElse(p, identity, [t, r]);
-  });
-});
+var elemsI = function elemsI(xs, _i, A, xi2yA) {
+  return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
+};
 
 //
 
@@ -1172,12 +1170,8 @@ function branches() {
 
 // Traversals and combinators
 
-var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef(reqApplicative('elems'))))(function (xs, _i, A, xi2yA) {
-  if (seemsArrayLike(xs)) {
-    return A === Identity ? mapPartialIndexU(xi2yA, xs) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs);
-  } else {
-    return A.of(xs);
-  }
+var elems = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef(reqApplicative('elems'))))(function (xs, i, A, xi2yA) {
+  return seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs);
 });
 
 var entries = /*#__PURE__*/toFunction([keyed, elems]);
@@ -1216,7 +1210,16 @@ var matches = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : dep(fun
 
 var values = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
 
-var children = /*#__PURE__*/ifElse(isArray, elems, /*#__PURE__*/ifElse(isObject, values, zero));
+var children = function children(x, i, C, xi2yC) {
+  return isArray(x) ? elemsI(x, i, C, xi2yC) : isObject(x) ? values(x, i, C, xi2yC) : C.of(x);
+};
+
+function flatten(x, i, C, xi2yC) {
+  var rec = function rec(x, i) {
+    return isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i);
+  };
+  return rec(x, i);
+}
 
 function query() {
   var r = [];
@@ -1227,11 +1230,14 @@ function query() {
   return r;
 }
 
-var satisfying = /*#__PURE__*/recWithUnless(children);
-
-var flatten = /*#__PURE__*/recWithUnless(elems, function (x) {
-  return !isArray(x);
-});
+var satisfying = function satisfying(p) {
+  return function (x, i, C, xi2yC) {
+    var rec = function rec(x, i) {
+      return p(x, i) ? xi2yC(x, i) : children(x, i, C, rec);
+    };
+    return rec(x, i);
+  };
+};
 
 var leafs = /*#__PURE__*/satisfying(function (x) {
   return !isArray(x) && !isObject(x);
@@ -1707,4 +1713,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, query, satisfying, flatten, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
+export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, pointer };
