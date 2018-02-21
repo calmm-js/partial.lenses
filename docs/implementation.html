@@ -50,44 +50,46 @@ Lenses</a>.</p>
 generalized <code>traverse</code> function.  The
 <a href="http://hackage.haskell.org/package/base-4.10.1.0/docs/Data-Traversable.html#v:traverse"><code>traverse</code></a>
 function of the <code>Traversable</code> constructor class</p>
-<pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (a -&gt; f b) -&gt; t a -&gt; f (t b)
+<pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (x -&gt; f y) -&gt; t x -&gt; f (t y)
 </code></pre>
 <p>is a kind of mapping function.  Indeed, if you specialize the <code>t</code> type
 constructor to list, <code>[]</code>, and <code>f</code> to identity, you get list map:</p>
-<pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (a -&gt;   b) -&gt; [a] -&gt;    [b]
+<pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (x -&gt;   y) -&gt; [x] -&gt;    [y]
 </code></pre>
-<p><code>traverse</code> takes some kind of traversable data structure of type <code>t a</code>
-containing values type <code>a</code>.  It maps those values to operations of type <code>f b</code> in
-some applicative functor using the given mapping function of type <code>a -&gt; f b</code>.
-Finally it returns an operation of type <code>f (t b)</code> that constructs a new data
-structure of type <code>t b</code>.</p>
+<p><code>traverse</code> takes some kind of traversable data structure of type <code>t x</code>
+containing values type <code>x</code>.  It maps those values to operations of type <code>f y</code> in
+some <a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors">applicative
+functor</a> using the
+given mapping function of type <code>x -&gt; f y</code>.  Finally it returns an operation of
+type <code>f (t y)</code> that constructs a new data structure of type <code>t y</code>.</p>
 <p>The optical version of <code>traverse</code> replaces the second class <code>Traversable</code>
 constructor class with a first class traversal function</p>
-<pre><code class="hljs lang-haskell">type Traversal s t a b = forall f. Applicative f =&gt; (a -&gt; f b) -&gt; s -&gt; f t
+<pre><code class="hljs lang-haskell">type Traversal s t a b = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t
 </code></pre>
 <p>and <code>traverse</code> using an optic merely calls the given traversal function</p>
-<pre><code class="hljs lang-haskell">traverse :: Applicative f =&gt; (a -&gt; f b) -&gt; Traversal s t a b -&gt; s -&gt; f t
-traverse a2bF o = o a2bF
+<pre><code class="hljs lang-haskell">traverse :: Applicative f =&gt; (x -&gt; f y) -&gt; Traversal s t x y -&gt; s -&gt; f t
+traverse x2yF traversal = traversal x2yF
 </code></pre>
-<p>A traversal function of type <code>Traversal s t a b</code> is simply a function that knows
-how to locate elements of type <code>a</code> within a data structure of type <code>s</code> and then
-knows how to build a new data structure of type <code>t</code> where values of type <code>a</code>
-have been replaced with values of type <code>b</code>.  In other words, the traversal
+<p>A traversal function of type <code>Traversal s t x y</code> is simply a function that knows
+how to locate elements of type <code>x</code> within a data structure of type <code>s</code> and then
+knows how to build a new data structure of type <code>t</code> where values of type <code>x</code>
+have been replaced with values of type <code>y</code>.  In other words, the traversal
 function knows how to both take apart a data structure in a particular way to
 extract some values out of it and also how to put the data structure back
 together substituting some new values for the extracted values.  Of course, it
-is often the case that the type <code>b</code> is the same type <code>a</code> and type <code>t</code> is the
+is often the case that the type <code>y</code> is the same type <code>x</code> and type <code>t</code> is the
 same as <code>s</code>.</p>
 <p>We can translate the above <code>traverse</code> function to JavaScript in <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
 Land</a> style by
 passing the method dictionary corresponding to the <code>Applicative</code> constraint as
-an explicit argument:</p>
-<pre><code class="hljs lang-js">var traverse = F =&gt; a2bF =&gt; o =&gt; o(F)(a2bF)
+an explicit argument <code>F</code>:</p>
+<pre><code class="hljs lang-js">var traverse = F =&gt; x2yF =&gt; traversal =&gt; traversal(F)(x2yF)
 </code></pre>
 <p>Innocent as it may seem, <em>every</em> operation in Partial Lenses is basically an
 application of a traversal function like that.  The Partial Lenses version of
-<a href="index.html#L-traverse"><code>traverse</code></a> is only slightly different due to currying,
-built-in indexing, and the lifting of strings, numbers, and arrays to optics.</p>
+<a href="index.html#L-traverse"><code>traverse</code></a> is only slightly different due to features
+such as currying, built-in indexing, and the lifting of strings, numbers, and
+arrays to optics.</p>
 <p>Here is an example of an <code>elems</code> traversal over the elements of an array:</p>
 <pre><code class="hljs lang-js">var elems = F =&gt; x2yF =&gt; xs =&gt; xs.reduce(
   (ysF, x) =&gt; F.ap(F.map(ys =&gt; y =&gt; [...ys, y], ysF), x2yF(x)),
@@ -97,14 +99,17 @@ built-in indexing, and the lifting of strings, numbers, and arrays to optics.</p
 <p>Above, <code>F</code> is a Static Land <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative">applicative
 functor</a>,
 <code>x2yF</code> is the function mapping array elements to applicative operations, and
-<code>xs</code> is an array.</p>
+<code>xs</code> is an array.  <code>elems</code> maps each element of the array <code>xs</code> to an applicative
+operation using the mapping function <code>x2yF</code> and then combines those operations
+using the applicative combinators <code>F.of</code>, <code>F.ap</code> and <code>F.map</code> into a computation
+that builds an array of the results.</p>
 <p>To actually use <code>elems</code> with <code>traverse</code> we need an applicative functor.  Perhaps
 the most straightforward example is using the identity applicative:</p>
 <pre><code class="hljs lang-js">var Identity = {map: (x2y, x) =&gt; x2y(x), ap: (x2y, x) =&gt; x2y(x), of: x =&gt; x}
 </code></pre>
 <p>The identity applicative performs no interesting computation by itself.  Any
-value is taken as such and both <code>map</code> and <code>ap</code> simply apply their first argument
-to their second argument.</p>
+value is taken as such by <code>of</code> and both <code>map</code> and <code>ap</code> simply apply their first
+argument to their second argument.</p>
 <p>By supplying the <code>Identity</code> applicative to <code>traverse</code> we get a mapping function
 over a given traversal:</p>
 <pre><code class="hljs lang-js">var map = traverse(Identity)

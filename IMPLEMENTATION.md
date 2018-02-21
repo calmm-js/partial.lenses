@@ -22,59 +22,61 @@ generalized `traverse` function.  The
 function of the `Traversable` constructor class
 
 ```haskell
-traverse :: (Traversable t, Applicative f) => (a -> f b) -> t a -> f (t b)
+traverse :: (Traversable t, Applicative f) => (x -> f y) -> t x -> f (t y)
 ```
 
 is a kind of mapping function.  Indeed, if you specialize the `t` type
 constructor to list, `[]`, and `f` to identity, you get list map:
 
 ```haskell
-traverse :: {-  t = []  and  f = identity  -} (a ->   b) -> [a] ->    [b]
+traverse :: {-  t = []  and  f = identity  -} (x ->   y) -> [x] ->    [y]
 ```
 
-`traverse` takes some kind of traversable data structure of type `t a`
-containing values type `a`.  It maps those values to operations of type `f b` in
-some applicative functor using the given mapping function of type `a -> f b`.
-Finally it returns an operation of type `f (t b)` that constructs a new data
-structure of type `t b`.
+`traverse` takes some kind of traversable data structure of type `t x`
+containing values type `x`.  It maps those values to operations of type `f y` in
+some [applicative
+functor](https://en.wikibooks.org/wiki/Haskell/Applicative_functors) using the
+given mapping function of type `x -> f y`.  Finally it returns an operation of
+type `f (t y)` that constructs a new data structure of type `t y`.
 
 The optical version of `traverse` replaces the second class `Traversable`
 constructor class with a first class traversal function
 
 ```haskell
-type Traversal s t a b = forall f. Applicative f => (a -> f b) -> s -> f t
+type Traversal s t a b = forall f. Applicative f => (x -> f y) -> s -> f t
 ```
 
 and `traverse` using an optic merely calls the given traversal function
 
 ```haskell
-traverse :: Applicative f => (a -> f b) -> Traversal s t a b -> s -> f t
-traverse a2bF o = o a2bF
+traverse :: Applicative f => (x -> f y) -> Traversal s t x y -> s -> f t
+traverse x2yF traversal = traversal x2yF
 ```
 
-A traversal function of type `Traversal s t a b` is simply a function that knows
-how to locate elements of type `a` within a data structure of type `s` and then
-knows how to build a new data structure of type `t` where values of type `a`
-have been replaced with values of type `b`.  In other words, the traversal
+A traversal function of type `Traversal s t x y` is simply a function that knows
+how to locate elements of type `x` within a data structure of type `s` and then
+knows how to build a new data structure of type `t` where values of type `x`
+have been replaced with values of type `y`.  In other words, the traversal
 function knows how to both take apart a data structure in a particular way to
 extract some values out of it and also how to put the data structure back
 together substituting some new values for the extracted values.  Of course, it
-is often the case that the type `b` is the same type `a` and type `t` is the
+is often the case that the type `y` is the same type `x` and type `t` is the
 same as `s`.
 
 We can translate the above `traverse` function to JavaScript in [Static
 Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md) style by
 passing the method dictionary corresponding to the `Applicative` constraint as
-an explicit argument:
+an explicit argument `F`:
 
 ```js
-const traverse = F => a2bF => o => o(F)(a2bF)
+const traverse = F => x2yF => traversal => traversal(F)(x2yF)
 ```
 
 Innocent as it may seem, *every* operation in Partial Lenses is basically an
 application of a traversal function like that.  The Partial Lenses version of
-[`traverse`](README.md#L-traverse) is only slightly different due to currying,
-built-in indexing, and the lifting of strings, numbers, and arrays to optics.
+[`traverse`](README.md#L-traverse) is only slightly different due to features
+such as currying, built-in indexing, and the lifting of strings, numbers, and
+arrays to optics.
 
 Here is an example of an `elems` traversal over the elements of an array:
 
@@ -88,7 +90,10 @@ const elems = F => x2yF => xs => xs.reduce(
 Above, `F` is a Static Land [applicative
 functor](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative),
 `x2yF` is the function mapping array elements to applicative operations, and
-`xs` is an array.
+`xs` is an array.  `elems` maps each element of the array `xs` to an applicative
+operation using the mapping function `x2yF` and then combines those operations
+using the applicative combinators `F.of`, `F.ap` and `F.map` into a computation
+that builds an array of the results.
 
 To actually use `elems` with `traverse` we need an applicative functor.  Perhaps
 the most straightforward example is using the identity applicative:
@@ -98,8 +103,8 @@ const Identity = {map: (x2y, x) => x2y(x), ap: (x2y, x) => x2y(x), of: x => x}
 ```
 
 The identity applicative performs no interesting computation by itself.  Any
-value is taken as such and both `map` and `ap` simply apply their first argument
-to their second argument.
+value is taken as such by `of` and both `map` and `ap` simply apply their first
+argument to their second argument.
 
 By supplying the `Identity` applicative to `traverse` we get a mapping function
 over a given traversal:
