@@ -43,7 +43,7 @@ The optical version of `traverse` replaces the second class `Traversable`
 constructor class with a first class traversal function
 
 ```haskell
-type Traversal s t a b = forall f. Applicative f => (x -> f y) -> s -> f t
+type Traversal s t x y = forall f. Applicative f => (x -> f y) -> s -> f t
 ```
 
 and `traverse` using an optic merely calls the given traversal function

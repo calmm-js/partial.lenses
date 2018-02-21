@@ -64,7 +64,7 @@ given mapping function of type <code>x -&gt; f y</code>.  Finally it returns an 
 type <code>f (t y)</code> that constructs a new data structure of type <code>t y</code>.</p>
 <p>The optical version of <code>traverse</code> replaces the second class <code>Traversable</code>
 constructor class with a first class traversal function</p>
-<pre><code class="hljs lang-haskell">type Traversal s t a b = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t
+<pre><code class="hljs lang-haskell">type Traversal s t x y = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t
 </code></pre>
 <p>and <code>traverse</code> using an optic merely calls the given traversal function</p>
 <pre><code class="hljs lang-haskell">traverse :: Applicative f =&gt; (x -&gt; f y) -&gt; Traversal s t x y -&gt; s -&gt; f t
