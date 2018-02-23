@@ -1214,16 +1214,16 @@ var matches = /*#__PURE__*/(dep(function (re) {
 
 var values = /*#__PURE__*/(par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
 
-var children = function children(x, i, C, xi2yC) {
+var children = /*#__PURE__*/(par(2, ef(reqApplicative('children'))))(function (x, i, C, xi2yC) {
   return I.isArray(x) ? elemsI(x, i, C, xi2yC) : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x);
-};
+});
 
-function flatten(x, i, C, xi2yC) {
+var flatten = /*#__PURE__*/(par(2, ef(reqApplicative('flatten'))))(function (x, i, C, xi2yC) {
   var rec = function rec(x, i) {
-    return I.isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i);
+    return I.isArray(x) ? elemsI(x, i, C, rec) : void 0 !== x ? xi2yC(x, i) : C.of(x);
   };
   return rec(x, i);
-}
+});
 
 function query() {
   var r = [];
@@ -1244,7 +1244,7 @@ var satisfying = function satisfying(p) {
 };
 
 var leafs = /*#__PURE__*/satisfying(function (x) {
-  return !I.isArray(x) && !I.isObject(x);
+  return void 0 !== x && !I.isArray(x) && !I.isObject(x);
 });
 
 // Folds over traversals

@@ -1445,8 +1445,8 @@ Usually, however, <code>L.modifyOp</code> is used within <a href="#transforms">t
 
 L.transform([&#39;elements&#39;,
              L.elems,
-             L.seq([L.when(elem =&gt; elem.time &lt; 2), L.removeOp],
-                   [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
+             L.ifElse(elem =&gt; elem.time &lt; 2, L.removeOp,
+                      [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
             sampleToFilter)
 </code></pre>
 <p>The idea is to filter the data both by <code>time</code> and by <code>subelements</code>.</p>
@@ -1524,7 +1524,8 @@ object.</p>
 <h5><a id="L-flatten"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-flatten">■</a> <a href="#L-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></h5>
 <p><code>L.flatten</code> is a traversal over the elements of arbitrarily nested arrays.
 Other <a href="#array-like">array-like</a> objects are treated as elements by <code>L.flatten</code>.
-In case the immediate target of <code>L.flatten</code> is not an array, it is traversed.</p>
+In case the immediate target of <code>L.flatten</code> is neither <code>undefined</code> nor an array,
+it is traversed.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.join(&#39; &#39;, L.flatten, [[[1]], [&#39;2&#39;], 3])
 </code></pre>
@@ -1535,7 +1536,8 @@ In case the immediate target of <code>L.flatten</code> is not an array, it is tr
 </code></pre>
 <h5><a id="L-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-leafs">■</a> <a href="#L-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.leafs</code> is a traversal that descends into ordinary arrays and plain objects
-and focuses on the elements whose constructor is neither <code>Array</code> nor <code>Object</code>.</p>
+and focuses on non-<code>undefined</code> elements whose constructor is neither <code>Array</code> nor
+<code>Object</code>.</p>
 <h5><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></h5>
 <p><code>L.matches</code>, when given a regular expression with the
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a>
