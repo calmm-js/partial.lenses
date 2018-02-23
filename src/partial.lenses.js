@@ -1013,15 +1013,22 @@ export const values = (process.env.NODE_ENV === 'production'
   branchOr1Level(identity, I.protoless0)
 )
 
-export const children = (x, i, C, xi2yC) =>
-  I.isArray(x)
-    ? elemsI(x, i, C, xi2yC)
-    : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
+export const children = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.par(2, C.ef(reqApplicative('children'))))(
+  (x, i, C, xi2yC) =>
+    I.isArray(x)
+      ? elemsI(x, i, C, xi2yC)
+      : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
+)
 
-export function flatten(x, i, C, xi2yC) {
-  const rec = (x, i) => (I.isArray(x) ? elemsI(x, i, C, rec) : xi2yC(x, i))
+export const flatten = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.par(2, C.ef(reqApplicative('flatten'))))((x, i, C, xi2yC) => {
+  const rec = (x, i) =>
+    I.isArray(x) ? elemsI(x, i, C, rec) : void 0 !== x ? xi2yC(x, i) : C.of(x)
   return rec(x, i)
-}
+})
 
 export function query() {
   const r = []
@@ -1037,7 +1044,9 @@ export const satisfying = p => (x, i, C, xi2yC) => {
   return rec(x, i)
 }
 
-export const leafs = satisfying(x => !I.isArray(x) && !I.isObject(x))
+export const leafs = satisfying(
+  x => void 0 !== x && !I.isArray(x) && !I.isObject(x)
+)
 
 // Folds over traversals
 

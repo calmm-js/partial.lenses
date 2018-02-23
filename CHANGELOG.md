@@ -1,5 +1,11 @@
 # Partial Lenses Changelog
 
+## 13.7.2
+
+Tightened the specification of `L.flatten` and `L.leafs` to skip `undefined`
+focuses.  This is considered a bug fix as the behaviour wasn't previously
+strictly specified.
+
 ## 13.6.2
 
 Fixed a bug in `L.filter`, which didn't correctly handle the case of writing an
