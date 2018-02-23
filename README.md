@@ -1881,7 +1881,8 @@ L.modify(L.entries, ([k, v]) => [v, k], {x: 'a', y: 'b'})
 
 `L.flatten` is a traversal over the elements of arbitrarily nested arrays.
 Other [array-like](#array-like) objects are treated as elements by `L.flatten`.
-In case the immediate target of `L.flatten` is not an array, it is traversed.
+In case the immediate target of `L.flatten` is neither `undefined` nor an array,
+it is traversed.
 
 For example:
 
@@ -1904,7 +1905,8 @@ L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 ##### <a id="L-leafs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-leafs) [`L.leafs ~> traversal`](#L-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
 
 `L.leafs` is a traversal that descends into ordinary arrays and plain objects
-and focuses on the elements whose constructor is neither `Array` nor `Object`.
+and focuses on non-`undefined` elements whose constructor is neither `Array` nor
+`Object`.
 
 ##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
 

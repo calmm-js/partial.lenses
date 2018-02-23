@@ -1687,6 +1687,8 @@ describe('L.flatten', () => {
     {y: 2},
     false
   ])
+  testEq(() => L.set(L.flatten, 1, undefined), undefined)
+  testEq(() => L.set(L.flatten, 1, 'defined'), 1)
 })
 
 describe('L.leafs', () => {
@@ -1698,6 +1700,8 @@ describe('L.leafs', () => {
     2,
     false
   ])
+  testEq(() => L.set(L.leafs, 1, undefined), undefined)
+  testEq(() => L.set(L.leafs, 1, 'defined'), 1)
 })
 
 describe('L.query', () => {
