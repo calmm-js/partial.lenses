@@ -1751,8 +1751,8 @@ const sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
 
 L.transform(['elements',
              L.elems,
-             L.seq([L.when(elem => elem.time < 2), L.removeOp],
-                   ['subelements', L.elems, L.when(i => i < 3), L.removeOp])],
+             L.ifElse(elem => elem.time < 2, L.removeOp,
+                      ['subelements', L.elems, L.when(i => i < 3), L.removeOp])],
             sampleToFilter)
 // { elements: [ { time: 2, subelements: [ 3, 4 ] },
 //               { time: 3, subelements: [ 3, 4 ] } ] }
