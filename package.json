@@ -72,7 +72,7 @@
     "codecov": "^3.0.0",
     "eslint": "^4.18.1",
     "klipse-github-docs-generator": "^0.3.2",
-    "livereload": "^0.6.3",
+    "livereload": "^0.7.0",
     "mocha": "^5.0.1",
     "nyc": "^11.4.1",
     "ramda": "^0.25.0",
