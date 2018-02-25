@@ -4,6 +4,7 @@
   "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "module": "dist/partial.lenses.es.js",
   "main": "dist/partial.lenses.cjs.js",
+  "sideEffects": false,
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
     "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get unchanged",
