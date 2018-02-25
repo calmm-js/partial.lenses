@@ -2,9 +2,12 @@
 .babelrc
 .eslintrc
 .nyc_output
+.prettierrc
 .travis.yml
 bench
 bower.json
+coverage
 docs
+klipse-github-docs.config.js
 scripts
 test
