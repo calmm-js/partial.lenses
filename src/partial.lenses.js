@@ -697,7 +697,8 @@ const matchesJoin = input => matchesIn => {
 
 //
 
-const ifteU = (c, t, e) => (x, i, C, xi2yC) => (c(x, i) ? t : e)(x, i, C, xi2yC)
+const eitherU = (t, e) => c => (x, i, C, xi2yC) =>
+  (c(x, i) ? t : e)(x, i, C, xi2yC)
 
 const orElseU = (back, prim) => (
   (prim = toFunction(prim)),
@@ -835,7 +836,7 @@ export const cond = (process.env.NODE_ENV === 'production'
   let r = zero
   while (n--) {
     const c = arguments[n]
-    r = c.length < 2 ? toFunction(c[0]) : ifteU(c[0], toFunction(c[1]), r)
+    r = c.length < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0])
   }
   return r
 })
@@ -862,7 +863,7 @@ export const condOf = (process.env.NODE_ENV === 'production'
 })
 
 export const ifElse = I.curry((c, t, e) =>
-  ifteU(c, toFunction(t), toFunction(e))
+  eitherU(toFunction(t), toFunction(e))(c)
 )
 
 export const iftes = (process.env.NODE_ENV === 'production'
@@ -877,7 +878,8 @@ export const iftes = (process.env.NODE_ENV === 'production'
       })(function(_c, _t) {
   let n = arguments.length
   let r = n & 1 ? toFunction(arguments[--n]) : zero
-  while (0 <= (n -= 2)) r = ifteU(arguments[n], toFunction(arguments[n + 1]), r)
+  while (0 <= (n -= 2))
+    r = eitherU(toFunction(arguments[n + 1]), r)(arguments[n])
   return r
 })
 
@@ -892,9 +894,9 @@ export const chain = I.curry((xi2yO, xO) => [
 
 export const choice = (...os) => os.reduceRight(orElseU, zero)
 
-export const unless = p => ifteU(p, zeroOp, identity)
+export const unless = eitherU(zeroOp, identity)
 
-export const when = p => ifteU(p, identity, zeroOp)
+export const when = eitherU(identity, zeroOp)
 
 export const optional = when(I.isDefined)
 
