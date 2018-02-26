@@ -700,6 +700,13 @@ const matchesJoin = input => matchesIn => {
 const eitherU = (t, e) => c => (x, i, C, xi2yC) =>
   (c(x, i) ? t : e)(x, i, C, xi2yC)
 
+const eitherOfU = (t, e) =>
+  I.curry((l, c) => {
+    l = toFunction(l)
+    const op = (y, j) => (c(y, j) ? t : e)
+    return (x, i, F, xi2yF) => l(x, i, Constant, op)(x, i, F, xi2yF)
+  })
+
 const orElseU = (back, prim) => (
   (prim = toFunction(prim)),
   (back = toFunction(back)),
@@ -866,6 +873,8 @@ export const ifElse = I.curry((c, t, e) =>
   eitherU(toFunction(t), toFunction(e))(c)
 )
 
+export const ifElseOf = I.curry((l, c, t, e) => eitherOfU(t, e)(l, c))
+
 export const iftes = (process.env.NODE_ENV === 'production'
   ? I.id
   : fn =>
@@ -896,7 +905,11 @@ export const choice = (...os) => os.reduceRight(orElseU, zero)
 
 export const unless = eitherU(zeroOp, identity)
 
+export const unlessOf = eitherOfU(zeroOp, identity)
+
 export const when = eitherU(identity, zeroOp)
+
+export const whenOf = eitherOfU(identity, zeroOp)
 
 export const optional = when(I.isDefined)
 

@@ -249,6 +249,7 @@ describe('arities', () => {
     getInverse: 2,
     identity: 4,
     ifElse: 3,
+    ifElseOf: 4,
     iftes: 2,
     index: 1,
     indexed: 4,
@@ -316,11 +317,13 @@ describe('arities', () => {
     transform: 2,
     traverse: 4,
     unless: 1,
+    unlessOf: 2,
     uri: 4,
     uriComponent: 4,
     valueOr: 1,
     values: 4,
     when: 1,
+    whenOf: 2,
     zero: 4
   }
 

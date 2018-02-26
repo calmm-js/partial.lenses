@@ -113,6 +113,10 @@ export const ifElse = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_optic, T_optic],
   T_optic
 )
+export const ifElseOf = T.fn(
+  [T_lens, T.fn([T_maybeDataO, T_index], T.any), T_optic, T_optic],
+  T_optic
+)
 export const iftes = T.fnVarN(2, T.any, T_optic)
 export const orElse = T.fn([T_optic, T_optic], T_optic)
 
@@ -122,7 +126,12 @@ export const chain = T.fn([T.fn([T_dataO, T_index], T_optic), T_lens], T_optic)
 export const choice = T.fnVarN(0, T_optic, T_optic)
 export const optional = T_optic
 export const unless = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
-export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
+export const unlessOf = T.fn(
+  [T_lens, T.fn([T_maybeDataO, T_index], T.any)],
+  T_optic
+)
+export const when = unless
+export const whenOf = unlessOf
 export const zero = T_optic
 
 // Transforming
