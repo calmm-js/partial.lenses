@@ -236,6 +236,7 @@ describe('arities', () => {
     entries: 4,
     filter: 1,
     find: 1,
+    findWhereEq: 1,
     findWith: 1,
     first: undefined,
     flat: 0,
@@ -363,6 +364,19 @@ describe(`L.find`, () => {
   )
   testEq(() => L.get(L.find(R.equals(2), {hint: 10}), [3, 2, 1, 0]), 2)
   testEq(() => L.set(L.find(R.equals(2), {hint: 0}), 2, [0, 1]), [0, 1, 2])
+})
+
+describe(`L.findWhereEq`, () => {
+  testEq(`L.set([L.findWhereEq({id: 2}), 'value'], 42, [{id: 3}, {id: 2}])`, [
+    {id: 3},
+    {id: 2, value: 42}
+  ])
+  testEq(
+    `L.set([L.findWhereEq({id: 2}, {hint: 2}), 'value'],
+           42,
+           [{id: 3}, {id: 2}])`,
+    [{id: 3}, {id: 2, value: 42}]
+  )
 })
 
 describe(`L.get`, () => {
