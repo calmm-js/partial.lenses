@@ -1,5 +1,10 @@
 # Partial Lenses Changelog
 
+## 13.7.4
+
+Worked around an issue with React Native, see
+[#161](https://github.com/calmm-js/partial.lenses/issues/161).
+
 ## 13.7.2
 
 Tightened the specification of `L.flatten` and `L.leafs` to skip `undefined`

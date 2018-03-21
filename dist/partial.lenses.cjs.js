@@ -19,7 +19,7 @@ var create = Object.create;
 var protoless = function protoless(o) {
   return I.assign(create(null), o);
 };
-var protoless0 = /*#__PURE__*/I.freeze( /*#__PURE__*/protoless(0));
+var protoless0 = /*#__PURE__*/I.freeze( /*#__PURE__*/protoless(I.object0));
 
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
@@ -862,9 +862,11 @@ var matchesJoin = function matchesJoin(input) {
 
 //
 
-var ifteU = function ifteU(c, t, e) {
-  return function (x, i, C, xi2yC) {
-    return (c(x, i) ? t : e)(x, i, C, xi2yC);
+var eitherU = function eitherU(t, e) {
+  return function (c) {
+    return function (x, i, C, xi2yC) {
+      return (c(x, i) ? t : e)(x, i, C, xi2yC);
+    };
   };
 };
 
@@ -1027,7 +1029,7 @@ var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : function
   var r = zero;
   while (n--) {
     var c = arguments[n];
-    r = c.length < 2 ? toFunction(c[0]) : ifteU(c[0], toFunction(c[1]), r);
+    r = c.length < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0]);
   }
   return r;
 });
@@ -1057,7 +1059,7 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : functi
 });
 
 var ifElse = /*#__PURE__*/I.curry(function (c, t, e) {
-  return ifteU(c, toFunction(t), toFunction(e));
+  return eitherU(toFunction(t), toFunction(e))(c);
 });
 
 var iftes = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : function (fn$$1) {
@@ -1069,7 +1071,7 @@ var iftes = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : functio
   var n = arguments.length;
   var r = n & 1 ? toFunction(arguments[--n]) : zero;
   while (0 <= (n -= 2)) {
-    r = ifteU(arguments[n], toFunction(arguments[n + 1]), r);
+    r = eitherU(toFunction(arguments[n + 1]), r)(arguments[n]);
   }return r;
 });
 
@@ -1091,13 +1093,9 @@ var choice = function choice() {
   return os.reduceRight(orElseU, zero);
 };
 
-var unless = function unless(p) {
-  return ifteU(p, zeroOp, identity);
-};
+var unless = /*#__PURE__*/eitherU(zeroOp, identity);
 
-var when = function when(p) {
-  return ifteU(p, identity, zeroOp);
-};
+var when = /*#__PURE__*/eitherU(identity, zeroOp);
 
 var optional = /*#__PURE__*/when(I.isDefined);
 
