@@ -6,13 +6,14 @@ import * as PL from '../dist/partial.lenses.cjs'
 import * as BST from './bst'
 import * as T from './types'
 
-// L is a variable so we can override it for the tests
+// L is a variable so we can override it for the tests.
 let L = PL
 
-const typedL = R.mapObjIndexed(
-  (val, key) => (I.isFunction(T[key]) ? T[key](val) : val),
-  PL
-)
+const typedL = R.mapObjIndexed((val, key) => {
+  const type = T[key]
+  if (!I.isFunction(type)) throw Error(`Type of \`${key}\` missing`)
+  return type(val)
+}, PL)
 
 const id = I.id
 const X = L
@@ -127,26 +128,24 @@ function toggleEnv() {
     process.env.NODE_ENV === 'production' ? 'development' : 'production'
 }
 
-function showFunction(f) {
-  return f
+const toExpr = f =>
+  f
     .toString()
     .replace(/\s+/g, ' ')
     .replace(/^\s*function\s*\(\s*\)\s*{\s*(return\s*)?/, '')
     .replace(/\s*;?\s*}\s*$/, '')
     .replace(/function\s*(\([a-zA-Z]*\))\s*/g, '$1 => ')
     .replace(/{\s*return\s*([^{;]+)\s*;\s*}/g, '$1')
-    .replace(/{\s*return\s*([^{;]+)\s*;\s*}/g, '$1')
-}
 
-function testEq(expr, expect) {
-  it(`${showFunction(expr)} => ${show(expect)}`, () => {
-    const actual = expr()
+function testEq(thunk, expect) {
+  it(`${toExpr(thunk)} => ${show(expect)}`, () => {
+    const actual = thunk()
     if (!equals(actual, expect))
       throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
 
     toggleEnv()
     try {
-      const actual = expr()
+      const actual = thunk()
       if (!equals(actual, expect))
         throw Error(`Expected: ${show(expect)}, actual: ${show(actual)}`)
     } finally {
@@ -155,7 +154,7 @@ function testEq(expr, expect) {
 
     L = typedL
     try {
-      const typed = expr()
+      const typed = thunk()
       if (!equals(actual, typed))
         throw Error(`Typed: ${show(typed)}, actual: ${show(actual)}`)
     } finally {
@@ -164,19 +163,21 @@ function testEq(expr, expect) {
   })
 }
 
-const testThrows = expr =>
-  it(`${showFunction(expr)} => throws`, () => {
+const testThrows = thunk =>
+  it(`${toExpr(thunk)} => throws`, () => {
     let raised
     let result
     try {
-      result = expr()
+      result = thunk()
       raised = false
     } catch (e) {
       result = e
       raised = true
     }
     if (!raised)
-      throw Error(`Expected ${expr} to throw, returned ${show(result)}`)
+      throw Error(
+        `Expected ${toExpr(thunk)} to throw, returned ${show(result)}`
+      )
   })
 
 const empties = [undefined, null, false, true, '', 0, 0.0 / 0.0, {}, []]
