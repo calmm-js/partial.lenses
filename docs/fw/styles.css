@@ -14,14 +14,18 @@
   height: 100%;
   background: white;
   border-radius: 3px;
-  border: 1px solid rgba(0,0,0,255);
+  border: 1px solid rgba(0, 0, 0, 255);
 }
 .hint:hover::after {
   display: none;
 }
 
-.markdown-body h4 code { font-size: 16px; }
-.markdown-body h5 code { font-size: 14px; }
+.markdown-body h4 code {
+  font-size: 16px;
+}
+.markdown-body h5 code {
+  font-size: 14px;
+}
 
 .markdown-body {
   box-sizing: border-box;
@@ -40,7 +44,7 @@
 .CodeMirror {
   display: none;
   border: none;
-  font: 13.6px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font: 13.6px Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   line-height: 19.72px;
 }
 
