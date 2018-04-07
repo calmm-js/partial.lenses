@@ -310,6 +310,7 @@ describe('arities', () => {
     modify: 3,
     modifyAsync: 3,
     modifyOp: 1,
+    multikeyed: 4,
     multiply: 1,
     negate: 4,
     none: 3,
@@ -1903,6 +1904,10 @@ describe('L.indexed', () => {
 describe('L.keyed', () => {
   testEq(() => L.get(L.keyed, {x: 4, y: 2}), [['x', 4], ['y', 2]])
   testEq(() => L.getInverse(L.keyed, [['x', 4], ['y', 2]]), {x: 4, y: 2})
+  testEq(() => L.getInverse(L.keyed, [['x', 4], ['x', 3], ['y', 2]]), {
+    x: 3,
+    y: 2
+  })
   testEq(() => L.set(L.keyed, {}, {x: 4, y: 2}), undefined)
   testEq(() => L.set(L.keyed, [], {x: 4, y: 2}), {})
   testEq(() => L.set(L.keyed, undefined, {x: 4, y: 2}), undefined)
@@ -1910,6 +1915,35 @@ describe('L.keyed', () => {
   testEq(() => L.remove([L.keyed, 1, 0], {x: 4, y: 2}), {x: 4})
   testEq(() => L.remove([L.keyed, 0, 1], {x: 4, y: 2}), {y: 2})
   testEq(() => L.getInverse(L.keyed, null), undefined)
+})
+
+describe('L.multikeyed', () => {
+  testEq(() => L.get(L.multikeyed, {x: 4, y: 2}), [['x', 4], ['y', 2]])
+  testEq(() => L.get(L.multikeyed, {x: [4, 3, 2], y: 2}), [
+    ['x', 4],
+    ['x', 3],
+    ['x', 2],
+    ['y', 2]
+  ])
+  testEq(() => L.getInverse(L.multikeyed, [['x', 4], ['y', 2]]), {x: 4, y: 2})
+  testEq(
+    () => L.getInverse(L.multikeyed, [['x', 4], ['x', 3], ['y', 2], ['x', 1]]),
+    {
+      x: [4, 3, 1],
+      y: 2
+    }
+  )
+  testEq(() => L.set(L.multikeyed, {}, {x: 4, y: 2}), undefined)
+  testEq(() => L.set(L.multikeyed, [], {x: 4, y: 2}), {})
+  testEq(() => L.set(L.multikeyed, undefined, {x: 4, y: 2}), undefined)
+  testEq(() => L.set([L.multikeyed, 2], ['z', 6], {x: 4, y: 2}), {
+    x: 4,
+    y: 2,
+    z: 6
+  })
+  testEq(() => L.remove([L.multikeyed, 1, 0], {x: 4, y: 2}), {x: 4})
+  testEq(() => L.remove([L.multikeyed, 0, 1], {x: 4, y: 2}), {y: 2})
+  testEq(() => L.getInverse(L.multikeyed, null), undefined)
 })
 
 describe('L.entries', () => {

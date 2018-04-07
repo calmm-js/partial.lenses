@@ -770,6 +770,45 @@ const keyed = isoU(
   )
 )
 
+export const multikeyed = isoU(
+  expect(
+    I.isInstanceOf(Object),
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
+      o => {
+        o = toObject(o)
+        const ps = []
+        for (const k in o) {
+          const v = o[k]
+          if (I.isArray(v))
+            for (let i = 0, n = v.length; i < n; ++i) ps.push([k, v[i]])
+          else ps.push([k, v])
+        }
+        return ps
+      }
+    )
+  ),
+  expect(
+    I.isArray,
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
+      ps => {
+        const o = I.create(null)
+        for (let i = 0, n = ps.length; i < n; ++i) {
+          const entry = ps[i]
+          if (entry.length === 2) {
+            const k = entry[0]
+            const v = entry[1]
+            const was = o[k]
+            if (was === void 0) o[k] = v
+            else if (I.isArray(was)) was.push(v)
+            else o[k] = [was, v]
+          }
+        }
+        return I.assign({}, o)
+      }
+    )
+  )
+)
+
 //
 
 const matchesJoin = input => matchesIn => {
