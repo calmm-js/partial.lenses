@@ -373,6 +373,14 @@ export const uri = T_isomorphism
 export const uriComponent = T_isomorphism
 export const json = T.fn([T.any], T_isomorphism)
 
+// String isomorphisms
+
+export const dropPrefix = T.fn([T.string], T_isomorphism)
+export const dropSuffix = T.fn([T.string], T_isomorphism)
+export const replaces = T.fn([T.string, T.string], T_isomorphism)
+export const split = T.fn([T.string], T_isomorphism)
+export const uncouple = T.fn([T.string], T_isomorphism)
+
 // Interop
 
 export const pointer = T.fn([T.string], T_lens)

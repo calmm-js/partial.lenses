@@ -4,6 +4,11 @@ import * as C from './contract'
 
 //
 
+const toRegExpU = (str, flags) =>
+  I.isString(str)
+    ? new RegExp(I.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags)
+    : str
+
 const toStringPartial = x => (void 0 !== x ? String(x) : '')
 
 const sliceIndex = (m, l, d, i) =>
@@ -440,6 +445,9 @@ const lensU = (get, set) => (x, i, F, xi2yF) =>
 
 const isoU = (bwd, fwd) => (x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i))
 
+const stringIsoU = (bwd, fwd) =>
+  isoU(expect(I.isString, bwd), expect(I.isString, fwd))
+
 //
 
 const getPick = (process.env.NODE_ENV === 'production'
@@ -602,6 +610,7 @@ const fromReader = wi2x => (w, i, F, xi2yF) =>
 
 const reValue = m => m[0]
 const reIndex = m => m.index
+const reLastIndex = m => reIndex(m) + m[0].length
 
 const reNext = (process.env.NODE_ENV === 'production'
   ? I.id
@@ -615,7 +624,7 @@ const reNext = (process.env.NODE_ENV === 'production'
       return res
     })((m, re) => {
   const lastIndex = re.lastIndex
-  re.lastIndex = reIndex(m) + m[0].length
+  re.lastIndex = reLastIndex(m)
   const n = re.exec(m.input)
   re.lastIndex = lastIndex
   return n && n[0] && n
@@ -684,11 +693,10 @@ const matchesJoin = input => matchesIn => {
   const n = matches.length
   for (let j = n - 2; j !== -2; j += -2) {
     const m = matches[j]
-    const i = reIndex(m)
-    result += input.slice(lastIndex, i)
+    result += input.slice(lastIndex, reIndex(m))
     const s = matches[j + 1]
     if (void 0 !== s) result += s
-    lastIndex = i + m[0].length
+    lastIndex = reLastIndex(m)
   }
 
   result += input.slice(lastIndex)
@@ -1546,15 +1554,9 @@ export const singleton = (process.env.NODE_ENV === 'production'
 
 // Standard isomorphisms
 
-export const uri = isoU(
-  expect(I.isString, decodeURI),
-  expect(I.isString, encodeURI)
-)
+export const uri = stringIsoU(decodeURI, encodeURI)
 
-export const uriComponent = isoU(
-  expect(I.isString, decodeURIComponent),
-  expect(I.isString, encodeURIComponent)
-)
+export const uriComponent = stringIsoU(decodeURIComponent, encodeURIComponent)
 
 export const json = (process.env.NODE_ENV === 'production'
   ? I.id
@@ -1563,6 +1565,59 @@ export const json = (process.env.NODE_ENV === 'production'
   return isoU(
     expect(I.isString, text => JSON.parse(text, reviver)),
     expect(I.isDefined, value => JSON.stringify(value, replacer, space))
+  )
+})
+
+// String isomorphisms
+
+export const dropPrefix = pfx =>
+  stringIsoU(
+    x => (x.startsWith(pfx) ? x.slice(pfx.length) : undefined),
+    x => pfx + x
+  )
+
+export const dropSuffix = sfx =>
+  stringIsoU(
+    x => (x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined),
+    x => x + sfx
+  )
+
+export const replaces = I.curry((i, o) =>
+  stringIsoU(I.replace(toRegExpU(i, 'g'), o), I.replace(toRegExpU(o, 'g'), i))
+)
+
+export const split = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : fn =>
+      function(_sep) {
+        return toFunction([fn.apply(null, arguments), isoU(I.freeze, I.id)])
+      })(function(sep) {
+  const re = arguments.length > 1 ? arguments[1] : sep
+  return isoU(
+    expect(I.isString, x => x.split(re)),
+    expect(I.isArray, xs => xs.join(sep))
+  )
+})
+
+export const uncouple = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : fn =>
+      function(_sep) {
+        return toFunction([fn.apply(null, arguments), isoU(I.freeze, I.id)])
+      })(function(sep) {
+  const re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '')
+  return isoU(
+    expect(I.isString, x => {
+      const m = re.exec(x)
+      return m ? [x.slice(0, reIndex(m)), x.slice(reLastIndex(m))] : [x, '']
+    }),
+    kv => {
+      if (I.isArray(kv) && kv.length === 2) {
+        const k = kv[0]
+        const v = kv[1]
+        return v ? k + sep + v : k
+      }
+    }
   )
 })
 

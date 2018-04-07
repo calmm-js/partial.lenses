@@ -10,3 +10,5 @@ export const isInstanceOf = I.curry((Class, x) => x instanceof Class)
 export const create = Object.create
 export const protoless = o => I.assign(create(null), o)
 export const protoless0 = I.freeze(protoless(I.object0))
+
+export const replace = I.curry((p, r, s) => s.replace(p, r))

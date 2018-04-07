@@ -233,6 +233,8 @@ describe('arities', () => {
     countsAs: 3,
     defaults: 1,
     define: 1,
+    dropPrefix: 1,
+    dropSuffix: 1,
     elems: 4,
     entries: 4,
     filter: 1,
@@ -296,6 +298,7 @@ describe('arities', () => {
     remove: 2,
     removeOp: 4,
     replace: 2,
+    replaces: 2,
     required: 1,
     reread: 1,
     reverse: 4,
@@ -310,12 +313,14 @@ describe('arities', () => {
     setter: 1,
     singleton: 4,
     slice: 2,
+    split: 1,
     suffix: 1,
     sum: 2,
     sumAs: 3,
     toFunction: 1,
     transform: 2,
     traverse: 4,
+    uncouple: 1,
     unless: 1,
     uri: 4,
     uriComponent: 4,
@@ -1920,6 +1925,50 @@ describe('L.pointer', () => {
     a: 1,
     b: [3, 3]
   })
+})
+
+describe('L.dropPrefix', () => {
+  testEq(() => L.get(L.dropPrefix('foo'), 'foobar'), 'bar')
+  testEq(() => L.getInverse(L.dropPrefix('foo'), 'bar'), 'foobar')
+  testEq(() => L.get(L.dropPrefix('foo'), ['not a string']), undefined)
+  testEq(() => L.getInverse(L.dropPrefix('foo'), ['not a string']), undefined)
+})
+
+describe('L.dropSuffix', () => {
+  testEq(() => L.get(L.dropSuffix('bar'), 'foobar'), 'foo')
+  testEq(() => L.getInverse(L.dropSuffix('bar'), 'foo'), 'foobar')
+  testEq(() => L.get(L.dropSuffix('bar'), ['not a string']), undefined)
+  testEq(() => L.getInverse(L.dropSuffix('bar'), ['not a string']), undefined)
+})
+
+describe('L.replaces', () => {
+  testEq(() => L.get(L.replaces('+', '%20'), 'fo+ob+ar'), 'fo%20ob%20ar')
+  testEq(() => L.getInverse(L.replaces('+', '%20'), 'fo%20ob%20ar'), 'fo+ob+ar')
+  testEq(() => L.get(L.replaces('+', '%20'), ['not a string']), undefined)
+  testEq(
+    () => L.getInverse(L.replaces('+', '%20'), ['not a string']),
+    undefined
+  )
+})
+
+describe('L.split', () => {
+  testEq(() => L.get(L.split(','), 'fo,ob,ar'), ['fo', 'ob', 'ar'])
+  testEq(() => L.get(X.split(',', /,\s*/), 'fo, ob, ar'), ['fo', 'ob', 'ar'])
+  testEq(() => L.getInverse(L.split(','), ['fo', 'ob', 'ar']), 'fo,ob,ar')
+  testEq(() => L.get(L.split(','), ['not a', 'string']), undefined)
+  testEq(() => L.getInverse(L.split(','), 'not an array'), undefined)
+})
+
+describe('L.uncouple', () => {
+  testEq(() => L.get(L.uncouple('='), 'fo=ob=ar'), ['fo', 'ob=ar'])
+  testEq(() => L.get(X.uncouple('=', '/'), 'fo/ob=ar'), ['fo', 'ob=ar'])
+  testEq(() => L.get(X.uncouple('=', /\s*=\s*/), 'fo = ob = ar'), [
+    'fo',
+    'ob = ar'
+  ])
+  testEq(() => L.getInverse(L.uncouple('='), ['foo', 'bar']), 'foo=bar')
+  testEq(() => L.get(L.uncouple('='), ['not a', 'string']), undefined)
+  testEq(() => L.getInverse(L.uncouple('='), 'not an array'), undefined)
 })
 
 describe('L.flat', () => {
