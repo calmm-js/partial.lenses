@@ -197,6 +197,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON") <small><sup>v11.3.0</sup></small>
+    * [String isomorphisms](#string-isomorphisms)
+      * [`L.dropPrefix(prefix) ~> isomorphism`](#L-dropPrefix "L.dropPrefix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
+      * [`L.dropSuffix(suffix) ~> isomorphism`](#L-dropSuffix "L.dropSuffix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
+      * [`L.replaces(substringIn, substringOut) ~> isomorphism`](#L-replaces "L.replaces: String -> String -> PIso String String") <small><sup>v13.8.0</sup></small>
+      * [`L.split(separator[, separatorRegExp]) ~> isomorphism`](#L-split "L.split: (String[, String | RegExp]) -> PIso String [String]") <small><sup>v13.8.0</sup></small>
+      * [`L.uncouple(separator[, separatorRegExp]) ~> isomorphism`](#L-uncouple "L.uncouple: (String[, String | RegExp]) -> PIso String [String, String]") <small><sup>v13.8.0</sup></small>
   * [Interop](#interop)
     * [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
   * [Auxiliary](#auxiliary)
@@ -3554,6 +3560,106 @@ functions.  The optional `reviver` is passed to
 [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 and the optional `replacer` and `space` are passed to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
+
+#### <a id="string-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#string-isomorphisms) [String isomorphisms](#string-isomorphisms)
+
+##### <a id="L-dropPrefix"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-dropPrefix) [`L.dropPrefix(prefix) ~> isomorphism`](#L-dropPrefix "L.dropPrefix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
+
+`L.dropPrefix` drops the given prefix from the beginning of the string when read
+through and adds it when written through.  In case the input does not contain
+the prefix, the result is `undefined`, which allows `L.dropPrefix` to be used as
+a predicate.  See also [`L.dropSuffix`](#L-dropSuffix).
+
+For example:
+
+```js
+L.get(L.dropPrefix('?'), '?foo=bar')
+// 'foo=bar'
+```
+
+```js
+L.getInverse(L.dropPrefix('?'), 'foo=bar')
+// '?foo=bar'
+```
+
+##### <a id="L-dropSuffix"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-dropSuffix) [`L.dropSuffix(suffix) ~> isomorphism`](#L-dropSuffix "L.dropSuffix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
+
+`L.dropSuffix` drops the given suffix from the end of the string when read
+through and adds it when written through.  In case the input does not contain
+the suffix, the result is `undefined`, which allows `L.dropSuffix` to be used as
+a predicate.  See also [`L.dropPrefix`](#L-dropPrefix).
+
+For example:
+
+```js
+L.get(L.dropSuffix('.bar'), 'foo.bar')
+// 'foo'
+```
+
+```js
+L.getInverse(L.dropSuffix('.bar'), 'foo')
+// 'foo.bar'
+```
+
+##### <a id="L-replaces"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-replaces) [`L.replaces(substringIn, substringOut) ~> isomorphism`](#L-replaces "L.replaces: String -> String -> PIso String String") <small><sup>v13.8.0</sup></small>
+
+`L.replaces` replaces substrings in the string passing through both when read
+and written.
+
+For example:
+
+```js
+L.get(L.replaces('+', ' '), 'Is+this too+much?')
+// 'Is this too much?'
+```
+
+```js
+L.getInverse(L.replaces('+', ' '), 'Is URL+encoding fun?')
+// 'Is+URL+encoding+fun?'
+```
+
+##### <a id="L-split"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-split) [`L.split(separator[, separatorRegExp]) ~> isomorphism`](#L-split "L.split: (String[, String | RegExp]) -> PIso String [String]") <small><sup>v13.8.0</sup></small>
+
+`L.split` splits a string with given separator into an array when read through
+and joins an array of strings into a string with the separator when written
+through.  The second argument to `L.split` is optional and specifies the pattern
+to be used for splitting instead of the default separator string.  See also
+[`L.uncouple`](#L-uncouple).
+
+For example:
+
+```js
+L.get(L.split(',', /\s*,\s*/), 'comma, separated, items')
+// ['comma', 'separated', 'items']
+```
+
+```js
+L.getInverse(L.split('&'), ['roses=red', 'violets=blue', 'sugar=sweet'])
+// 'roses=red&violets=blue&sugar=sweet'
+```
+
+##### <a id="L-uncouple"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uncouple) [`L.uncouple(separator[, separatorRegExp]) ~> isomorphism`](#L-uncouple "L.uncouple: (String[, String | RegExp]) -> PIso String [String, String]") <small><sup>v13.8.0</sup></small>
+
+`L.uncouple` splits a string with the given separator into a pair when read
+through and joins a pair of strings into a string with the separator when
+written through.  In case the input string does not contain the separator, the
+second element of the pair will be an empty string.  Likewise, if the second
+element of the pair is an empty string, no separator is written to the resulting
+string.  The second argument to `L.uncouple` is optional and specifies the
+pattern to be used for splitting instead of the default separator string.  See
+also [`L.split`](#L-split).
+
+For example:
+
+```js
+L.get(L.uncouple('=', /\s*=\s*/), 'foo = bar')
+// [ 'foo', 'bar' ]
+```
+
+```js
+L.getInverse(L.uncouple('='), ['key', ''])
+// 'key'
+```
 
 ### <a id="interop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interop) [Interop](#interop)
 
