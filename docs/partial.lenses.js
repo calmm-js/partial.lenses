@@ -21,6 +21,10 @@
   };
   var protoless0 = /*#__PURE__*/I.freeze( /*#__PURE__*/protoless(I.object0));
 
+  var replace = /*#__PURE__*/I.curry(function (p, r, s) {
+    return s.replace(p, r);
+  });
+
   var dep = function dep(xs2xsyC) {
     return function (xsy) {
       return I.arityN(xsy.length, function () {
@@ -118,6 +122,10 @@
   };
 
   //
+
+  var toRegExpU = function toRegExpU(str, flags) {
+    return I.isString(str) ? new RegExp(replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags) : str;
+  };
 
   var toStringPartial = function toStringPartial(x) {
     return void 0 !== x ? String(x) : '';
@@ -598,6 +606,10 @@
     };
   };
 
+  var stringIsoU = function stringIsoU(bwd, fwd) {
+    return isoU(expect(I.isString, bwd), expect(I.isString, fwd));
+  };
+
   //
 
   var getPick = /*#__PURE__*/(res(I.freeze))(function (template, x) {
@@ -773,6 +785,9 @@
   var reIndex = function reIndex(m) {
     return m.index;
   };
+  var reLastIndex = function reLastIndex(m) {
+    return reIndex(m) + m[0].length;
+  };
 
   var reNext = /*#__PURE__*/(function (fn$$1) {
     return function (m, re) {
@@ -782,7 +797,7 @@
     };
   })(function (m, re) {
     var lastIndex = re.lastIndex;
-    re.lastIndex = reIndex(m) + m[0].length;
+    re.lastIndex = reLastIndex(m);
     var n = re.exec(m.input);
     re.lastIndex = lastIndex;
     return n && n[0] && n;
@@ -848,11 +863,10 @@
       var n = matches.length;
       for (var j = n - 2; j !== -2; j += -2) {
         var m = matches[j];
-        var i = reIndex(m);
-        result += input.slice(lastIndex, i);
+        result += input.slice(lastIndex, reIndex(m));
         var s = matches[j + 1];
         if (void 0 !== s) result += s;
-        lastIndex = i + m[0].length;
+        lastIndex = reLastIndex(m);
       }
 
       result += input.slice(lastIndex);
@@ -1443,7 +1457,7 @@
       if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(I.id, warnEmpty(required, inn, 'required'))]);else return res$$1;
     };
   })(function (inn) {
-    return replace(inn, void 0);
+    return replace$1(inn, void 0);
   });
 
   var reread = function reread(xi2x) {
@@ -1592,7 +1606,7 @@
     };
   });
 
-  var replace = /*#__PURE__*/I.curry(function (inn, out) {
+  var replace$1 = /*#__PURE__*/I.curry(function (inn, out) {
     function o2i(x) {
       return replaced(out, inn, x);
     }
@@ -1682,9 +1696,9 @@
 
   // Standard isomorphisms
 
-  var uri = /*#__PURE__*/isoU( /*#__PURE__*/expect(I.isString, decodeURI), /*#__PURE__*/expect(I.isString, encodeURI));
+  var uri = /*#__PURE__*/stringIsoU(decodeURI, encodeURI);
 
-  var uriComponent = /*#__PURE__*/isoU( /*#__PURE__*/expect(I.isString, decodeURIComponent), /*#__PURE__*/expect(I.isString, encodeURIComponent));
+  var uriComponent = /*#__PURE__*/stringIsoU(decodeURIComponent, encodeURIComponent);
 
   var json = /*#__PURE__*/(res(function (iso) {
     return toFunction([iso, isoU(deepFreeze, I.id)]);
@@ -1699,6 +1713,59 @@
     }), expect(I.isDefined, function (value) {
       return JSON.stringify(value, replacer, space);
     }));
+  });
+
+  // String isomorphisms
+
+  var dropPrefix = function dropPrefix(pfx) {
+    return stringIsoU(function (x) {
+      return x.startsWith(pfx) ? x.slice(pfx.length) : undefined;
+    }, function (x) {
+      return pfx + x;
+    });
+  };
+
+  var dropSuffix = function dropSuffix(sfx) {
+    return stringIsoU(function (x) {
+      return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined;
+    }, function (x) {
+      return x + sfx;
+    });
+  };
+
+  var replaces = /*#__PURE__*/I.curry(function (i, o) {
+    return stringIsoU(replace(toRegExpU(i, 'g'), o), replace(toRegExpU(o, 'g'), i));
+  });
+
+  var split = /*#__PURE__*/(function (fn$$1) {
+    return function (_sep) {
+      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, I.id)]);
+    };
+  })(function (sep) {
+    var re = arguments.length > 1 ? arguments[1] : sep;
+    return isoU(expect(I.isString, function (x) {
+      return x.split(re);
+    }), expect(I.isArray, function (xs) {
+      return xs.join(sep);
+    }));
+  });
+
+  var uncouple = /*#__PURE__*/(function (fn$$1) {
+    return function (_sep) {
+      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, I.id)]);
+    };
+  })(function (sep) {
+    var re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '');
+    return isoU(expect(I.isString, function (x) {
+      var m = re.exec(x);
+      return m ? [x.slice(0, reIndex(m)), x.slice(reLastIndex(m))] : [x, ''];
+    }), function (kv) {
+      if (I.isArray(kv) && kv.length === 2) {
+        var k = kv[0];
+        var v = kv[1];
+        return v ? k + sep + v : k;
+      }
+    });
   });
 
   // Interop
@@ -1820,7 +1887,7 @@
   exports.removable = removable;
   exports.valueOr = valueOr;
   exports.pick = pick;
-  exports.replace = replace;
+  exports.replace = replace$1;
   exports.getInverse = getInverse;
   exports.iso = iso;
   exports.array = array;
@@ -1835,6 +1902,11 @@
   exports.uri = uri;
   exports.uriComponent = uriComponent;
   exports.json = json;
+  exports.dropPrefix = dropPrefix;
+  exports.dropSuffix = dropSuffix;
+  exports.replaces = replaces;
+  exports.split = split;
+  exports.uncouple = uncouple;
   exports.pointer = pointer;
 
   Object.defineProperty(exports, '__esModule', { value: true });
