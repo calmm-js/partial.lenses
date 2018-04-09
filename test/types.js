@@ -381,6 +381,14 @@ export const replaces = T.fn([T.string, T.string], T_isomorphism)
 export const split = T.fn([T.string], T_isomorphism)
 export const uncouple = T.fn([T.string], T_isomorphism)
 
+// Arithmetic isomorphisms
+
+export const add = T.fn([T.number], T_isomorphism)
+export const divide = T.fn([T.number], T_isomorphism)
+export const multiply = T.fn([T.number], T_isomorphism)
+export const negate = T_isomorphism
+export const subtract = T.fn([T.number], T_isomorphism)
+
 // Interop
 
 export const pointer = T.fn([T.string], T_lens)

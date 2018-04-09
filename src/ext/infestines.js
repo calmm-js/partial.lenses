@@ -2,6 +2,16 @@ import * as I from 'infestines'
 
 export * from 'infestines'
 
+export const addU = (x, y) => x + y
+export const multiplyU = (x, y) => x * y
+
+export const add = I.curry(addU)
+export const multiply = I.curry(multiplyU)
+
+export const divideBy = I.curry((d, n) => n / d)
+
+export const negate = x => -x
+
 export const ltU = (x, y) => x < y
 export const gtU = (x, y) => x > y
 

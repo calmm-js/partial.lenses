@@ -116,7 +116,7 @@ const Select = {
 
 const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
 
-const Sum = ConcatOf((x, y) => x + y, 0)
+const Sum = ConcatOf(I.addU, 0)
 
 const mumBy = ord =>
   I.curry((xi2y, t, s) => {
@@ -447,6 +447,9 @@ const isoU = (bwd, fwd) => (x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i))
 
 const stringIsoU = (bwd, fwd) =>
   isoU(expect(I.isString, bwd), expect(I.isString, fwd))
+
+const numberIsoU = (bwd, fwd) =>
+  isoU(expect(I.isNumber, bwd), expect(I.isNumber, fwd))
 
 //
 
@@ -1249,7 +1252,7 @@ export const none = I.curry(
 
 export const or = any(I.id)
 
-export const productAs = traverse(ConcatOf((x, y) => x * y, 1))
+export const productAs = traverse(ConcatOf(I.multiplyU, 1))
 
 export const product = productAs(unto(1))
 
@@ -1620,6 +1623,14 @@ export const uncouple = (process.env.NODE_ENV === 'production'
     }
   )
 })
+
+// Arithmetic isomorphisms
+
+export const add = c => numberIsoU(I.add(c), I.add(-c))
+export const divide = c => numberIsoU(I.divideBy(c), I.multiply(c))
+export const multiply = c => numberIsoU(I.multiply(c), I.divideBy(c))
+export const negate = numberIsoU(I.negate, I.negate)
+export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 
 // Interop
 
