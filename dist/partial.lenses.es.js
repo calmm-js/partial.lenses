@@ -1,4 +1,22 @@
-import { isString, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, isFunction, curryN, assocPartialU, dissocPartialU, constructorOf, toObject, applyU, isDefined, keys, hasU, assign, arityN } from 'infestines';
+import { isString, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, isFunction, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign, arityN } from 'infestines';
+
+var addU = function addU(x, y) {
+  return x + y;
+};
+var multiplyU = function multiplyU(x, y) {
+  return x * y;
+};
+
+var add = /*#__PURE__*/curry(addU);
+var multiply = /*#__PURE__*/curry(multiplyU);
+
+var divideBy = /*#__PURE__*/curry(function (d, n) {
+  return n / d;
+});
+
+var negate = function negate(x) {
+  return -x;
+};
 
 var ltU = function ltU(x, y) {
   return x < y;
@@ -253,9 +271,7 @@ var ConcatOf = function ConcatOf(ap, empty) {
   return { map: sndU, ap: ap, of: always(empty) };
 };
 
-var Sum = /*#__PURE__*/ConcatOf(function (x, y) {
-  return x + y;
-}, 0);
+var Sum = /*#__PURE__*/ConcatOf(addU, 0);
 
 var mumBy = function mumBy(ord) {
   return curry(function (xi2y, t, s) {
@@ -604,6 +620,10 @@ var isoU = function isoU(bwd, fwd) {
 
 var stringIsoU = function stringIsoU(bwd, fwd) {
   return isoU(expect(isString, bwd), expect(isString, fwd));
+};
+
+var numberIsoU = function numberIsoU(bwd, fwd) {
+  return isoU(expect(isNumber, bwd), expect(isNumber, fwd));
 };
 
 //
@@ -1388,9 +1408,7 @@ var none = /*#__PURE__*/curry(function (xi2b, t, s) {
 
 var or$1 = /*#__PURE__*/any(id);
 
-var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(function (x, y) {
-  return x * y;
-}, 1));
+var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(multiplyU, 1));
 
 var product = /*#__PURE__*/productAs( /*#__PURE__*/unto(1));
 
@@ -1764,6 +1782,22 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : functi
   });
 });
 
+// Arithmetic isomorphisms
+
+var add$1 = function add$$1(c) {
+  return numberIsoU(add(c), add(-c));
+};
+var divide = function divide(c) {
+  return numberIsoU(divideBy(c), multiply(c));
+};
+var multiply$1 = function multiply$$1(c) {
+  return numberIsoU(multiply(c), divideBy(c));
+};
+var negate$1 = /*#__PURE__*/numberIsoU(negate, negate);
+var subtract = function subtract(c) {
+  return numberIsoU(add(-c), add(c));
+};
+
 // Interop
 
 var pointer = function pointer(s) {
@@ -1778,4 +1812,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, pointer };
+export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };

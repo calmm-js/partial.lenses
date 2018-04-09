@@ -4,6 +4,24 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var I = require('infestines');
 
+var addU = function addU(x, y) {
+  return x + y;
+};
+var multiplyU = function multiplyU(x, y) {
+  return x * y;
+};
+
+var add = /*#__PURE__*/I.curry(addU);
+var multiply = /*#__PURE__*/I.curry(multiplyU);
+
+var divideBy = /*#__PURE__*/I.curry(function (d, n) {
+  return n / d;
+});
+
+var negate = function negate(x) {
+  return -x;
+};
+
 var ltU = function ltU(x, y) {
   return x < y;
 };
@@ -257,9 +275,7 @@ var ConcatOf = function ConcatOf(ap, empty) {
   return { map: I.sndU, ap: ap, of: I.always(empty) };
 };
 
-var Sum = /*#__PURE__*/ConcatOf(function (x, y) {
-  return x + y;
-}, 0);
+var Sum = /*#__PURE__*/ConcatOf(addU, 0);
 
 var mumBy = function mumBy(ord) {
   return I.curry(function (xi2y, t, s) {
@@ -608,6 +624,10 @@ var isoU = function isoU(bwd, fwd) {
 
 var stringIsoU = function stringIsoU(bwd, fwd) {
   return isoU(expect(I.isString, bwd), expect(I.isString, fwd));
+};
+
+var numberIsoU = function numberIsoU(bwd, fwd) {
+  return isoU(expect(I.isNumber, bwd), expect(I.isNumber, fwd));
 };
 
 //
@@ -1392,9 +1412,7 @@ var none = /*#__PURE__*/I.curry(function (xi2b, t, s) {
 
 var or$1 = /*#__PURE__*/any(I.id);
 
-var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(function (x, y) {
-  return x * y;
-}, 1));
+var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(multiplyU, 1));
 
 var product = /*#__PURE__*/productAs( /*#__PURE__*/unto(1));
 
@@ -1768,6 +1786,22 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : func
   });
 });
 
+// Arithmetic isomorphisms
+
+var add$1 = function add$$1(c) {
+  return numberIsoU(add(c), add(-c));
+};
+var divide = function divide(c) {
+  return numberIsoU(divideBy(c), multiply(c));
+};
+var multiply$1 = function multiply$$1(c) {
+  return numberIsoU(multiply(c), divideBy(c));
+};
+var negate$1 = /*#__PURE__*/numberIsoU(negate, negate);
+var subtract = function subtract(c) {
+  return numberIsoU(add(-c), add(c));
+};
+
 // Interop
 
 var pointer = function pointer(s) {
@@ -1907,4 +1941,9 @@ exports.dropSuffix = dropSuffix;
 exports.replaces = replaces;
 exports.split = split;
 exports.uncouple = uncouple;
+exports.add = add$1;
+exports.divide = divide;
+exports.multiply = multiply$1;
+exports.negate = negate$1;
+exports.subtract = subtract;
 exports.pointer = pointer;
