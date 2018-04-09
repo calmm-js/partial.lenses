@@ -203,6 +203,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.replaces(substringIn, substringOut) ~> isomorphism`](#L-replaces "L.replaces: String -> String -> PIso String String") <small><sup>v13.8.0</sup></small>
       * [`L.split(separator[, separatorRegExp]) ~> isomorphism`](#L-split "L.split: (String[, String | RegExp]) -> PIso String [String]") <small><sup>v13.8.0</sup></small>
       * [`L.uncouple(separator[, separatorRegExp]) ~> isomorphism`](#L-uncouple "L.uncouple: (String[, String | RegExp]) -> PIso String [String, String]") <small><sup>v13.8.0</sup></small>
+    * [Arithmetic isomorphisms](#arithmetic-isomorphisms)
+      * [`L.add(number) ~> isomorphism`](#L-add "L.add: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+      * [`L.divide(number) ~> isomorphism`](#L-divide "L.divide: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+      * [`L.multiply(number) ~> isomorphism`](#L-multiply "L.multiply: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+      * [`L.negate ~> isomorphism`](#L-negate "L.negate: PIso Number Number") <small><sup>v13.9.0</sup></small>
+      * [`L.subtract(number) ~> isomorphism`](#L-subtract "L.subtract: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
   * [Interop](#interop)
     * [`L.pointer(jsonPointer) ~> lens`](#L-pointer "L.pointer: JSONPointer s a -> PLens s a") <small><sup>v11.21.0</sup></small>
   * [Auxiliary](#auxiliary)
@@ -3659,6 +3665,67 @@ L.get(L.uncouple('=', /\s*=\s*/), 'foo = bar')
 ```js
 L.getInverse(L.uncouple('='), ['key', ''])
 // 'key'
+```
+
+#### <a id="arithmetic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#arithmetic-isomorphisms) [Arithmetic isomorphisms](#arithmetic-isomorphisms)
+
+##### <a id="L-add"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-add) [`L.add(number) ~> isomorphism`](#L-add "L.add: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+
+`L.add` adds the given constant to the number in focus when read through and
+subtracts when written through.
+
+For example:
+
+```js
+L.get(L.add(1), 2)
+// 3
+```
+
+##### <a id="L-divide"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-divide) [`L.divide(number) ~> isomorphism`](#L-divide "L.divide: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+
+`L.divide` divides the number in focus by the given constant when read through
+and multiplies when written through.
+
+For example:
+
+```js
+L.get(L.divide(2), 6)
+// 3
+```
+
+##### <a id="L-multiply"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-multiply) [`L.multiply(number) ~> isomorphism`](#L-multiply "L.multiply: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+
+`L.multiply` multiplies the number in focus by the given constant when read
+through and divides when written through.
+
+For example:
+
+```js
+L.get(L.multiply(2), 3)
+// 6
+```
+
+##### <a id="L-negate"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-negate) [`L.negate ~> isomorphism`](#L-negate "L.negate: PIso Number Number") <small><sup>v13.9.0</sup></small>
+
+`L.negate` negates the number in focus when either read or written through.
+
+For example:
+
+```js
+L.get(L.negate, 2)
+// -2
+```
+
+##### <a id="L-subtract"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-subtract) [`L.subtract(number) ~> isomorphism`](#L-subtract "L.subtract: Number -> PIso Number Number") <small><sup>v13.9.0</sup></small>
+
+`L.subtract` subtracts the given constant from the number in focus when read
+through and adds when written through.
+
+For example:
+
+```js
+L.get(L.subtract(1), 3)
+// 2
 ```
 
 ### <a id="interop"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#interop) [Interop](#interop)

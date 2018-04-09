@@ -204,6 +204,7 @@ describe('arities', () => {
   const arities = {
     Constant: undefined,
     Identity: undefined,
+    add: 1,
     all: 3,
     and: 2,
     any: 3,
@@ -233,6 +234,7 @@ describe('arities', () => {
     countsAs: 3,
     defaults: 1,
     define: 1,
+    divide: 1,
     dropPrefix: 1,
     dropSuffix: 1,
     elems: 4,
@@ -279,6 +281,8 @@ describe('arities', () => {
     minimumBy: 3,
     modify: 3,
     modifyOp: 1,
+    multiply: 1,
+    negate: 4,
     none: 3,
     normalize: 1,
     optional: 4,
@@ -314,6 +318,7 @@ describe('arities', () => {
     singleton: 4,
     slice: 2,
     split: 1,
+    subtract: 1,
     suffix: 1,
     sum: 2,
     sumAs: 3,
@@ -1969,6 +1974,14 @@ describe('L.uncouple', () => {
   testEq(() => L.getInverse(L.uncouple('='), ['foo', 'bar']), 'foo=bar')
   testEq(() => L.get(L.uncouple('='), ['not a', 'string']), undefined)
   testEq(() => L.getInverse(L.uncouple('='), 'not an array'), undefined)
+})
+
+describe('arithmetic', () => {
+  testEq(() => L.modify(L.add(1), x => 1 - x, 1), -2)
+  testEq(() => L.modify(L.subtract(-1), x => 1 - x, 1), -2)
+  testEq(() => L.modify(L.multiply(2), x => 1 - x, 1), -0.5)
+  testEq(() => L.modify(L.divide(0.5), x => 1 - x, 1), -0.5)
+  testEq(() => L.modify(L.negate, x => 1 - x, 1), -2)
 })
 
 describe('L.flat', () => {
