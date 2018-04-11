@@ -3567,6 +3567,16 @@ functions.  The optional `reviver` is passed to
 and the optional `replacer` and `space` are passed to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).
 
+For example:
+
+```js
+L.transform(
+  [L.json(), 'foo', L.elems, L.modifyOp(R.negate)],
+  '{"foo":[3,1,4]}'
+)
+// '{"foo":[-3,-1,-4]}'
+```
+
 #### <a id="string-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#string-isomorphisms) [String isomorphisms](#string-isomorphisms)
 
 ##### <a id="L-dropPrefix"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-dropPrefix) [`L.dropPrefix(prefix) ~> isomorphism`](#L-dropPrefix "L.dropPrefix: String -> PIso String String") <small><sup>v13.8.0</sup></small>

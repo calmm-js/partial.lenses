@@ -2727,6 +2727,13 @@ functions.  The optional <code>reviver</code> is passed to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a>
 and the optional <code>replacer</code> and <code>space</code> are passed to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transform(
+  [L.json(), &#39;foo&#39;, L.elems, L.modifyOp(R.negate)],
+  &#39;{&quot;foo&quot;:[3,1,4]}&#39;
+)
+
+</code></pre>
 <h4><a id="string-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#string-isomorphisms">■</a> <a href="#string-isomorphisms">String isomorphisms</a></h4>
 <h5><a id="L-dropPrefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-dropPrefix">■</a> <a href="#L-dropPrefix" title="L.dropPrefix: String -&gt; PIso String String"><code>L.dropPrefix(prefix) ~&gt; isomorphism</code></a> <small><sup>v13.8.0</sup></small></h5>
 <p><code>L.dropPrefix</code> drops the given prefix from the beginning of the string when read
