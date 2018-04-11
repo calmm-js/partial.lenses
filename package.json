@@ -8,11 +8,7 @@
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
     "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get unchanged",
-    "dist": "concurrently \"npm run dist:umd\" \"npm run dist:umd.min\" \"npm run dist:es\" \"npm run dist:cjs\"",
-    "dist:cjs": "    NODE_ENV=           rollup -c -n L -i src/partial.lenses.js -f cjs -o dist/partial.lenses.cjs.js",
-    "dist:es": "     NODE_ENV=           rollup -c -n L -i src/partial.lenses.js -f es  -o dist/partial.lenses.es.js",
-    "dist:umd": "    NODE_ENV=dev        rollup -c -n L -i src/partial.lenses.js -f umd -o dist/partial.lenses.js && cp dist/partial.lenses.js docs/",
-    "dist:umd.min": "NODE_ENV=production rollup -c -n L -i src/partial.lenses.js -f umd -o dist/partial.lenses.min.js",
+    "dist": "rollup -c && cp dist/partial.lenses.js docs/",
     "docs": "klipse-github-docs-generator && cp node_modules/infestines/dist/infestines.min.js docs/",
     "lint": "eslint src test",
     "prepare": "concurrently \"npm run lint\" \"npm run docs\" \"npm run dist && npm run test\"",
