@@ -57,22 +57,26 @@ const notPartial = function complement(x) {
   return void 0 !== x ? !x : x
 }
 
-const singletonPartial = x => (void 0 !== x ? [x] : x)
-
 const expect = (p, f) => copyName(x => (p(x) ? f(x) : void 0), f)
 
 const freezeInDev = process.env.NODE_ENV === 'production' ? id : I.freeze
 
-function deepFreeze(x) {
-  if (I.isArray(x)) {
-    x.forEach(deepFreeze)
-    I.freeze(x)
-  } else if (I.isObject(x)) {
-    for (const k in x) deepFreeze(x[k])
-    I.freeze(x)
-  }
-  return x
-}
+const freezeResultInDev =
+  process.env.NODE_ENV === 'production' ? id : C.res(I.freeze)
+
+const deepFreezeInDev =
+  process.env.NODE_ENV === 'production'
+    ? id
+    : function deepFreezeInDev(x) {
+        if (I.isArray(x)) {
+          x.forEach(deepFreezeInDev)
+          I.freeze(x)
+        } else if (I.isObject(x)) {
+          for (const k in x) deepFreezeInDev(x[k])
+          I.freeze(x)
+        }
+        return x
+      }
 
 function freezeObjectOfObjects(xs) {
   if (xs) for (const k in xs) I.freeze(xs[k])
@@ -963,6 +967,234 @@ const subsetPartial = p =>
     return p(x) ? x : undefined
   }
 
+//
+
+const PAYLOAD = '珳襱댎纚䤤鬖罺좴'
+
+const isPayload = k => I.isString(k) && k.indexOf(PAYLOAD) === 0
+
+function Spread(i) {
+  this[PAYLOAD] = i
+  I.freeze(this)
+}
+
+const isSpread = I.isInstanceOf(Spread)
+
+const Variable = I.inherit(
+  function Variable(i) {
+    this[PAYLOAD + i] = this[PAYLOAD] = I.freeze([new Spread(i)])
+    I.freeze(this)
+  },
+  Object,
+  I.assocPartialU(I.iterator, function() {
+    return this[PAYLOAD][I.iterator]()
+  })
+)
+const isVariable = I.isInstanceOf(Variable)
+
+const vars = []
+function nVars(n) {
+  while (I.length(vars) < n) vars.push(new Variable(I.length(vars)))
+  return vars
+}
+
+const isPrimitive = x => x == null || typeof x !== 'object'
+
+function match1(kinds, i, e, x) {
+  if (void 0 !== x) {
+    if (i in e) return I.acyclicEqualsU(e[i], x)
+    e[i] = x
+    const k = kinds[i]
+    return !k || k(x)
+  }
+}
+
+function checkKind(kinds, i, kind) {
+  if (0 <= i) {
+    if (kinds[i]) {
+      if (kinds[i] !== kind)
+        throw Error(
+          'Spread patterns must be used consistently either as arrays or as objects.'
+        )
+    } else {
+      kinds[i] = kind
+    }
+  }
+}
+
+const arrayKind = x => void 0 === x || I.isArray(x)
+const objectKind = x => void 0 === x || I.isInstanceOf(Object)
+
+function checkPattern(kinds, p) {
+  if (isSpread(p)) {
+    throw Error('Spread patterns must be inside objects or arrays.')
+  } else if (I.isArray(p)) {
+    let nSpread = 0
+    for (let i = 0, n = I.length(p); i < n; ++i) {
+      const pi = p[i]
+      if (isSpread(pi)) {
+        if (nSpread++)
+          throw Error('At most one spread is allowed in an array or object.')
+        checkKind(kinds, pi[PAYLOAD], arrayKind)
+      } else {
+        checkPattern(kinds, pi)
+      }
+    }
+  } else if (I.isObject(p)) {
+    let spread = p[PAYLOAD]
+    if (spread) {
+      spread = spread[0][PAYLOAD]
+      checkKind(kinds, spread, objectKind)
+    }
+    let n = 0
+    for (const k in p) {
+      if (isPayload(k)) {
+        if (2 < ++n)
+          throw Error('At most one spread is allowed in an array or object.')
+      } else {
+        checkPattern(kinds, p[k])
+      }
+    }
+  } else if (!isPrimitive(p) && !isVariable(p)) {
+    throw Error('Only plain arrays and objects are allowed in patterns.')
+  }
+}
+
+const checkPatternPairInDev =
+  process.env.NODE_ENV === 'production'
+    ? id
+    : ps => {
+        const kinds = []
+        checkPattern(kinds, ps[0])
+        checkPattern(kinds, ps[1])
+        return deepFreezeInDev(ps)
+      }
+
+const setDefined = (o, k, x) => {
+  if (void 0 !== x) o[k] = x
+}
+
+const pushDefined = (xs, x) => {
+  if (void 0 !== x) xs.push(x)
+}
+
+function toMatch(kinds, p) {
+  if (all1(isPrimitive, leafs, p)) {
+    return (e, x) => I.acyclicEqualsU(p, x)
+  } else if (isVariable(p)) {
+    const i = p[PAYLOAD][0][PAYLOAD]
+    return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
+  } else if (I.isArray(p)) {
+    const init = []
+    const rest = []
+    let spread = void 0
+    const n = I.length(p)
+    for (let i = 0; i < n; ++i) {
+      const x = p[i]
+      if (isSpread(x)) {
+        spread = x[PAYLOAD]
+        kinds[spread] = arrayKind
+      } else {
+        const side = void 0 !== spread ? rest : init
+        side.push(toMatch(kinds, x))
+      }
+    }
+    return (e, x) => {
+      if (!seemsArrayLike(x)) return
+      let l = x.length
+      if (void 0 !== spread ? l < n - 1 : l !== n) return
+      const j = init.length
+      for (let i = 0; i < j; ++i) if (!init[i](e, x[i])) return
+      const k = rest.length
+      l -= k
+      for (let i = 0; i < k; ++i) if (!rest[i](e, x[l + i])) return
+      return (
+        !(0 <= spread) ||
+        match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l))
+      )
+    }
+  } else {
+    let spread = p[PAYLOAD]
+    if (spread) {
+      spread = spread[0][PAYLOAD]
+      kinds[spread] = objectKind
+    }
+    p = modify(values, (p, k) => (isPayload(k) ? void 0 : toMatch(kinds, p)), p)
+    const n = count(values, p)
+    return (e, x) => {
+      if (isPrimitive(x) || I.isArray(x)) return
+      x = toObject(x)
+      const rest = 0 <= spread && {}
+      let i = 0
+      for (const k in x) {
+        const m = p[k]
+        if (m) {
+          if (!m(e, x[k])) return
+          i++
+        } else if (void 0 !== spread) {
+          if (rest) rest[k] = x[k]
+        } else {
+          return
+        }
+      }
+      return i === n && (!rest || match1(kinds, spread, e, freezeInDev(rest)))
+    }
+  }
+}
+
+function toSubst(p, k) {
+  if (isPayload(k)) {
+    return void 0
+  } else if (all1(isPrimitive, leafs, p)) {
+    return I.always(p)
+  } else if (isVariable(p)) {
+    const i = p[PAYLOAD][0][PAYLOAD]
+    return e => e[i]
+  } else if (I.isArray(p)) {
+    const init = []
+    const rest = []
+    let spread = void 0
+    const n = I.length(p)
+    for (let i = 0; i < n; ++i) {
+      const x = p[i]
+      if (isSpread(x)) {
+        spread = x[PAYLOAD]
+      } else {
+        const side = void 0 !== spread ? rest : init
+        side.push(toSubst(x))
+      }
+    }
+    return freezeResultInDev(e => {
+      const r = []
+      for (let i = 0, n = init.length; i < n; ++i) pushDefined(r, init[i](e))
+      if (0 <= spread) {
+        const xs = e[spread]
+        if (xs) for (let i = 0, n = xs.length; i < n; ++i) pushDefined(r, xs[i])
+      }
+      for (let i = 0, n = rest.length; i < n; ++i) pushDefined(r, rest[i](e))
+      return r
+    })
+  } else {
+    let spread = p[PAYLOAD]
+    if (spread) spread = spread[0][PAYLOAD]
+    p = modify(values, toSubst, p)
+    return freezeResultInDev(e => {
+      const r = {}
+      for (const k in p) setDefined(r, k, p[k](e))
+      if (0 <= spread) {
+        const x = e[spread]
+        if (x) for (const k in x) setDefined(r, k, x[k])
+      }
+      return r
+    })
+  }
+}
+
+const oneway = (n, m, s) => x => {
+  const e = Array(n)
+  if (m(e, x)) return s(e)
+}
+
 // Auxiliary
 
 export const seemsArrayLike = x =>
@@ -1792,6 +2024,23 @@ export function getInverse(o, s) {
 
 export const iso = I.curry(isoU)
 
+export const _ = new Variable(-1)
+
+export function mapping(ps) {
+  let n = 0
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars((n = ps.length)))
+  checkPatternPairInDev(ps)
+  const kinds = Array(n)
+  const ms = ps.map(p => toMatch(kinds, p))
+  const ss = ps.map(toSubst)
+  return isoU(oneway(n, ms[0], ss[1]), oneway(n, ms[1], ss[0]))
+}
+
+export function mappings(ps) {
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps.length))
+  return alternatives.apply(null, ps.map(mapping))
+}
+
 // Isomorphism combinators
 
 export const alternatives = makeSemi(orAlternativelyU)
@@ -1870,23 +2119,7 @@ export const indexed = isoU(
 
 export const reverse = isoU(rev, rev)
 
-export const singleton = (process.env.NODE_ENV === 'production'
-  ? id
-  : iso => copyName(toFunction([isoU(id, I.freeze), iso]), iso))(
-  function singleton(x, i, F, xi2yF) {
-    return F.map(
-      singletonPartial,
-      xi2yF(
-        (x instanceof Object || I.isString(x)) && x.length === 1
-          ? x[0]
-          : void 0,
-        i
-      )
-    )
-  }
-)
-
-// Object isomorphisms
+export const singleton = mapping(x => [[x], x])
 
 export const disjoint = groupOf =>
   function disjoint(x, i, F, xi2yF) {
@@ -1939,7 +2172,7 @@ export const multikeyed = isoU(
 
 export const json = (process.env.NODE_ENV === 'production'
   ? id
-  : C.res(iso => toFunction([iso, isoU(deepFreeze, id)])))(function json(
+  : C.res(iso => toFunction([iso, isoU(deepFreezeInDev, id)])))(function json(
   options
 ) {
   const {reviver, replacer, space} = options || I.object0

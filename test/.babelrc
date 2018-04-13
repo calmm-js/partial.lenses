@@ -19,6 +19,7 @@
     "transform-es2015-destructuring",
     "transform-es2015-block-scoping",
     "transform-es2015-modules-commonjs",
-    "transform-async-to-generator"
+    "transform-async-to-generator",
+    "transform-object-rest-spread"
   ]
 }

@@ -33,3 +33,7 @@ export function isPrimitiveData(x) {
       return false
   }
 }
+
+export const iterator = Symbol.iterator
+
+export const length = x => x.length

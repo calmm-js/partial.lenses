@@ -62,6 +62,8 @@ const T_monoid = T.object({
   concat: T.fn([T.any, T.any], T.any)
 })
 
+const T_patternPair = T.and(T.array(T_maybeDataI), T.arity(2))
+
 const template = c => T.lazy(rec => T.props(T.or(c, rec)))
 
 // Internals
@@ -390,6 +392,18 @@ export const getInverse = T.fn([T_isomorphism, T_maybeDataI], T_maybeDataO)
 
 export const iso = T.fn(
   [T.fn([T_maybeDataO], T_maybeDataI), T.fn([T_maybeDataO], T_maybeDataI)],
+  T_isomorphism
+)
+
+export const _ = T.any
+
+export const mapping = T.fn(
+  [T.or(T_patternPair, T.fnVarN(0, T.any, T_patternPair))],
+  T_isomorphism
+)
+
+export const mappings = T.fn(
+  [T.or(T.array(T_patternPair), T.fnVarN(0, T.any, T.array(T_patternPair)))],
   T_isomorphism
 )
 
