@@ -742,6 +742,8 @@ describe('L.append', () => {
 })
 
 describe('L.elems', () => {
+  testEq(() => L.modify(L.elems, R.identity, {x: 1, y: 2}), {x: 1, y: 2})
+  testEq(() => L.modify(L.elems, R.inc, {x: 1, y: 2}), {x: 1, y: 2})
   testEq(() => L.modify(L.elems, R.negate, []), [])
   testEq(() => L.remove(L.elems, [1]), [])
   testEq(
@@ -796,6 +798,8 @@ describe('L.elems', () => {
 })
 
 describe('L.values', () => {
+  testEq(() => L.modify(L.values, R.identity, [1, 2]), {'0': 1, '1': 2})
+  testEq(() => L.modify(L.values, R.inc, [1, 2]), {'0': 2, '1': 3})
   testEq(() => L.modify(L.values, R.negate, {x: 11, y: 22}), {x: -11, y: -22})
   testEq(
     () =>

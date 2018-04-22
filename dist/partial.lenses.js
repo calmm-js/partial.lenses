@@ -228,14 +228,33 @@
 
   //
 
-  var mapPartialIndexU = /*#__PURE__*/(res(I.freeze))(function (xi2y, xs) {
+  var mapPartialIndexU = /*#__PURE__*/(function (fn$$1) {
+    return function (xi2y, xs) {
+      var ys = fn$$1(xi2y, xs);
+      if (xs !== ys) I.freeze(ys);
+      return ys;
+    };
+  })(function (xi2y, xs) {
     var n = xs.length;
     var ys = Array(n);
     var j = 0;
-    for (var i = 0, y; i < n; ++i) {
-      if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y;
-    }if (j < n) ys.length = j;
-    return ys;
+    var same = true;
+    for (var i = 0; i < n; ++i) {
+      var x = xs[i];
+      var y = xi2y(x, i);
+      if (void 0 !== y) {
+        ys[j++] = y;
+        if (same) same = x === y && (x !== 0 || 1 / x === 1 / y) || x !== x && y !== y;
+      }
+    }
+    if (j !== n) {
+      ys.length = j;
+      return ys;
+    } else if (same) {
+      return xs;
+    } else {
+      return ys;
+    }
   });
 
   var mapIfArrayLike = function mapIfArrayLike(xi2y, xs) {
@@ -695,36 +714,59 @@
     };
   });
 
+  var branchOr1LevelIdentity = /*#__PURE__*/(function (fn$$1) {
+    return function (otherwise, k2o, xO, x, A, xi2yA) {
+      var y = fn$$1(otherwise, k2o, xO, x, A, xi2yA);
+      if (x !== y) I.freeze(y);
+      return y;
+    };
+  })(function (otherwise, k2o, xO, x, A, xi2yA) {
+    var written = void 0;
+    var same = true;
+    var r = {};
+    for (var k in k2o) {
+      written = 1;
+      var _x2 = xO[k];
+      var y = k2o[k](_x2, k, A, xi2yA);
+      if (void 0 !== y) {
+        r[k] = y;
+        if (same) same = _x2 === y && (_x2 !== 0 || 1 / _x2 === 1 / y) || _x2 !== _x2 && y !== y;
+      } else {
+        same = false;
+      }
+    }
+    var t = written;
+    for (var _k in xO) {
+      if (void 0 === (t && k2o[_k])) {
+        written = 1;
+        var _x3 = xO[_k];
+        var _y = otherwise(_x3, _k, A, xi2yA);
+        if (void 0 !== _y) {
+          r[_k] = _y;
+          if (same) same = _x3 === _y && (_x3 !== 0 || 1 / _x3 === 1 / _y) || _x3 !== _x3 && _y !== _y;
+        } else {
+          same = false;
+        }
+      }
+    }
+    return written ? same && xO === x ? x : r : x;
+  });
+
   var branchOr1Level = function branchOr1Level(otherwise, k2o) {
     return function (x, _i, A, xi2yA) {
       var xO = x instanceof Object ? toObject(x) : I.object0;
 
       if (Identity === A) {
-        var written = void 0;
-        var r = {};
-        for (var k in k2o) {
-          written = 1;
-          var y = k2o[k](xO[k], k, A, xi2yA);
-          if (void 0 !== y) r[k] = y;
-        }
-        var t = written;
-        for (var _k in xO) {
-          if (void 0 === (t && k2o[_k])) {
-            written = 1;
-            var _y = otherwise(xO[_k], _k, A, xi2yA);
-            if (void 0 !== _y) r[_k] = _y;
-          }
-        }
-        return written ? r : x;
+        return branchOr1LevelIdentity(otherwise, k2o, xO, x, A, xi2yA);
       } else if (Select === A) {
-        for (var _k2 in k2o) {
-          var _y2 = k2o[_k2](xO[_k2], _k2, A, xi2yA);
-          if (void 0 !== _y2) return _y2;
+        for (var k in k2o) {
+          var y = k2o[k](xO[k], k, A, xi2yA);
+          if (void 0 !== y) return y;
         }
-        for (var _k3 in xO) {
-          if (void 0 === k2o[_k3]) {
-            var _y3 = otherwise(xO[_k3], _k3, A, xi2yA);
-            if (void 0 !== _y3) return _y3;
+        for (var _k2 in xO) {
+          if (void 0 === k2o[_k2]) {
+            var _y2 = otherwise(xO[_k2], _k2, A, xi2yA);
+            if (void 0 !== _y2) return _y2;
           }
         }
       } else {
@@ -734,15 +776,15 @@
 
         var xsA = of(cpair);
         var ks = [];
-        for (var _k4 in k2o) {
-          ks.push(_k4);
-          xsA = ap(map(cpair, xsA), k2o[_k4](xO[_k4], _k4, A, xi2yA));
+        for (var _k3 in k2o) {
+          ks.push(_k3);
+          xsA = ap(map(cpair, xsA), k2o[_k3](xO[_k3], _k3, A, xi2yA));
         }
-        var _t2 = ks.length ? true : void 0;
-        for (var _k5 in xO) {
-          if (void 0 === (_t2 && k2o[_k5])) {
-            ks.push(_k5);
-            xsA = ap(map(cpair, xsA), otherwise(xO[_k5], _k5, A, xi2yA));
+        var t = ks.length ? true : void 0;
+        for (var _k4 in xO) {
+          if (void 0 === (t && k2o[_k4])) {
+            ks.push(_k4);
+            xsA = ap(map(cpair, xsA), otherwise(xO[_k4], _k4, A, xi2yA));
           }
         }
         return ks.length ? map(branchAssemble(ks), xsA) : of(x);
@@ -954,14 +996,14 @@
 
   // Internals
 
-  var Identity = /*#__PURE__*/(I.freeze)({
+  var Identity = /*#__PURE__*/(0, I.freeze)({
     map: I.applyU,
     of: I.id,
     ap: I.applyU,
     chain: I.applyU
   });
 
-  var Constant = /*#__PURE__*/(I.freeze)({
+  var Constant = /*#__PURE__*/(0, I.freeze)({
     map: I.sndU
   });
 

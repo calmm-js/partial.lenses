@@ -572,7 +572,7 @@ const branchOr1LevelIdentity = (process.env.NODE_ENV === 'production'
       }
     }
   }
-  return written ? (same ? x : r) : x
+  return written ? (same && xO === x ? x : r) : x
 })
 
 const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
