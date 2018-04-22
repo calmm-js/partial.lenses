@@ -1584,10 +1584,18 @@ object.  <code>L.branches(p1, ..., pN)</code> is equivalent to <a href="#L-branc
 <h5><a id="L-children"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-children">■</a> <a href="#L-children" title="L.children: PTraversal ([a] | {p: a, ...ps}) a"><code>L.children ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.children</code> is a traversal over the immediate children of the ordinary array or
 plain object in focus.  Children of objects whose constructor is neither <code>Array</code>
-nor <code>Object</code> are not traversed.</p>
+nor <code>Object</code> are not traversed.  See also <a href="#L-leafs"><code>L.leafs</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.children, R.negate, {x: 3, y: 1})
+
+</code></pre>
+<pre><code class="hljs lang-js">L.modify(L.children, R.negate, [1, 2, 3])
+
+</code></pre>
 <h5><a id="L-elems"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-elems">■</a> <a href="#L-elems" title="L.elems: PTraversal [a] a"><code>L.elems ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></h5>
 <p><code>L.elems</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
-object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.</p>
+object.  When written through, <code>L.elems</code> always produces an <code>Array</code>.  See also
+<a href="#L-values"><code>L.values</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&#39;xs&#39;, L.elems, &#39;x&#39;], R.inc, {xs: [{x: 1}, {x: 2}]})
 
@@ -1625,7 +1633,11 @@ it is traversed.</p>
 <h5><a id="L-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-leafs">■</a> <a href="#L-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.leafs</code> is a traversal that descends into ordinary arrays and plain objects
 and focuses on non-<code>undefined</code> elements whose constructor is neither <code>Array</code> nor
-<code>Object</code>.</p>
+<code>Object</code>.  See also <a href="#L-children"><code>L.children</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modify(L.leafs, R.negate, [{x: 1, y: [2]}, 3])
+
+</code></pre>
 <h5><a id="L-matches-g"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-matches-g">■</a> <a href="#L-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></h5>
 <p><code>L.matches</code>, when given a regular expression with the
 <a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/RegExp/global"><code>global</code></a>
@@ -1683,7 +1695,8 @@ Children of objects whose constructor is neither <code>Array</code> nor <code>Ob
 traversed.  See also <a href="#L-query"><code>L.query</code></a>.</p>
 <h5><a id="L-values"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-values">■</a> <a href="#L-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></h5>
 <p><code>L.values</code> is a traversal over the values of an <code>instanceof Object</code>.  When
-written through, <code>L.values</code> always produces an <code>Object</code>.</p>
+written through, <code>L.values</code> always produces an <code>Object</code>.  See also
+<a href="#L-elems"><code>L.elems</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 

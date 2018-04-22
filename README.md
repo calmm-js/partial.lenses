@@ -1852,12 +1852,25 @@ object.  `L.branches(p1, ..., pN)` is equivalent to [`L.branch({[p1]: [],
 
 `L.children` is a traversal over the immediate children of the ordinary array or
 plain object in focus.  Children of objects whose constructor is neither `Array`
-nor `Object` are not traversed.
+nor `Object` are not traversed.  See also [`L.leafs`](#L-leafs).
+
+For example:
+
+```js
+L.modify(L.children, R.negate, {x: 3, y: 1})
+// {x: -3, y: -1}
+```
+
+```js
+L.modify(L.children, R.negate, [1, 2, 3])
+// [-1, -2, -3]
+```
 
 ##### <a id="L-elems"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-elems) [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
 
 `L.elems` is a traversal over the elements of an [array-like](#array-like)
-object.  When written through, `L.elems` always produces an `Array`.
+object.  When written through, `L.elems` always produces an `Array`.  See also
+[`L.values`](#L-values).
 
 For example:
 
@@ -1918,7 +1931,14 @@ L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 
 `L.leafs` is a traversal that descends into ordinary arrays and plain objects
 and focuses on non-`undefined` elements whose constructor is neither `Array` nor
-`Object`.
+`Object`.  See also [`L.children`](#L-children).
+
+For example:
+
+```js
+L.modify(L.leafs, R.negate, [{x: 1, y: [2]}, 3])
+// [{x: -1, y: [-2]}, -3]
+```
 
 ##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
 
@@ -2007,7 +2027,8 @@ traversed.  See also [`L.query`](#L-query).
 ##### <a id="L-values"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-values) [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
 
 `L.values` is a traversal over the values of an `instanceof Object`.  When
-written through, `L.values` always produces an `Object`.
+written through, `L.values` always produces an `Object`.  See also
+[`L.elems`](#L-elems).
 
 For example:
 
