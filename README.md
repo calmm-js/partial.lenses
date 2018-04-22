@@ -861,6 +861,14 @@ Also note that optics do not implicitly "deep freeze" data structures given to
 them or freeze data returned by user defined functions.  Only objects newly
 created by optic functions themselves are frozen.
 
+Starting with version [13.10.0](./CHANGELOG.md#13100), the possibility that
+optics do not unnecessarily clone input data structures is explicitly
+acknowledged.  In case all elements of an array or object produced by an optic
+operation would be the same, as determined by
+[`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is),
+then it is allowed, but not guaranteed, for the optic operation to return the
+input as is.
+
 #### <a id="on-composability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-composability) [On composability](#on-composability)
 
 A lot of libraries these days claim to be
