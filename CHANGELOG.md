@@ -1,5 +1,14 @@
 # Partial Lenses Changelog
 
+## 13.10.0
+
+There is no longer guarantee that optic operations return newly allocated data
+structures.  In case all the elements of the result are the same, as determined
+by
+[`Object.is`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is),
+as in the input, optic operations may return the input as is.  OTOH, there is
+also currently no guarantee that input is returned as is.
+
 ## 13.7.4
 
 Worked around an issue with React Native, see

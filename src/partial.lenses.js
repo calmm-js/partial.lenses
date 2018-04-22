@@ -74,14 +74,32 @@ const warnEmpty = (o, v, f) => {
 
 const mapPartialIndexU = (process.env.NODE_ENV === 'production'
   ? I.id
-  : C.res(I.freeze))((xi2y, xs) => {
+  : fn => (xi2y, xs) => {
+      const ys = fn(xi2y, xs)
+      if (xs !== ys) I.freeze(ys)
+      return ys
+    })((xi2y, xs) => {
   const n = xs.length
   const ys = Array(n)
   let j = 0
-  for (let i = 0, y; i < n; ++i)
-    if (void 0 !== (y = xi2y(xs[i], i))) ys[j++] = y
-  if (j < n) ys.length = j
-  return ys
+  let same = true
+  for (let i = 0; i < n; ++i) {
+    const x = xs[i]
+    const y = xi2y(x, i)
+    if (void 0 !== y) {
+      ys[j++] = y
+      if (same)
+        same = (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y)
+    }
+  }
+  if (j !== n) {
+    ys.length = j
+    return ys
+  } else if (same) {
+    return xs
+  } else {
+    return ys
+  }
 })
 
 const mapIfArrayLike = (xi2y, xs) =>
@@ -516,26 +534,52 @@ const branchAssemble = (process.env.NODE_ENV === 'production'
   return r
 })
 
+const branchOr1LevelIdentity = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : fn => (otherwise, k2o, xO, x, A, xi2yA) => {
+      const y = fn(otherwise, k2o, xO, x, A, xi2yA)
+      if (x !== y) I.freeze(y)
+      return y
+    })((otherwise, k2o, xO, x, A, xi2yA) => {
+  let written = void 0
+  let same = true
+  const r = {}
+  for (const k in k2o) {
+    written = 1
+    const x = xO[k]
+    const y = k2o[k](x, k, A, xi2yA)
+    if (void 0 !== y) {
+      r[k] = y
+      if (same)
+        same = (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y)
+    } else {
+      same = false
+    }
+  }
+  const t = written
+  for (const k in xO) {
+    if (void 0 === (t && k2o[k])) {
+      written = 1
+      const x = xO[k]
+      const y = otherwise(x, k, A, xi2yA)
+      if (void 0 !== y) {
+        r[k] = y
+        if (same)
+          same =
+            (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y)
+      } else {
+        same = false
+      }
+    }
+  }
+  return written ? (same ? x : r) : x
+})
+
 const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
   const xO = x instanceof Object ? toObject(x) : I.object0
 
   if (Identity === A) {
-    let written = void 0
-    const r = {}
-    for (const k in k2o) {
-      written = 1
-      const y = k2o[k](xO[k], k, A, xi2yA)
-      if (void 0 !== y) r[k] = y
-    }
-    const t = written
-    for (const k in xO) {
-      if (void 0 === (t && k2o[k])) {
-        written = 1
-        const y = otherwise(xO[k], k, A, xi2yA)
-        if (void 0 !== y) r[k] = y
-      }
-    }
-    return written ? r : x
+    return branchOr1LevelIdentity(otherwise, k2o, xO, x, A, xi2yA)
   } else if (Select === A) {
     for (const k in k2o) {
       const y = k2o[k](xO[k], k, A, xi2yA)

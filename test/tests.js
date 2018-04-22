@@ -2038,3 +2038,30 @@ if (process.env.NODE_ENV !== 'production') {
     testEq(() => L.set(L.define([]), [], []), [])
   })
 }
+
+describe('cloning avoidance', () => {
+  const testCloning = (name, o, x) =>
+    it(`L.${name} avoids cloning`, () => {
+      const y = X.modify(o, I.id, x)
+      if (x !== y) throw Error('Not same')
+      if (Object.isFrozen(x)) throw Error('Mutated input')
+      if (process.env.NODE_ENV !== 'production') {
+        const z = X.modify(o, x => (Number.isInteger(x) ? x + 1 : x), x)
+        if (!Object.isFrozen(z)) throw Error('Does not freeze')
+      }
+    })
+  testCloning('elems', X.elems, [1, [2], NaN])
+  testCloning('flatten', X.flatten, [1, [2], NaN])
+  testCloning('values', X.values, {x: 1, y: [2], z: NaN})
+  testCloning('branch', X.branch({x: X.identity, y: X.elems}), {
+    x: 1,
+    y: [2],
+    z: NaN
+  })
+  testCloning('branches', X.branches('x', 'z', 'y'), {x: 1, y: [2], z: NaN})
+  testCloning('branchOr', X.branchOr(X.identity, {y: X.elems}), {
+    x: 1,
+    y: [2],
+    z: NaN
+  })
+})
