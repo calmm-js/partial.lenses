@@ -97,6 +97,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Traversals and combinators](#traversals-and-combinators)
       * [`L.children ~> traversal`](#L-children "L.children: PTraversal ([a] | {p: a, ...ps}) a") <small><sup>v13.3.0</sup></small>
       * [`L.elems ~> traversal`](#L-elems "L.elems: PTraversal [a] a") <small><sup>v7.3.0</sup></small>
+      * [`L.elemsTotal ~> traversal`](#L-elemsTotal "L.elemsTotal: PTraversal [a] a") <small><sup>v13.11.0</sup></small>
       * [`L.entries ~> traversal`](#L-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>
       * [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
       * [`L.keys ~> traversal`](#L-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
@@ -1878,7 +1879,7 @@ L.modify(L.children, R.negate, [1, 2, 3])
 
 `L.elems` is a traversal over the elements of an [array-like](#array-like)
 object.  When written through, `L.elems` always produces an `Array`.  See also
-[`L.values`](#L-values).
+[`L.values`](#L-values) and [`L.elemsTotal`](#L-elemsTotal).
 
 For example:
 
@@ -1896,6 +1897,20 @@ L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
          R.inc,
          Int8Array.from([-1, 4, 0, 2, 4]))
 // Int8Array [ 0, 5, 1, 3, 5 ]
+```
+
+##### <a id="L-elemsTotal"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-elemsTotal) [`L.elemsTotal ~> traversal`](#L-elemsTotal "L.elemsTotal: PTraversal [a] a") <small><sup>v13.11.0</sup></small>
+
+`L.elemsTotal` is a traversal over the elements of an [array-like](#array-like)
+object.  When written through, `L.elemsTotal` always produces an `Array`.
+Unlike [`L.elems`](#L-elems), `L.elemsTotal` does not remove `undefined`
+elements from the resulting array when written through.
+
+For example:
+
+```js
+L.modify([L.elemsTotal, L.when(R.is(Number))], R.negate, [1, undefined, 2])
+// [-1, undefined, -2]
 ```
 
 ##### <a id="L-entries"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-entries) [`L.entries ~> traversal`](#L-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>

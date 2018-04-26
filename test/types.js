@@ -153,6 +153,7 @@ export const branches = T.fnVarN(0, T.string, T_optic)
 
 export const children = T_traversal
 export const elems = T_traversal
+export const elemsTotal = T_traversal
 export const entries = T_traversal
 export const flatten = T_traversal
 export const keys = T_traversal

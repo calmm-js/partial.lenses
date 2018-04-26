@@ -238,6 +238,7 @@ describe('arities', () => {
     dropPrefix: 1,
     dropSuffix: 1,
     elems: 4,
+    elemsTotal: 4,
     entries: 4,
     filter: 1,
     find: 1,
@@ -739,6 +740,14 @@ describe('L.append', () => {
     testEq(() => L.set(L.append, 'a', invalid), ['a'])
   })
   testEq(() => L.set(L.append, 1, Int8Array.of(3, 1, 4)), [3, 1, 4, 1])
+})
+
+describe('L.elemsTotal', () => {
+  testEq(
+    () =>
+      L.modify([L.elemsTotal, L.when(I.isNumber)], R.negate, [1, undefined]),
+    [-1, undefined]
+  )
 })
 
 describe('L.elems', () => {

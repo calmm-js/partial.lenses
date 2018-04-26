@@ -74,11 +74,11 @@ const warnEmpty = (o, v, f) => {
 
 const mapPartialIndexU = (process.env.NODE_ENV === 'production'
   ? I.id
-  : fn => (xi2y, xs) => {
-      const ys = fn(xi2y, xs)
+  : fn => (xi2y, xs, skip) => {
+      const ys = fn(xi2y, xs, skip)
       if (xs !== ys) I.freeze(ys)
       return ys
-    })((xi2y, xs) => {
+    })((xi2y, xs, skip) => {
   const n = xs.length
   const ys = Array(n)
   let j = 0
@@ -86,7 +86,7 @@ const mapPartialIndexU = (process.env.NODE_ENV === 'production'
   for (let i = 0; i < n; ++i) {
     const x = xs[i]
     const y = xi2y(x, i)
-    if (void 0 !== y) {
+    if (skip !== y) {
       ys[j++] = y
       if (same)
         same = (x === y && (x !== 0 || 1 / x === 1 / y)) || (x !== x && y !== y)
@@ -103,7 +103,7 @@ const mapPartialIndexU = (process.env.NODE_ENV === 'production'
 })
 
 const mapIfArrayLike = (xi2y, xs) =>
-  seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs) : void 0
+  seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs, void 0) : void 0
 
 const copyToFrom = (process.env.NODE_ENV === 'production'
   ? I.id
@@ -260,11 +260,11 @@ const mkTraverse = (after, toC) =>
 
 //
 
-const cons = t => h => (void 0 !== h ? [h, t] : t)
+const consExcept = skip => t => h => (skip !== h ? [h, t] : t)
 const consTo = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
   n => {
     const xs = []
-    while (cons !== n) {
+    while (consExcept !== n) {
       xs.push(n[0])
       n = n[1]
     }
@@ -272,14 +272,15 @@ const consTo = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
   }
 )
 
-function traversePartialIndex(A, xi2yA, xs) {
+function traversePartialIndex(A, xi2yA, xs, skip) {
   const {map, ap} = A
-  let xsA = A.of(cons)
+  let xsA = A.of(consExcept)
   const n = xs.length
   if (map === I.sndU) {
     for (let i = 0; i < n; ++i) xsA = ap(xsA, xi2yA(xs[i], i))
     return xsA
   } else {
+    const cons = consExcept(skip)
     for (let i = 0; i < n; ++i) xsA = ap(map(cons, xsA), xi2yA(xs[i], i))
     return map(consTo, xsA)
   }
@@ -770,10 +771,10 @@ function zeroOp(y, i, C, xi2yC, x) {
 
 const elemsI = (xs, _i, A, xi2yA) =>
   A === Identity
-    ? mapPartialIndexU(xi2yA, xs)
+    ? mapPartialIndexU(xi2yA, xs, void 0)
     : A === Select
       ? selectInArrayLike(xi2yA, xs)
-      : traversePartialIndex(A, xi2yA, xs)
+      : traversePartialIndex(A, xi2yA, xs, void 0)
 
 //
 
@@ -1027,6 +1028,15 @@ export const elems = (process.env.NODE_ENV === 'production'
   : C.par(2, C.ef(reqApplicative('elems'))))(
   (xs, i, A, xi2yA) => (seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs))
 )
+
+export const elemsTotal = (xs, i, A, xi2yA) =>
+  seemsArrayLike(xs)
+    ? A === Identity
+      ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU)
+      : A === Select
+        ? selectInArrayLike(xi2yA, xs)
+        : traversePartialIndex(A, xi2yA, xs, traversePartialIndex)
+    : A.of(xs)
 
 export const entries = toFunction([keyed, elems])
 
