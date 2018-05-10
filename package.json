@@ -66,13 +66,13 @@
     "babel-polyfill": "^6.26.0",
     "babel-register": "^6.26.0",
     "benchmark": "^2.1.4",
-    "codecov": "^3.0.1",
+    "codecov": "^3.0.2",
     "concurrently": "^3.5.1",
     "eslint": "^4.19.1",
     "klipse-github-docs-generator": "^0.3.3",
     "livereload": "^0.7.0",
     "mocha": "^5.1.1",
-    "nyc": "^11.7.1",
+    "nyc": "^11.7.3",
     "ramda": "^0.25.0",
     "rollup": "^0.58.2",
     "rollup-plugin-babel": "^3.0.4",
@@ -80,7 +80,7 @@
     "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-uglify": "^3.0.0",
     "sprintf-js": "^1.1.1",
-    "uglify-js": "^3.3.22",
+    "uglify-js": "^3.3.24",
     "watch-run": "^1.2.5"
   }
 }
