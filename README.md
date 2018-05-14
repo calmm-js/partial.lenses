@@ -742,6 +742,7 @@ which is mainly used for the currying helpers it provides, are not provided.
 
 Currently the following additional Partial Lenses libraries exist:
 
+* [Partial Lenses History](https://github.com/calmm-js/partial.lenses.history)
 * [Partial Lenses Validation](https://github.com/calmm-js/partial.lenses.validation)
 
 ### <a id="optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#optics) [Optics](#optics)
