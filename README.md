@@ -50,6 +50,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Operations on optics](#operations-on-optics)
       * [`L.assign(optic, object, maybeData) ~> maybeData`](#L-assign "L.assign: PLens s {p1: a1, ...ps, ...o} -> {p1: a1, ...ps} -> Maybe s -> Maybe s") <small><sup>v11.13.0</sup></small>
       * [`L.modify(optic, (maybeValue, index) => maybeValue, maybeData) ~> maybeData`](#L-modify "L.modify: POptic s a -> ((Maybe a, Index) -> Maybe a) -> Maybe s -> Maybe s") <small><sup>v2.2.0</sup></small>
+      * [`L.modifyAsync(optic, (maybeValue, index) => maybeValuePromise, maybeData) ~> maybeDataPromise`](#L-modifyAsync "L.modifyAsync: POptic s a -> ((Maybe a, Index) -> Promise (Maybe a)) -> Maybe s -> Promise (Maybe s)") <small><sup>v13.12.0</sup></small>
       * [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s") <small><sup>v2.0.0</sup></small>
       * [`L.set(optic, maybeValue, maybeData) ~> maybeData`](#L-set "L.set: POptic s a -> Maybe a -> Maybe s -> Maybe s") <small><sup>v1.0.0</sup></small>
       * [`L.traverse(algebra, (maybeValue, index) => operation, optic, maybeData) ~> operation`](#L-traverse "L.traverse: (Functor|Applicative|Monad) c -> ((Maybe a, Index) -> c b) -> POptic s t a b -> Maybe s -> c t") <small><sup>v10.0.0</sup></small>
@@ -78,10 +79,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Internals](#internals)
       * [`L.Constant ~> Functor`](#L-Constant "L.Constant: Functor") <small><sup>v13.7.0</sup></small>
       * [`L.Identity ~> Monad`](#L-Identity "L.Identity: Monad") <small><sup>v13.7.0</sup></small>
+      * [`L.IdentityAsync ~> Monadish`](#L-IdentityAsync "L.IdentityAsync: Monadish") <small><sup>v13.12.0</sup></small>
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
   * [Transforms](#transforms)
     * [Operations on transforms](#operations-on-transforms)
       * [`L.transform(optic, maybeData) ~> maybeData`](#L-transform "L.transform: POptic s a -> Maybe s -> Maybe s") <small><sup>v11.7.0</sup></small>
+      * [`L.transformAsync(optic, maybeData) ~> maybeDataPromise`](#L-transformAsync "L.transformAsync: POptic s a -> Maybe s -> Promise (Maybe s)") <small><sup>v13.12.0</sup></small>
     * [Sequencing](#sequencing)
       * [`L.seq(...transforms) ~> transform`](#L-seq "L.seq: (...PTransform s a) -> PTransform s a") <small><sup>v9.4.0</sup></small>
     * [Transforming](#transforming)
@@ -1053,6 +1056,22 @@ L.modify(['elems', L.elems, 'x'],
 // { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
 ```
 
+##### <a id="L-modifyAsync"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-modifyAsync) [`L.modifyAsync(optic, (maybeValue, index) => maybeValuePromise, maybeData) ~> maybeDataPromise`](#L-modifyAsync "L.modifyAsync: POptic s a -> ((Maybe a, Index) -> Promise (Maybe a)) -> Maybe s -> Promise (Maybe s)") <small><sup>v13.12.0</sup></small>
+
+`L.modifyAsync` allows one to map an asynchronous function over the elements
+focused on by the given optic.  The result of `L.modifyAsync` is always a
+[promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+For example:
+
+```js
+L.modifyAsync(
+  ['elems', L.elems, 'x'],
+  async x => x - 1,
+  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+).then(console.log)
+// Promise { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
+```
 
 ##### <a id="L-remove"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-remove) [`L.remove(optic, maybeData) ~> maybeData`](#L-remove "L.remove: POptic s a -> Maybe s -> Maybe s") <small><sup>v2.0.0</sup></small>
 
@@ -1068,7 +1087,6 @@ L.remove([0, L.defaults({}), 'x'], [{x: 1}, {x: 2}, {x: 3}])
 L.remove([L.elems, 'x', L.when(x => x > 1)], [{x: 1}, {x: 2, y: 1}, {x: 3}])
 // [ { x: 1 }, { y: 1 }, {} ]
 ```
-
 
 Note that `L.remove(optic, maybeData)` is equivalent to [`L.set(lens, undefined,
 maybeData)`](#L-set).  With partial lenses, setting to `undefined` typically has
@@ -1582,6 +1600,15 @@ compatible identity
 [`Monad`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
 definition used by Partial Lenses.
 
+##### <a id="L-IdentityAsync"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-IdentityAsync) [`L.IdentityAsync ~> Monadish`](#L-IdentityAsync "L.IdentityAsync: Monadish") <small><sup>v13.12.0</sup></small>
+
+`L.IdentityAsync` is like [`L.Identity`](#L-Identity), but allows values to be
+[thenable](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve).
+[JavaScript promises do not form a
+monad](https://buzzdecafe.github.io/2018/04/10/no-promises-are-not-monads),
+which explains the "monadish".  Fortunately one usually does not want nested
+promises in which case the approximation can be close enough.
+
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
 
 `L.toFunction` converts a given optic, which can be a [string](#L-prop), an
@@ -1672,6 +1699,16 @@ optics, but may sometimes be useful.
 is intended for running [transforms](#transforms) defined using [transform
 ops](#transforming).
 
+For example:
+
+```js
+L.transform(
+  [L.elems, L.modifyOp(x => -x)],
+  [1, 2, 3]
+)
+// [-1, -2, -3]
+```
+
 Note that
 
 * [`L.assign(o, x, s)`](#L-assign) is equivalent to [`L.transform([o,
@@ -1682,6 +1719,23 @@ Note that
   s)`](#L-setOp), and
 * [`L.remove(o, s)`](#L-remove) is equivalent to [`L.transform([o, L.removeOp],
   s)`](#L-removeOp).
+
+##### <a id="L-transformAsync"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-transformAsync) [`L.transformAsync(optic, maybeData) ~> maybeDataPromise`](#L-transformAsync "L.transformAsync: POptic s a -> Maybe s -> Promise (Maybe s)") <small><sup>v13.12.0</sup></small>
+
+`L.transformAsync` is like [`L.transform`](#L-transform), but allows
+[`L.modifyOp`](#L-modifyOp) operations to be asynchronous.  The result of
+`L.transformAsync` is always a
+[promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise).
+
+For example:
+
+```js
+L.transformAsync(
+  [L.elems, L.modifyOp(async x => -x)],
+  [1, 2, 3]
+).then(console.log)
+// Promise [-1, -2, -3]
+```
 
 #### <a id="sequencing"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#sequencing) [Sequencing](#sequencing)
 
