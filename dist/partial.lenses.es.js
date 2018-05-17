@@ -1,4 +1,4 @@
-import { isString, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, isFunction, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, arityN, assign } from 'infestines';
+import { isString, isFunction, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, curryN, arityN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign } from 'infestines';
 
 var addU = function addU(x, y) {
   return x + y;
@@ -140,6 +140,18 @@ var arr = function arr(xC) {
 var toRegExpU = function toRegExpU(str, flags) {
   return isString(str) ? new RegExp(replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags) : str;
 };
+
+//
+
+var returnAsync = function returnAsync(x) {
+  return Promise.resolve(x);
+};
+
+var chainAsync = function chainAsync(xyP, xP) {
+  return null != xP && isFunction(xP.then) ? xP.then(xyP) : xyP(xP);
+};
+
+//
 
 var toStringPartial = function toStringPartial(x) {
   return void 0 !== x ? String(x) : '';
@@ -549,6 +561,10 @@ var modifyU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, 
       return o.length === 4 ? o(s, void 0, Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
 });
+
+var modifyAsyncU = function modifyAsyncU(o, f, s) {
+  return returnAsync(toFunction(o)(s, void 0, IdentityAsync, f));
+};
 
 function makeIx(i) {
   var ix = function ix(s, j) {
@@ -1002,6 +1018,19 @@ var Identity = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : freeze
   chain: applyU
 });
 
+var IdentityAsync = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : freeze)({
+  map: chainAsync,
+  ap: function ap(xyP, xP) {
+    return chainAsync(function (xP) {
+      return chainAsync(function (xyP) {
+        return xyP(xP);
+      }, xyP);
+    }, xP);
+  },
+  of: id,
+  chain: chainAsync
+});
+
 var Constant = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : freeze)({
   map: sndU
 });
@@ -1027,6 +1056,8 @@ var assign$1 = /*#__PURE__*/curry(function (o, x, s) {
 
 var modify = /*#__PURE__*/curry(modifyU);
 
+var modifyAsync = /*#__PURE__*/curry(modifyAsyncU);
+
 var remove = /*#__PURE__*/curry(function (o, s) {
   return setU(o, void 0, s);
 });
@@ -1035,6 +1066,10 @@ var set = /*#__PURE__*/curry(setU);
 
 var transform = /*#__PURE__*/curry(function (o, s) {
   return modifyU(o, id, s);
+});
+
+var transformAsync = /*#__PURE__*/curry(function (o, s) {
+  return modifyAsyncU(o, id, s);
 });
 
 var traverse = /*#__PURE__*/curry(traverseU);
@@ -1861,4 +1896,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, Constant, toFunction, assign$1 as assign, modify, remove, set, transform, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };

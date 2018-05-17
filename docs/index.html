@@ -88,6 +88,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
+<li><a href="#L-modifyAsync" title="L.modifyAsync: POptic s a -&gt; ((Maybe a, Index) -&gt; Promise (Maybe a)) -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.modifyAsync(optic, (maybeValue, index) =&gt; maybeValuePromise, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></li>
 <li><a href="#L-set" title="L.set: POptic s a -&gt; Maybe a -&gt; Maybe s -&gt; Maybe s"><code>L.set(optic, maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-traverse" title="L.traverse: (Functor|Applicative|Monad) c -&gt; ((Maybe a, Index) -&gt; c b) -&gt; POptic s t a b -&gt; Maybe s -&gt; c t"><code>L.traverse(algebra, (maybeValue, index) =&gt; operation, optic, maybeData) ~&gt; operation</code></a> <small><sup>v10.0.0</sup></small></li>
@@ -128,6 +129,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#internals">Internals</a><ul>
 <li><a href="#L-Constant" title="L.Constant: Functor"><code>L.Constant ~&gt; Functor</code></a> <small><sup>v13.7.0</sup></small></li>
 <li><a href="#L-Identity" title="L.Identity: Monad"><code>L.Identity ~&gt; Monad</code></a> <small><sup>v13.7.0</sup></small></li>
+<li><a href="#L-IdentityAsync" title="L.IdentityAsync: Monadish"><code>L.IdentityAsync ~&gt; Monadish</code></a> <small><sup>v13.12.0</sup></small></li>
 <li><a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></li>
 </ul>
 </li>
@@ -136,6 +138,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#transforms">Transforms</a><ul>
 <li><a href="#operations-on-transforms">Operations on transforms</a><ul>
 <li><a href="#L-transform" title="L.transform: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.transform(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.7.0</sup></small></li>
+<li><a href="#L-transformAsync" title="L.transformAsync: POptic s a -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.transformAsync(optic, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#sequencing">Sequencing</a><ul>
@@ -1032,6 +1035,18 @@ focused on by the given optic.</p>
          {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 
 </code></pre>
+<h5><a id="L-modifyAsync"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-modifyAsync">■</a> <a href="#L-modifyAsync" title="L.modifyAsync: POptic s a -&gt; ((Maybe a, Index) -&gt; Promise (Maybe a)) -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.modifyAsync(optic, (maybeValue, index) =&gt; maybeValuePromise, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></h5>
+<p><code>L.modifyAsync</code> allows one to map an asynchronous function over the elements
+focused on by the given optic.  The result of <code>L.modifyAsync</code> is always a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promise</a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.modifyAsync(
+  [&#39;elems&#39;, L.elems, &#39;x&#39;],
+  async x =&gt; x - 1,
+  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+).then(console.log)
+
+</code></pre>
 <h5><a id="L-remove"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-remove">■</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></h5>
 <p><code>L.remove</code> allows one to remove the elements focused on by the given optic.</p>
 <p>For example:</p>
@@ -1395,6 +1410,13 @@ Land</a>
 compatible identity
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad"><code>Monad</code></a>
 definition used by Partial Lenses.</p>
+<h5><a id="L-IdentityAsync"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-IdentityAsync">■</a> <a href="#L-IdentityAsync" title="L.IdentityAsync: Monadish"><code>L.IdentityAsync ~&gt; Monadish</code></a> <small><sup>v13.12.0</sup></small></h5>
+<p><code>L.IdentityAsync</code> is like <a href="#L-Identity"><code>L.Identity</code></a>, but allows values to be
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve">thenable</a>.
+<a href="https://buzzdecafe.github.io/2018/04/10/no-promises-are-not-monads">JavaScript promises do not form a
+monad</a>,
+which explains the &quot;monadish&quot;.  Fortunately one usually does not want nested
+promises in which case the approximation can be close enough.</p>
 <h5><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>, an
 <a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.  This
@@ -1462,6 +1484,13 @@ optics, but may sometimes be useful.</p>
 <p><code>L.transform(o, s)</code> is shorthand for <a href="#L-modify"><code>L.modify(o, x =&gt; x, s)</code></a> and
 is intended for running <a href="#transforms">transforms</a> defined using <a href="#transforming">transform
 ops</a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transform(
+  [L.elems, L.modifyOp(x =&gt; -x)],
+  [1, 2, 3]
+)
+
+</code></pre>
 <p>Note that</p>
 <ul>
 <li><a href="#L-assign"><code>L.assign(o, x, s)</code></a> is equivalent to <a href="#L-assignOp"><code>L.transform([o,
@@ -1473,6 +1502,18 @@ s)</code></a>, and</li>
 <li><a href="#L-remove"><code>L.remove(o, s)</code></a> is equivalent to <a href="#L-removeOp"><code>L.transform([o, L.removeOp],
 s)</code></a>.</li>
 </ul>
+<h5><a id="L-transformAsync"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-transformAsync">■</a> <a href="#L-transformAsync" title="L.transformAsync: POptic s a -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.transformAsync(optic, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></h5>
+<p><code>L.transformAsync</code> is like <a href="#L-transform"><code>L.transform</code></a>, but allows
+<a href="#L-modifyOp"><code>L.modifyOp</code></a> operations to be asynchronous.  The result of
+<code>L.transformAsync</code> is always a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promise</a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.transformAsync(
+  [L.elems, L.modifyOp(async x =&gt; -x)],
+  [1, 2, 3]
+).then(console.log)
+
+</code></pre>
 <h4><a id="sequencing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#sequencing">■</a> <a href="#sequencing">Sequencing</a></h4>
 <p>The <a href="#L-seq"><code>L.seq</code></a> combinator allows one to build <a href="#transforms">transforms</a>
 that modify their focus more than once.</p>

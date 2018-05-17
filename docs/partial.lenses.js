@@ -145,6 +145,18 @@
     return I.isString(str) ? new RegExp(replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags) : str;
   };
 
+  //
+
+  var returnAsync = function returnAsync(x) {
+    return Promise.resolve(x);
+  };
+
+  var chainAsync = function chainAsync(xyP, xP) {
+    return null != xP && I.isFunction(xP.then) ? xP.then(xyP) : xyP(xP);
+  };
+
+  //
+
   var toStringPartial = function toStringPartial(x) {
     return void 0 !== x ? String(x) : '';
   };
@@ -553,6 +565,10 @@
         return o.length === 4 ? o(s, void 0, Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
     }
   });
+
+  var modifyAsyncU = function modifyAsyncU(o, f, s) {
+    return returnAsync(toFunction(o)(s, void 0, IdentityAsync, f));
+  };
 
   function makeIx(i) {
     var ix = function ix(s, j) {
@@ -1006,6 +1022,19 @@
     chain: I.applyU
   });
 
+  var IdentityAsync = /*#__PURE__*/(0, I.freeze)({
+    map: chainAsync,
+    ap: function ap(xyP, xP) {
+      return chainAsync(function (xP) {
+        return chainAsync(function (xyP) {
+          return xyP(xP);
+        }, xyP);
+      }, xP);
+    },
+    of: I.id,
+    chain: chainAsync
+  });
+
   var Constant = /*#__PURE__*/(0, I.freeze)({
     map: I.sndU
   });
@@ -1031,6 +1060,8 @@
 
   var modify = /*#__PURE__*/I.curry(modifyU);
 
+  var modifyAsync = /*#__PURE__*/I.curry(modifyAsyncU);
+
   var remove = /*#__PURE__*/I.curry(function (o, s) {
     return setU(o, void 0, s);
   });
@@ -1039,6 +1070,10 @@
 
   var transform = /*#__PURE__*/I.curry(function (o, s) {
     return modifyU(o, I.id, s);
+  });
+
+  var transformAsync = /*#__PURE__*/I.curry(function (o, s) {
+    return modifyAsyncU(o, I.id, s);
   });
 
   var traverse = /*#__PURE__*/I.curry(traverseU);
@@ -1867,13 +1902,16 @@
 
   exports.seemsArrayLike = seemsArrayLike;
   exports.Identity = Identity;
+  exports.IdentityAsync = IdentityAsync;
   exports.Constant = Constant;
   exports.toFunction = toFunction;
   exports.assign = assign;
   exports.modify = modify;
+  exports.modifyAsync = modifyAsync;
   exports.remove = remove;
   exports.set = set;
   exports.transform = transform;
+  exports.transformAsync = transformAsync;
   exports.traverse = traverse;
   exports.compose = compose;
   exports.flat = flat;
