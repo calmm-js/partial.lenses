@@ -765,8 +765,12 @@ const matchesJoin = input => matchesIn => {
 
 //
 
-const eitherU = (t, e) => c => (x, i, C, xi2yC) =>
-  (c(x, i) ? t : e)(x, i, C, xi2yC)
+const eitherFn = x => x || undefined
+
+const eitherU = (t, e) => c => (
+  (c = toFunction(c)),
+  (x, i, C, xi2yC) => (c(x, i, Select, eitherFn) ? t : e)(x, i, C, xi2yC)
+)
 
 const orElseU = (back, prim) => (
   (prim = toFunction(prim)),
