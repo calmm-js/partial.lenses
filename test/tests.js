@@ -400,6 +400,7 @@ describe(`L.get`, () => {
     () => L.get([[0, L.findWith('x')], [[L.identity], 'y']], [[{x: {y: 101}}]]),
     101
   )
+  testEq(() => L.get(X.findWith('x', {hint: 1}), [{x: 1}, {x: 2}]), 2)
 })
 
 describe(`L.index`, () => {
@@ -467,6 +468,7 @@ describe('L.defaults', () => {
 })
 
 describe('L.define', () => {
+  testEq(() => L.remove(L.define({x: 1}), {y: 0}), {x: 1})
   testEq(() => L.get(L.define([]), [1]), [1])
   testEq(() => L.get(['related', L.define([])], {}), [])
   testEq(() => L.set(L.define([]), undefined, undefined), [])
@@ -760,6 +762,7 @@ describe('L.elemsTotal', () => {
 })
 
 describe('L.elems', () => {
+  testEq(() => L.modify(L.elems, R.identity, [0, NaN]), [0, NaN])
   testEq(() => L.modify(L.elems, R.identity, {x: 1, y: 2}), {x: 1, y: 2})
   testEq(() => L.modify(L.elems, R.inc, {x: 1, y: 2}), {x: 1, y: 2})
   testEq(() => L.modify(L.elems, R.negate, []), [])
@@ -1193,6 +1196,14 @@ describe('L.complement', () => {
 })
 
 describe('L.branch', () => {
+  testEq(
+    () => L.modify(L.branchOr([], {x: []}), R.identity, {x: 0, y: NaN, z: 0}),
+    {
+      x: 0,
+      y: NaN,
+      z: 0
+    }
+  )
   testEq(() => L.modify(L.branch({}), x => x + 1, null), null)
   testEq(() => L.modify(L.branch({}), x => x + 1, 'anything'), 'anything')
   testEq(() => L.modify(L.branch({}), x => x + 1, {}), {})
@@ -1924,6 +1935,7 @@ describe('L.pointer', () => {
     a: 1,
     b: [3, 3]
   })
+  testEq(() => L.get(L.pointer('/-'), {'-': 101}), 101)
 
   testEq(() => L.get(L.pointer('#'), {a: 1, b: 2}), {a: 1, b: 2})
   testEq(() => L.get(L.pointer('#/'), {'': 1, b: 2}), 1)
@@ -1955,6 +1967,7 @@ describe('L.pointer', () => {
 })
 
 describe('L.dropPrefix', () => {
+  testEq(() => L.get(L.dropPrefix('foo'), 'bar'), undefined)
   testEq(() => L.get(L.dropPrefix('foo'), 'foobar'), 'bar')
   testEq(() => L.getInverse(L.dropPrefix('foo'), 'bar'), 'foobar')
   testEq(() => L.get(L.dropPrefix('foo'), ['not a string']), undefined)
@@ -1962,6 +1975,7 @@ describe('L.dropPrefix', () => {
 })
 
 describe('L.dropSuffix', () => {
+  testEq(() => L.get(L.dropSuffix('foo'), 'bar'), undefined)
   testEq(() => L.get(L.dropSuffix('bar'), 'foobar'), 'foo')
   testEq(() => L.getInverse(L.dropSuffix('bar'), 'foo'), 'foobar')
   testEq(() => L.get(L.dropSuffix('bar'), ['not a string']), undefined)
@@ -1987,6 +2001,7 @@ describe('L.split', () => {
 })
 
 describe('L.uncouple', () => {
+  testEq(() => L.get(L.uncouple('='), 'foo'), ['foo', ''])
   testEq(() => L.get(L.uncouple('='), 'fo=ob=ar'), ['fo', 'ob=ar'])
   testEq(() => L.get(X.uncouple('=', '/'), 'fo/ob=ar'), ['fo', 'ob=ar'])
   testEq(() => L.get(X.uncouple('=', /\s*=\s*/), 'fo = ob = ar'), [
@@ -1996,6 +2011,7 @@ describe('L.uncouple', () => {
   testEq(() => L.getInverse(L.uncouple('='), ['foo', 'bar']), 'foo=bar')
   testEq(() => L.get(L.uncouple('='), ['not a', 'string']), undefined)
   testEq(() => L.getInverse(L.uncouple('='), 'not an array'), undefined)
+  testEq(() => L.getInverse(L.uncouple('='), ['foo', '']), 'foo')
 })
 
 describe('arithmetic', () => {
@@ -2087,6 +2103,8 @@ if (process.env.NODE_ENV !== 'production') {
     testThrows(() => L.joinAs(I.id, 0))
 
     testThrows(() => L.cond([]))
+
+    testThrows(() => L.cond([0, 1]))
   })
 
   describe('diagnostics', () => {
