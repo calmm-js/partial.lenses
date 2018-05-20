@@ -243,6 +243,9 @@ describe('arities', () => {
     attemptEveryDown: 1,
     attemptEveryUp: 1,
     attemptSomeDown: 1,
+    attrs: 0,
+    attrsIn: 1,
+    attrsInOr: 2,
     branch: 1,
     branchOr: 2,
     branches: 0,
@@ -340,6 +343,7 @@ describe('arities', () => {
     negate: 4,
     none: 3,
     normalize: 1,
+    object: 1,
     offset: 2,
     optional: 4,
     or: 2,
@@ -1226,6 +1230,68 @@ describe('L.pickIn', () => {
       }),
     {meta: {file: './foo.txt', ext: 'txt'}}
   )
+  testEq(() => L.remove(L.pickIn({x: L.negate}), {x: 1}), {})
+  testEq(() => L.get(L.pickIn({x: L.negate}), {}), undefined)
+})
+
+describe('L.attrsInOr', () => {
+  testEq(() => L.set(L.attrsInOr(L.zero, {}), {}, {x: 1}), {x: 1})
+  testEq(() => L.get(L.attrsInOr(L.zero, {}), {y: 1}), {})
+  testEq(() => L.get(L.attrsInOr(L.negate, {x: L.add(1)}), {x: 1, y: 2}), {
+    x: 2,
+    y: -2
+  })
+  testEq(
+    () => L.set([L.attrsInOr(L.negate, {x: L.add(1)}), 'x'], -2, {x: 1, y: 2}),
+    {x: -3, y: 2}
+  )
+  testEq(
+    () =>
+      L.set(
+        L.attrsInOr(L.negate, {x: L.add(1), z: L.subtract(1)}),
+        {x: -2, z: 1},
+        {x: 1, y: 2}
+      ),
+    {x: -3, z: 2}
+  )
+  testEq(
+    () => L.remove(L.attrsInOr(L.negate, {x: L.add(1)}), {x: 1, y: 2}),
+    undefined
+  )
+  testEq(
+    () => L.set(L.attrsInOr(L.negate, {x: L.add(1)}), {}, {x: 1, y: 2}),
+    {}
+  )
+  testEq(() => L.set(L.attrsInOr(L.defaults(0), {}), {x: 0}, {}), {})
+})
+
+describe('L.attrsIn', () => {
+  testEq(() => L.get(L.attrsIn({x: L.zero}), 'not an object'), undefined)
+  testEq(() => L.get(L.attrsIn({x: L.negate}), {}), {})
+  testEq(() => L.get(L.attrsIn({x: L.negate}), {y: 1}), {})
+  testEq(() => L.get(L.attrsIn({x: L.negate}), {x: 1, y: 2}), {x: -1})
+  testEq(() => L.set(L.attrsIn({x: L.negate}), {y: 1}, {y: 2}), {y: 2})
+  testEq(() => L.set(L.attrsIn({x: L.negate}), {}, {}), {})
+  testEq(() => L.remove(L.attrsIn({x: L.negate}), {x: 1}), undefined)
+  testEq(
+    () =>
+      L.get(L.attrsIn({meta: {file: [], ext: []}}), {
+        meta: {file: './foo.txt', base: 'foo', ext: 'txt'}
+      }),
+    {meta: {file: './foo.txt', ext: 'txt'}}
+  )
+})
+
+describe('L.object', () => {
+  testEq(() => L.get(L.object(L.filter(x => x < 0)), {x: [1], y: [1, -1]}), {
+    x: [],
+    y: [-1]
+  })
+  testEq(
+    () =>
+      L.set(L.object(L.filter(x => x < 0)), {y: [-2]}, {x: [1], y: [1, -1]}),
+    {x: [1], y: [-2, 1]}
+  )
 })
 
 describe('L.props', () => {
@@ -1245,6 +1311,46 @@ describe('L.props', () => {
     'b',
     'y'
   ])
+})
+
+describe('L.attrs', () => {
+  testEq(() => L.remove(L.attrs('x', 'y'), {x: 1, y: 2, z: 3}), {z: 3})
+  testEq(() => L.set(L.attrs('x', 'y'), {}, {x: 1, y: 2, z: 3}), {z: 3})
+  testEq(() => L.set(L.attrs('x', 'y'), {y: 4}, {x: 1, y: 2, z: 3}), {
+    y: 4,
+    z: 3
+  })
+
+  for (const maybeInverse of [R.identity, L.inverse]) {
+    testEq(() => L.get(maybeInverse(L.attrs('x', 'y')), {x: 1, y: 2, z: 3}), {
+      x: 1,
+      y: 2
+    })
+    testEq(() => L.get(maybeInverse(L.attrs('x', 'y')), {z: 3}), {})
+    testEq(() => L.get(maybeInverse(L.attrs('x', 'y')), {x: 2, z: 3}), {
+      x: 2
+    })
+    testEq(
+      () => L.remove(maybeInverse(L.attrs('x', 'y')), {x: 1, y: 2}),
+      undefined
+    )
+    testEq(() => L.set(maybeInverse(L.attrs('x', 'y')), {}, {x: 1, y: 2}), {})
+    testEq(() => L.set(maybeInverse(L.attrs('x', 'y')), {y: 4}, {x: 1, y: 2}), {
+      y: 4
+    })
+    testEq(
+      () => L.remove(maybeInverse(L.attrs('x', 'y')), {x: 1, y: 2}),
+      undefined
+    )
+    testEq(() => L.set(maybeInverse(L.attrs('a', 'b')), {a: 2}, {a: 1, b: 3}), {
+      a: 2
+    })
+    testEq(
+      () =>
+        I.keys(L.get(maybeInverse(L.attrs('x', 'b', 'y')), {b: 1, y: 1, x: 1})),
+      ['x', 'b', 'y']
+    )
+  }
 })
 
 describe('L.propsExcept', () => {

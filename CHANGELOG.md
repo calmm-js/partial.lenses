@@ -1,5 +1,24 @@
 # Partial Lenses Changelog
 
+## 14.x.y
+
+Obsoleted `L.pickIn`, and `L.props`.  They are based on `L.pick`,
+which uses lenses and requires super linear time when written through.  The new
+`L.attrsIn`, and `L.attrs` work in linear time and differ from them
+in the handling of empty results and removal, because they are designed to work
+symmetrically as isomorphisms, but in most cases you should be able to just
+replace uses of `L.pickIn` with `L.attrsIn` and `L.props` with `L.attrs`:
+
+```diff
+-L.pickIn(template)
++L.attrsIn(template)
+```
+
+```diff
+-L.props(...propNames)
++L.attrs(...propNames)
+```
+
 ## 14.14.0
 
 Renamed `L.append` to `L.appendTo`.  This means that `L.append` is deprecated.
