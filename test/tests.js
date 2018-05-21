@@ -2045,17 +2045,21 @@ describe('async', () => {
     [-3, -1, -4]
   )
 
-  testEq(
-    () =>
-      L.modifyAsync(
-        L.elems,
-        async _ => {
-          throw Error('error')
-        },
-        [1]
-      ) instanceof Promise,
-    true
-  )
+  testEq(async () => {
+    const result = L.modifyAsync(
+      L.elems,
+      async _ => {
+        throw Error('error')
+      },
+      [1]
+    )
+    try {
+      await result
+      return false
+    } catch (_) {
+      return result instanceof Promise
+    }
+  }, true)
 
   testThrows(() =>
     L.modifyAsync(
