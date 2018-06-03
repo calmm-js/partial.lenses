@@ -241,6 +241,7 @@ describe('arities', () => {
     countsAs: 3,
     defaults: 1,
     define: 1,
+    disjoint: 1,
     divide: 1,
     dropPrefix: 1,
     dropSuffix: 1,
@@ -1998,6 +1999,35 @@ describe('L.split', () => {
   testEq(() => L.getInverse(L.split(','), ['fo', 'ob', 'ar']), 'fo,ob,ar')
   testEq(() => L.get(L.split(','), ['not a', 'string']), undefined)
   testEq(() => L.getInverse(L.split(','), 'not an array'), undefined)
+})
+
+describe('L.disjoint', () => {
+  testEq(
+    () =>
+      L.get(L.disjoint(k => (k < 'x' ? 'primary' : 'secondary')), {
+        a: 'b',
+        x: 1,
+        y: 2
+      }),
+    {
+      primary: {a: 'b'},
+      secondary: {x: 1, y: 2}
+    }
+  )
+  testEq(
+    () =>
+      L.getInverse(L.disjoint(k => (k < 'x' ? 'primary' : 'secondary')), {
+        primary: {a: 'b'},
+        secondary: {x: 1, y: 2}
+      }),
+    {a: 'b', x: 1, y: 2}
+  )
+  testEq(() => L.getInverse(L.disjoint(R.identity), 'not an object'), undefined)
+  testEq(() => L.getInverse(L.disjoint(R.identity), {x: 'not object'}), {})
+  testEq(
+    () => L.getInverse(L.disjoint(R.always('g')), {x: {k: 'not in group'}}),
+    {}
+  )
 })
 
 describe('L.uncouple', () => {
