@@ -209,6 +209,12 @@
     return I.freeze(xs);
   }
 
+  function freezeObjectOfObjects(xs) {
+    if (xs) for (var k in xs) {
+      I.freeze(xs[k]);
+    }return I.freeze(xs);
+  }
+
   var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
     return !(x instanceof Object) || I.isArray(x);
   };
@@ -954,6 +960,43 @@
       return result;
     };
   };
+
+  //
+
+  var disjointBwd = /*#__PURE__*/(res(freezeObjectOfObjects))(function (groupOf, x) {
+    if (x instanceof Object) {
+      var y = {};
+      x = toObject(x);
+      for (var key in x) {
+        var group = groupOf(key);
+        var g = y[group];
+        if (undefined === g) y[group] = g = {};
+        g[key] = x[key];
+      }
+      return y;
+    }
+  });
+
+  var disjointFwd = /*#__PURE__*/(res(res(I.freeze)))(function (groupOf) {
+    return function (y) {
+      if (y instanceof Object) {
+        var x = {};
+        y = toObject(y);
+        for (var group in y) {
+          var g = y[group];
+          if (g instanceof Object) {
+            g = toObject(g);
+            for (var key in g) {
+              if (groupOf(key) === group) {
+                x[key] = g[key];
+              }
+            }
+          }
+        }
+        return x;
+      }
+    };
+  });
 
   //
 
@@ -1754,6 +1797,16 @@
 
   var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
+  var is = function is(v) {
+    return isoU(function (x) {
+      return I.acyclicEqualsU(v, x);
+    }, function (b) {
+      return true === b ? v : void 0;
+    });
+  };
+
+  // Array isomorphisms
+
   var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeArrayOfObjects))(function (xs) {
     var n = xs.length;
     var xis = Array(n);
@@ -1780,14 +1833,6 @@
     return xs;
   })));
 
-  var is = function is(v) {
-    return isoU(function (x) {
-      return I.acyclicEqualsU(v, x);
-    }, function (b) {
-      return true === b ? v : void 0;
-    });
-  };
-
   var reverse = /*#__PURE__*/isoU(rev, rev);
 
   var singleton = /*#__PURE__*/(function (iso) {
@@ -1795,6 +1840,15 @@
   })(function (x, i, F, xi2yF) {
     return F.map(singletonPartial, xi2yF((x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0, i));
   });
+
+  // Object isomorphisms
+
+  var disjoint = function disjoint(groupOf) {
+    return function (x, i, F, xi2yF) {
+      var fwd = disjointFwd(groupOf);
+      return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i));
+    };
+  };
 
   // Standard isomorphisms
 
@@ -2016,11 +2070,12 @@
   exports.inverse = inverse;
   exports.complement = complement;
   exports.identity = identity;
-  exports.indexed = indexed;
   exports.is = is;
-  exports.keyed = keyed;
+  exports.indexed = indexed;
   exports.reverse = reverse;
   exports.singleton = singleton;
+  exports.disjoint = disjoint;
+  exports.keyed = keyed;
   exports.uri = uri;
   exports.uriComponent = uriComponent;
   exports.json = json;

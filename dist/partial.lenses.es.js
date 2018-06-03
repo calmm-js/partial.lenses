@@ -1,4 +1,4 @@
-import { isString, isFunction, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curry, curryN, arityN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign } from 'infestines';
+import { isString, curry, isFunction, isArray, freeze, isObject, id, acyclicEqualsU, array0, object0, sndU, always, curryN, arityN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign } from 'infestines';
 
 var addU = function addU(x, y) {
   return x + y;
@@ -203,6 +203,12 @@ function deepFreeze(x) {
 function freezeArrayOfObjects(xs) {
   xs.forEach(freeze);
   return freeze(xs);
+}
+
+function freezeObjectOfObjects(xs) {
+  if (xs) for (var k in xs) {
+    freeze(xs[k]);
+  }return freeze(xs);
 }
 
 var isArrayOrPrimitive = function isArrayOrPrimitive(x) {
@@ -950,6 +956,43 @@ var matchesJoin = function matchesJoin(input) {
     return result;
   };
 };
+
+//
+
+var disjointBwd = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (groupOf, x) {
+  if (x instanceof Object) {
+    var y = {};
+    x = toObject$1(x);
+    for (var key in x) {
+      var group = groupOf(key);
+      var g = y[group];
+      if (undefined === g) y[group] = g = {};
+      g[key] = x[key];
+    }
+    return y;
+  }
+});
+
+var disjointFwd = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(freeze)))(function (groupOf) {
+  return function (y) {
+    if (y instanceof Object) {
+      var x = {};
+      y = toObject$1(y);
+      for (var group in y) {
+        var g = y[group];
+        if (g instanceof Object) {
+          g = toObject$1(g);
+          for (var key in g) {
+            if (groupOf(key) === group) {
+              x[key] = g[key];
+            }
+          }
+        }
+      }
+      return x;
+    }
+  };
+});
 
 //
 
@@ -1750,6 +1793,16 @@ var inverse = function inverse(iso) {
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
+var is = function is(v) {
+  return isoU(function (x) {
+    return acyclicEqualsU(v, x);
+  }, function (b) {
+    return true === b ? v : void 0;
+  });
+};
+
+// Array isomorphisms
+
 var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeArrayOfObjects))(function (xs) {
   var n = xs.length;
   var xis = Array(n);
@@ -1776,14 +1829,6 @@ var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__
   return xs;
 })));
 
-var is = function is(v) {
-  return isoU(function (x) {
-    return acyclicEqualsU(v, x);
-  }, function (b) {
-    return true === b ? v : void 0;
-  });
-};
-
 var reverse = /*#__PURE__*/isoU(rev, rev);
 
 var singleton = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (iso) {
@@ -1791,6 +1836,15 @@ var singleton = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : funct
 })(function (x, i, F, xi2yF) {
   return F.map(singletonPartial, xi2yF((x instanceof Object || isString(x)) && x.length === 1 ? x[0] : void 0, i));
 });
+
+// Object isomorphisms
+
+var disjoint = function disjoint(groupOf) {
+  return function (x, i, F, xi2yF) {
+    var fwd = disjointFwd(groupOf);
+    return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i));
+  };
+};
 
 // Standard isomorphisms
 
@@ -1896,4 +1950,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, indexed, is, keyed, reverse, singleton, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
