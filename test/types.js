@@ -376,6 +376,7 @@ export const singleton = T_isomorphism
 
 // Object isomorphisms
 
+export const disjoint = T.fn([T.fn([T.string], T.string)], T_isomorphism)
 export const keyed = T_isomorphism
 
 // Standard isomorphisms

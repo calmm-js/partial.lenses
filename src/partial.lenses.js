@@ -50,6 +50,11 @@ function freezeArrayOfObjects(xs) {
   return I.freeze(xs)
 }
 
+function freezeObjectOfObjects(xs) {
+  if (xs) for (const k in xs) I.freeze(xs[k])
+  return I.freeze(xs)
+}
+
 const isArrayOrPrimitive = x => !(x instanceof Object) || I.isArray(x)
 
 const rev = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
@@ -762,6 +767,45 @@ const matchesJoin = input => matchesIn => {
   result += input.slice(lastIndex)
   return result
 }
+
+//
+
+const disjointBwd = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.res(freezeObjectOfObjects))((groupOf, x) => {
+  if (x instanceof Object) {
+    const y = {}
+    x = toObject(x)
+    for (const key in x) {
+      const group = groupOf(key)
+      let g = y[group]
+      if (undefined === g) y[group] = g = {}
+      g[key] = x[key]
+    }
+    return y
+  }
+})
+
+const disjointFwd = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.res(C.res(I.freeze)))(groupOf => y => {
+  if (y instanceof Object) {
+    const x = {}
+    y = toObject(y)
+    for (const group in y) {
+      let g = y[group]
+      if (g instanceof Object) {
+        g = toObject(g)
+        for (const key in g) {
+          if (groupOf(key) === group) {
+            x[key] = g[key]
+          }
+        }
+      }
+    }
+    return x
+  }
+})
 
 //
 
@@ -1635,6 +1679,11 @@ export const singleton = (process.env.NODE_ENV === 'production'
 )
 
 // Object isomorphisms
+
+export const disjoint = groupOf => (x, i, F, xi2yF) => {
+  const fwd = disjointFwd(groupOf)
+  return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i))
+}
 
 export {keyed}
 

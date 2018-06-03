@@ -198,6 +198,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
     * [Object isomorphisms](#object-isomorphisms)
+      * [`L.disjoint(propName => propName) ~> isomorphisms`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
       * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3629,6 +3630,34 @@ the first element of an array-like object, but to also check that the object is
 of the expected form.
 
 #### <a id="object-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#object-isomorphisms) [Object isomorphisms](#object-isomorphisms)
+
+##### <a id="L-disjoint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-disjoint) [`L.disjoint(propName => propName) ~> isomorphisms`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
+
+`L.disjoint` divides an object into disjoint subsets based on the given function
+that maps keys to group keys.
+
+For example:
+
+```js
+L.collect(
+  L.lazy(rec => L.cond(
+    [R.is(Array), [L.elems, rec]],
+    [R.is(Object), [
+      L.disjoint(key => key === 'children' ? 'nest' : 'rest'),
+      L.branch({rest: [], nest: ['children', rec]})
+    ]]
+  )),
+  {
+    id: 1,
+    value: 'root',
+    children: [
+      {id: 2, value: 'a', children: []},
+      {id: 3, value: 'b', extra: 1}
+    ]
+  }
+)
+// [{id: 1, value: 'root'}, {id: 2, value: 'a'}, {id: 3, value: 'b', extra: 1}]
+```
 
 ##### <a id="L-keyed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-keyed) [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
 
