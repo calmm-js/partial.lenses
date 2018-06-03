@@ -192,11 +192,13 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
-      * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
-      * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
+    * [Array isomorphisms](#array-isomorphisms)
+      * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
+    * [Object isomorphisms](#object-isomorphisms)
+      * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3569,6 +3571,14 @@ L.modify(L.identity, f, x) = f(x)
   L.compose(l, L.identity) = l
 ```
 
+##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
+
+`L.is` reads the given value as `true` and everything else as `false` and writes
+`true` as the given value and everything else as `undefined`.  See
+[here](#an-array-of-ids-as-boolean-flags) for an example.
+
+#### <a id="array-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#array-isomorphisms) [Array isomorphisms](#array-isomorphisms)
+
 ##### <a id="L-indexed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-indexed) [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
 
 `L.indexed` is an isomorphism between an [array-like](#array-like) object and an
@@ -3585,24 +3595,6 @@ L.modify([L.rewrite(R.join('')),
          R.toUpper,
          'optics')
 // 'optiCs'
-```
-
-##### <a id="L-is"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-is) [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
-
-`L.is` reads the given value as `true` and everything else as `false` and writes
-`true` as the given value and everything else as `undefined`.  See
-[here](#an-array-of-ids-as-boolean-flags) for an example.
-
-##### <a id="L-keyed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-keyed) [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
-
-`L.keyed` is an isomorphism between an object and an array of `[key, value]`
-pairs.
-
-For example:
-
-```js
-L.get(L.keyed, {a: 1, b: 2})
-// [ ['a', 1], ['b', 2] ]
 ```
 
 ##### <a id="L-reverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-reverse) [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
@@ -3635,6 +3627,20 @@ not contain exactly one element, then the view will be `undefined`.  The reason
 for this behaviour is that it allows `L.singleton` to not only be used to access
 the first element of an array-like object, but to also check that the object is
 of the expected form.
+
+#### <a id="object-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#object-isomorphisms) [Object isomorphisms](#object-isomorphisms)
+
+##### <a id="L-keyed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-keyed) [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
+
+`L.keyed` is an isomorphism between an object and an array of `[key, value]`
+pairs.
+
+For example:
+
+```js
+L.get(L.keyed, {a: 1, b: 2})
+// [ ['a', 1], ['b', 2] ]
+```
 
 #### <a id="standard-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standard-isomorphisms) [Standard isomorphisms](#standard-isomorphisms)
 

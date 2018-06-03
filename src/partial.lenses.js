@@ -1579,6 +1579,11 @@ export const complement = isoU(notPartial, notPartial)
 
 export {identity}
 
+export const is = v =>
+  isoU(x => I.acyclicEqualsU(v, x), b => (true === b ? v : void 0))
+
+// Array isomorphisms
+
 export const indexed = isoU(
   expect(
     seemsArrayLike,
@@ -1615,11 +1620,6 @@ export const indexed = isoU(
   )
 )
 
-export const is = v =>
-  isoU(x => I.acyclicEqualsU(v, x), b => (true === b ? v : void 0))
-
-export {keyed}
-
 export const reverse = isoU(rev, rev)
 
 export const singleton = (process.env.NODE_ENV === 'production'
@@ -1633,6 +1633,10 @@ export const singleton = (process.env.NODE_ENV === 'production'
     )
   )
 )
+
+// Object isomorphisms
+
+export {keyed}
 
 // Standard isomorphisms
 

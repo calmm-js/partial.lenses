@@ -366,11 +366,17 @@ export const inverse = T.fn([T_isomorphism], T_isomorphism)
 
 export const complement = T_isomorphism
 export const identity = T_isomorphism
-export const indexed = T_isomorphism
 export const is = T.fn([T.def], T_lens)
-export const keyed = T_isomorphism
+
+// Array isomorphisms
+
+export const indexed = T_isomorphism
 export const reverse = T_isomorphism
 export const singleton = T_isomorphism
+
+// Object isomorphisms
+
+export const keyed = T_isomorphism
 
 // Standard isomorphisms
 
