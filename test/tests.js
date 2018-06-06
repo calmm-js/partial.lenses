@@ -315,6 +315,7 @@ describe('arities', () => {
     replaces: 2,
     required: 1,
     reread: 1,
+    retry: 2,
     reverse: 4,
     rewrite: 1,
     satisfying: 1,
@@ -1381,6 +1382,16 @@ describe('L.seq', () => {
   testEq(() => L.modify(everywhere, x => [x], {x: {y: 1}}), [{x: [{y: [1]}]}])
 
   testEq(() => collectM(L.seq(1, 0, 2), ['b', 'a', 'c']), ['a', 'b', 'c'])
+})
+
+describe('L.retry', () => {
+  testEq(
+    `L.transform([L.values,
+                  L.retry((x, i) => L.modifyOp((y, i) => [{x, i}, {y, i}]),
+                          L.modifyOp((x, i) => ({x, i})))],
+                 {x: 42})`,
+    {x: [{x: {x: 42, i: 'x'}, i: 'x'}, {y: 42, i: 'x'}]}
+  )
 })
 
 describe('lazy folds', () => {

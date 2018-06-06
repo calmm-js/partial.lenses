@@ -147,6 +147,13 @@ export const log = T.fnVarN(0, T.string, T_optic)
 
 export const seq = T.fnVarN(0, T_optic, T_transform)
 
+// Backtracking
+
+export const retry = T.fn(
+  [T.fn([T_maybeDataO, T_index], T_transform), T_transform],
+  T_transform
+)
+
 // Creating new traversals
 
 export const branchOr = T.fn([T_optic, template(T_traversal)], T_traversal)
