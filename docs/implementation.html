@@ -50,12 +50,10 @@ Lenses</a>.</p>
 generalized <code>traverse</code> function.  The
 <a href="http://hackage.haskell.org/package/base-4.10.1.0/docs/Data-Traversable.html#v:traverse"><code>traverse</code></a>
 function of the <code>Traversable</code> constructor class</p>
-<pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (x -&gt; f y) -&gt; t x -&gt; f (t y)
-</code></pre>
+<pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (x -&gt; f y) -&gt; t x -&gt; f (t y)</code></pre>
 <p>is a kind of mapping function.  Indeed, if you specialize the <code>t</code> type
 constructor to list, <code>[]</code>, and <code>f</code> to identity, you get list map:</p>
-<pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (x -&gt;   y) -&gt; [x] -&gt;    [y]
-</code></pre>
+<pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (x -&gt;   y) -&gt; [x] -&gt;    [y]</code></pre>
 <p><code>traverse</code> takes some kind of traversable data structure of type <code>t x</code>
 containing values type <code>x</code>.  It maps those values to operations of type <code>f y</code> in
 some <a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors">applicative
@@ -64,12 +62,10 @@ given mapping function of type <code>x -&gt; f y</code>.  Finally it returns an 
 type <code>f (t y)</code> that constructs a new data structure of type <code>t y</code>.</p>
 <p>The optical version of <code>traverse</code> replaces the second class <code>Traversable</code>
 constructor class with a first class traversal function</p>
-<pre><code class="hljs lang-haskell">type Traversal s t x y = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t
-</code></pre>
+<pre><code class="hljs lang-haskell">type Traversal s t x y = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t</code></pre>
 <p>and <code>traverse</code> using an optic merely calls the given traversal function</p>
 <pre><code class="hljs lang-haskell">traverse :: Applicative f =&gt; (x -&gt; f y) -&gt; Traversal s t x y -&gt; s -&gt; f t
-traverse x2yF traversal = traversal x2yF
-</code></pre>
+traverse x2yF traversal = traversal x2yF</code></pre>
 <p>A traversal function of type <code>Traversal s t x y</code> is simply a function that knows
 how to locate elements of type <code>x</code> within a data structure of type <code>s</code> and then
 knows how to build a new data structure of type <code>t</code> where values of type <code>x</code>
@@ -83,8 +79,7 @@ same as <code>s</code>.</p>
 Land</a> style by
 passing the method dictionary corresponding to the <code>Applicative</code> constraint as
 an explicit argument <code>F</code>:</p>
-<pre><code class="hljs lang-js">var traverse = F =&gt; x2yF =&gt; traversal =&gt; traversal(F)(x2yF)
-</code></pre>
+<pre><code class="hljs lang-js">var traverse = F =&gt; x2yF =&gt; traversal =&gt; traversal(F)(x2yF)</code></pre>
 <p>Innocent as it may seem, <em>every</em> operation in Partial Lenses is basically an
 application of a traversal function like that.  The Partial Lenses version of
 <a href="index.html#L-traverse"><code>traverse</code></a> is only slightly different due to features
@@ -94,8 +89,7 @@ arrays to optics.</p>
 <pre><code class="hljs lang-js">var elems = F =&gt; x2yF =&gt; xs =&gt; xs.reduce(
   (ysF, x) =&gt; F.ap(F.map(ys =&gt; y =&gt; [...ys, y], ysF), x2yF(x)),
   F.of([])
-)
-</code></pre>
+)</code></pre>
 <p>Above, <code>F</code> is a Static Land <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative">applicative
 functor</a>,
 <code>x2yF</code> is the function mapping array elements to applicative operations, and
@@ -105,42 +99,34 @@ using the applicative combinators <code>F.of</code>, <code>F.ap</code> and <code
 that builds an array of the results.</p>
 <p>To actually use <code>elems</code> with <code>traverse</code> we need an applicative functor.  Perhaps
 the most straightforward example is using the identity applicative:</p>
-<pre><code class="hljs lang-js">var Identity = {map: (x2y, x) =&gt; x2y(x), ap: (x2y, x) =&gt; x2y(x), of: x =&gt; x}
-</code></pre>
+<pre><code class="hljs lang-js">var Identity = {map: (x2y, x) =&gt; x2y(x), ap: (x2y, x) =&gt; x2y(x), of: x =&gt; x}</code></pre>
 <p>The identity applicative performs no interesting computation by itself.  Any
 value is taken as such by <code>of</code> and both <code>map</code> and <code>ap</code> simply apply their first
 argument to their second argument.</p>
 <p>By supplying the <code>Identity</code> applicative to <code>traverse</code> we get a mapping function
 over a given traversal:</p>
-<pre><code class="hljs lang-js">var map = traverse(Identity)
-</code></pre>
+<pre><code class="hljs lang-js">var map = traverse(Identity)</code></pre>
 <p>In Partial Lenses the above function is called <a href="index.html#L-modify"><code>modify</code></a>
 and it takes its arguments in a different order, but otherwise it is the same.</p>
 <p>Using <code>map</code> and <code>elems</code> we can now map over an array of elements:</p>
 <pre><code class="hljs lang-js">map(x =&gt; x + 1)(elems)([3, 1, 4])
-
 </code></pre>
 <p>At this point we basically have a horribly complex version of the map function
 for arrays.  Notice, however, that <code>map</code> takes the optic, <code>elems</code> in the above
 case, as an argument.  We can compose optics and get different behavior.</p>
 <p>The following <code>o</code> function composes two optics <code>outer</code> and <code>inner</code>:</p>
-<pre><code class="hljs lang-js">var o = (outer, inner) =&gt; F =&gt; x2yF =&gt; outer(F)(inner(F)(x2yF))
-</code></pre>
+<pre><code class="hljs lang-js">var o = (outer, inner) =&gt; F =&gt; x2yF =&gt; outer(F)(inner(F)(x2yF))</code></pre>
 <p>If you look closely, you&#39;ll notice that the above function really is just a
 variation of ordinary function composition.  Consider what we get if we drop the
 <code>F</code> argument:</p>
-<pre><code class="hljs lang-jsx">var o = (outer, inner) =&gt;      x2yF =&gt; outer   (inner   (x2yF))
-</code></pre>
+<pre><code class="hljs lang-jsx">var o = (outer, inner) =&gt;      x2yF =&gt; outer   (inner   (x2yF))</code></pre>
 <p>That is exactly the same as ordinary single argument function composition.</p>
 <p>We can also define an identity optic function:</p>
-<pre><code class="hljs lang-js">var identity = F =&gt; x2yF =&gt; x =&gt; x2yF(x)
-</code></pre>
+<pre><code class="hljs lang-js">var identity = F =&gt; x2yF =&gt; x =&gt; x2yF(x)</code></pre>
 <p>And a function to compose any number of optics:</p>
-<pre><code class="hljs lang-js">var compose = optics =&gt; optics.reduce(o, identity)
-</code></pre>
+<pre><code class="hljs lang-js">var compose = optics =&gt; optics.reduce(o, identity)</code></pre>
 <p>Using <code>compose</code> we can now conveniently map over nested arrays:</p>
 <pre><code class="hljs lang-js">map(x =&gt; x + 1)(compose([elems, elems, elems]))([[[1]], [[2, 3], [4]]])
-
 </code></pre>
 <p>Let&#39;s then divert our attention to lenses for a moment.  One could say that
 lenses are just traversals that focus on exactly one element.  Let&#39;s build
@@ -155,50 +141,41 @@ for both arrays and objects:</p>
 var ObjectIx = {
   set: (n, v, o) =&gt; ({...o, [n]: v}),
   get: (n, o) =&gt; o[n]
-}
-</code></pre>
+}</code></pre>
 <p>The <code>atOf</code> function then takes an <code>Ix</code> module and a key and returns a lens:</p>
 <pre><code class="hljs lang-js">var atOf = Ix =&gt; k =&gt; F =&gt; x2yF =&gt; x =&gt; F.map(
   y =&gt; Ix.set(k, y, x),
   x2yF(Ix.get(k, x))
-)
-</code></pre>
+)</code></pre>
 <p>Notice that we only use the <code>map</code> function from the functor argument <code>F</code>.  In
 other words, lenses do not require an applicative functor.  Lenses only require
 a functor.  Otherwise lens functions are just like traversal functions.</p>
 <p>As a convenience the <code>at</code> function dispatches to <code>atOf</code> so that when the key is
 a number it uses array indexing and otherwise object indexing:</p>
-<pre><code class="hljs lang-js">var at = k =&gt; atOf(typeof k === &#39;number&#39; ? ArrayIx : ObjectIx)(k)
-</code></pre>
+<pre><code class="hljs lang-js">var at = k =&gt; atOf(typeof k === &#39;number&#39; ? ArrayIx : ObjectIx)(k)</code></pre>
 <p>We can now map over e.g. an object property:</p>
 <pre><code class="hljs lang-js">map(x =&gt; -x)(at(&#39;b&#39;))({a: 1, b: 2, c: 3})
-
 </code></pre>
 <p>We can also compose lens and traversal functions.  For example:</p>
 <pre><code class="hljs lang-js">map(x =&gt; -x)(compose([elems, at(&#39;x&#39;)]))([{x: 1}, {x: 2}])
-
 </code></pre>
 <pre><code class="hljs lang-js">map(x =&gt; x.toUpperCase())(compose([at(&#39;xs&#39;), elems]))({xs: [&#39;a&#39;, &#39;b&#39;]})
-
 </code></pre>
 <p>Composing two lenses gives a lens.  Composing a lens and a traversal gives a
 traversal.  And composing two traversals gives a traversal.</p>
 <p>We have so far only used the identity applicative.  By using other algebras we
 get different operations.  One suitable algebra is the constant functor:</p>
-<pre><code class="hljs lang-js">var Constant = {map: (x2y, c) =&gt; c}
-</code></pre>
+<pre><code class="hljs lang-js">var Constant = {map: (x2y, c) =&gt; c}</code></pre>
 <p>The constant functor is a somewhat strange beast.  The <code>map</code> function of the
 constant functor simply ignores the first argument and returns the second
 argument as is.  This basically means that after a value is injected into the
 constant functor it never changes.  We can use that to create a <code>get</code> function</p>
-<pre><code class="hljs lang-js">var get = traverse(Constant)(x =&gt; x)
-</code></pre>
+<pre><code class="hljs lang-js">var get = traverse(Constant)(x =&gt; x)</code></pre>
 <p>that extracts the element targeted by a lens without building a new data
 structure during the traversal.  Recall that the <code>map</code> function of the
 <code>Constant</code> functor actually does not use the given mapping function at all.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">get(compose([at(1), at(&#39;x&#39;)]))([{x: 1}, {x: 2}, {x: 3}])
-
 </code></pre>
 <p>The same lens, e.g. <code>compose([at(1), at(&#39;x&#39;)])</code>, can now be used to both <code>get</code>
 and <code>map</code> over the targeted element.</p>
@@ -208,24 +185,19 @@ function, but also the <code>ap</code> and <code>of</code> functions.  We can bu
 similar to the constant functor from
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoids</a>
 and use those to fold over the elements targeted by a traversal:</p>
-<pre><code class="hljs lang-js">var foldWith = M =&gt; traverse({...Constant, ap: M.concat, of: _ =&gt; M.empty()})
-</code></pre>
+<pre><code class="hljs lang-js">var foldWith = M =&gt; traverse({...Constant, ap: M.concat, of: _ =&gt; M.empty()})</code></pre>
 <p>The above <code>foldWith</code> function takes a Static Land
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
 and creates an applicative whose <code>ap</code> and <code>of</code> methods essentially ignore their
 arguments and use the monoid.</p>
 <p>Using different monoids we get different operations.  For example, we can define
 an operation to collect all the elements targeted by a traversal:</p>
-<pre><code class="hljs lang-js">var collect = foldWith({empty: () =&gt; [], concat: (l, r) =&gt; [...l, ...r]})(x =&gt; [x])
-</code></pre>
+<pre><code class="hljs lang-js">var collect = foldWith({empty: () =&gt; [], concat: (l, r) =&gt; [...l, ...r]})(x =&gt; [x])</code></pre>
 <pre><code class="hljs lang-js">collect(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
-
 </code></pre>
 <p>And we can define an operation to sum all the elements targeted by a traversal:</p>
-<pre><code class="hljs lang-js">var sum = foldWith({empty: () =&gt; 0, concat: (x, y) =&gt; x + y})(x =&gt; x)
-</code></pre>
+<pre><code class="hljs lang-js">var sum = foldWith({empty: () =&gt; 0, concat: (x, y) =&gt; x + y})(x =&gt; x)</code></pre>
 <pre><code class="hljs lang-js">sum(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
-
 </code></pre>
 <p>This pretty much covers the basics of lenses and traversals.  The Partial Lenses
 library simply provides you with a large number of predefined lens and traversal
@@ -241,7 +213,7 @@ document</a>.</p>
       </code></pre>
     </div>
     <script type="text/javascript" src="https://unpkg.com/babel-polyfill/dist/polyfill.min.js"></script>
-    <script type="text/javascript" src="infestines.min.js"></script>
+    <script type="text/javascript" src="infestines.js"></script>
     <script type="text/javascript" src="partial.lenses.js"></script>
     <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>

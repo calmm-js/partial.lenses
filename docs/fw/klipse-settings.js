@@ -27,13 +27,13 @@ function log() {
   console.log.apply(null, arguments)
 }
 
-window.klipse_settings = {
-  codemirror_options_in: {
+window.klipse_settings = window.klipse_settings || {
+  codemirror_options_in: window.codemirror_options_in || {
     lineWrapping: false,
     autoCloseBrackets: false,
     cursorBlinkRate: 0
   },
-  codemirror_options_out: {
+  codemirror_options_out: window.codemirror_options_out || {
     lineWrapping: true
   },
   eval_idle_msec: 150,

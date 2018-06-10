@@ -91,8 +91,7 @@ test(&#39;get&#39;,    L.get(lens,           whole), 101)
 test(&#39;set&#39;,    L.set(lens,       42, whole), {part: 42})
 test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
 
-test(&#39;no-mutate&#39;, whole, {part: 101})
-</code></pre>
+test(&#39;no-mutate&#39;, whole, {part: 101})</code></pre>
 <h3 id="nested-objects">Nested objects</h3>
 <ul>
 <li>Create a lens to access <code>inside.part</code>.<ul>
@@ -117,8 +116,7 @@ const nested = {
 test(&#39;get&#39;,    L.get(lens,           nested), 101)
 test(&#39;set&#39;,    L.set(lens,       42, nested), {inside: {part: 42, more: &#39;stuff&#39;}})
 test(&#39;mod&#39;, L.modify(lens, R.negate, nested), {inside: {part: -101, more: &#39;stuff&#39;}})
-test(&#39;rem&#39;, L.remove(lens,           nested), undefined)
-</code></pre>
+test(&#39;rem&#39;, L.remove(lens,           nested), undefined)</code></pre>
 <h3 id="association-list">Association list</h3>
 <ul>
 <li>Write a function <code>valOf</code> to return a lens to access value with given key.<ul>
@@ -149,8 +147,7 @@ test(&#39;rem&#39;, L.remove(valOf(&#39;en&#39;),              data), [{key: &#3
 
 test(&#39;emp&#39;, L.remove(valOf(&#39;sv&#39;), L.remove(valOf(&#39;en&#39;), data)), [])
 
-test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;fi&#39;, val: &#39;Otsikko&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
-</code></pre>
+test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;fi&#39;, val: &#39;Otsikko&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])</code></pre>
 <h3 id="dimorphic-ranges">Dimorphic ranges</h3>
 <ul>
 <li>Implement the <code>end</code> lens to access the end of range objects that may take one
@@ -177,14 +174,14 @@ test(&#39;get_end&#39;, L.get(end, {start: 1, end: 3}), 3)
 test(&#39;set_num&#39;, L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
 test(&#39;set_end&#39;, L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
 
-test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;}), {start: 1, num: 3, xtra: &#39;field&#39;})
-</code></pre>
+test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;}), {start: 1, num: 3, xtra: &#39;field&#39;})</code></pre>
 <!--
 * `L.lazy`
 * `L.pick`
 * `L.slice`
 * `L.matches`
 -->
+
 <h2 id="traversals">Traversals</h2>
 <h3 id="xces">Xces</h3>
 <ul>
@@ -224,8 +221,7 @@ test(&#39;rem&#39;, L.remove([xs, L.when(x =&gt; x &lt; 3)], coords), [
   {x: 5, y: 3}
 ])
 
-test(&#39;emp&#39;, L.remove([xs, L.when(x =&gt; 0 &lt; x)], coords), [])
-</code></pre>
+test(&#39;emp&#39;, L.remove([xs, L.when(x =&gt; 0 &lt; x)], coords), [])</code></pre>
 <h3 id="nested-properties">Nested properties</h3>
 <ul>
 <li>Implement a <code>nonObject</code> traversal that targets all non-object or primitive
@@ -242,8 +238,7 @@ properties of an object.</span></li>
 <pre><code class="hljs lang-js">const nonObjects = &#39;???&#39;
 
 test(&#39;max&#39;, L.maximum(nonObjects, {a: 1, b: {c: 2, d: {e: 5}}, e: 3}), 5)
-test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [1]}}}})
-</code></pre>
+test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [1]}}}})</code></pre>
 <h2 id="isomorphisms">Isomorphisms</h2>
 <h3 id="inverse-puzzle">Inverse puzzle</h3>
 <ul>
@@ -258,8 +253,7 @@ test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {
 <pre><code class="hljs lang-js">const iso = &#39;???&#39;
 
 test(&#39;inv&#39;, L.getInverse(L.inverse(iso), &#39;{&quot;foo&quot;:[true,false,true]}&#39;), &#39;{&quot;bar&quot;:[false,true,false]}&#39;)
-test(&#39;get&#39;, L.get(L.inverse(iso), &#39;{&quot;bar&quot;:[true]}&#39;), &#39;{&quot;foo&quot;:[false]}&#39;)
-</code></pre>
+test(&#39;get&#39;, L.get(L.inverse(iso), &#39;{&quot;bar&quot;:[true]}&#39;), &#39;{&quot;foo&quot;:[false]}&#39;)</code></pre>
 <h2 id="transforms">Transforms</h2>
 <h3 id="increment-and-decrement">Increment and Decrement</h3>
 <ul>
@@ -276,8 +270,7 @@ to get to the leafs.</span></li>
 <pre><code class="hljs lang-js">const trn = &#39;???&#39;
 
 test(&#39;sol&#39;, L.transform(trn, {xs: {a:3, b:1, c:4}, ys: [1, 5, 9]}),
-     /**/                    {xs: {a:4, b:2, c:5}, ys: [0, 4, 8]})
-</code></pre>
+     /**/                    {xs: {a:4, b:2, c:5}, ys: [0, 4, 8]})</code></pre>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">
@@ -287,7 +280,7 @@ test(&#39;sol&#39;, L.transform(trn, {xs: {a:3, b:1, c:4}, ys: [1, 5, 9]}),
       </code></pre>
     </div>
     <script type="text/javascript" src="https://unpkg.com/babel-polyfill/dist/polyfill.min.js"></script>
-    <script type="text/javascript" src="infestines.min.js"></script>
+    <script type="text/javascript" src="infestines.js"></script>
     <script type="text/javascript" src="partial.lenses.js"></script>
     <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>

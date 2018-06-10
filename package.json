@@ -9,14 +9,14 @@
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
     "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get unchanged",
     "dist": "rollup -c && cp dist/partial.lenses.js docs/",
-    "docs": "klipse-github-docs-generator && cp node_modules/infestines/dist/infestines.min.js docs/",
+    "docs": "klipse-github-docs-generator && cp node_modules/infestines/dist/infestines.js docs/",
     "lint": "eslint src test",
     "prepare": "concurrently \"npm run lint\" \"npm run docs\" \"npm run dist && npm run test\"",
     "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "test": "nyc mocha && nyc report -r html mocha",
-    "watch": "concurrently \"npm run watch:dist\" \"npm run watch:docs\" \"livereload docs\" \"npm run watch:test\"",
+    "watch": "concurrently \"npm run watch:dist\" \"npm run watch:docs\" \"npm run watch:test\"",
     "watch:dist": "watch-run -d 50 -i -p 'src/**/*.js' npm run dist",
-    "watch:docs": "watch-run -d 50 -i -p '*.md' npm run docs",
+    "watch:docs": "watch-run -d 50 -i -p '*.md' npm run docs & livereload docs & wait",
     "watch:test": "watch-run -d 50    -p 'dist/partial.lenses.cjs.js,test/**/*.js' npm run test"
   },
   "repository": {
@@ -38,7 +38,7 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "infestines": "^0.4.7"
+    "infestines": "^0.4.8"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -70,12 +70,12 @@
     "codecov": "^3.0.2",
     "concurrently": "^3.5.1",
     "eslint": "^4.19.1",
-    "klipse-github-docs-generator": "^0.3.3",
+    "klipse-github-docs-generator": "^0.3.4",
     "livereload": "^0.7.0",
     "mocha": "^5.2.0",
     "nyc": "^12.0.2",
     "ramda": "^0.25.0",
-    "rollup": "^0.60.0",
+    "rollup": "^0.60.1",
     "rollup-plugin-babel": "^3.0.4",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-replace": "^2.0.0",
