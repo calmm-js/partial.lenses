@@ -48,6 +48,10 @@
   line-height: 19.72px;
 }
 
+.CodeMirror-linenumber:hover {
+  color: #777;
+}
+
 #playground .CodeMirror {
   display: block;
 }
