@@ -32,7 +32,6 @@
       clearTimeout(to)
       to = setTimeout(function() {
         var cm = document.querySelector('.CodeMirror.cm-s-default').CodeMirror
-        cm.lineNumbers = true
         if (cm) {
           var text = cm.getValue()
           history.replaceState(
@@ -47,6 +46,27 @@
           updateTitle(text)
         }
       }, 250)
+    }
+
+    var copyToClipboard = document.querySelector('#copy-to-clipboard')
+    if (copyToClipboard) {
+      function copyTextToClipboard(text) {
+        var textArea = document.createElement('textarea')
+        textArea.value = text
+        document.body.appendChild(textArea)
+        textArea.focus()
+        textArea.select()
+        try {
+          document.execCommand('copy')
+        } finally {
+          document.body.removeChild(textArea)
+        }
+      }
+      copyToClipboard.onclick = function(e) {
+        e.preventDefault()
+        e.stopPropagation()
+        copyTextToClipboard(window.location.href)
+      }
     }
   }
 })()
