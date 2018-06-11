@@ -1,14 +1,14 @@
 'use strict'
 ;(function() {
-  window.codemirror_options_in = {
-    lineWrapping: false,
-    lineNumbers: true,
-    autoCloseBrackets: false,
-    cursorBlinkRate: 0
-  }
-
   var pg = document.querySelector('#playground code')
   if (pg) {
+    window.codemirror_options_in = {
+      lineWrapping: false,
+      lineNumbers: true,
+      autoCloseBrackets: false,
+      cursorBlinkRate: 0
+    }
+
     var hash = window.location.hash.slice(1)
     function updateTitle(text) {
       document.title = document.title.replace(
