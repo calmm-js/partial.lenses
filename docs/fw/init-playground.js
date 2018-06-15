@@ -3,10 +3,11 @@
   var pg = document.querySelector('#playground code')
   if (pg) {
     window.codemirror_options_in = {
-      lineWrapping: false,
-      lineNumbers: true,
       autoCloseBrackets: false,
-      cursorBlinkRate: 0
+      autofocus: true,
+      cursorBlinkRate: 0,
+      lineNumbers: true,
+      lineWrapping: false
     }
 
     var highlightedLines = {}
