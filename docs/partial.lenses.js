@@ -45,21 +45,21 @@
 
   var dep = function dep(xs2xsyC) {
     return function (xsy) {
-      return I.arityN(xsy.length, function () {
+      return I.arityN(xsy.length, I.defineNameU(function () {
         return xs2xsyC.apply(undefined, arguments)(xsy).apply(undefined, arguments);
-      });
+      }, xsy.name));
     };
   };
 
   var fn = function fn(xsC, yC) {
     return function (xsy) {
-      return I.arityN(xsy.length, function () {
+      return I.arityN(xsy.length, I.defineNameU(function () {
         for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
           xs[_key] = arguments[_key];
         }
 
         return yC(xsy.apply(null, xsC(xs)));
-      });
+      }, xsy.name));
     };
   };
 
@@ -114,10 +114,10 @@
   };
 
   var ef = function ef(xE) {
-    return function (x) {
+    return I.defineNameU(function (x) {
       xE(x);
       return x;
-    };
+    }, xE.name);
   };
 
   var tup = function tup() {
@@ -140,6 +140,18 @@
   };
 
   //
+
+  var id = function id(x) {
+    return x;
+  };
+
+  var setName = function (to, name) {
+    return I.defineNameU(to, name);
+  };
+
+  var copyName = function (to, from) {
+    return I.defineNameU(to, from.name);
+  };
 
   var toRegExpU = function toRegExpU(str, flags) {
     return I.isString(str) ? new RegExp(replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags) : str;
@@ -178,7 +190,7 @@
   };
   var unto0 = /*#__PURE__*/unto(0);
 
-  var notPartial = function notPartial(x) {
+  var notPartial = function complement(x) {
     return void 0 !== x ? !x : x;
   };
 
@@ -187,9 +199,9 @@
   };
 
   var expect = function expect(p, f) {
-    return function (x) {
+    return copyName(function (x) {
       return p(x) ? f(x) : void 0;
-    };
+    }, f);
   };
 
   function deepFreeze(x) {
@@ -219,7 +231,7 @@
     return !(x instanceof Object) || I.isArray(x);
   };
 
-  var rev = /*#__PURE__*/(res(I.freeze))(function (xs) {
+  var rev = /*#__PURE__*/(res(I.freeze))(function reverse(xs) {
     if (seemsArrayLike(xs)) {
       var n = xs.length;
       var ys = Array(n);
@@ -315,7 +327,7 @@
   var Sum = /*#__PURE__*/ConcatOf(addU, 0);
 
   var mumBy = function mumBy(ord) {
-    return I.curry(function (xi2y, t, s) {
+    return I.curry(function mumBy(xi2y, t, s) {
       var minX = void 0;
       var minY = void 0;
       traverseU(Select, function (x, i) {
@@ -331,7 +343,7 @@
 
   //
 
-  var traverseU = function traverseU(C, xi2yC, t, s) {
+  var traverseU = function traverse(C, xi2yC, t, s) {
     return toFunction(t)(s, void 0, C, xi2yC);
   };
 
@@ -355,9 +367,9 @@
     throw Error(m + e);
   }
 
-  function reqIndex(x) {
+  var reqIndex = function index(x) {
     if (!Number.isInteger(x) || x < 0) errorGiven('`index` expects a non-negative integer', x);
-  }
+  };
 
   function reqFunction(o) {
     if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o, opticIsEither);
@@ -420,11 +432,11 @@
   //
 
   var mkTraverse = function mkTraverse(after, toC) {
-    return I.curryN(4, function (xi2yC, m) {
+    return I.curryN(4, copyName(function (xi2yC, m) {
       return m = toC(m), function (t, s) {
         return after(traverseU(m, xi2yC, t, s));
       };
-    });
+    }, toC));
   };
 
   //
@@ -546,7 +558,7 @@
     }
   }
 
-  var setU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o, x, s) {
+  var setU = /*#__PURE__*/(par(0, ef(reqOptic)))(function set(o, x, s) {
     switch (typeof o) {
       case 'string':
         return setProp(o, x, s);
@@ -559,7 +571,7 @@
     }
   });
 
-  var modifyU = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o, xi2x, s) {
+  var modifyU = /*#__PURE__*/(par(0, ef(reqOptic)))(function modify(o, xi2x, s) {
     switch (typeof o) {
       case 'string':
         return setProp(o, xi2x(getProp(o, s), o), s);
@@ -622,7 +634,7 @@
           }
         }return s;
       default:
-        return l(s, void 0, Constant, I.id);
+        return l(s, void 0, Constant, id);
     }
   });
 
@@ -652,18 +664,18 @@
 
   //
 
-  var lensU = function lensU(get, set) {
-    return function (x, i, F, xi2yF) {
+  var lensU = function lens(get, set) {
+    return copyName(function (x, i, F, xi2yF) {
       return F.map(function (y) {
         return set(y, x, i);
       }, xi2yF(get(x, i), i));
-    };
+    }, get);
   };
 
-  var isoU = function isoU(bwd, fwd) {
-    return function (x, i, F, xi2yF) {
+  var isoU = function iso(bwd, fwd) {
+    return copyName(function (x, i, F, xi2yF) {
       return F.map(fwd, xi2yF(bwd(x), i));
-    };
+    }, bwd);
   };
 
   var stringIsoU = function stringIsoU(bwd, fwd) {
@@ -859,9 +871,9 @@
   });
 
   var fromReader = function fromReader(wi2x) {
-    return function (w, i, F, xi2yF) {
+    return copyName(function (w, i, F, xi2yF) {
       return F.map(I.always(w), xi2yF(wi2x(w, i), i));
-    };
+    }, wi2x);
   };
 
   //
@@ -925,7 +937,7 @@
 
   //
 
-  var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(res(freezeArrayOfObjects))(function (x) {
+  var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(res(freezeArrayOfObjects))(function keyed(x) {
     x = toObject(x);
     var es = [];
     for (var key in x) {
@@ -1001,15 +1013,17 @@
   //
 
   var eitherU = function eitherU(t, e) {
-    return function (c) {
-      return function (x, i, C, xi2yC) {
+    return function either(c) {
+      return function either(x, i, C, xi2yC) {
         return (c(x, i) ? t : e)(x, i, C, xi2yC);
       };
     };
   };
 
-  var orElseU = function orElseU(back, prim) {
-    return prim = toFunction(prim), back = toFunction(back), function (x, i, C, xi2yC) {
+  var orElseU = function orElse(back, prim) {
+    prim = toFunction(prim);
+    back = toFunction(back);
+    return function orElse(x, i, C, xi2yC) {
       return (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC);
     };
   };
@@ -1060,7 +1074,7 @@
 
   var Identity = /*#__PURE__*/(0, I.freeze)({
     map: I.applyU,
-    of: I.id,
+    of: id,
     ap: I.applyU,
     chain: I.applyU
   });
@@ -1074,7 +1088,7 @@
         }, xyP);
       }, xP);
     },
-    of: I.id,
+    of: id,
     chain: chainAsync
   });
 
@@ -1082,7 +1096,7 @@
     map: I.sndU
   });
 
-  var toFunction = /*#__PURE__*/(par(0, ef(reqOptic)))(function (o) {
+  var toFunction = /*#__PURE__*/(par(0, ef(reqOptic)))(function toFunction(o) {
     switch (typeof o) {
       case 'string':
         return funProp(o);
@@ -1097,7 +1111,7 @@
 
   // Operations on optics
 
-  var assign = /*#__PURE__*/I.curry(function (o, x, s) {
+  var assign = /*#__PURE__*/I.curry(function assign(o, x, s) {
     return setU([o, propsOf(x)], x, s);
   });
 
@@ -1105,18 +1119,18 @@
 
   var modifyAsync = /*#__PURE__*/I.curry(modifyAsyncU);
 
-  var remove = /*#__PURE__*/I.curry(function (o, s) {
+  var remove = /*#__PURE__*/I.curry(function remove(o, s) {
     return setU(o, void 0, s);
   });
 
   var set = /*#__PURE__*/I.curry(setU);
 
-  var transform = /*#__PURE__*/I.curry(function (o, s) {
-    return modifyU(o, I.id, s);
+  var transform = /*#__PURE__*/I.curry(function transform(o, s) {
+    return modifyU(o, id, s);
   });
 
-  var transformAsync = /*#__PURE__*/I.curry(function (o, s) {
-    return modifyAsyncU(o, I.id, s);
+  var transformAsync = /*#__PURE__*/I.curry(function transformAsync(o, s) {
+    return modifyAsyncU(o, id, s);
   });
 
   var traverse = /*#__PURE__*/I.curry(traverseU);
@@ -1165,23 +1179,24 @@
   };
 
   var choose = function choose(xiM2o) {
-    return function (x, i, C, xi2yC) {
+    return copyName(function (x, i, C, xi2yC) {
       return toFunction(xiM2o(x, i))(x, i, C, xi2yC);
-    };
+    }, xiM2o);
   };
 
   var cond = /*#__PURE__*/(function (fn$$1) {
-    return function () {
+    return function cond() {
+      var pair = tup(ef(reqFn), ef(reqOptic));
+
       for (var _len2 = arguments.length, cs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
         cs[_key2] = arguments[_key2];
       }
 
-      var pair = tup(ef(reqFn), ef(reqOptic));
       arr(pair)(cs.slice(0, -1));
       arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
       return fn$$1.apply(undefined, cs);
     };
-  })(function () {
+  })(function cond() {
     var n = arguments.length;
     var r = zero;
     while (n--) {
@@ -1192,17 +1207,18 @@
   });
 
   var condOf = /*#__PURE__*/(function (fn$$1) {
-    return function (of) {
+    return function condOf(of) {
+      var pair = tup(ef(reqFn), ef(reqOptic));
+
       for (var _len3 = arguments.length, cs = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
         cs[_key3 - 1] = arguments[_key3];
       }
 
-      var pair = tup(ef(reqFn), ef(reqOptic));
       arr(pair)(cs.slice(0, -1));
       arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
       return fn$$1.apply(undefined, [of].concat(cs));
     };
-  })(function (of) {
+  })(function condOf(of) {
     of = toFunction(of);
     var op = condOfDefault;
     var n = arguments.length;
@@ -1210,21 +1226,21 @@
       var c = arguments[n];
       op = c.length === 1 ? I.always(toFunction(c[0])) : condOfCase(c[0], toFunction(c[1]), op);
     }
-    return function (x, i, C, xi2yC) {
+    return function condOf(x, i, C, xi2yC) {
       return of(x, i, Constant, op)(x, i, C, xi2yC);
     };
   });
 
-  var ifElse = /*#__PURE__*/I.curry(function (c, t, e) {
+  var ifElse = /*#__PURE__*/I.curry(function ifElse(c, t, e) {
     return eitherU(toFunction(t), toFunction(e))(c);
   });
 
   var iftes = /*#__PURE__*/(function (fn$$1) {
-    return function (_c, _t) {
+    return function iftes(_c, _t) {
       warn(iftes, '`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.');
       return fn$$1.apply(null, arguments);
     };
-  })(function (_c, _t) {
+  })(function iftes(_c, _t) {
     var n = arguments.length;
     var r = n & 1 ? toFunction(arguments[--n]) : zero;
     while (0 <= (n -= 2)) {
@@ -1236,7 +1252,7 @@
 
   // Querying
 
-  var chain = /*#__PURE__*/I.curry(function (xi2yO, xO) {
+  var chain = /*#__PURE__*/I.curry(function chain(xi2yO, xO) {
     return [xO, choose(function (xM, i) {
       return void 0 !== xM ? xi2yO(xM, i) : zero;
     })];
@@ -1267,13 +1283,13 @@
   };
 
   var modifyOp = function modifyOp(xi2y) {
-    return function (x, i, C, xi2yC) {
+    return function modifyOp(x, i, C, xi2yC) {
       return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
     };
   };
 
   var setOp = function setOp(y) {
-    return function (_x, i, C, xi2yC) {
+    return function setOp(_x, i, C, xi2yC) {
       return zeroOp(y, i, C, xi2yC, y);
     };
   };
@@ -1283,10 +1299,9 @@
   // Debugging
 
   function log() {
-    var _arguments = arguments;
-
-    var show = I.curry(function (dir, x) {
-      return console.log.apply(console, copyToFrom([], 0, _arguments, 0, _arguments.length).concat([dir, x])), x;
+    var show = I.curry(function log(dir, x) {
+      console.log.apply(console, copyToFrom([], 0, arguments, 0, arguments.length).concat([dir, x]));
+      return x;
     });
     return isoU(show('get'), show('set'));
   }
@@ -1294,10 +1309,10 @@
   // Sequencing
 
   var seq = /*#__PURE__*/(function (fn$$1) {
-    return function () {
+    return function seq() {
       return par(2, ef(reqMonad('seq')))(fn$$1.apply(undefined, arguments));
     };
-  })(function () {
+  })(function seq() {
     var n = arguments.length;
     var r = zero;
     if (n) {
@@ -1311,8 +1326,9 @@
 
   // Creating new traversals
 
-  var branchOr = /*#__PURE__*/(par(1, ef(reqTemplate('branchOr'))))( /*#__PURE__*/I.curryN(2, function (otherwise) {
-    return otherwise = toFunction(otherwise), function (template) {
+  var branchOr = /*#__PURE__*/(par(1, ef(reqTemplate('branchOr'))))( /*#__PURE__*/I.curryN(2, function branchOr(otherwise) {
+    otherwise = toFunction(otherwise);
+    return function branchOr(template) {
       return branchOrU(otherwise, template);
     };
   }));
@@ -1329,7 +1345,7 @@
 
   // Traversals and combinators
 
-  var elems = /*#__PURE__*/(par(2, ef(reqApplicative('elems'))))(function (xs, i, A, xi2yA) {
+  var elems = /*#__PURE__*/(par(2, ef(reqApplicative('elems'))))(function elems(xs, i, A, xi2yA) {
     return seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs);
   });
 
@@ -1337,14 +1353,14 @@
     return seemsArrayLike(xs) ? A === Identity ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs, traversePartialIndex) : A.of(xs);
   };
 
-  var entries = /*#__PURE__*/toFunction([keyed, elems]);
+  var entries = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems]), 'entries');
 
-  var keys = /*#__PURE__*/toFunction([keyed, elems, 0]);
+  var keys = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems, 0]), 'keys');
 
   var matches = /*#__PURE__*/(dep(function (re) {
-    return re.global ? res(par(2, ef(reqApplicative('matches', re)))) : I.id;
-  }))(function (re) {
-    return function (x, _i, C, xi2yC) {
+    return re.global ? res(par(2, ef(reqApplicative('matches', re)))) : id;
+  }))(function matches(re) {
+    return function matches(x, _i, C, xi2yC) {
       if (I.isString(x)) {
         var map = C.map;
 
@@ -1371,13 +1387,13 @@
     };
   });
 
-  var values = /*#__PURE__*/(par(2, ef(reqApplicative('values'))))( /*#__PURE__*/branchOr1Level(identity, protoless0));
+  var values = /*#__PURE__*/(par(2, ef(reqApplicative('values'))))( /*#__PURE__*/setName( /*#__PURE__*/branchOr1Level(identity, protoless0), 'values'));
 
-  var children = /*#__PURE__*/(par(2, ef(reqApplicative('children'))))(function (x, i, C, xi2yC) {
+  var children = /*#__PURE__*/(par(2, ef(reqApplicative('children'))))(function children(x, i, C, xi2yC) {
     return I.isArray(x) ? elemsI(x, i, C, xi2yC) : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x);
   });
 
-  var flatten = /*#__PURE__*/(par(2, ef(reqApplicative('flatten'))))(function (x, i, C, xi2yC) {
+  var flatten = /*#__PURE__*/(par(2, ef(reqApplicative('flatten'))))(function flatten(x, i, C, xi2yC) {
     var rec = function rec(x, i) {
       return I.isArray(x) ? elemsI(x, i, C, rec) : void 0 !== x ? xi2yC(x, i) : C.of(x);
     };
@@ -1394,7 +1410,7 @@
   }
 
   var satisfying = function satisfying(p) {
-    return function (x, i, C, xi2yC) {
+    return function satisfying(x, i, C, xi2yC) {
       var rec = function rec(x, i) {
         return p(x, i) ? xi2yC(x, i) : children(x, i, C, rec);
       };
@@ -1408,21 +1424,21 @@
 
   // Folds over traversals
 
-  var all = /*#__PURE__*/I.curry(function (xi2b, t, s) {
+  var all = /*#__PURE__*/I.curry(function all(xi2b, t, s) {
     return !traverseU(Select, function (x, i) {
       if (!xi2b(x, i)) return true;
     }, t, s);
   });
 
-  var and$1 = /*#__PURE__*/all(I.id);
+  var and$1 = /*#__PURE__*/all(id);
 
-  var any = /*#__PURE__*/I.curry(function (xi2b, t, s) {
+  var any = /*#__PURE__*/I.curry(function any(xi2b, t, s) {
     return !!traverseU(Select, function (x, i) {
       if (xi2b(x, i)) return true;
     }, t, s);
   });
 
-  var collectAs = /*#__PURE__*/(res(I.freeze))(function (xi2y, t, s) {
+  var collectAs = /*#__PURE__*/(res(I.freeze))(function collectAs(xi2y, t, s) {
     var results = [];
     traverseU(Select, function (x, i) {
       var y = xi2y(x, i);
@@ -1431,15 +1447,15 @@
     return results;
   });
 
-  var collect = /*#__PURE__*/collectAs(I.id);
+  var collect = /*#__PURE__*/collectAs(id);
 
-  var concatAs = /*#__PURE__*/mkTraverse(I.id, function (m) {
+  var concatAs = /*#__PURE__*/mkTraverse(id, function concatAs(m) {
     return ConcatOf(m.concat, m.empty());
   });
 
-  var concat = /*#__PURE__*/concatAs(I.id);
+  var concat = /*#__PURE__*/concatAs(id);
 
-  var countIf = /*#__PURE__*/I.curry(function (p, t, s) {
+  var countIf = /*#__PURE__*/I.curry(function countIf(p, t, s) {
     return traverseU(Sum, function (x, i) {
       return p(x, i) ? 1 : 0;
     }, t, s);
@@ -1447,7 +1463,7 @@
 
   var count = /*#__PURE__*/countIf(I.isDefined);
 
-  var countsAs = /*#__PURE__*/I.curry(function (xi2k, t, s) {
+  var countsAs = /*#__PURE__*/I.curry(function countsAs(xi2k, t, s) {
     var counts = new Map();
     traverseU(Select, function (x, i) {
       var k = xi2k(x, i);
@@ -1457,16 +1473,16 @@
     return counts;
   });
 
-  var counts = /*#__PURE__*/countsAs(I.id);
+  var counts = /*#__PURE__*/countsAs(id);
 
-  var foldl = /*#__PURE__*/I.curry(function (f, r, t, s) {
+  var foldl = /*#__PURE__*/I.curry(function foldl(f, r, t, s) {
     traverseU(Select, function (x, i) {
       r = f(r, x, i);
     }, t, s);
     return r;
   });
 
-  var foldr = /*#__PURE__*/I.curry(function (f, r, t, s) {
+  var foldr = /*#__PURE__*/I.curry(function foldr(f, r, t, s) {
     var is = [];
     var xs = [];
     traverseU(Select, function (x, i) {
@@ -1478,13 +1494,13 @@
     }return r;
   });
 
-  var forEach = /*#__PURE__*/I.curry(function (f, t, s) {
+  var forEach = /*#__PURE__*/I.curry(function forEach(f, t, s) {
     return traverseU(Select, function (x, i) {
       f(x, i);
     }, t, s);
   });
 
-  var forEachWith = /*#__PURE__*/I.curry(function (newC, ef$$1, t, s) {
+  var forEachWith = /*#__PURE__*/I.curry(function forEachWith(newC, ef$$1, t, s) {
     var c = newC();
     traverseU(Select, function (x, i) {
       ef$$1(c, x, i);
@@ -1492,27 +1508,27 @@
     return c;
   });
 
-  var isDefined = /*#__PURE__*/I.curry(function (t, s) {
-    return void 0 !== traverseU(Select, I.id, t, s);
+  var isDefined = /*#__PURE__*/I.curry(function isDefined(t, s) {
+    return void 0 !== traverseU(Select, id, t, s);
   });
 
-  var isEmpty = /*#__PURE__*/I.curry(function (t, s) {
+  var isEmpty = /*#__PURE__*/I.curry(function isEmpty(t, s) {
     return !traverseU(Select, I.always(true), t, s);
   });
 
-  var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, /*#__PURE__*/(par(0, ef(reqString('`join` and `joinAs` expect a string delimiter'))))(function (d) {
+  var joinAs = /*#__PURE__*/mkTraverse(toStringPartial, /*#__PURE__*/(par(0, ef(reqString('`join` and `joinAs` expect a string delimiter'))))(function joinAs(d) {
     return ConcatOf(function (x, y) {
       return void 0 !== x ? void 0 !== y ? x + d + y : x : y;
     });
   }));
 
-  var join = /*#__PURE__*/joinAs(I.id);
+  var join = /*#__PURE__*/joinAs(id);
 
   var maximumBy = /*#__PURE__*/mumBy(gtU);
 
-  var maximum = /*#__PURE__*/maximumBy(I.id);
+  var maximum = /*#__PURE__*/maximumBy(id);
 
-  var meanAs = /*#__PURE__*/I.curry(function (xi2y, t, s) {
+  var meanAs = /*#__PURE__*/I.curry(function meanAs(xi2y, t, s) {
     var sum = 0;
     var num = 0;
     traverseU(Select, function (x, i) {
@@ -1525,19 +1541,19 @@
     return sum / num;
   });
 
-  var mean = /*#__PURE__*/meanAs(I.id);
+  var mean = /*#__PURE__*/meanAs(id);
 
   var minimumBy = /*#__PURE__*/mumBy(ltU);
 
-  var minimum = /*#__PURE__*/minimumBy(I.id);
+  var minimum = /*#__PURE__*/minimumBy(id);
 
-  var none = /*#__PURE__*/I.curry(function (xi2b, t, s) {
+  var none = /*#__PURE__*/I.curry(function none(xi2b, t, s) {
     return !traverseU(Select, function (x, i) {
       if (xi2b(x, i)) return true;
     }, t, s);
   });
 
-  var or$1 = /*#__PURE__*/any(I.id);
+  var or$1 = /*#__PURE__*/any(id);
 
   var productAs = /*#__PURE__*/traverse( /*#__PURE__*/ConcatOf(multiplyU, 1));
 
@@ -1545,7 +1561,7 @@
 
   var selectAs = /*#__PURE__*/traverse(Select);
 
-  var select = /*#__PURE__*/selectAs(I.id);
+  var select = /*#__PURE__*/selectAs(id);
 
   var sumAs = /*#__PURE__*/traverse(Sum);
 
@@ -1563,9 +1579,9 @@
 
   var lens = /*#__PURE__*/I.curry(lensU);
 
-  var setter = /*#__PURE__*/lens(I.id);
+  var setter = /*#__PURE__*/lens(id);
 
-  var foldTraversalLens = /*#__PURE__*/I.curry(function (fold, traversal) {
+  var foldTraversalLens = /*#__PURE__*/I.curry(function foldTraversalLens(fold, traversal) {
     return lensU(fold(traversal), set(traversal));
   });
 
@@ -1575,19 +1591,19 @@
     function o2u(x) {
       return replaced(out, void 0, x);
     }
-    return function (x, i, F, xi2yF) {
+    return function defaults(x, i, F, xi2yF) {
       return F.map(o2u, xi2yF(void 0 !== x ? x : out, i));
     };
   }
 
   var define = /*#__PURE__*/(function (fn$$1) {
-    return function (inn) {
+    return function define(inn) {
       var res$$1 = fn$$1(inn);
-      if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, 'define'), I.id), res$$1, isoU(I.id, warnEmpty(define, inn, 'define'))]);else return res$$1;
+      if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, 'define'), id), res$$1, isoU(id, warnEmpty(define, inn, 'define'))]);else return res$$1;
     };
-  })(function (v) {
+  })(function define(v) {
     var untoV = unto(v);
-    return function (x, i, F, xi2yF) {
+    return function define(x, i, F, xi2yF) {
       return F.map(untoV, xi2yF(void 0 !== x ? x : v, i));
     };
   });
@@ -1597,11 +1613,11 @@
   };
 
   var required = /*#__PURE__*/(function (fn$$1) {
-    return function (inn) {
+    return function required(inn) {
       var res$$1 = fn$$1(inn);
-      if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(I.id, warnEmpty(required, inn, 'required'))]);else return res$$1;
+      if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(id, warnEmpty(required, inn, 'required'))]);else return res$$1;
     };
-  })(function (inn) {
+  })(function required(inn) {
     return replace$1(inn, void 0);
   });
 
@@ -1629,9 +1645,9 @@
   }
 
   var filter = /*#__PURE__*/(res(function (lens) {
-    return toFunction([lens, isoU(I.id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
-  }))(function (xi2b) {
-    return function (xs, i, F, xi2yF) {
+    return toFunction([lens, isoU(id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
+  }))(function filter(xi2b) {
+    return function filter(xs, i, F, xi2yF) {
       var ts = void 0;
       var fs = I.array0;
       if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
@@ -1646,7 +1662,7 @@
 
   function find(xih2b) {
     var hint = arguments.length > 1 ? arguments[1] : { hint: 0 };
-    return function (xs, _i, F, xi2yF) {
+    return function find(xs, _i, F, xi2yF) {
       var ys = seemsArrayLike(xs) ? xs : '';
       var i = hint.hint = findIndexHint(hint, xih2b, ys);
       return F.map(function (v) {
@@ -1665,7 +1681,7 @@
 
   var index = ef(reqIndex);
 
-  var last = /*#__PURE__*/choose(function (maybeArray) {
+  var last = /*#__PURE__*/choose(function last(maybeArray) {
     return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
   });
 
@@ -1674,9 +1690,9 @@
   };
 
   var slice = /*#__PURE__*/(res(function (lens) {
-    return toFunction([lens, isoU(I.id, ef(reqMaybeArray('`slice` must be set with undefined or an array-like object')))]);
-  }))(function (begin, end) {
-    return function (xs, i, F, xsi2yF) {
+    return toFunction([lens, isoU(id, ef(reqMaybeArray('`slice` must be set with undefined or an array-like object')))]);
+  }))(function slice(begin, end) {
+    return function slice(xs, i, F, xsi2yF) {
       var seems = seemsArrayLike(xs);
       var xsN = seems && xs.length;
       var b = sliceIndex(0, xsN, 0, begin);
@@ -1743,7 +1759,7 @@
 
   // Transforming data
 
-  var pick = /*#__PURE__*/(par(0, ef(reqTemplate('pick'))))(function (template) {
+  var pick = /*#__PURE__*/(par(0, ef(reqTemplate('pick'))))(function pick(template) {
     return function (x, i, F, xi2yF) {
       return F.map(function (v) {
         return setPick(template, v, x);
@@ -1751,11 +1767,11 @@
     };
   });
 
-  var replace$1 = /*#__PURE__*/I.curry(function (inn, out) {
+  var replace$1 = /*#__PURE__*/I.curry(function replace$$1(inn, out) {
     function o2i(x) {
       return replaced(out, inn, x);
     }
-    return function (x, i, F, xi2yF) {
+    return function replace$$1(x, i, F, xi2yF) {
       return F.map(o2i, xi2yF(replaced(inn, out, x), i));
     };
   });
@@ -1798,7 +1814,7 @@
   var complement = /*#__PURE__*/isoU(notPartial, notPartial);
 
   var is = function is(v) {
-    return isoU(function (x) {
+    return isoU(function is(x) {
       return I.acyclicEqualsU(v, x);
     }, function (b) {
       return true === b ? v : void 0;
@@ -1807,7 +1823,7 @@
 
   // Array isomorphisms
 
-  var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeArrayOfObjects))(function (xs) {
+  var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeArrayOfObjects))(function indexed(xs) {
     var n = xs.length;
     var xis = Array(n);
     for (var i = 0; i < n; ++i) {
@@ -1836,15 +1852,15 @@
   var reverse = /*#__PURE__*/isoU(rev, rev);
 
   var singleton = /*#__PURE__*/(function (iso) {
-    return toFunction([isoU(I.id, I.freeze), iso]);
-  })(function (x, i, F, xi2yF) {
+    return copyName(toFunction([isoU(id, I.freeze), iso]), iso);
+  })(function singleton(x, i, F, xi2yF) {
     return F.map(singletonPartial, xi2yF((x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0, i));
   });
 
   // Object isomorphisms
 
   var disjoint = function disjoint(groupOf) {
-    return function (x, i, F, xi2yF) {
+    return function disjoint(x, i, F, xi2yF) {
       var fwd = disjointFwd(groupOf);
       return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i));
     };
@@ -1857,8 +1873,8 @@
   var uriComponent = /*#__PURE__*/stringIsoU(decodeURIComponent, encodeURIComponent);
 
   var json = /*#__PURE__*/(res(function (iso) {
-    return toFunction([iso, isoU(deepFreeze, I.id)]);
-  }))(function (options) {
+    return toFunction([iso, isoU(deepFreeze, id)]);
+  }))(function json(options) {
     var _ref = options || I.object0,
         reviver = _ref.reviver,
         replacer = _ref.replacer,
@@ -1874,7 +1890,7 @@
   // String isomorphisms
 
   var dropPrefix = function dropPrefix(pfx) {
-    return stringIsoU(function (x) {
+    return stringIsoU(function dropPrefix(x) {
       return x.startsWith(pfx) ? x.slice(pfx.length) : undefined;
     }, function (x) {
       return pfx + x;
@@ -1882,22 +1898,22 @@
   };
 
   var dropSuffix = function dropSuffix(sfx) {
-    return stringIsoU(function (x) {
+    return stringIsoU(function dropSuffix(x) {
       return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined;
     }, function (x) {
       return x + sfx;
     });
   };
 
-  var replaces = /*#__PURE__*/I.curry(function (i, o) {
+  var replaces = /*#__PURE__*/I.curry(function replaces(i, o) {
     return stringIsoU(replace(toRegExpU(i, 'g'), o), replace(toRegExpU(o, 'g'), i));
   });
 
   var split = /*#__PURE__*/(function (fn$$1) {
-    return function (_sep) {
-      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, I.id)]);
+    return function split(_sep) {
+      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
     };
-  })(function (sep) {
+  })(function split(sep) {
     var re = arguments.length > 1 ? arguments[1] : sep;
     return isoU(expect(I.isString, function (x) {
       return x.split(re);
@@ -1907,10 +1923,10 @@
   });
 
   var uncouple = /*#__PURE__*/(function (fn$$1) {
-    return function (_sep) {
-      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, I.id)]);
+    return function uncouple(_sep) {
+      return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
     };
-  })(function (sep) {
+  })(function uncouple(sep) {
     var re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '');
     return isoU(expect(I.isString, function (x) {
       var m = re.exec(x);
@@ -1943,7 +1959,7 @@
   // Interop
 
   var pointer = function pointer(s) {
-    if (s[0] === '#') s = decodeURIComponent(s);
+    if (s[0] === '#') s = getU(uriComponent, s);
     var ts = s.split('/');
     var n = ts.length;
     for (var i = 1; i < n; ++i) {

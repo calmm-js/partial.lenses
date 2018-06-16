@@ -1,10 +1,16 @@
 import * as I from 'infestines'
 
 export const dep = xs2xsyC => xsy =>
-  I.arityN(xsy.length, (...xs) => xs2xsyC(...xs)(xsy)(...xs))
+  I.arityN(
+    xsy.length,
+    I.defineNameU((...xs) => xs2xsyC(...xs)(xsy)(...xs), xsy.name)
+  )
 
 export const fn = (xsC, yC) => xsy =>
-  I.arityN(xsy.length, (...xs) => yC(xsy.apply(null, xsC(xs))))
+  I.arityN(
+    xsy.length,
+    I.defineNameU((...xs) => yC(xsy.apply(null, xsC(xs))), xsy.name)
+  )
 
 export const res = yC => fn(I.id, yC)
 
@@ -35,10 +41,11 @@ export const or = (...xCs) => x => {
   throw es
 }
 
-export const ef = xE => x => {
-  xE(x)
-  return x
-}
+export const ef = xE =>
+  I.defineNameU(x => {
+    xE(x)
+    return x
+  }, xE.name)
 
 export const tup = (...xCs) => xs => {
   if (xs.length !== xCs.length)

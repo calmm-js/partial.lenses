@@ -9,7 +9,6 @@
     "no-unneeded-ternary": 2,
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-var": 2,
-    "prefer-arrow-callback": 2,
     "semi": [2, "never"]
   },
   "env": {

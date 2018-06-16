@@ -4,6 +4,18 @@ import * as C from './contract'
 
 //
 
+const id = x => x
+
+const setName =
+  process.env.NODE_ENV === 'production'
+    ? id
+    : (to, name) => I.defineNameU(to, name)
+
+const copyName =
+  process.env.NODE_ENV === 'production'
+    ? id
+    : (to, from) => I.defineNameU(to, from.name)
+
 const toRegExpU = (str, flags) =>
   I.isString(str)
     ? new RegExp(I.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&', str), flags)
@@ -28,11 +40,13 @@ const cpair = xs => x => [x, xs]
 const unto = c => x => (void 0 !== x ? x : c)
 const unto0 = unto(0)
 
-const notPartial = x => (void 0 !== x ? !x : x)
+const notPartial = function complement(x) {
+  return void 0 !== x ? !x : x
+}
 
 const singletonPartial = x => (void 0 !== x ? [x] : x)
 
-const expect = (p, f) => x => (p(x) ? f(x) : void 0)
+const expect = (p, f) => copyName(x => (p(x) ? f(x) : void 0), f)
 
 function deepFreeze(x) {
   if (I.isArray(x)) {
@@ -57,8 +71,8 @@ function freezeObjectOfObjects(xs) {
 
 const isArrayOrPrimitive = x => !(x instanceof Object) || I.isArray(x)
 
-const rev = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
-  xs => {
+const rev = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
+  function reverse(xs) {
     if (seemsArrayLike(xs)) {
       let n = xs.length
       const ys = Array(n)
@@ -87,7 +101,7 @@ const warnEmpty = (o, v, f) => {
 //
 
 const mapPartialIndexU = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn => (xi2y, xs, skip) => {
       const ys = fn(xi2y, xs, skip)
       if (xs !== ys) I.freeze(ys)
@@ -120,7 +134,7 @@ const mapIfArrayLike = (xi2y, xs) =>
   seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs, void 0) : void 0
 
 const copyToFrom = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn => (ys, k, xs, i, j) =>
       ys.length === k + j - i
         ? I.freeze(fn(ys, k, xs, i, j))
@@ -151,7 +165,7 @@ const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
 const Sum = ConcatOf(I.addU, 0)
 
 const mumBy = ord =>
-  I.curry((xi2y, t, s) => {
+  I.curry(function mumBy(xi2y, t, s) {
     let minX = void 0
     let minY = void 0
     traverseU(
@@ -171,7 +185,9 @@ const mumBy = ord =>
 
 //
 
-const traverseU = (C, xi2yC, t, s) => toFunction(t)(s, void 0, C, xi2yC)
+const traverseU = function traverse(C, xi2yC, t, s) {
+  return toFunction(t)(s, void 0, C, xi2yC)
+}
 
 //
 
@@ -199,7 +215,7 @@ function errorGiven(m, o, e) {
   throw Error(m + e)
 }
 
-function reqIndex(x) {
+const reqIndex = function index(x) {
   if (!Number.isInteger(x) || x < 0)
     errorGiven('`index` expects a non-negative integer', x)
 }
@@ -269,13 +285,16 @@ const reqMonad = name => C => {
 const mkTraverse = (after, toC) =>
   I.curryN(
     4,
-    (xi2yC, m) => ((m = toC(m)), (t, s) => after(traverseU(m, xi2yC, t, s)))
+    copyName(
+      (xi2yC, m) => ((m = toC(m)), (t, s) => after(traverseU(m, xi2yC, t, s))),
+      toC
+    )
   )
 
 //
 
 const consExcept = skip => t => h => (skip !== h ? [h, t] : t)
-const consTo = (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(
+const consTo = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
   n => {
     const xs = []
     while (consExcept !== n) {
@@ -309,9 +328,7 @@ const lensFrom = (get, set) => i => (x, _i, F, xi2yF) =>
 
 const getProp = (k, o) => (o instanceof Object ? o[k] : void 0)
 
-const setProp = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(I.freeze))(
+const setProp = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
   (k, v, o) =>
     void 0 !== v
       ? I.assocPartialU(k, v, o)
@@ -325,7 +342,7 @@ const funProp = lensFrom(getProp, setProp)
 const getIndex = (i, xs) => (seemsArrayLike(xs) ? xs[i] : void 0)
 
 const setIndex = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.fn(C.nth(0, C.ef(reqIndex)), I.freeze))((i, x, xs) => {
   if (!seemsArrayLike(xs)) xs = ''
   const n = xs.length
@@ -366,8 +383,8 @@ function composed(oi0, os) {
 }
 
 const setU = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(0, C.ef(reqOptic)))((o, x, s) => {
+  ? id
+  : C.par(0, C.ef(reqOptic)))(function set(o, x, s) {
   switch (typeof o) {
     case 'string':
       return setProp(o, x, s)
@@ -381,8 +398,8 @@ const setU = (process.env.NODE_ENV === 'production'
 })
 
 const modifyU = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(0, C.ef(reqOptic)))((o, xi2x, s) => {
+  ? id
+  : C.par(0, C.ef(reqOptic)))(function modify(o, xi2x, s) {
   switch (typeof o) {
     case 'string':
       return setProp(o, xi2x(getProp(o, s), o), s)
@@ -425,7 +442,7 @@ function getNestedU(l, s, j, ix) {
 }
 
 const getU = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.par(0, C.ef(reqOptic)))((l, s) => {
   switch (typeof l) {
     case 'string':
@@ -446,7 +463,7 @@ const getU = (process.env.NODE_ENV === 'production'
         }
       return s
     default:
-      return l(s, void 0, Constant, I.id)
+      return l(s, void 0, Constant, id)
   }
 })
 
@@ -476,10 +493,16 @@ function modifyComposed(os, xi2y, x, y) {
 
 //
 
-const lensU = (get, set) => (x, i, F, xi2yF) =>
-  F.map(y => set(y, x, i), xi2yF(get(x, i), i))
+const lensU = function lens(get, set) {
+  return copyName(
+    (x, i, F, xi2yF) => F.map(y => set(y, x, i), xi2yF(get(x, i), i)),
+    get
+  )
+}
 
-const isoU = (bwd, fwd) => (x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i))
+const isoU = function iso(bwd, fwd) {
+  return copyName((x, i, F, xi2yF) => F.map(fwd, xi2yF(bwd(x), i)), bwd)
+}
 
 const stringIsoU = (bwd, fwd) =>
   isoU(expect(I.isString, bwd), expect(I.isString, fwd))
@@ -489,20 +512,20 @@ const numberIsoU = (bwd, fwd) =>
 
 //
 
-const getPick = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(I.freeze))((template, x) => {
-  let r
-  for (const k in template) {
-    const t = template[k]
-    const v = I.isObject(t) ? getPick(t, x) : getU(t, x)
-    if (void 0 !== v) {
-      if (!r) r = {}
-      r[k] = v
+const getPick = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
+  (template, x) => {
+    let r
+    for (const k in template) {
+      const t = template[k]
+      const v = I.isObject(t) ? getPick(t, x) : getU(t, x)
+      if (void 0 !== v) {
+        if (!r) r = {}
+        r[k] = v
+      }
     }
+    return r
   }
-  return r
-})
+)
 
 const reqTemplate = name => template => {
   if (!I.isObject(template))
@@ -514,7 +537,7 @@ const reqObject = msg => value => {
 }
 
 const setPick = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.par(
       1,
       C.ef(reqObject('`pick` must be set with undefined or an object'))
@@ -538,7 +561,7 @@ const identity = (x, i, _F, xi2yF) => xi2yF(x, i)
 //
 
 const branchAssemble = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.res(C.res(I.freeze)))(ks => xs => {
   const r = {}
   let i = ks.length
@@ -553,7 +576,7 @@ const branchAssemble = (process.env.NODE_ENV === 'production'
 })
 
 const branchOr1LevelIdentity = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn => (otherwise, k2o, xO, x, A, xi2yA) => {
       const y = fn(otherwise, k2o, xO, x, A, xi2yA)
       if (x !== y) I.freeze(y)
@@ -655,7 +678,7 @@ function findIndexHint(hint, xi2b, xs) {
 }
 
 const partitionIntoIndex = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.dep((_xi2b, _xs, ts, fs) =>
       C.res(
         C.ef(() => {
@@ -668,8 +691,8 @@ const partitionIntoIndex = (process.env.NODE_ENV === 'production'
     (xi2b((x = xs[i]), i) ? ts : fs).push(x)
 })
 
-const fromReader = wi2x => (w, i, F, xi2yF) =>
-  F.map(I.always(w), xi2yF(wi2x(w, i), i))
+const fromReader = wi2x =>
+  copyName((w, i, F, xi2yF) => F.map(I.always(w), xi2yF(wi2x(w, i), i)), wi2x)
 
 //
 
@@ -678,7 +701,7 @@ const reIndex = m => m.index
 const reLastIndex = m => reIndex(m) + m[0].length
 
 const reNext = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn => (m, re) => {
       const res = fn(m, re)
       if ('' === res)
@@ -727,18 +750,18 @@ function iterEager(map, ap, of, xi2yA, t, s) {
 const keyed = isoU(
   expect(
     I.isInstanceOf(Object),
-    (process.env.NODE_ENV === 'production'
-      ? I.id
-      : C.res(freezeArrayOfObjects))(x => {
-      x = toObject(x)
-      const es = []
-      for (const key in x) es.push([key, x[key]])
-      return es
-    })
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeArrayOfObjects))(
+      function keyed(x) {
+        x = toObject(x)
+        const es = []
+        for (const key in x) es.push([key, x[key]])
+        return es
+      }
+    )
   ),
   expect(
     I.isArray,
-    (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(es => {
+    (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(es => {
       const o = {}
       for (let i = 0, n = es.length; i < n; ++i) {
         const entry = es[i]
@@ -771,7 +794,7 @@ const matchesJoin = input => matchesIn => {
 //
 
 const disjointBwd = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.res(freezeObjectOfObjects))((groupOf, x) => {
   if (x instanceof Object) {
     const y = {}
@@ -787,7 +810,7 @@ const disjointBwd = (process.env.NODE_ENV === 'production'
 })
 
 const disjointFwd = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.res(C.res(I.freeze)))(groupOf => y => {
   if (y instanceof Object) {
     const x = {}
@@ -809,14 +832,20 @@ const disjointFwd = (process.env.NODE_ENV === 'production'
 
 //
 
-const eitherU = (t, e) => c => (x, i, C, xi2yC) =>
-  (c(x, i) ? t : e)(x, i, C, xi2yC)
+const eitherU = (t, e) =>
+  function either(c) {
+    return function either(x, i, C, xi2yC) {
+      return (c(x, i) ? t : e)(x, i, C, xi2yC)
+    }
+  }
 
-const orElseU = (back, prim) => (
-  (prim = toFunction(prim)),
-  (back = toFunction(back)),
-  (x, i, C, xi2yC) => (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC)
-)
+const orElseU = function orElse(back, prim) {
+  prim = toFunction(prim)
+  back = toFunction(back)
+  return function orElse(x, i, C, xi2yC) {
+    return (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC)
+  }
+}
 
 function zeroOp(y, i, C, xi2yC, x) {
   const of = C.of
@@ -854,33 +883,33 @@ export const seemsArrayLike = x =>
 
 // Internals
 
-export const Identity = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : I.freeze)({
-  map: I.applyU,
-  of: I.id,
-  ap: I.applyU,
-  chain: I.applyU
-})
+export const Identity = (process.env.NODE_ENV === 'production' ? id : I.freeze)(
+  {
+    map: I.applyU,
+    of: id,
+    ap: I.applyU,
+    chain: I.applyU
+  }
+)
 
 export const IdentityAsync = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : I.freeze)({
   map: chainAsync,
   ap: (xyP, xP) => chainAsync(xP => chainAsync(xyP => xyP(xP), xyP), xP),
-  of: I.id,
+  of: id,
   chain: chainAsync
 })
 
-export const Constant = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : I.freeze)({
-  map: I.sndU
-})
+export const Constant = (process.env.NODE_ENV === 'production' ? id : I.freeze)(
+  {
+    map: I.sndU
+  }
+)
 
 export const toFunction = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(0, C.ef(reqOptic)))(o => {
+  ? id
+  : C.par(0, C.ef(reqOptic)))(function toFunction(o) {
   switch (typeof o) {
     case 'string':
       return funProp(o)
@@ -895,19 +924,27 @@ export const toFunction = (process.env.NODE_ENV === 'production'
 
 // Operations on optics
 
-export const assign = I.curry((o, x, s) => setU([o, propsOf(x)], x, s))
+export const assign = I.curry(function assign(o, x, s) {
+  return setU([o, propsOf(x)], x, s)
+})
 
 export const modify = I.curry(modifyU)
 
 export const modifyAsync = I.curry(modifyAsyncU)
 
-export const remove = I.curry((o, s) => setU(o, void 0, s))
+export const remove = I.curry(function remove(o, s) {
+  return setU(o, void 0, s)
+})
 
 export const set = I.curry(setU)
 
-export const transform = I.curry((o, s) => modifyU(o, I.id, s))
+export const transform = I.curry(function transform(o, s) {
+  return modifyU(o, id, s)
+})
 
-export const transformAsync = I.curry((o, s) => modifyAsyncU(o, I.id, s))
+export const transformAsync = I.curry(function transformAsync(o, s) {
+  return modifyAsyncU(o, id, s)
+})
 
 export const traverse = I.curry(traverseU)
 
@@ -946,17 +983,18 @@ export function lazy(o2o) {
 export const choices = (o, ...os) =>
   os.length ? orElseU(os.reduceRight(orElseU), o) : o
 
-export const choose = xiM2o => (x, i, C, xi2yC) =>
-  toFunction(xiM2o(x, i))(x, i, C, xi2yC)
+export const choose = xiM2o =>
+  copyName((x, i, C, xi2yC) => toFunction(xiM2o(x, i))(x, i, C, xi2yC), xiM2o)
 
 export const cond = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : fn => (...cs) => {
-      const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
-      C.arr(pair)(cs.slice(0, -1))
-      C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
-      return fn(...cs)
-    })(function() {
+  ? id
+  : fn =>
+      function cond(...cs) {
+        const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
+        C.arr(pair)(cs.slice(0, -1))
+        C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
+        return fn(...cs)
+      })(function cond() {
   let n = arguments.length
   let r = zero
   while (n--) {
@@ -967,13 +1005,14 @@ export const cond = (process.env.NODE_ENV === 'production'
 })
 
 export const condOf = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : fn => (of, ...cs) => {
-      const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
-      C.arr(pair)(cs.slice(0, -1))
-      C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
-      return fn(of, ...cs)
-    })(function(of) {
+  ? id
+  : fn =>
+      function condOf(of, ...cs) {
+        const pair = C.tup(C.ef(reqFn), C.ef(reqOptic))
+        C.arr(pair)(cs.slice(0, -1))
+        C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
+        return fn(of, ...cs)
+      })(function condOf(of) {
   of = toFunction(of)
   let op = condOfDefault
   let n = arguments.length
@@ -984,23 +1023,25 @@ export const condOf = (process.env.NODE_ENV === 'production'
         ? I.always(toFunction(c[0]))
         : condOfCase(c[0], toFunction(c[1]), op)
   }
-  return (x, i, C, xi2yC) => of(x, i, Constant, op)(x, i, C, xi2yC)
+  return function condOf(x, i, C, xi2yC) {
+    return of(x, i, Constant, op)(x, i, C, xi2yC)
+  }
 })
 
-export const ifElse = I.curry((c, t, e) =>
-  eitherU(toFunction(t), toFunction(e))(c)
-)
+export const ifElse = I.curry(function ifElse(c, t, e) {
+  return eitherU(toFunction(t), toFunction(e))(c)
+})
 
 export const iftes = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn =>
-      function(_c, _t) {
+      function iftes(_c, _t) {
         warn(
           iftes,
           '`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.'
         )
         return fn.apply(null, arguments)
-      })(function(_c, _t) {
+      })(function iftes(_c, _t) {
   let n = arguments.length
   let r = n & 1 ? toFunction(arguments[--n]) : zero
   while (0 <= (n -= 2))
@@ -1012,10 +1053,9 @@ export const orElse = I.curry(orElseU)
 
 // Querying
 
-export const chain = I.curry((xi2yO, xO) => [
-  xO,
-  choose((xM, i) => (void 0 !== xM ? xi2yO(xM, i) : zero))
-])
+export const chain = I.curry(function chain(xi2yO, xO) {
+  return [xO, choose((xM, i) => (void 0 !== xM ? xi2yO(xM, i) : zero))]
+})
 
 export const choice = (...os) => os.reduceRight(orElseU, zero)
 
@@ -1031,33 +1071,39 @@ export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
 export const assignOp = x => [propsOf(x), setOp(x)]
 
-export const modifyOp = xi2y => (x, i, C, xi2yC) =>
-  zeroOp((x = xi2y(x, i)), i, C, xi2yC, x)
+export const modifyOp = xi2y =>
+  function modifyOp(x, i, C, xi2yC) {
+    return zeroOp((x = xi2y(x, i)), i, C, xi2yC, x)
+  }
 
-export const setOp = y => (_x, i, C, xi2yC) => zeroOp(y, i, C, xi2yC, y)
+export const setOp = y =>
+  function setOp(_x, i, C, xi2yC) {
+    return zeroOp(y, i, C, xi2yC, y)
+  }
 
 export const removeOp = setOp()
 
 // Debugging
 
 export function log() {
-  const show = I.curry(
-    (dir, x) => (
-      console.log.apply(
-        console,
-        copyToFrom([], 0, arguments, 0, arguments.length).concat([dir, x])
-      ),
-      x
+  const show = I.curry(function log(dir, x) {
+    console.log.apply(
+      console,
+      copyToFrom([], 0, arguments, 0, arguments.length).concat([dir, x])
     )
-  )
+    return x
+  })
   return isoU(show('get'), show('set'))
 }
 
 // Sequencing
 
 export const seq = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : fn => (...xMs) => C.par(2, C.ef(reqMonad('seq')))(fn(...xMs)))(function() {
+  ? id
+  : fn =>
+      function seq(...xMs) {
+        return C.par(2, C.ef(reqMonad('seq')))(fn(...xMs))
+      })(function seq() {
   let n = arguments.length
   let r = zero
   if (n) {
@@ -1070,15 +1116,14 @@ export const seq = (process.env.NODE_ENV === 'production'
 // Creating new traversals
 
 export const branchOr = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.par(1, C.ef(reqTemplate('branchOr'))))(
-  I.curryN(
-    2,
-    otherwise => (
-      (otherwise = toFunction(otherwise)),
-      template => branchOrU(otherwise, template)
-    )
-  )
+  I.curryN(2, function branchOr(otherwise) {
+    otherwise = toFunction(otherwise)
+    return function branchOr(template) {
+      return branchOrU(otherwise, template)
+    }
+  })
 )
 
 export const branch = branchOr(zero)
@@ -1093,10 +1138,10 @@ export function branches() {
 // Traversals and combinators
 
 export const elems = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(2, C.ef(reqApplicative('elems'))))(
-  (xs, i, A, xi2yA) => (seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs))
-)
+  ? id
+  : C.par(2, C.ef(reqApplicative('elems'))))(function elems(xs, i, A, xi2yA) {
+  return seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs)
+})
 
 export const elemsTotal = (xs, i, A, xi2yA) =>
   seemsArrayLike(xs)
@@ -1107,17 +1152,17 @@ export const elemsTotal = (xs, i, A, xi2yA) =>
         : traversePartialIndex(A, xi2yA, xs, traversePartialIndex)
     : A.of(xs)
 
-export const entries = toFunction([keyed, elems])
+export const entries = setName(toFunction([keyed, elems]), 'entries')
 
-export const keys = toFunction([keyed, elems, 0])
+export const keys = setName(toFunction([keyed, elems, 0]), 'keys')
 
 export const matches = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.dep(
       re =>
-        re.global ? C.res(C.par(2, C.ef(reqApplicative('matches', re)))) : I.id
-    ))(re => {
-  return (x, _i, C, xi2yC) => {
+        re.global ? C.res(C.par(2, C.ef(reqApplicative('matches', re)))) : id
+    ))(function matches(re) {
+  return function matches(x, _i, C, xi2yC) {
     if (I.isString(x)) {
       const {map} = C
       if (re.global) {
@@ -1144,23 +1189,32 @@ export const matches = (process.env.NODE_ENV === 'production'
 })
 
 export const values = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.par(2, C.ef(reqApplicative('values'))))(
-  branchOr1Level(identity, I.protoless0)
+  setName(branchOr1Level(identity, I.protoless0), 'values')
 )
 
 export const children = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(2, C.ef(reqApplicative('children'))))(
-  (x, i, C, xi2yC) =>
-    I.isArray(x)
-      ? elemsI(x, i, C, xi2yC)
-      : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
-)
+  ? id
+  : C.par(2, C.ef(reqApplicative('children'))))(function children(
+  x,
+  i,
+  C,
+  xi2yC
+) {
+  return I.isArray(x)
+    ? elemsI(x, i, C, xi2yC)
+    : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
+})
 
 export const flatten = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(2, C.ef(reqApplicative('flatten'))))((x, i, C, xi2yC) => {
+  ? id
+  : C.par(2, C.ef(reqApplicative('flatten'))))(function flatten(
+  x,
+  i,
+  C,
+  xi2yC
+) {
   const rec = (x, i) =>
     I.isArray(x) ? elemsI(x, i, C, rec) : void 0 !== x ? xi2yC(x, i) : C.of(x)
   return rec(x, i)
@@ -1175,10 +1229,11 @@ export function query() {
   return r
 }
 
-export const satisfying = p => (x, i, C, xi2yC) => {
-  const rec = (x, i) => (p(x, i) ? xi2yC(x, i) : children(x, i, C, rec))
-  return rec(x, i)
-}
+export const satisfying = p =>
+  function satisfying(x, i, C, xi2yC) {
+    const rec = (x, i) => (p(x, i) ? xi2yC(x, i) : children(x, i, C, rec))
+    return rec(x, i)
+  }
 
 export const leafs = satisfying(
   x => void 0 !== x && !I.isArray(x) && !I.isObject(x)
@@ -1186,35 +1241,33 @@ export const leafs = satisfying(
 
 // Folds over traversals
 
-export const all = I.curry(
-  (xi2b, t, s) =>
-    !traverseU(
-      Select,
-      (x, i) => {
-        if (!xi2b(x, i)) return true
-      },
-      t,
-      s
-    )
-)
+export const all = I.curry(function all(xi2b, t, s) {
+  return !traverseU(
+    Select,
+    (x, i) => {
+      if (!xi2b(x, i)) return true
+    },
+    t,
+    s
+  )
+})
 
-export const and = all(I.id)
+export const and = all(id)
 
-export const any = I.curry(
-  (xi2b, t, s) =>
-    !!traverseU(
-      Select,
-      (x, i) => {
-        if (xi2b(x, i)) return true
-      },
-      t,
-      s
-    )
-)
+export const any = I.curry(function any(xi2b, t, s) {
+  return !!traverseU(
+    Select,
+    (x, i) => {
+      if (xi2b(x, i)) return true
+    },
+    t,
+    s
+  )
+})
 
 export const collectAs = (process.env.NODE_ENV === 'production'
   ? I.curry
-  : C.res(I.freeze))((xi2y, t, s) => {
+  : C.res(I.freeze))(function collectAs(xi2y, t, s) {
   const results = []
   traverseU(
     Select,
@@ -1228,19 +1281,21 @@ export const collectAs = (process.env.NODE_ENV === 'production'
   return results
 })
 
-export const collect = collectAs(I.id)
+export const collect = collectAs(id)
 
-export const concatAs = mkTraverse(I.id, m => ConcatOf(m.concat, m.empty()))
+export const concatAs = mkTraverse(id, function concatAs(m) {
+  return ConcatOf(m.concat, m.empty())
+})
 
-export const concat = concatAs(I.id)
+export const concat = concatAs(id)
 
-export const countIf = I.curry((p, t, s) =>
-  traverseU(Sum, (x, i) => (p(x, i) ? 1 : 0), t, s)
-)
+export const countIf = I.curry(function countIf(p, t, s) {
+  return traverseU(Sum, (x, i) => (p(x, i) ? 1 : 0), t, s)
+})
 
 export const count = countIf(I.isDefined)
 
-export const countsAs = I.curry((xi2k, t, s) => {
+export const countsAs = I.curry(function countsAs(xi2k, t, s) {
   const counts = new Map()
   traverseU(
     Select,
@@ -1255,9 +1310,9 @@ export const countsAs = I.curry((xi2k, t, s) => {
   return counts
 })
 
-export const counts = countsAs(I.id)
+export const counts = countsAs(id)
 
-export const foldl = I.curry((f, r, t, s) => {
+export const foldl = I.curry(function foldl(f, r, t, s) {
   traverseU(
     Select,
     (x, i) => {
@@ -1269,7 +1324,7 @@ export const foldl = I.curry((f, r, t, s) => {
   return r
 })
 
-export const foldr = I.curry((f, r, t, s) => {
+export const foldr = I.curry(function foldr(f, r, t, s) {
   const is = []
   const xs = []
   traverseU(
@@ -1285,8 +1340,8 @@ export const foldr = I.curry((f, r, t, s) => {
   return r
 })
 
-export const forEach = I.curry((f, t, s) =>
-  traverseU(
+export const forEach = I.curry(function forEach(f, t, s) {
+  return traverseU(
     Select,
     (x, i) => {
       f(x, i)
@@ -1294,9 +1349,9 @@ export const forEach = I.curry((f, t, s) =>
     t,
     s
   )
-)
+})
 
-export const forEachWith = I.curry((newC, ef, t, s) => {
+export const forEachWith = I.curry(function forEachWith(newC, ef, t, s) {
   const c = newC()
   traverseU(
     Select,
@@ -1309,35 +1364,35 @@ export const forEachWith = I.curry((newC, ef, t, s) => {
   return c
 })
 
-export const isDefined = I.curry(
-  (t, s) => void 0 !== traverseU(Select, I.id, t, s)
-)
+export const isDefined = I.curry(function isDefined(t, s) {
+  return void 0 !== traverseU(Select, id, t, s)
+})
 
-export const isEmpty = I.curry(
-  (t, s) => !traverseU(Select, I.always(true), t, s)
-)
+export const isEmpty = I.curry(function isEmpty(t, s) {
+  return !traverseU(Select, I.always(true), t, s)
+})
 
 export const joinAs = mkTraverse(
   toStringPartial,
   (process.env.NODE_ENV === 'production'
-    ? I.id
+    ? id
     : C.par(
         0,
         C.ef(reqString('`join` and `joinAs` expect a string delimiter'))
-      ))(d => {
+      ))(function joinAs(d) {
     return ConcatOf(
       (x, y) => (void 0 !== x ? (void 0 !== y ? x + d + y : x) : y)
     )
   })
 )
 
-export const join = joinAs(I.id)
+export const join = joinAs(id)
 
 export const maximumBy = mumBy(I.gtU)
 
-export const maximum = maximumBy(I.id)
+export const maximum = maximumBy(id)
 
-export const meanAs = I.curry((xi2y, t, s) => {
+export const meanAs = I.curry(function meanAs(xi2y, t, s) {
   let sum = 0
   let num = 0
   traverseU(
@@ -1355,25 +1410,24 @@ export const meanAs = I.curry((xi2y, t, s) => {
   return sum / num
 })
 
-export const mean = meanAs(I.id)
+export const mean = meanAs(id)
 
 export const minimumBy = mumBy(I.ltU)
 
-export const minimum = minimumBy(I.id)
+export const minimum = minimumBy(id)
 
-export const none = I.curry(
-  (xi2b, t, s) =>
-    !traverseU(
-      Select,
-      (x, i) => {
-        if (xi2b(x, i)) return true
-      },
-      t,
-      s
-    )
-)
+export const none = I.curry(function none(xi2b, t, s) {
+  return !traverseU(
+    Select,
+    (x, i) => {
+      if (xi2b(x, i)) return true
+    },
+    t,
+    s
+  )
+})
 
-export const or = any(I.id)
+export const or = any(id)
 
 export const productAs = traverse(ConcatOf(I.multiplyU, 1))
 
@@ -1381,7 +1435,7 @@ export const product = productAs(unto(1))
 
 export const selectAs = traverse(Select)
 
-export const select = selectAs(I.id)
+export const select = selectAs(id)
 
 export const sumAs = traverse(Sum)
 
@@ -1397,11 +1451,14 @@ export function get(l, s) {
 
 export const lens = I.curry(lensU)
 
-export const setter = lens(I.id)
+export const setter = lens(id)
 
-export const foldTraversalLens = I.curry((fold, traversal) =>
-  lensU(fold(traversal), set(traversal))
-)
+export const foldTraversalLens = I.curry(function foldTraversalLens(
+  fold,
+  traversal
+) {
+  return lensU(fold(traversal), set(traversal))
+})
 
 // Enforcing invariants
 
@@ -1409,38 +1466,46 @@ export function defaults(out) {
   function o2u(x) {
     return replaced(out, void 0, x)
   }
-  return (x, i, F, xi2yF) => F.map(o2u, xi2yF(void 0 !== x ? x : out, i))
+  return function defaults(x, i, F, xi2yF) {
+    return F.map(o2u, xi2yF(void 0 !== x ? x : out, i))
+  }
 }
 
 export const define = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : fn => inn => {
-      const res = fn(inn)
-      if (isEmptyArrayStringOrObject(inn))
-        return toFunction([
-          isoU(warnEmpty(fn, inn, 'define'), I.id),
-          res,
-          isoU(I.id, warnEmpty(define, inn, 'define'))
-        ])
-      else return res
-    })(v => {
+  ? id
+  : fn =>
+      function define(inn) {
+        const res = fn(inn)
+        if (isEmptyArrayStringOrObject(inn))
+          return toFunction([
+            isoU(warnEmpty(fn, inn, 'define'), id),
+            res,
+            isoU(id, warnEmpty(define, inn, 'define'))
+          ])
+        else return res
+      })(function define(v) {
   const untoV = unto(v)
-  return (x, i, F, xi2yF) => F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
+  return function define(x, i, F, xi2yF) {
+    return F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
+  }
 })
 
 export const normalize = xi2x => [reread(xi2x), rewrite(xi2x)]
 
 export const required = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : fn => inn => {
-      const res = fn(inn)
-      if (isEmptyArrayStringOrObject(inn))
-        return toFunction([
-          res,
-          isoU(I.id, warnEmpty(required, inn, 'required'))
-        ])
-      else return res
-    })(inn => replace(inn, void 0))
+  ? id
+  : fn =>
+      function required(inn) {
+        const res = fn(inn)
+        if (isEmptyArrayStringOrObject(inn))
+          return toFunction([
+            res,
+            isoU(id, warnEmpty(required, inn, 'required'))
+          ])
+        else return res
+      })(function required(inn) {
+  return replace(inn, void 0)
+})
 
 export const reread = xi2x => (x, i, _F, xi2yF) =>
   xi2yF(void 0 !== x ? xi2x(x, i) : x, i)
@@ -1456,12 +1521,12 @@ export function append(xs, _, F, xi2yF) {
 }
 
 export const filter = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.res(lens =>
       toFunction([
         lens,
         isoU(
-          I.id,
+          id,
           C.ef(
             reqMaybeArray(
               '`filter` must be set with undefined or an array-like object'
@@ -1469,23 +1534,25 @@ export const filter = (process.env.NODE_ENV === 'production'
           )
         )
       ])
-    ))(xi2b => (xs, i, F, xi2yF) => {
-  let ts
-  let fs = I.array0
-  if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, (ts = []), (fs = []))
-  return F.map(ts => {
-    const tsN = ts ? ts.length : 0
-    const fsN = fs.length
-    const n = tsN + fsN
-    return n === fsN
-      ? fs
-      : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
-  }, xi2yF(ts, i))
+    ))(function filter(xi2b) {
+  return function filter(xs, i, F, xi2yF) {
+    let ts
+    let fs = I.array0
+    if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, (ts = []), (fs = []))
+    return F.map(ts => {
+      const tsN = ts ? ts.length : 0
+      const fsN = fs.length
+      const n = tsN + fsN
+      return n === fsN
+        ? fs
+        : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN)
+    }, xi2yF(ts, i))
+  }
 })
 
 export function find(xih2b) {
   const hint = arguments.length > 1 ? arguments[1] : {hint: 0}
-  return (xs, _i, F, xi2yF) => {
+  return function find(xs, _i, F, xi2yF) {
     const ys = seemsArrayLike(xs) ? xs : ''
     const i = (hint.hint = findIndexHint(hint, xih2b, ys))
     return F.map(v => setIndex(i, v, ys), xi2yF(ys[i], i))
@@ -1500,13 +1567,13 @@ export function findWith(o) {
 
 export const first = 0
 
-export const index =
-  process.env.NODE_ENV !== 'production' ? C.ef(reqIndex) : I.id
+export const index = process.env.NODE_ENV !== 'production' ? C.ef(reqIndex) : id
 
-export const last = choose(
-  maybeArray =>
-    seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0
-)
+export const last = choose(function last(maybeArray) {
+  return seemsArrayLike(maybeArray) && maybeArray.length
+    ? maybeArray.length - 1
+    : 0
+})
 
 export const prefix = n => slice(0, n)
 
@@ -1516,7 +1583,7 @@ export const slice = (process.env.NODE_ENV === 'production'
       toFunction([
         lens,
         isoU(
-          I.id,
+          id,
           C.ef(
             reqMaybeArray(
               '`slice` must be set with undefined or an array-like object'
@@ -1524,23 +1591,25 @@ export const slice = (process.env.NODE_ENV === 'production'
           )
         )
       ])
-    ))((begin, end) => (xs, i, F, xsi2yF) => {
-  const seems = seemsArrayLike(xs)
-  const xsN = seems && xs.length
-  const b = sliceIndex(0, xsN, 0, begin)
-  const e = sliceIndex(b, xsN, xsN, end)
-  return F.map(zs => {
-    const zsN = zs ? zs.length : 0
-    const bPzsN = b + zsN
-    const n = xsN - e + bPzsN
-    return copyToFrom(
-      copyToFrom(copyToFrom(Array(n), 0, xs, 0, b), b, zs, 0, zsN),
-      bPzsN,
-      xs,
-      e,
-      xsN
-    )
-  }, xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) : void 0, i))
+    ))(function slice(begin, end) {
+  return function slice(xs, i, F, xsi2yF) {
+    const seems = seemsArrayLike(xs)
+    const xsN = seems && xs.length
+    const b = sliceIndex(0, xsN, 0, begin)
+    const e = sliceIndex(b, xsN, xsN, end)
+    return F.map(zs => {
+      const zsN = zs ? zs.length : 0
+      const bPzsN = b + zsN
+      const n = xsN - e + bPzsN
+      return copyToFrom(
+        copyToFrom(copyToFrom(Array(n), 0, xs, 0, b), b, zs, 0, zsN),
+        bPzsN,
+        xs,
+        e,
+        xsN
+      )
+    }, xsi2yF(seems ? copyToFrom(Array(Math.max(0, e - b)), 0, xs, b, e) : void 0, i))
+  }
 })
 
 export const suffix = n => slice(0 === n ? Infinity : !n ? 0 : -n, void 0)
@@ -1552,7 +1621,7 @@ export const pickIn = t =>
 
 export const prop =
   process.env.NODE_ENV === 'production'
-    ? I.id
+    ? id
     : x => {
         if (!I.isString(x)) errorGiven('`prop` expects a string', x)
         return x
@@ -1582,17 +1651,19 @@ export const valueOr = v => (x, i, _F, xi2yF) => xi2yF(x != null ? x : v, i)
 // Transforming data
 
 export const pick = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.par(0, C.ef(reqTemplate('pick'))))(template => {
+  ? id
+  : C.par(0, C.ef(reqTemplate('pick'))))(function pick(template) {
   return (x, i, F, xi2yF) =>
     F.map(v => setPick(template, v, x), xi2yF(getPick(template, x), i))
 })
 
-export const replace = I.curry((inn, out) => {
+export const replace = I.curry(function replace(inn, out) {
   function o2i(x) {
     return replaced(out, inn, x)
   }
-  return (x, i, F, xi2yF) => F.map(o2i, xi2yF(replaced(inn, out, x), i))
+  return function replace(x, i, F, xi2yF) {
+    return F.map(o2i, xi2yF(replaced(inn, out, x), i))
+  }
 })
 
 // Operations on isomorphisms
@@ -1624,25 +1695,27 @@ export const complement = isoU(notPartial, notPartial)
 export {identity}
 
 export const is = v =>
-  isoU(x => I.acyclicEqualsU(v, x), b => (true === b ? v : void 0))
+  isoU(function is(x) {
+    return I.acyclicEqualsU(v, x)
+  }, b => (true === b ? v : void 0))
 
 // Array isomorphisms
 
 export const indexed = isoU(
   expect(
     seemsArrayLike,
-    (process.env.NODE_ENV === 'production'
-      ? I.id
-      : C.res(freezeArrayOfObjects))(xs => {
-      const n = xs.length
-      const xis = Array(n)
-      for (let i = 0; i < n; ++i) xis[i] = [i, xs[i]]
-      return xis
-    })
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeArrayOfObjects))(
+      function indexed(xs) {
+        const n = xs.length
+        const xis = Array(n)
+        for (let i = 0; i < n; ++i) xis[i] = [i, xs[i]]
+        return xis
+      }
+    )
   ),
   expect(
     I.isArray,
-    (process.env.NODE_ENV === 'production' ? I.id : C.res(I.freeze))(xis => {
+    (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(xis => {
       let n = xis.length
       let xs = Array(n)
       for (let i = 0; i < n; ++i) {
@@ -1667,23 +1740,28 @@ export const indexed = isoU(
 export const reverse = isoU(rev, rev)
 
 export const singleton = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : iso => toFunction([isoU(I.id, I.freeze), iso]))((x, i, F, xi2yF) =>
-  F.map(
-    singletonPartial,
-    xi2yF(
-      (x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0,
-      i
+  ? id
+  : iso => copyName(toFunction([isoU(id, I.freeze), iso]), iso))(
+  function singleton(x, i, F, xi2yF) {
+    return F.map(
+      singletonPartial,
+      xi2yF(
+        (x instanceof Object || I.isString(x)) && x.length === 1
+          ? x[0]
+          : void 0,
+        i
+      )
     )
-  )
+  }
 )
 
 // Object isomorphisms
 
-export const disjoint = groupOf => (x, i, F, xi2yF) => {
-  const fwd = disjointFwd(groupOf)
-  return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i))
-}
+export const disjoint = groupOf =>
+  function disjoint(x, i, F, xi2yF) {
+    const fwd = disjointFwd(groupOf)
+    return F.map(fwd, xi2yF(disjointBwd(groupOf, x), i))
+  }
 
 export {keyed}
 
@@ -1694,8 +1772,10 @@ export const uri = stringIsoU(decodeURI, encodeURI)
 export const uriComponent = stringIsoU(decodeURIComponent, encodeURIComponent)
 
 export const json = (process.env.NODE_ENV === 'production'
-  ? I.id
-  : C.res(iso => toFunction([iso, isoU(deepFreeze, I.id)])))(options => {
+  ? id
+  : C.res(iso => toFunction([iso, isoU(deepFreeze, id)])))(function json(
+  options
+) {
   const {reviver, replacer, space} = options || I.object0
   return isoU(
     expect(I.isString, text => JSON.parse(text, reviver)),
@@ -1706,27 +1786,28 @@ export const json = (process.env.NODE_ENV === 'production'
 // String isomorphisms
 
 export const dropPrefix = pfx =>
-  stringIsoU(
-    x => (x.startsWith(pfx) ? x.slice(pfx.length) : undefined),
-    x => pfx + x
-  )
+  stringIsoU(function dropPrefix(x) {
+    return x.startsWith(pfx) ? x.slice(pfx.length) : undefined
+  }, x => pfx + x)
 
 export const dropSuffix = sfx =>
-  stringIsoU(
-    x => (x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined),
-    x => x + sfx
-  )
+  stringIsoU(function dropSuffix(x) {
+    return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined
+  }, x => x + sfx)
 
-export const replaces = I.curry((i, o) =>
-  stringIsoU(I.replace(toRegExpU(i, 'g'), o), I.replace(toRegExpU(o, 'g'), i))
-)
+export const replaces = I.curry(function replaces(i, o) {
+  return stringIsoU(
+    I.replace(toRegExpU(i, 'g'), o),
+    I.replace(toRegExpU(o, 'g'), i)
+  )
+})
 
 export const split = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn =>
-      function(_sep) {
-        return toFunction([fn.apply(null, arguments), isoU(I.freeze, I.id)])
-      })(function(sep) {
+      function split(_sep) {
+        return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)])
+      })(function split(sep) {
   const re = arguments.length > 1 ? arguments[1] : sep
   return isoU(
     expect(I.isString, x => x.split(re)),
@@ -1735,11 +1816,11 @@ export const split = (process.env.NODE_ENV === 'production'
 })
 
 export const uncouple = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : fn =>
-      function(_sep) {
-        return toFunction([fn.apply(null, arguments), isoU(I.freeze, I.id)])
-      })(function(sep) {
+      function uncouple(_sep) {
+        return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)])
+      })(function uncouple(sep) {
   const re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '')
   return isoU(
     expect(I.isString, x => {
@@ -1767,7 +1848,7 @@ export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 // Interop
 
 export const pointer = s => {
-  if (s[0] === '#') s = decodeURIComponent(s)
+  if (s[0] === '#') s = getU(uriComponent, s)
   const ts = s.split('/')
   const n = ts.length
   for (let i = 1; i < n; ++i) {
