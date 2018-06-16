@@ -141,11 +141,15 @@ var id$1 = function id$$1(x) {
   return x;
 };
 
-var setName = process.env.NODE_ENV === 'production' ? id$1 : function (to, name) {
+var setName = process.env.NODE_ENV === 'production' ? function (x) {
+  return x;
+} : function (to, name) {
   return defineNameU(to, name);
 };
 
-var copyName = process.env.NODE_ENV === 'production' ? id$1 : function (to, from) {
+var copyName = process.env.NODE_ENV === 'production' ? function (x) {
+  return x;
+} : function (to, from) {
   return defineNameU(to, from.name);
 };
 

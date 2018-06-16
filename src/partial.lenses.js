@@ -8,12 +8,12 @@ const id = x => x
 
 const setName =
   process.env.NODE_ENV === 'production'
-    ? id
+    ? x => x
     : (to, name) => I.defineNameU(to, name)
 
 const copyName =
   process.env.NODE_ENV === 'production'
-    ? id
+    ? x => x
     : (to, from) => I.defineNameU(to, from.name)
 
 const toRegExpU = (str, flags) =>
