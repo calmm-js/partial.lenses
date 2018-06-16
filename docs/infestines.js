@@ -11,11 +11,11 @@
   //
 
   var defineNameU = /*#__PURE__*/function () {
-    var defineNameU = function defineNameU(fn, value) {
+    var _defineNameU = function _defineNameU(fn, value) {
       return Object.defineProperty(fn, 'name', { value: value });
     };
     try {
-      return defineNameU(defineNameU, defineNameU.name);
+      return _defineNameU(_defineNameU, _defineNameU.name.slice(1));
     } catch (_) {
       return function (fn, _) {
         return fn;
