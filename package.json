@@ -16,8 +16,8 @@
     "test": "nyc mocha && nyc report -r html mocha",
     "watch": "concurrently \"npm run watch:dist\" \"npm run watch:docs\" \"npm run watch:test\"",
     "watch:dist": "watch-run -d 50 -i -p 'src/**/*.js' npm run dist",
-    "watch:docs": "watch-run -d 50 -i -p '*.md' npm run docs & livereload docs & wait",
-    "watch:test": "watch-run -d 50    -p 'dist/partial.lenses.cjs.js,test/**/*.js' npm run test"
+    "watch:docs": "concurrently \"watch-run -d 50 -i -p '*.md' npm run docs\" \"livereload docs\"",
+    "watch:test": "watch-run -d 50 -p 'dist/partial.lenses.cjs.js,test/**/*.js' npm run test"
   },
   "repository": {
     "type": "git",
