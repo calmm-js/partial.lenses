@@ -9,5 +9,6 @@ bower.json
 coverage
 docs
 klipse-github-docs.config.js
+rollup.config.js
 scripts
 test
