@@ -146,6 +146,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
   * [Lenses](#lenses)
     * [Operations on lenses](#operations-on-lenses)
       * [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a") <small><sup>v2.2.0</sup></small>
+      * [`L.getLog(lens, maybeData) ~> maybeValue`](#L-getLog "L.getLog: PLens s a -> Maybe s -> Maybe a") <small><sup>v13.14.0</sup></small>
     * [Creating new lenses](#creating-new-lenses)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
       * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
@@ -1568,7 +1569,8 @@ L.collect([L.elems,
 [`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
 messages with the given labels (or [format in
 Node.js](https://nodejs.org/api/console.html#console_console_log_data)) when
-data flows in either direction, `get` or `set`, through the lens.
+data flows in either direction, `get` or `set`, through the lens.  See also
+[`L.getLog`](#L-getLog).
 
 For example:
 
@@ -2690,6 +2692,30 @@ L.get('y', {x: 112, y: 101})
 ```
 
 Note that `L.get` does not work on [traversals](#traversals).
+
+##### <a id="L-getLog"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-getLog) [`L.getLog(lens, maybeData) ~> maybeValue`](#L-getLog "L.getLog: PLens s a -> Maybe s -> Maybe a") <small><sup>v13.14.0</sup></small>
+
+`L.getLog` returns the element focused on by a [lens](#lenses) from a data
+structure like [`L.get`](#L-get), but `L.getLog` also
+[`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)s
+the sequence of values that the corresponding [`L.set`](#L-set) operation would
+create.  This can be useful for understanding why a particular value was
+returned.  `L.getLog`, like [`L.log`](#L-log), is intended for debugging.
+
+For example:
+
+```js
+L.getLog(['x', 0, 'y'], {x: [{y: 101}]})
+// { x: [ { y: 101 } ] } <= [ { y: 101 } ] <= { y: 101 } <= 101
+// 101
+```
+
+(If you are looking at the above snippet in the interactive version of this
+page, then note that the
+[`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)
+function is replaced by [Klipse](https://github.com/viebel/klipse/) and the
+replacement function unfortunately does not handle substitution strings
+correctly.)
 
 #### <a id="creating-new-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-lenses) [Creating new lenses](#creating-new-lenses)
 

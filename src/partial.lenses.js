@@ -294,15 +294,17 @@ const mkTraverse = (after, toC) =>
 //
 
 const consExcept = skip => t => h => (skip !== h ? [h, t] : t)
-const consTo = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
-  n => {
-    const xs = []
-    while (consExcept !== n) {
-      xs.push(n[0])
-      n = n[1]
-    }
-    return xs.reverse()
+
+const pushTo = (n, xs) => {
+  while (consExcept !== n) {
+    xs.push(n[0])
+    n = n[1]
   }
+  return xs
+}
+
+const consTo = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
+  n => pushTo(n, []).reverse()
 )
 
 function traversePartialIndex(A, xi2yA, xs, skip) {
@@ -318,6 +320,13 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
     return map(consTo, xsA)
   }
 }
+
+//
+
+const ConstantLog = {
+  map: (f, {m, p, c}) => ({m: `%O <= ${m}`, p: [f(p[0]), p], c})
+}
+const getLogFn = x => ({m: '%O', p: [x, consExcept], c: x})
 
 //
 
@@ -1095,6 +1104,12 @@ export function log() {
   })
   return isoU(show('get'), show('set'))
 }
+
+export const getLog = I.curry(function getLog(l, s) {
+  const {m, p, c} = traverseU(ConstantLog, getLogFn, l, s)
+  console.log.apply(console, pushTo(p, [m]))
+  return c
+})
 
 // Sequencing
 

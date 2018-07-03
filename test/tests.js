@@ -192,6 +192,10 @@ describe('L.log', () => {
   testEq(() => L.set(L.log('label'), 'out', 'in'), 'out')
 })
 
+describe('L.getLog', () => {
+  testEq(() => L.getLog(['x', 0, 'y'], {x: [{y: 101}]}), 101)
+})
+
 describe('L.compose', () => {
   testEq(() => L.get(L.compose(), 'any'), 'any')
   testEq(() => L.compose('x'), 'x')
@@ -261,6 +265,7 @@ describe('arities', () => {
     forEachWith: 4,
     get: 2,
     getInverse: 2,
+    getLog: 2,
     identity: 4,
     ifElse: 3,
     iftes: 2,
