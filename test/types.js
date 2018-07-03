@@ -142,6 +142,7 @@ export const setOp = T.fn([T_maybeDataI], T_optic)
 // Debugging
 
 export const log = T.fnVarN(0, T.string, T_optic)
+export const getLog = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
 
 // Sequencing
 
