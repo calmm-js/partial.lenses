@@ -216,6 +216,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#lenses">Lenses</a><ul>
 <li><a href="#operations-on-lenses">Operations on lenses</a><ul>
 <li><a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v2.2.0</sup></small></li>
+<li><a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
@@ -1282,7 +1283,8 @@ lens whose view is always <code>undefined</code>.</p>
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
 messages with the given labels (or <a href="https://nodejs.org/api/console.html#console_console_log_data">format in
 Node.js</a>) when
-data flows in either direction, <code>get</code> or <code>set</code>, through the lens.</p>
+data flows in either direction, <code>get</code> or <code>set</code>, through the lens.  See also
+<a href="#L-getLog"><code>L.getLog</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set([&#39;x&#39;, L.log(&#39;x&#39;)], &#39;11&#39;, {x: 10})
 </code></pre>
@@ -1941,6 +1943,22 @@ structure.</p>
 <pre><code class="hljs lang-js">L.get(&#39;y&#39;, {x: 112, y: 101})
 </code></pre>
 <p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
+<h5><a id="L-getLog"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-getLog">■</a> <a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></h5>
+<p><code>L.getLog</code> returns the element focused on by a <a href="#lenses">lens</a> from a data
+structure like <a href="#L-get"><code>L.get</code></a>, but <code>L.getLog</code> also
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>s
+the sequence of values that the corresponding <a href="#L-set"><code>L.set</code></a> operation would
+create.  This can be useful for understanding why a particular value was
+returned.  <code>L.getLog</code>, like <a href="#L-log"><code>L.log</code></a>, is intended for debugging.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.getLog([&#39;x&#39;, 0, &#39;y&#39;], {x: [{y: 101}]})
+</code></pre>
+<p>(If you are looking at the above snippet in the interactive version of this
+page, then note that the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
+function is replaced by <a href="https://github.com/viebel/klipse/">Klipse</a> and the
+replacement function unfortunately does not handle substitution strings
+correctly.)</p>
 <h4><a id="creating-new-lenses"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#creating-new-lenses">■</a> <a href="#creating-new-lenses">Creating new lenses</a></h4>
 <h5><a id="L-lens"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-lens">■</a> <a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.lens</code> creates a new primitive lens.  The first parameter is the <em>getter</em> and

@@ -448,13 +448,17 @@ var consExcept = function consExcept(skip) {
     };
   };
 };
-var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freeze))(function (n) {
-  var xs = [];
+
+var pushTo = function pushTo(n, xs) {
   while (consExcept !== n) {
     xs.push(n[0]);
     n = n[1];
   }
-  return xs.reverse();
+  return xs;
+};
+
+var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freeze))(function (n) {
+  return pushTo(n, []).reverse();
 });
 
 function traversePartialIndex(A, xi2yA, xs, skip) {
@@ -474,6 +478,20 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
     }return map(consTo, xsA);
   }
 }
+
+//
+
+var ConstantLog = {
+  map: function map(f, _ref) {
+    var m = _ref.m,
+        p = _ref.p,
+        c = _ref.c;
+    return { m: '%O <= ' + m, p: [f(p[0]), p], c: c };
+  }
+};
+var getLogFn = function getLogFn(x) {
+  return { m: '%O', p: [x, consExcept], c: x };
+};
 
 //
 
@@ -1306,6 +1324,16 @@ function log() {
   return isoU(show('get'), show('set'));
 }
 
+var getLog = /*#__PURE__*/curry(function getLog(l, s) {
+  var _traverseU = traverseU(ConstantLog, getLogFn, l, s),
+      m = _traverseU.m,
+      p = _traverseU.p,
+      c = _traverseU.c;
+
+  console.log.apply(console, pushTo(p, [m]));
+  return c;
+});
+
 // Sequencing
 
 var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
@@ -1875,10 +1903,10 @@ var uriComponent = /*#__PURE__*/stringIsoU(decodeURIComponent, encodeURIComponen
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id$1)]);
 }))(function json(options) {
-  var _ref = options || object0,
-      reviver = _ref.reviver,
-      replacer = _ref.replacer,
-      space = _ref.space;
+  var _ref2 = options || object0,
+      reviver = _ref2.reviver,
+      replacer = _ref2.replacer,
+      space = _ref2.space;
 
   return isoU(expect(isString, function (text) {
     return JSON.parse(text, reviver);
@@ -1970,4 +1998,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, getLog, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };

@@ -452,13 +452,17 @@ var consExcept = function consExcept(skip) {
     };
   };
 };
-var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(I.freeze))(function (n) {
-  var xs = [];
+
+var pushTo = function pushTo(n, xs) {
   while (consExcept !== n) {
     xs.push(n[0]);
     n = n[1];
   }
-  return xs.reverse();
+  return xs;
+};
+
+var consTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(I.freeze))(function (n) {
+  return pushTo(n, []).reverse();
 });
 
 function traversePartialIndex(A, xi2yA, xs, skip) {
@@ -478,6 +482,20 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
     }return map(consTo, xsA);
   }
 }
+
+//
+
+var ConstantLog = {
+  map: function map(f, _ref) {
+    var m = _ref.m,
+        p = _ref.p,
+        c = _ref.c;
+    return { m: '%O <= ' + m, p: [f(p[0]), p], c: c };
+  }
+};
+var getLogFn = function getLogFn(x) {
+  return { m: '%O', p: [x, consExcept], c: x };
+};
 
 //
 
@@ -1310,6 +1328,16 @@ function log() {
   return isoU(show('get'), show('set'));
 }
 
+var getLog = /*#__PURE__*/I.curry(function getLog(l, s) {
+  var _traverseU = traverseU(ConstantLog, getLogFn, l, s),
+      m = _traverseU.m,
+      p = _traverseU.p,
+      c = _traverseU.c;
+
+  console.log.apply(console, pushTo(p, [m]));
+  return c;
+});
+
 // Sequencing
 
 var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
@@ -1879,10 +1907,10 @@ var uriComponent = /*#__PURE__*/stringIsoU(decodeURIComponent, encodeURIComponen
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id)]);
 }))(function json(options) {
-  var _ref = options || I.object0,
-      reviver = _ref.reviver,
-      replacer = _ref.replacer,
-      space = _ref.space;
+  var _ref2 = options || I.object0,
+      reviver = _ref2.reviver,
+      replacer = _ref2.replacer,
+      space = _ref2.space;
 
   return isoU(expect(I.isString, function (text) {
     return JSON.parse(text, reviver);
@@ -2008,6 +2036,7 @@ exports.modifyOp = modifyOp;
 exports.setOp = setOp;
 exports.removeOp = removeOp;
 exports.log = log;
+exports.getLog = getLog;
 exports.seq = seq;
 exports.branchOr = branchOr;
 exports.branch = branch;
