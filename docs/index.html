@@ -2025,7 +2025,7 @@ example.</p>
 case it is missing.  When set with the default value, the effect is to remove
 the element.  This can be useful for both making partial lenses with propagating
 removal and for avoiding having to check for and provide default values
-elsewhere.</p>
+elsewhere.  See also <a href="#L-valueOr"><code>L.valueOr</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get([&#39;items&#39;, L.defaults([])], {})
 </code></pre>
@@ -2359,7 +2359,7 @@ the target is not a string, then <code>L.matches</code> will be read-only.  See 
 <h5><a id="L-valueOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-valueOr">■</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a> <small><sup>v3.5.0</sup></small></h5>
 <p><code>L.valueOr</code> is an asymmetric lens used to specify a default value in case the
 focus is <code>undefined</code> or <code>null</code>.  When set, <code>L.valueOr</code> behaves like the identity
-lens.</p>
+lens.  See also <a href="#L-defaults"><code>L.defaults</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.valueOr(0), null)
 </code></pre>

@@ -2814,7 +2814,7 @@ example.
 case it is missing.  When set with the default value, the effect is to remove
 the element.  This can be useful for both making partial lenses with propagating
 removal and for avoiding having to check for and provide default values
-elsewhere.
+elsewhere.  See also [`L.valueOr`](#L-valueOr).
 
 For example:
 
@@ -3347,7 +3347,7 @@ L.set(L.matches(/\.[^./]+$/),
 
 `L.valueOr` is an asymmetric lens used to specify a default value in case the
 focus is `undefined` or `null`.  When set, `L.valueOr` behaves like the identity
-lens.
+lens.  See also [`L.defaults`](#L-defaults).
 
 For example:
 
