@@ -9,7 +9,11 @@ const T_maybeDataO = T_deepFrozenOnDev
 const T_dataI = T.and(T.def, T.deepFreeze)
 const T_dataO = T.and(T.def, T_deepFrozenOnDev)
 
-const T_index = T.or(T.nonNegative, T.string, T.undef)
+const T_index = T.and(
+  T.or(T.undef, T.lazy(rec => T.or(T.nonNegative, T.string, T.array(rec)))),
+  T_deepFrozenOnDev
+)
+
 const T_sliceIndex = T.or(T.number, T.undef)
 
 const T_functor = T.object({
@@ -126,6 +130,14 @@ export const optional = T_optic
 export const unless = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const zero = T_optic
+
+// Indices
+
+export const joinIx = T.fn([T_optic], T_optic)
+export const mapIx = T.fn([T.fn([T_index, T_maybeDataI], T_index)], T_optic)
+export const setIx = T.fn([T_index], T_optic)
+export const skipIx = T.fn([T_optic], T_optic)
+export const tieIx = T.fn([T.fn([T_index, T_index], T_index), T_optic], T_optic)
 
 // Debugging
 
