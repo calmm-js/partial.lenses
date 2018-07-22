@@ -61,7 +61,11 @@ export const string = type('string')
 export const undef = fromPredicate(x => x === undefined)
 export const def = fromPredicate(x => x !== undefined)
 
-export const array = ty => and(instanceOf(Array), R.map(ty))
+export const array = ty =>
+  and(instanceOf(Array), xs => {
+    const ys = R.map(ty, xs)
+    return Object.isFrozen(xs) ? Object.freeze(ys) : ys
+  })
 
 export const arity = n => fromPredicate(x => x.length === n)
 
