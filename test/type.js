@@ -40,7 +40,7 @@ const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
 const isDeepFrozen = x =>
   !isFreezable(x) ||
   (Object.isFrozen(x) &&
-    !Object.getOwnPropertyNames(x).find(x => !isDeepFrozen(x)))
+    !Object.getOwnPropertyNames(x).find(k => !isDeepFrozen(x[k])))
 
 export const frozen = fromPredicate(isFrozen)
 
