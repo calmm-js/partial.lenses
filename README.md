@@ -897,7 +897,7 @@ Now, optics are composable in several ways and in each of those ways there is an
 operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:
 
-|                           | Operation(s)                                                                        | Semantics
+| Form                      | Operation(s)                                                                        | Semantics
 | ------------------------- | ----------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
 | [Nesting](#nesting)       | [`L.compose(...optics)`](#L-compose) or `[...optics]`                               | [Monoid](https://en.wikipedia.org/wiki/Monoid) over [unityped](http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w) [optics](#optics)
 | [Recursing](#recursing)   | [`L.lazy(optic => optic)`](#L-lazy)                                                 | [Fixed point](https://en.wikipedia.org/wiki/Fixed-point_combinator)

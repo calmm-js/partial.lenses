@@ -857,15 +857,50 @@ such a thing composable.</p>
 <p>Now, optics are composable in several ways and in each of those ways there is an
 operation to perform the composition and laws on how such composed optics
 behave.  Here is a table of the means of composition supported by this library:</p>
-<p>|                           | Operation(s)                                                                        | Semantics
-| ------------------------- | ----------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------
-| <a href="#nesting">Nesting</a>       | <a href="#L-compose"><code>L.compose(...optics)</code></a> or <code>[...optics]</code>                               | <a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w">unityped</a> <a href="#optics">optics</a>
-| <a href="#recursing">Recursing</a>   | <a href="#L-lazy"><code>L.lazy(optic =&gt; optic)</code></a>                                                 | <a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">Fixed point</a>
-| <a href="#adapting">Adapting</a>     | <a href="#L-choices"><code>L.choices(optic, ...optics)</code></a>                                         | <a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#optics">optics</a>
-| <a href="#querying">Querying</a>     | <a href="#L-choice"><code>L.choice(...optics)</code></a> and <a href="#L-chain"><code>L.chain(value =&gt; optic, optic)</code></a> | <a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a> over <a href="#optics">optics</a>
-| Picking                   | <a href="#L-pick"><code>L.pick({...prop:lens})</code></a>                                                 | <a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of <a href="#lenses">lenses</a>
-| Branching                 | <a href="#L-branch"><code>L.branch({...prop:traversal})</code></a>                                        | <a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a>
-| <a href="#sequencing">Sequencing</a> | <a href="#L-seq"><code>L.seq(...transforms)</code></a>                                                    | <a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over <a href="#transforms">transforms</a></p>
+<table>
+<thead>
+<tr>
+<th>Form</th>
+<th>Operation(s)</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="#nesting">Nesting</a></td>
+<td><a href="#L-compose"><code>L.compose(...optics)</code></a> or <code>[...optics]</code></td>
+<td><a href="https://en.wikipedia.org/wiki/Monoid">Monoid</a> over <a href="http://cs.stackexchange.com/questions/18847/if-dynamically-typed-languages-are-truly-statically-typed-unityped-languages-w">unityped</a> <a href="#optics">optics</a></td>
+</tr>
+<tr>
+<td><a href="#recursing">Recursing</a></td>
+<td><a href="#L-lazy"><code>L.lazy(optic =&gt; optic)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Fixed-point_combinator">Fixed point</a></td>
+</tr>
+<tr>
+<td><a href="#adapting">Adapting</a></td>
+<td><a href="#L-choices"><code>L.choices(optic, ...optics)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Semigroup">Semigroup</a> over <a href="#optics">optics</a></td>
+</tr>
+<tr>
+<td><a href="#querying">Querying</a></td>
+<td><a href="#L-choice"><code>L.choice(...optics)</code></a> and <a href="#L-chain"><code>L.chain(value =&gt; optic, optic)</code></a></td>
+<td><a href="https://en.wikibooks.org/wiki/Haskell/Alternative_and_MonadPlus">MonadPlus</a> over <a href="#optics">optics</a></td>
+</tr>
+<tr>
+<td>Picking</td>
+<td><a href="#L-pick"><code>L.pick({...prop:lens})</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Product_(category_theory)">Product</a> of <a href="#lenses">lenses</a></td>
+</tr>
+<tr>
+<td>Branching</td>
+<td><a href="#L-branch"><code>L.branch({...prop:traversal})</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Coproduct">Coproduct</a> of <a href="#traversals">traversals</a></td>
+</tr>
+<tr>
+<td><a href="#sequencing">Sequencing</a></td>
+<td><a href="#L-seq"><code>L.seq(...transforms)</code></a></td>
+<td><a href="https://en.wikipedia.org/wiki/Monad_(functional_programming)">Monad</a> over <a href="#transforms">transforms</a></td>
+</tr>
+</tbody></table>
 <p>The above table and, in particular, the semantics column is by no means
 complete.  In particular, the documentation of this library does not generally
 spell out proofs of the semantics.</p>
