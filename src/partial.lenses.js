@@ -947,14 +947,6 @@ export const remove = I.curry(function remove(o, s) {
 
 export const set = I.curry(setU)
 
-export const transform = I.curry(function transform(o, s) {
-  return modifyU(o, id, s)
-})
-
-export const transformAsync = I.curry(function transformAsync(o, s) {
-  return modifyAsyncU(o, id, s)
-})
-
 export const traverse = I.curry(traverseU)
 
 // Nesting
@@ -1076,22 +1068,6 @@ export const optional = when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
-// Transforming
-
-export const assignOp = x => [propsOf(x), setOp(x)]
-
-export const modifyOp = xi2y =>
-  function modifyOp(x, i, C, xi2yC) {
-    return zeroOp((x = xi2y(x, i)), i, C, xi2yC, x)
-  }
-
-export const setOp = y =>
-  function setOp(_x, i, C, xi2yC) {
-    return zeroOp(y, i, C, xi2yC, y)
-  }
-
-export const removeOp = setOp()
-
 // Debugging
 
 export function log() {
@@ -1111,6 +1087,16 @@ export const getLog = I.curry(function getLog(l, s) {
   return c
 })
 
+// Operations on transforms
+
+export const transform = I.curry(function transform(o, s) {
+  return modifyU(o, id, s)
+})
+
+export const transformAsync = I.curry(function transformAsync(o, s) {
+  return modifyAsyncU(o, id, s)
+})
+
 // Sequencing
 
 export const seq = (process.env.NODE_ENV === 'production'
@@ -1127,6 +1113,22 @@ export const seq = (process.env.NODE_ENV === 'production'
   }
   return r
 })
+
+// Transforming
+
+export const assignOp = x => [propsOf(x), setOp(x)]
+
+export const modifyOp = xi2y =>
+  function modifyOp(x, i, C, xi2yC) {
+    return zeroOp((x = xi2y(x, i)), i, C, xi2yC, x)
+  }
+
+export const setOp = y =>
+  function setOp(_x, i, C, xi2yC) {
+    return zeroOp(y, i, C, xi2yC, y)
+  }
+
+export const removeOp = setOp()
 
 // Creating new traversals
 

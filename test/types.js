@@ -86,8 +86,6 @@ export const modify = T.fn(
 export const modifyAsync = modify
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
-export const transform = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
-export const transformAsync = transform
 export const traverse = T.fn(
   [
     T.or(T_monad, T_applicative, T_functor),
@@ -129,6 +127,20 @@ export const unless = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const when = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_optic)
 export const zero = T_optic
 
+// Debugging
+
+export const log = T.fnVarN(0, T.string, T_optic)
+export const getLog = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
+
+// Operations on transforms
+
+export const transform = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
+export const transformAsync = transform
+
+// Sequencing
+
+export const seq = T.fnVarN(0, T_optic, T_transform)
+
 // Transforming
 
 export const assignOp = T.fn([T.instanceOf(Object)], T_optic)
@@ -138,15 +150,6 @@ export const modifyOp = T.fn(
 )
 export const removeOp = T_optic
 export const setOp = T.fn([T_maybeDataI], T_optic)
-
-// Debugging
-
-export const log = T.fnVarN(0, T.string, T_optic)
-export const getLog = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
-
-// Sequencing
-
-export const seq = T.fnVarN(0, T_optic, T_transform)
 
 // Creating new traversals
 
