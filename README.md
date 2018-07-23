@@ -269,8 +269,12 @@ produces and consumes JSON objects that include, among many other properties, a
 `titles` property:
 
 ```js
-const sampleTitles = {titles: [{language: 'en', text: 'Title'},
-                               {language: 'sv', text: 'Rubrik'}]}
+const sampleTitles = {
+  titles: [
+    {language: 'en', text: 'Title'},
+    {language: 'sv', text: 'Rubrik'}
+  ]
+}
 ```
 
 We ultimately want to present the user with a rich enough editor, with features
@@ -330,8 +334,7 @@ So, to just [get](#L-get) at the `titles` array of the `sampleTitles` we can use
 the lens [`L.prop('titles')`](#L-prop):
 
 ```js
-L.get(L.prop('titles'),
-      sampleTitles)
+L.get(L.prop('titles'), sampleTitles)
 // [{ language: 'en', text: 'Title' },
 //  { language: 'sv', text: 'Rubrik' }]
 ```
@@ -340,30 +343,25 @@ To focus on the first element of the `titles` array, we compose with
 the [`L.index(0)`](#L-index) lens:
 
 ```js
-L.get(L.compose(L.prop('titles'),
-                L.index(0)),
-      sampleTitles)
+L.get(L.compose(L.prop('titles'), L.index(0)), sampleTitles)
 // { language: 'en', text: 'Title' }
 ```
 
 Then, to focus on the `text`, we compose with [`L.prop('text')`](#L-prop):
 
 ```js
-L.get(L.compose(L.prop('titles'),
-                L.index(0),
-                L.prop('text')),
-      sampleTitles)
+L.get(L.compose(L.prop('titles'), L.index(0), L.prop('text')), sampleTitles)
 // 'Title'
 ```
 
 We can then use the same composed lens to also [set](#L-set) the `text`:
 
 ```js
-L.set(L.compose(L.prop('titles'),
-                L.index(0),
-                L.prop('text')),
-      'New title',
-      sampleTitles)
+L.set(
+  L.compose(L.prop('titles'), L.index(0), L.prop('text')),
+  'New title',
+  sampleTitles
+)
 // { titles: [{ language: 'en', text: 'New title' },
 //            { language: 'sv', text: 'Rubrik' }] }
 ```
@@ -385,12 +383,14 @@ Let's then just [compose](#L-compose) a parameterized lens for accessing the
 `text` of titles:
 
 ```js
-const textIn = language => L.compose(L.prop('titles'),
-                                     L.normalize(R.sortBy(L.get('language'))),
-                                     L.find(R.whereEq({language})),
-                                     L.valueOr({language, text: ''}),
-                                     L.removable('text'),
-                                     L.prop('text'))
+const textIn = language => L.compose(
+  L.prop('titles'),
+  L.normalize(R.sortBy(L.get('language'))),
+  L.find(R.whereEq({language})),
+  L.valueOr({language, text: ''}),
+  L.removable('text'),
+  L.prop('text')
+)
 ```
 
 Take a moment to read through the above definition line by line.  Each part
@@ -494,10 +494,7 @@ so that when the `text` property is set to `undefined`, the result will be
 If we remove all of the titles, we get an empty array:
 
 ```js
-L.set(L.seq(textIn('sv'),
-            textIn('en')),
-      undefined,
-      sampleTitles)
+L.set(L.seq(textIn('sv'), textIn('en')), undefined, sampleTitles)
 // { titles: [] }
 ```
 
@@ -528,12 +525,14 @@ It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Recall the lens from the start of the example:
 
 ```jsx
-L.compose(L.prop('titles'),
-          L.normalize(R.sortBy(L.get('language'))),
-          L.find(R.whereEq({language})),
-          L.valueOr({language, text: ''}),
-          L.removable('text'),
-          L.prop('text'))
+L.compose(
+  L.prop('titles'),
+  L.normalize(R.sortBy(L.get('language'))),
+  L.find(R.whereEq({language})),
+  L.valueOr({language, text: ''}),
+  L.removable('text'),
+  L.prop('text')
+)
 ```
 
 Following the structure or schema of the JSON, we could break this into three
@@ -551,16 +550,15 @@ const Title = {
 }
 
 const Titles = {
-  titleIn: language => [L.find(R.whereEq({language})),
-                        L.valueOr({language, text: ''})]
+  titleIn: language => [
+    L.find(R.whereEq({language})),
+    L.valueOr({language, text: ''})
+  ]
 }
 
 const Model = {
-  titles: ['titles',
-           L.normalize(R.sortBy(L.get('language')))],
-  textIn: language => [Model.titles,
-                       Titles.titleIn(language),
-                       Title.text]
+  titles: ['titles', L.normalize(R.sortBy(L.get('language')))],
+  textIn: language => [Model.titles, Titles.titleIn(language), Title.text]
 }
 ```
 
@@ -585,9 +583,7 @@ multiple items.  Continuing on the tutorial example, let's define a traversal
 that targets all the texts:
 
 ```js
-const texts = [Model.titles,
-               L.elems,
-               Title.text]
+const texts = [Model.titles, L.elems, Title.text]
 ```
 
 What makes the above a traversal is the [`L.elems`](#L-elems) part.  The result
@@ -624,8 +620,7 @@ We can also manipulate texts selectively.  For example, we could remove all
 the texts that are longer than 5 characters:
 
 ```js
-L.remove([texts, L.when(t => t.length > 5)],
-         sampleTitles)
+L.remove([texts, L.when(t => t.length > 5)], sampleTitles)
 // { titles: [ { language: 'en', text: 'Title' } ] }
 ```
 
@@ -656,25 +651,33 @@ optics.  One could, for example, write a collection of operations like
 `getText`, `setText`, `addText`, and `remText`:
 
 ```js
-const getEntry = R.curry((language, data) =>
-                         data.titles.find(R.whereEq({language})))
+const getEntry = R.curry(
+  (language, data) => data.titles.find(R.whereEq({language}))
+)
 const hasText = R.pipe(getEntry, Boolean)
 const getText = R.pipe(getEntry, R.defaultTo({}), R.prop('text'))
-const mapProp = R.curry((fn, prop, obj) =>
-                        R.assoc(prop, fn(R.prop(prop, obj)), obj))
-const mapText = R.curry((language, fn, data) =>
-                        mapProp(R.map(R.ifElse(R.whereEq({language}),
-                                               mapProp(fn, 'text'),
-                                               R.identity)),
-                                'titles',
-                                data))
-const remText = R.curry((language, data) =>
-                        mapProp(R.filter(R.complement(R.whereEq({language}))),
-                                'titles'))
-const addText = R.curry((language, text, data) =>
-                        mapProp(R.append({language, text}), 'titles', data))
-const setText = R.curry((language, text, data) =>
-                        mapText(language, R.always(text), data))
+const mapProp = R.curry(
+  (fn, prop, obj) => R.assoc(prop, fn(R.prop(prop, obj)), obj)
+)
+const mapText = R.curry(
+  (language, fn, data) => mapProp(
+    R.map(R.ifElse(R.whereEq({language}), mapProp(fn, 'text'), R.identity)),
+    'titles',
+    data
+  )
+)
+const remText = R.curry(
+  (language, data) => mapProp(
+    R.filter(R.complement(R.whereEq({language}))),
+    'titles'
+  )
+)
+const addText = R.curry(
+  (language, text, data) => mapProp(R.append({language, text}), 'titles', data)
+)
+const setText = R.curry(
+  (language, text, data) => mapText(language, R.always(text), data)
+)
 ```
 
 You can definitely make the above operations both cleaner and more robust.  For
@@ -820,8 +823,10 @@ functions operating on that focus.
 For example:
 
 ```js
-L.get([L.find(R.equals('bar')), (value, index) => ({value, index})],
-      ['foo', 'bar', 'baz'])
+L.get(
+  [L.find(R.equals('bar')), (value, index) => ({value, index})],
+  ['foo', 'bar', 'baz']
+)
 // {value: 'bar', index: 1}
 ```
 ```js
@@ -836,15 +841,19 @@ doesn't have an index by itself, but it passes through the index provided by the
 preceding optic:
 
 ```js
-L.collectAs((value, index) => ({value, index}),
-            [L.elems, L.when(x => x > 2)],
-            [3, 1, 4, 1])
+L.collectAs(
+  (value, index) => ({value, index}),
+  [L.elems, L.when(x => x > 2)],
+  [3, 1, 4, 1]
+)
 // [{value: 3, index: 0}, {value: 4, index: 2}]
 ```
 ```js
-L.collectAs((value, key) => ({value, key}),
-            [L.values, L.when(x => x > 2)],
-            {x: 3, y: 1, z: 4, w: 1})
+L.collectAs(
+  (value, key) => ({value, key}),
+  [L.values, L.when(x => x > 2)],
+  {x: 3, y: 1, z: 4, w: 1}
+)
 // [{value: 3, key: 'x'}, {value: 4, key: 'z'}]
 ```
 
@@ -931,16 +940,13 @@ function test(actual, expected) {
 const VeryWellBehavedLens = ({lens, data, elemA, elemB}) => ({
   GetSet: test(L.set(lens, L.get(lens, data), data), data),
   SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
-  SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
-               L.set(lens, elemB, data))
+  SetSet: test(
+    L.set(lens, elemB, L.set(lens, elemA, data)),
+    L.set(lens, elemB, data)
+  )
 })
 
-VeryWellBehavedLens({
-  elemA: 2,
-  elemB: 3,
-  data: {x: 1},
-  lens: 'x'
-})
+VeryWellBehavedLens({elemA: 2, elemB: 3, data: {x: 1}, lens: 'x' })
 // { GetSet: true, SetGet: true, SetSet: true }
 ```
 
@@ -965,8 +971,7 @@ Consider the [`L.find`](#L-find) combinator.  The truth is that it doesn't by
 itself obey lens laws.  Here is an example:
 
 ```js
-L.get(L.find(R.equals(1)),
-      L.set(L.find(R.equals(1)), 2, []))
+L.get(L.find(R.equals(1)), L.set(L.find(R.equals(1)), 2, []))
 // undefined
 ```
 
@@ -1054,9 +1059,11 @@ L.modify(['elems', 0, 'x'], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 // { elems: [ { x: 2, y: 2 }, { x: 3, y: 4 } ] }
 ```
 ```js
-L.modify(['elems', L.elems, 'x'],
-         R.dec,
-         {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+L.modify(
+  ['elems', L.elems, 'x'],
+  R.dec,
+  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+)
 // { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
 ```
 
@@ -1247,14 +1254,13 @@ For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:
 
 ```js
-const primitives = [
-  L.optional,
-  L.lazy(rec => L.cond([R.is(Array),  [L.elems, rec]],
-                       [R.is(Object), [L.values, rec]],
-                       [              L.identity]))]
+const primitives = L.lazy(
+  rec => L.ifElse(R.is(Object), [L.children, rec], L.optional)
+)
 ```
 
-Note that the above creates a cyclic representation of the traversal.
+Note that the above creates a cyclic representation of the traversal and a
+similar traversal named [`L.leafs`](#L-leafs) is provided out-of-the-box.
 
 Now, for example:
 
@@ -1267,8 +1273,10 @@ L.modify(primitives, x => x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // [ [ [ 2 ], 3 ], { y: 4 }, [ { l: 5, r: [ 6 ] }, { x: 7 } ] ]
 ```
 ```js
-L.remove([primitives, L.when(x => 3 <= x && x <= 4)],
-         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.remove(
+  [primitives, L.when(x => 3 <= x && x <= 4)],
+  [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]]
+)
 // [ [ [ 1 ], 2 ], {}, [ { r: [ 5 ] }, { x: 6 } ] ]
 ```
 
@@ -1300,8 +1308,9 @@ examining the data structure being manipulated.  See also [`L.cond`](#L-cond).
 For example:
 
 ```js
-const majorAxis =
-  L.choose(({x, y} = {}) => Math.abs(x) < Math.abs(y) ? 'y' : 'x')
+const majorAxis = L.choose(
+  ({x, y} = {}) => Math.abs(x) < Math.abs(y) ? 'y' : 'x'
+)
 
 L.get(majorAxis, {x: -3, y: 1})
 // -3
@@ -1335,8 +1344,10 @@ there is no alternative, `L.cond` acts like [`L.zero`](#L-zero).
 For example:
 
 ```js
-const minorAxis =
-  L.cond([({x, y} = {}) => Math.abs(y) < Math.abs(x), 'y'], ['x'])
+const minorAxis = L.cond(
+  [({x, y} = {}) => Math.abs(y) < Math.abs(x), 'y'],
+  ['x']
+)
 
 L.get(minorAxis, {x: -3, y: 1})
 // 1
@@ -1431,8 +1442,7 @@ false and there is no alternative, `L.iftes` acts like [`L.zero`](#L-zero).
 For example:
 
 ```js
-const minorAxis =
-  L.iftes(({x, y} = {}) => Math.abs(y) < Math.abs(x), 'y', 'x')
+const minorAxis = L.iftes(({x, y} = {}) => Math.abs(y) < Math.abs(x), 'y', 'x')
 
 L.get(minorAxis, {x: -3, y: 1})
 // 1
@@ -1466,10 +1476,12 @@ empty or read-only [zero](#L-zero).
 combinator for querying with optics.  `L.chain(toOptic, optic)` is equivalent to
 
 ```jsx
-L.compose(optic, L.choose((maybeValue, index) =>
-  maybeValue === undefined
-  ? L.zero
-  : toOptic(maybeValue, index)))
+L.compose(
+  optic,
+  L.choose(
+    (value, index) => value === undefined ? L.zero : toOptic(value, index)
+  )
+)
 ```
 
 Note that with the [`R.always`](http://ramdajs.com/docs/#always), `L.chain`,
@@ -1553,11 +1565,10 @@ lens whose view is always `undefined`.
 For example:
 
 ```js
-L.collect([L.elems,
-           L.cond([R.is(Array),  L.elems],
-                  [R.is(Object), 'x'],
-                  [L.zero])],
-          [1, {x: 2}, [3, 4]])
+L.collect(
+  [L.elems, L.cond([R.is(Array),  L.elems], [R.is(Object), 'x'], [L.zero])],
+  [1, {x: 2}, [3, 4]]
+)
 // [ 2, 3, 4 ]
 ```
 
@@ -1756,11 +1767,9 @@ Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:
 
 ```js
-const everywhere = [
-  L.optional,
-  L.lazy(rec => L.cond([R.is(Array),  L.seq([L.elems, rec], L.identity)],
-                       [R.is(Object), L.seq([L.values, rec], L.identity)],
-                       [              L.identity]))]
+const everywhere = L.lazy(
+  rec => L.ifElse(R.is(Object), L.seq([L.children, rec], []), [])
+)
 ```
 
 The above `everywhere` transform is similar to the
@@ -1810,11 +1819,14 @@ Usually, however, `L.modifyOp` is used within [transforms](#transforms).
 For example:
 
 ```js
-L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
-                      z: [L.optional, L.modifyOp(R.negate)],
-                      ys: [L.elems, L.modifyOp(R.dec)]}),
-            {xs: [1, 2, 3],
-             ys: [1, 2, 3]})
+L.transform(
+  L.branch({
+    xs: [L.elems, L.modifyOp(R.inc)],
+    z: [L.optional, L.modifyOp(R.negate)],
+    ys: [L.elems, L.modifyOp(R.dec)]
+  }),
+  {xs: [1, 2, 3], ys: [1, 2, 3]}
+)
 // { xs: [ 2, 3, 4 ],
 //   ys: [ 0, 1, 2 ] }
 ```
@@ -1826,15 +1838,26 @@ L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
 Here is an example based on a question from a user:
 
 ```js
-const sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
-                                   {time: 2, subelements: [1, 2, 3, 4]},
-                                   {time: 3, subelements: [1, 2, 3, 4]}]}
+const sampleToFilter = {
+  elements: [
+    {time: 1, subelements: [1, 2, 3, 4]},
+    {time: 2, subelements: [1, 2, 3, 4]},
+    {time: 3, subelements: [1, 2, 3, 4]}
+  ]
+}
 
-L.transform(['elements',
-             L.elems,
-             L.ifElse(elem => elem.time < 2, L.removeOp,
-                      ['subelements', L.elems, L.when(i => i < 3), L.removeOp])],
-            sampleToFilter)
+L.transform(
+  [
+    'elements',
+    L.elems,
+    L.ifElse(
+      elem => elem.time < 2,
+      L.removeOp,
+      ['subelements', L.elems, L.when(i => i < 3), L.removeOp]
+    )
+  ],
+  sampleToFilter
+)
 // { elements: [ { time: 2, subelements: [ 3, 4 ] },
 //               { time: 3, subelements: [ 3, 4 ] } ] }
 ```
@@ -1865,16 +1888,17 @@ be seen as mapping each property to a set of paths to traverse.
 For example:
 
 ```js
-L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
-          {first: ['x'], second: {value: 'y'}})
+L.collect(
+  L.branch({first: L.elems, second: {value: []}}),
+  {first: ['x'], second: {value: 'y'}}
+)
 // [ 'x', 'y' ]
 ```
 
-The use of [`L.identity`](#L-identity) above might be puzzling at first.
-[`L.identity`](#L-identity) essentially specifies an empty path.  So, when a
-property is mapped to [`L.identity`](#L-identity) in the template given to
-`L.branch`, it means that the element is to be visited by the resulting
-traversal.
+The use of [`[]`](#L-identity) above might be puzzling at first.
+[`[]`](#L-identity) essentially specifies an empty path.  So, when a property is
+mapped to [`[]`](#L-identity) in the template given to `L.branch`, it means that
+the element is to be visited by the resulting traversal.
 
 Note that `L.branch` is equivalent to [`L.branchOr(L.zero)`](#L-branchOr).
 
@@ -1883,10 +1907,11 @@ can compose with [`L.pick`](#L-pick) to create a traversal over specific
 elements of an array:
 
 ```js
-L.modify([L.pick({z: 2, x: 0}),
-          L.branch({x: L.identity, z: L.identity})],
-         R.negate,
-         [1, 2, 3])
+L.modify(
+  [L.pick({z: 2, x: 0}), L.branch({x: [], z: []})],
+  R.negate,
+  [1, 2, 3]
+)
 // [ -1, 2, -3 ]
 ```
 
@@ -1907,7 +1932,7 @@ L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 ```
 
 Note that [`L.branch`](#L-branch) is equivalent to `L.branchOr(L.zero)` and
-[`L.values`](#L-values) is equivalent to `L.branchOr(L.identity, {})`.
+[`L.values`](#L-values) is equivalent to `L.branchOr([], {})`.
 
 ##### <a id="L-branches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branches) [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal p1 a, ...pts) -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.5.0</sup></small>
 
@@ -1953,9 +1978,11 @@ manipulating non-`Array` objects, [`L.rewrite`](#L-rewrite) can be used to
 convert the result to the desired type, if necessary:
 
 ```js
-L.modify([L.rewrite(xs => Int8Array.from(xs)), L.elems],
-         R.inc,
-         Int8Array.from([-1, 4, 0, 2, 4]))
+L.modify(
+  [L.rewrite(xs => Int8Array.from(xs)), L.elems],
+  R.inc,
+  Int8Array.from([-1, 4, 0, 2, 4])
+)
 // Int8Array [ 0, 5, 1, 3, 5 ]
 ```
 
@@ -2033,10 +2060,13 @@ expression gives over the focused string.  See also [`L.matches`](#L-matches).
 For example:
 
 ```js
-L.collect([L.matches(/[^&=?]+=[^&=]+/g),
-           L.pick({name: L.matches(/^[^=]+/),
-                   value: L.matches(/[^=]+$/)})],
-           '?first=foo&second=bar')
+L.collect(
+  [
+    L.matches(/[^&=?]+=[^&=]+/g),
+    L.pick({name: L.matches(/^[^=]+/), value: L.matches(/[^=]+$/)})
+  ],
+  '?first=foo&second=bar'
+)
 // [ { name: 'first', value: 'foo' },
 //   { name: 'second', value: 'bar' } ]
 ```
@@ -2130,9 +2160,7 @@ function XYZ(x, y, z) {
 }
 
 XYZ.prototype.norm = function () {
-  return (this.x * this.x +
-          this.y * this.y +
-          this.z * this.z)
+  return this.x * this.x + this.y * this.y + this.z * this.z
 }
 ```
 
@@ -2142,14 +2170,11 @@ if necessary:
 ```js
 const objectTo = C => o => Object.assign(Object.create(C.prototype), o)
 
-L.modify([L.rewrite(objectTo(XYZ)), L.values],
-         R.negate,
-         new XYZ(1, 2, 3))
+L.modify([L.rewrite(objectTo(XYZ)), L.values], R.negate, new XYZ(1, 2, 3))
 // XYZ { x: -1, y: -2, z: -3 }
 ```
 
-Note that `L.values` is equivalent to [`L.branchOr(L.identity,
-{})`](#L-branchOr).
+Note that `L.values` is equivalent to [`L.branchOr([], {})`](#L-branchOr).
 
 #### <a id="folds-over-traversals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#folds-over-traversals) [Folds over traversals](#folds-over-traversals)
 
@@ -2161,9 +2186,11 @@ satisfy the given predicate.
 For example:
 
 ```js
-L.all(x => 1 <= x && x <= 6,
-      primitives,
-      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.all(
+  x => 1 <= x && x <= 6,
+  primitives,
+  [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]]
+)
 // true
 ```
 
@@ -2193,9 +2220,7 @@ satisfy the given predicate.
 For example:
 
 ```js
-L.any(x => x > 5,
-      primitives,
-      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.any(x => x > 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
 
@@ -2241,10 +2266,12 @@ const toCollect = x => x !== undefined ? [x] : []
 So:
 
 ```js
-L.concatAs(toCollect,
-           Collect,
-           ['xs', L.elems, 'x', R.negate],
-           {xs: [{x: 1}, {x: 2}]})
+L.concatAs(
+  toCollect,
+  Collect,
+  ['xs', L.elems, 'x', R.negate],
+  {xs: [{x: 1}, {x: 2}]}
+)
 // [ -1, -2 ]
 ```
 
@@ -2549,9 +2576,7 @@ traversal satisfy the given predicate.
 For example:
 
 ```js
-L.none(x => x > 5,
-       primitives,
-       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+L.none(x => x > 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // false
 ```
 
@@ -2639,9 +2664,7 @@ const all = (p, t, s) => !L.selectAs(x => p(x) ? undefined : true, t, s)
 Now:
 
 ```js
-all(x => x < 9,
-    primitives,
-    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+all(x => x < 9, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // true
 ```
 
@@ -2757,17 +2780,22 @@ const timesAsDuration = L.lens(
 Now, for example:
 
 ```js
-L.get(timesAsDuration,
-      {start: '2016-12-07T09:39:02.451Z',
-       end: moment('2016-12-07T09:39:02.451Z').add(10, 'hours').toISOString()})
+L.get(
+  timesAsDuration,
+  {
+    start: '2016-12-07T09:39:02.451Z',
+    end: moment('2016-12-07T09:39:02.451Z').add(10, 'hours').toISOString()
+  }
+)
 // 'PT10H'
 ```
 
 ```js
-L.set(timesAsDuration,
-      'PT10H',
-      {start: '2016-12-07T09:39:02.451Z',
-       end: '2016-12-07T09:39:02.451Z'})
+L.set(
+  timesAsDuration,
+  'PT10H',
+  {start: '2016-12-07T09:39:02.451Z', end: '2016-12-07T09:39:02.451Z'}
+)
 // { end: '2016-12-07T19:39:02.451Z',
 //   start: '2016-12-07T09:39:02.451Z' }
 ```
@@ -3007,13 +3035,17 @@ allocating extra memory for it.
 For example:
 
 ```js
-L.modify([L.find(R.whereEq({id: 2}), {hint: 2}), 'value'],
-         R.toUpper,
-         [{id: 3, value: 'a'},
-          {id: 2, value: 'b'},
-          {id: 1, value: 'c'},
-          {id: 4, value: 'd'},
-          {id: 5, value: 'e'}])
+L.modify(
+  [L.find(R.whereEq({id: 2}), {hint: 2}), 'value'],
+  R.toUpper,
+  [
+    {id: 3, value: 'a'},
+    {id: 2, value: 'b'},
+    {id: 1, value: 'c'},
+    {id: 4, value: 'd'},
+    {id: 5, value: 'e'}
+  ]
+)
 // [{id: 3, value: 'a'},
 //  {id: 2, value: 'B'},
 //  {id: 1, value: 'c'},
@@ -3191,7 +3223,7 @@ plain `Object`.  For example:
 
 ```js
 function Custom(gold, silver, bronze) {
-  this.gold   = gold
+  this.gold = gold
   this.silver = silver
   this.bronze = bronze
 }
@@ -3236,8 +3268,10 @@ can effectively create a kind of filter for a nested object structure.  See also
 For example:
 
 ```js
-L.get(L.pickIn({meta: {file: [], ext: []}}),
-      {meta: {file: './foo.txt', base: 'foo', ext: 'txt'}})
+L.get(
+  L.pickIn({meta: {file: [], ext: []}}),
+  {meta: {file: './foo.txt', base: 'foo', ext: 'txt'}}
+)
 // { meta: { file: './foo.txt', ext: 'txt' } }
 ```
 
@@ -3335,9 +3369,7 @@ the target is not a string, then `L.matches` will be read-only.  See also
 For example:
 
 ```js
-L.set(L.matches(/\.[^./]+$/),
-      '.txt',
-      '/dir/file.ext')
+L.set(L.matches(/\.[^./]+$/), '.txt', '/dir/file.ext')
 // '/dir/file.txt'
 ```
 
@@ -3388,8 +3420,7 @@ We can use `L.pick` to create a lens to pick apart the data and put it back
 together into a more meaningful structure:
 
 ```js
-const sanitize = L.pick({pos: {x: 'px', y: 'py'},
-                         vel: {x: 'vx', y: 'vy'}})
+const sanitize = L.pick({pos: {x: 'px', y: 'py'}, vel: {x: 'vx', y: 'vy'}})
 ```
 
 Note that in the template object the lenses are relative to the root focus of
@@ -3489,8 +3520,7 @@ For example:
 ```js
 const expect = (p, f) => x => p(x) ? f(x) : undefined
 
-const offBy1 = L.iso(expect(R.is(Number), R.inc),
-                     expect(R.is(Number), R.dec))
+const offBy1 = L.iso(expect(R.is(Number), R.inc), expect(R.is(Number), R.dec))
 
 L.getInverse(offBy1, 1)
 // 0
@@ -3521,18 +3551,24 @@ doesn't match their expectation, the output is mapped to `undefined`.
 For example:
 
 ```js
-const reverseString = L.iso(expect(R.is(String), R.reverse),
-                            expect(R.is(String), R.reverse))
+const reverseString = L.iso(
+  expect(R.is(String), R.reverse),
+  expect(R.is(String), R.reverse)
+)
 
-L.modify([L.uriComponent,
-          L.json(),
-          'bottle',
-          0,
-          reverseString,
-          L.rewrite(R.join('')),
-          0],
-         R.toUpper,
-         '%7B%22bottle%22%3A%5B%22egassem%22%5D%7D')
+L.modify(
+  [
+    L.uriComponent,
+    L.json(),
+    'bottle',
+    0,
+    reverseString,
+    L.rewrite(R.join('')),
+    0
+  ],
+  R.toUpper,
+  '%7B%22bottle%22%3A%5B%22egassem%22%5D%7D'
+)
 // '%7B%22bottle%22%3A%22egasseM%22%7D'
 ```
 
@@ -3576,9 +3612,11 @@ non-`undefined` value when either read or written through.
 For example:
 
 ```js
-L.set([L.complement, L.log()],
-      'Could be anything truthy',
-      'Also converted to bool')
+L.set(
+  [L.complement, L.log()],
+  'Could be anything truthy',
+  'Also converted to bool'
+)
 // get false
 // set 'Could be anything truthy'
 // false
@@ -3614,13 +3652,17 @@ array of `[index, value]` pairs.
 For example:
 
 ```js
-L.modify([L.rewrite(R.join('')),
-          L.indexed,
-          L.normalize(R.sortBy(L.get(1))),
-          0,
-          1],
-         R.toUpper,
-         'optics')
+L.modify(
+  [
+    L.rewrite(R.join('')),
+    L.indexed,
+    L.normalize(R.sortBy(L.get(1))),
+    0,
+    1
+  ],
+  R.toUpper,
+  'optics'
+)
 // 'optiCs'
 ```
 
@@ -3959,9 +4001,11 @@ const sampleFlags = ['id-19', 'id-76']
 Here is a parameterized lens that does just that:
 
 ```js
-const flag = id => [L.normalize(R.sortBy(R.identity)),
-                    L.find(R.equals(id)),
-                    L.is(id)]
+const flag = id => [
+  L.normalize(R.sortBy(R.identity)),
+  L.find(R.equals(id)),
+  L.is(id)
+]
 ```
 
 Now we can treat individual constants as boolean flags:
@@ -4011,15 +4055,14 @@ const maximum = [
     else
       return props
   }),
-  'maximum']
+  'maximum'
+]
 ```
 
 Now:
 
 ```js
-L.set(maximum,
-      5,
-      {maximum: 10, initial: 8, something: 'else'})
+L.set(maximum, 5, {maximum: 10, initial: 8, something: 'else'})
 // {maximum: 5, initial: 5, something: 'else'}
 ```
 
@@ -4081,9 +4124,12 @@ looking for.  So, here is our first attempt at a BST lens:
 
 ```js
 const searchAttempt = key => L.lazy(rec => [
-  L.cond([n => !n || key === n.key, L.defaults({key})],
-         [n => key < n.key,         ['smaller', rec]],
-         [                          ['greater', rec]])])
+  L.cond(
+    [n => !n || key === n.key, L.defaults({key})],
+    [n => key < n.key, ['smaller', rec]],
+    [['greater', rec]]
+  )
+])
 
 const valueOfAttempt = key => [searchAttempt(key), 'value']
 ```
@@ -4096,8 +4142,10 @@ constructor to build a binary tree.  Here is a little helper to build a tree
 from pairs:
 
 ```js
-const fromPairs =
-  R.reduce((t, [k, v]) => L.set(valueOfAttempt(k), v, t), undefined)
+const fromPairs = R.reduce(
+  (t, [k, v]) => L.set(valueOfAttempt(k), v, t),
+  undefined
+)
 ```
 
 Now:
@@ -4140,9 +4188,12 @@ Here is a working `search` lens and a `valueOf` lens constructor:
 ```js
 const search = key => L.lazy(rec => [
   naiveBST,
-  L.cond([n => !n || key === n.key, L.defaults({key})],
-         [n => key < n.key,         ['smaller', rec]],
-         [                          ['greater', rec]])])
+  L.cond(
+    [n => !n || key === n.key, L.defaults({key})],
+    [n => key < n.key, ['smaller', rec]],
+    [['greater', rec]]
+  )
+])
 
 const valueOf = key => [search(key), 'value']
 ```
@@ -4174,9 +4225,8 @@ values of a BST:
 const values = L.lazy(rec => [
   L.optional,
   naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])
+  L.branch({smaller: rec, value: [], greater: rec})
+])
 ```
 
 Given a binary tree `sampleBST` we can now manipulate it as a whole.  For
@@ -4310,10 +4360,12 @@ L.remove([seqList, L.when(c => c < 'i')], sampleList)
 And:
 
 ```js
-L.joinAs(R.toUpper,
-         '',
-         [seqList, L.when(c => c <= 'i')],
-         sampleList)
+L.joinAs(
+  R.toUpper,
+  '',
+  [seqList, L.when(c => c <= 'i')],
+  sampleList
+)
 // 'AI'
 ```
 
@@ -4384,10 +4436,12 @@ understand this performance characteristic.
 Consider the following naïve use of [Ramda](http://ramdajs.com/):
 
 ```js
-const sumPositiveXs = R.pipe(R.flatten,
-                             R.map(R.prop('x')),
-                             R.filter(R.lt(0)),
-                             R.sum)
+const sumPositiveXs = R.pipe(
+  R.flatten,
+  R.map(R.prop('x')),
+  R.filter(R.lt(0)),
+  R.sum
+)
 
 const sampleXs = [[{x: 1}], [{x: -2}, {x: 2}]]
 
@@ -4467,7 +4521,7 @@ to eliminate more dead code.  Here is a sample snippet from a Rollup config:
 
 ```jsx
 import replace from 'rollup-plugin-replace'
-import uglify  from 'rollup-plugin-uglify'
+import {uglify} from 'rollup-plugin-uglify'
 // ...
 
 export default {
@@ -5024,21 +5078,26 @@ const sampleBloated = {
   extra: 'crap',
   that: [
     'we',
-    {want: 'to',
-     filter: ['out'],
-     including: {the: 'following',
-                 extra: true,
-                 fields: 1}}]
+    {
+      want: 'to',
+      filter: ['out'],
+      including: {the: 'following', extra: true, fields: 1}
+    }
+  ]
 }
 ```
 
 We can now remove the `extra` `fields` like this:
 
 ``` js
-transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
-                   L.remove(L.props('extra', 'fields')),
-                   R.identity),
-          sampleBloated)
+transform(
+  R.ifElse(
+    R.allPass([R.is(Object), R.complement(R.is(Array))]),
+    L.remove(L.props('extra', 'fields')),
+    R.identity
+  ),
+  sampleBloated
+)
 // { just: 'some',
 //   that: [ 'we', { want: 'to',
 //                   filter: ['out'],

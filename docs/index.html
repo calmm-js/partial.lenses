@@ -400,8 +400,12 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 the development of this library.  What we have is an external HTTP API that both
 produces and consumes JSON objects that include, among many other properties, a
 <code>titles</code> property:</p>
-<pre><code class="hljs lang-js">var sampleTitles = {titles: [{language: &#39;en&#39;, text: &#39;Title&#39;},
-                               {language: &#39;sv&#39;, text: &#39;Rubrik&#39;}]}</code></pre>
+<pre><code class="hljs lang-js">var sampleTitles = {
+  titles: [
+    {language: &#39;en&#39;, text: &#39;Title&#39;},
+    {language: &#39;sv&#39;, text: &#39;Rubrik&#39;}
+  ]
+}</code></pre>
 <p>We ultimately want to present the user with a rich enough editor, with features
 such as undo-redo and validation, for manipulating the content represented by
 those JSON objects.  The <code>titles</code> property is really just one tiny part of the
@@ -448,27 +452,21 @@ To specify such a path we use primitive lenses like
 array, and compose the path using <a href="#L-compose"><code>L.compose(...lenses)</code></a>.</p>
 <p>So, to just <a href="#L-get">get</a> at the <code>titles</code> array of the <code>sampleTitles</code> we can use
 the lens <a href="#L-prop"><code>L.prop(&#39;titles&#39;)</code></a>:</p>
-<pre><code class="hljs lang-js">L.get(L.prop(&#39;titles&#39;),
-      sampleTitles)
+<pre><code class="hljs lang-js">L.get(L.prop(&#39;titles&#39;), sampleTitles)
 </code></pre>
 <p>To focus on the first element of the <code>titles</code> array, we compose with
 the <a href="#L-index"><code>L.index(0)</code></a> lens:</p>
-<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&#39;titles&#39;),
-                L.index(0)),
-      sampleTitles)
+<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&#39;titles&#39;), L.index(0)), sampleTitles)
 </code></pre>
 <p>Then, to focus on the <code>text</code>, we compose with <a href="#L-prop"><code>L.prop(&#39;text&#39;)</code></a>:</p>
-<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&#39;titles&#39;),
-                L.index(0),
-                L.prop(&#39;text&#39;)),
-      sampleTitles)
+<pre><code class="hljs lang-js">L.get(L.compose(L.prop(&#39;titles&#39;), L.index(0), L.prop(&#39;text&#39;)), sampleTitles)
 </code></pre>
 <p>We can then use the same composed lens to also <a href="#L-set">set</a> the <code>text</code>:</p>
-<pre><code class="hljs lang-js">L.set(L.compose(L.prop(&#39;titles&#39;),
-                L.index(0),
-                L.prop(&#39;text&#39;)),
-      &#39;New title&#39;,
-      sampleTitles)
+<pre><code class="hljs lang-js">L.set(
+  L.compose(L.prop(&#39;titles&#39;), L.index(0), L.prop(&#39;text&#39;)),
+  &#39;New title&#39;,
+  sampleTitles
+)
 </code></pre>
 <p>In practise, specifying ad hoc lenses like this is not very useful.  We&#39;d like
 to access a text in a given language, so we want a lens parameterized by a given
@@ -482,12 +480,14 @@ such details along with the path to focus on.</p>
 <h3><a id="a-partial-lens-to-access-titles"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#a-partial-lens-to-access-titles">■</a> <a href="#a-partial-lens-to-access-titles">A partial lens to access title texts</a></h3>
 <p>Let&#39;s then just <a href="#L-compose">compose</a> a parameterized lens for accessing the
 <code>text</code> of titles:</p>
-<pre><code class="hljs lang-js">var textIn = language =&gt; L.compose(L.prop(&#39;titles&#39;),
-                                     L.normalize(R.sortBy(L.get(&#39;language&#39;))),
-                                     L.find(R.whereEq({language})),
-                                     L.valueOr({language, text: &#39;&#39;}),
-                                     L.removable(&#39;text&#39;),
-                                     L.prop(&#39;text&#39;))</code></pre>
+<pre><code class="hljs lang-js">var textIn = language =&gt; L.compose(
+  L.prop(&#39;titles&#39;),
+  L.normalize(R.sortBy(L.get(&#39;language&#39;))),
+  L.find(R.whereEq({language})),
+  L.valueOr({language, text: &#39;&#39;}),
+  L.removable(&#39;text&#39;),
+  L.prop(&#39;text&#39;)
+)</code></pre>
 <p>Take a moment to read through the above definition line by line.  Each part
 either specifies a step in the path to select the desired element or a way in
 which the data structure must be treated at that point.  The
@@ -547,10 +547,7 @@ having the whole object vanish, rather than just the <code>text</code> property,
 so that when the <code>text</code> property is set to <code>undefined</code>, the result will be
 <code>undefined</code> rather than merely an object without the <code>text</code> property.</p>
 <p>If we remove all of the titles, we get an empty array:</p>
-<pre><code class="hljs lang-js">L.set(L.seq(textIn(&#39;sv&#39;),
-            textIn(&#39;en&#39;)),
-      undefined,
-      sampleTitles)
+<pre><code class="hljs lang-js">L.set(L.seq(textIn(&#39;sv&#39;), textIn(&#39;en&#39;)), undefined, sampleTitles)
 </code></pre>
 <p>Above we use <a href="#L-seq"><code>L.seq</code></a> to run the <a href="#L-set"><code>L.set</code></a> operation over both
 of the focused titles.</p>
@@ -573,12 +570,14 @@ s)</code></a>.</li>
 <h3><a id="systematic-decomposition"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#systematic-decomposition">■</a> <a href="#systematic-decomposition">Systematic decomposition</a></h3>
 <p>It is also typical to compose lenses out of short paths following the schema of
 the JSON data being manipulated.  Recall the lens from the start of the example:</p>
-<pre><code class="hljs lang-jsx">L.compose(L.prop(&#39;titles&#39;),
-          L.normalize(R.sortBy(L.get(&#39;language&#39;))),
-          L.find(R.whereEq({language})),
-          L.valueOr({language, text: &#39;&#39;}),
-          L.removable(&#39;text&#39;),
-          L.prop(&#39;text&#39;))</code></pre>
+<pre><code class="hljs lang-jsx">L.compose(
+  L.prop(&#39;titles&#39;),
+  L.normalize(R.sortBy(L.get(&#39;language&#39;))),
+  L.find(R.whereEq({language})),
+  L.valueOr({language, text: &#39;&#39;}),
+  L.removable(&#39;text&#39;),
+  L.prop(&#39;text&#39;)
+)</code></pre>
 <p>Following the structure or schema of the JSON, we could break this into three
 separate lenses:</p>
 <ul>
@@ -593,16 +592,15 @@ model:</p>
 }
 
 var Titles = {
-  titleIn: language =&gt; [L.find(R.whereEq({language})),
-                        L.valueOr({language, text: &#39;&#39;})]
+  titleIn: language =&gt; [
+    L.find(R.whereEq({language})),
+    L.valueOr({language, text: &#39;&#39;})
+  ]
 }
 
 var Model = {
-  titles: [&#39;titles&#39;,
-           L.normalize(R.sortBy(L.get(&#39;language&#39;)))],
-  textIn: language =&gt; [Model.titles,
-                       Titles.titleIn(language),
-                       Title.text]
+  titles: [&#39;titles&#39;, L.normalize(R.sortBy(L.get(&#39;language&#39;)))],
+  textIn: language =&gt; [Model.titles, Titles.titleIn(language), Title.text]
 }</code></pre>
 <p>We can now say:</p>
 <pre><code class="hljs lang-js">L.get(Model.textIn(&#39;sv&#39;), sampleTitles)
@@ -617,9 +615,7 @@ incrementally as we inspect the model structure.</p>
 supports <a href="#traversals">traversals</a> that compose with lenses and can target
 multiple items.  Continuing on the tutorial example, let&#39;s define a traversal
 that targets all the texts:</p>
-<pre><code class="hljs lang-js">var texts = [Model.titles,
-               L.elems,
-               Title.text]</code></pre>
+<pre><code class="hljs lang-js">var texts = [Model.titles, L.elems, Title.text]</code></pre>
 <p>What makes the above a traversal is the <a href="#L-elems"><code>L.elems</code></a> part.  The result
 of composing a traversal with a lens is a traversal.  The other parts of the
 above composition should already be familiar from previous examples.  Note how
@@ -638,8 +634,7 @@ titles:</p>
 </code></pre>
 <p>We can also manipulate texts selectively.  For example, we could remove all
 the texts that are longer than 5 characters:</p>
-<pre><code class="hljs lang-js">L.remove([texts, L.when(t =&gt; t.length &gt; 5)],
-         sampleTitles)
+<pre><code class="hljs lang-js">L.remove([texts, L.when(t =&gt; t.length &gt; 5)], sampleTitles)
 </code></pre>
 <h3><a id="next-steps"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#next-steps">■</a> <a href="#next-steps">Next steps</a></h3>
 <p>This concludes the tutorial.  The reference documentation contains lots of tiny
@@ -662,25 +657,33 @@ be expressed as a composition of optics and used with many different operations.
 <p>Consider how one might approach the <a href="#tutorial">tutorial</a> problem without
 optics.  One could, for example, write a collection of operations like
 <code>getText</code>, <code>setText</code>, <code>addText</code>, and <code>remText</code>:</p>
-<pre><code class="hljs lang-js">var getEntry = R.curry((language, data) =&gt;
-                         data.titles.find(R.whereEq({language})))
+<pre><code class="hljs lang-js">var getEntry = R.curry(
+  (language, data) =&gt; data.titles.find(R.whereEq({language}))
+)
 var hasText = R.pipe(getEntry, Boolean)
 var getText = R.pipe(getEntry, R.defaultTo({}), R.prop(&#39;text&#39;))
-var mapProp = R.curry((fn, prop, obj) =&gt;
-                        R.assoc(prop, fn(R.prop(prop, obj)), obj))
-var mapText = R.curry((language, fn, data) =&gt;
-                        mapProp(R.map(R.ifElse(R.whereEq({language}),
-                                               mapProp(fn, &#39;text&#39;),
-                                               R.identity)),
-                                &#39;titles&#39;,
-                                data))
-var remText = R.curry((language, data) =&gt;
-                        mapProp(R.filter(R.complement(R.whereEq({language}))),
-                                &#39;titles&#39;))
-var addText = R.curry((language, text, data) =&gt;
-                        mapProp(R.append({language, text}), &#39;titles&#39;, data))
-var setText = R.curry((language, text, data) =&gt;
-                        mapText(language, R.always(text), data))</code></pre>
+var mapProp = R.curry(
+  (fn, prop, obj) =&gt; R.assoc(prop, fn(R.prop(prop, obj)), obj)
+)
+var mapText = R.curry(
+  (language, fn, data) =&gt; mapProp(
+    R.map(R.ifElse(R.whereEq({language}), mapProp(fn, &#39;text&#39;), R.identity)),
+    &#39;titles&#39;,
+    data
+  )
+)
+var remText = R.curry(
+  (language, data) =&gt; mapProp(
+    R.filter(R.complement(R.whereEq({language}))),
+    &#39;titles&#39;
+  )
+)
+var addText = R.curry(
+  (language, text, data) =&gt; mapProp(R.append({language, text}), &#39;titles&#39;, data)
+)
+var setText = R.curry(
+  (language, text, data) =&gt; mapText(language, R.always(text), data)
+)</code></pre>
 <p>You can definitely make the above operations both cleaner and more robust.  For
 example, consider maintaining the ordering of texts and the handling of cases
 such as using <code>addText</code> when there already is a text in the specified language
@@ -799,8 +802,10 @@ focusing on an array element or an object property, the index of the array
 element or the key of the object property is passed as the index to user defined
 functions operating on that focus.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.get([L.find(R.equals(&#39;bar&#39;)), (value, index) =&gt; ({value, index})],
-      [&#39;foo&#39;, &#39;bar&#39;, &#39;baz&#39;])
+<pre><code class="hljs lang-js">L.get(
+  [L.find(R.equals(&#39;bar&#39;)), (value, index) =&gt; ({value, index})],
+  [&#39;foo&#39;, &#39;bar&#39;, &#39;baz&#39;]
+)
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(L.values, (value, key) =&gt; ({key, value}), {x: 1, y: 2})
 </code></pre>
@@ -809,13 +814,17 @@ indices.  Most optics do not have an index of their own and they pass the index
 given by the preceding optic as their focus.  For example, <a href="#L-when"><code>L.when</code></a>
 doesn&#39;t have an index by itself, but it passes through the index provided by the
 preceding optic:</p>
-<pre><code class="hljs lang-js">L.collectAs((value, index) =&gt; ({value, index}),
-            [L.elems, L.when(x =&gt; x &gt; 2)],
-            [3, 1, 4, 1])
+<pre><code class="hljs lang-js">L.collectAs(
+  (value, index) =&gt; ({value, index}),
+  [L.elems, L.when(x =&gt; x &gt; 2)],
+  [3, 1, 4, 1]
+)
 </code></pre>
-<pre><code class="hljs lang-js">L.collectAs((value, key) =&gt; ({value, key}),
-            [L.values, L.when(x =&gt; x &gt; 2)],
-            {x: 3, y: 1, z: 4, w: 1})
+<pre><code class="hljs lang-js">L.collectAs(
+  (value, key) =&gt; ({value, key}),
+  [L.values, L.when(x =&gt; x &gt; 2)],
+  {x: 3, y: 1, z: 4, w: 1}
+)
 </code></pre>
 <p>When accessing a focus deep inside a data structure, the indices along the path
 to the focus are not collected into a path.  However, it is possible to define
@@ -920,16 +929,13 @@ called, <em>very well-behaved lenses</em>:</p>
 var VeryWellBehavedLens = ({lens, data, elemA, elemB}) =&gt; ({
   GetSet: test(L.set(lens, L.get(lens, data), data), data),
   SetGet: test(L.get(lens, L.set(lens, elemA, data)), elemA),
-  SetSet: test(L.set(lens, elemB, L.set(lens, elemA, data)),
-               L.set(lens, elemB, data))
+  SetSet: test(
+    L.set(lens, elemB, L.set(lens, elemA, data)),
+    L.set(lens, elemB, data)
+  )
 })
 
-VeryWellBehavedLens({
-  elemA: 2,
-  elemB: 3,
-  data: {x: 1},
-  lens: &#39;x&#39;
-})
+VeryWellBehavedLens({elemA: 2, elemB: 3, data: {x: 1}, lens: &#39;x&#39; })
 </code></pre>
 <p>You might want to <a href="#on-lens-laws">▶
 play</a> with the laws in
@@ -946,8 +952,7 @@ Nevertheless even such combinators can be used in lens compositions that obey
 lens laws.</p>
 <p>Consider the <a href="#L-find"><code>L.find</code></a> combinator.  The truth is that it doesn&#39;t by
 itself obey lens laws.  Here is an example:</p>
-<pre><code class="hljs lang-js">L.get(L.find(R.equals(1)),
-      L.set(L.find(R.equals(1)), 2, []))
+<pre><code class="hljs lang-js">L.get(L.find(R.equals(1)), L.set(L.find(R.equals(1)), 2, []))
 </code></pre>
 <p>As you can see, <a href="#L-find"><code>L.find(R.equals(1))</code></a> does not obey the <code>SetGet</code> aka
 <code>Put-Get</code> law.  Does this make the <a href="#L-find"><code>L.find</code></a> combinator useless?  Far
@@ -997,9 +1002,11 @@ focused on by the given optic.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify([&#39;elems&#39;, 0, &#39;x&#39;], R.inc, {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
 </code></pre>
-<pre><code class="hljs lang-js">L.modify([&#39;elems&#39;, L.elems, &#39;x&#39;],
-         R.dec,
-         {elems: [{x: 1, y: 2}, {x: 3, y: 4}]})
+<pre><code class="hljs lang-js">L.modify(
+  [&#39;elems&#39;, L.elems, &#39;x&#39;],
+  R.dec,
+  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+)
 </code></pre>
 <h5><a id="L-modifyAsync"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-modifyAsync">■</a> <a href="#L-modifyAsync" title="L.modifyAsync: POptic s a -&gt; ((Maybe a, Index) -&gt; Promise (Maybe a)) -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.modifyAsync(optic, (maybeValue, index) =&gt; maybeValuePromise, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></h5>
 <p><code>L.modifyAsync</code> allows one to map an asynchronous function over the elements
@@ -1123,19 +1130,20 @@ or <a href="#L-seq">presequenced</a> with some other optic in a way that neither
 immediate nor unconditional recursion.</p>
 <p>For example, here is a traversal that targets all the primitive elements in a
 data structure of nested arrays and objects:</p>
-<pre><code class="hljs lang-js">var primitives = [
-  L.optional,
-  L.lazy(rec =&gt; L.cond([R.is(Array),  [L.elems, rec]],
-                       [R.is(Object), [L.values, rec]],
-                       [              L.identity]))]</code></pre>
-<p>Note that the above creates a cyclic representation of the traversal.</p>
+<pre><code class="hljs lang-js">var primitives = L.lazy(
+  rec =&gt; L.ifElse(R.is(Object), [L.children, rec], L.optional)
+)</code></pre>
+<p>Note that the above creates a cyclic representation of the traversal and a
+similar traversal named <a href="#L-leafs"><code>L.leafs</code></a> is provided out-of-the-box.</p>
 <p>Now, for example:</p>
 <pre><code class="hljs lang-js">L.collect(primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(primitives, x =&gt; x+1, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
-<pre><code class="hljs lang-js">L.remove([primitives, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)],
-         [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">L.remove(
+  [primitives, L.when(x =&gt; 3 &lt;= x &amp;&amp; x &lt;= 4)],
+  [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]]
+)
 </code></pre>
 <h4><a id="adapting"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#adaptning">■</a> <a href="#adapting">Adapting</a></h4>
 <p>Adapting combinators allow one to build optics that adapt to their input.</p>
@@ -1153,8 +1161,9 @@ that maps the underlying view, which can be <code>undefined</code>, to an optic.
 words, the <code>L.choose</code> combinator allows an optic to be constructed <em>after</em>
 examining the data structure being manipulated.  See also <a href="#L-cond"><code>L.cond</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var majorAxis =
-  L.choose(({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &#39;y&#39; : &#39;x&#39;)
+<pre><code class="hljs lang-js">var majorAxis = L.choose(
+  ({x, y} = {}) =&gt; Math.abs(x) &lt; Math.abs(y) ? &#39;y&#39; : &#39;x&#39;
+)
 
 L.get(majorAxis, {x: -3, y: 1})
 </code></pre>
@@ -1176,8 +1185,10 @@ predicate that returns true.  The last argument to <code>L.cond</code> can be an
 case none of the predicates return true.  If all predicates return false and
 there is no alternative, <code>L.cond</code> acts like <a href="#L-zero"><code>L.zero</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var minorAxis =
-  L.cond([({x, y} = {}) =&gt; Math.abs(y) &lt; Math.abs(x), &#39;y&#39;], [&#39;x&#39;])
+<pre><code class="hljs lang-js">var minorAxis = L.cond(
+  [({x, y} = {}) =&gt; Math.abs(y) &lt; Math.abs(x), &#39;y&#39;],
+  [&#39;x&#39;]
+)
 
 L.get(minorAxis, {x: -3, y: 1})
 </code></pre>
@@ -1234,8 +1245,7 @@ is given an odd number of arguments, the last argument is the <em>alternative</e
 taken in case none of the predicates returns true.  If all predicates return
 false and there is no alternative, <code>L.iftes</code> acts like <a href="#L-zero"><code>L.zero</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var minorAxis =
-  L.iftes(({x, y} = {}) =&gt; Math.abs(y) &lt; Math.abs(x), &#39;y&#39;, &#39;x&#39;)
+<pre><code class="hljs lang-js">var minorAxis = L.iftes(({x, y} = {}) =&gt; Math.abs(y) &lt; Math.abs(x), &#39;y&#39;, &#39;x&#39;)
 
 L.get(minorAxis, {x: -3, y: 1})
 </code></pre>
@@ -1256,10 +1266,12 @@ empty or read-only <a href="#L-zero">zero</a>.</p>
 <p><code>L.chain</code> provides a monadic
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#chain">chain</a>
 combinator for querying with optics.  <code>L.chain(toOptic, optic)</code> is equivalent to</p>
-<pre><code class="hljs lang-jsx">L.compose(optic, L.choose((maybeValue, index) =&gt;
-  maybeValue === undefined
-  ? L.zero
-  : toOptic(maybeValue, index)))</code></pre>
+<pre><code class="hljs lang-jsx">L.compose(
+  optic,
+  L.choose(
+    (value, index) =&gt; value === undefined ? L.zero : toOptic(value, index)
+  )
+)</code></pre>
 <p>Note that with the <a href="http://ramdajs.com/docs/#always"><code>R.always</code></a>, <code>L.chain</code>,
 <a href="#L-choice"><code>L.choice</code></a> and <a href="#L-zero"><code>L.zero</code></a> combinators, one can consider
 optics as subsuming the maybe monad.</p>
@@ -1306,11 +1318,10 @@ L.identity : L.zero)</code></a>.</p>
 and as a lens, i.e. when used with <a href="#L-get"><code>L.get</code></a>, <code>L.zero</code> is a read-only
 lens whose view is always <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.elems,
-           L.cond([R.is(Array),  L.elems],
-                  [R.is(Object), &#39;x&#39;],
-                  [L.zero])],
-          [1, {x: 2}, [3, 4]])
+<pre><code class="hljs lang-js">L.collect(
+  [L.elems, L.cond([R.is(Array),  L.elems], [R.is(Object), &#39;x&#39;], [L.zero])],
+  [1, {x: 2}, [3, 4]]
+)
 </code></pre>
 <h4><a id="debugging"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#debugging">■</a> <a href="#debugging">Debugging</a></h4>
 <h5><a id="L-log"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-log">■</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></h5>
@@ -1445,11 +1456,9 @@ that modify their focus more than once.</p>
 transforms in sequence.</p>
 <p>Here is an example of a bottom-up transform over a data structure of nested
 objects and arrays:</p>
-<pre><code class="hljs lang-js">var everywhere = [
-  L.optional,
-  L.lazy(rec =&gt; L.cond([R.is(Array),  L.seq([L.elems, rec], L.identity)],
-                       [R.is(Object), L.seq([L.values, rec], L.identity)],
-                       [              L.identity]))]</code></pre>
+<pre><code class="hljs lang-js">var everywhere = L.lazy(
+  rec =&gt; L.ifElse(R.is(Object), L.seq([L.children, rec], []), [])
+)</code></pre>
 <p>The above <code>everywhere</code> transform is similar to the
 <a href="https://github.com/polytypic/fastener#F-everywhere"><code>F.everywhere</code></a> transform
 of the <a href="https://github.com/polytypic/fastener"><code>fastener</code></a> zipper-library.  Note
@@ -1477,24 +1486,38 @@ used as a traversal, <code>L.modifyOp</code> acts as a traversal of no elements.
 as a lens, <code>L.modifyOp</code> acts as a read-only lens whose view is the mapped focus.
 Usually, however, <code>L.modifyOp</code> is used within <a href="#transforms">transforms</a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.transform(L.branch({xs: [L.elems, L.modifyOp(R.inc)],
-                      z: [L.optional, L.modifyOp(R.negate)],
-                      ys: [L.elems, L.modifyOp(R.dec)]}),
-            {xs: [1, 2, 3],
-             ys: [1, 2, 3]})
+<pre><code class="hljs lang-js">L.transform(
+  L.branch({
+    xs: [L.elems, L.modifyOp(R.inc)],
+    z: [L.optional, L.modifyOp(R.negate)],
+    ys: [L.elems, L.modifyOp(R.dec)]
+  }),
+  {xs: [1, 2, 3], ys: [1, 2, 3]}
+)
 </code></pre>
 <h5><a id="L-removeOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-removeOp">■</a> <a href="#L-removeOp" title="L.removeOp: POptic a a"><code>L.removeOp ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></h5>
 <p><code>L.removeOp</code> is shorthand for <a href="#L-setOp"><code>L.setOp(undefined)</code></a>.</p>
 <p>Here is an example based on a question from a user:</p>
-<pre><code class="hljs lang-js">var sampleToFilter = {elements: [{time: 1, subelements: [1, 2, 3, 4]},
-                                   {time: 2, subelements: [1, 2, 3, 4]},
-                                   {time: 3, subelements: [1, 2, 3, 4]}]}
+<pre><code class="hljs lang-js">var sampleToFilter = {
+  elements: [
+    {time: 1, subelements: [1, 2, 3, 4]},
+    {time: 2, subelements: [1, 2, 3, 4]},
+    {time: 3, subelements: [1, 2, 3, 4]}
+  ]
+}
 
-L.transform([&#39;elements&#39;,
-             L.elems,
-             L.ifElse(elem =&gt; elem.time &lt; 2, L.removeOp,
-                      [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp])],
-            sampleToFilter)
+L.transform(
+  [
+    &#39;elements&#39;,
+    L.elems,
+    L.ifElse(
+      elem =&gt; elem.time &lt; 2,
+      L.removeOp,
+      [&#39;subelements&#39;, L.elems, L.when(i =&gt; i &lt; 3), L.removeOp]
+    )
+  ],
+  sampleToFilter
+)
 </code></pre>
 <p>The idea is to filter the data both by <code>time</code> and by <code>subelements</code>.</p>
 <h5><a id="L-setOp"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-setOp">■</a> <a href="#L-setOp" title="L.setOp: Maybe a -&gt; POptic a a"><code>L.setOp(maybeValue) ~&gt; optic</code></a> <small><sup>v11.7.0</sup></small></h5>
@@ -1512,22 +1535,24 @@ that specifies how the new traversal should visit the properties of an object.
 If one thinks of traversals as specifying sets of paths, then the template can
 be seen as mapping each property to a set of paths to traverse.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect(L.branch({first: L.elems, second: {value: L.identity}}),
-          {first: [&#39;x&#39;], second: {value: &#39;y&#39;}})
+<pre><code class="hljs lang-js">L.collect(
+  L.branch({first: L.elems, second: {value: []}}),
+  {first: [&#39;x&#39;], second: {value: &#39;y&#39;}}
+)
 </code></pre>
-<p>The use of <a href="#L-identity"><code>L.identity</code></a> above might be puzzling at first.
-<a href="#L-identity"><code>L.identity</code></a> essentially specifies an empty path.  So, when a
-property is mapped to <a href="#L-identity"><code>L.identity</code></a> in the template given to
-<code>L.branch</code>, it means that the element is to be visited by the resulting
-traversal.</p>
+<p>The use of <a href="#L-identity"><code>[]</code></a> above might be puzzling at first.
+<a href="#L-identity"><code>[]</code></a> essentially specifies an empty path.  So, when a property is
+mapped to <a href="#L-identity"><code>[]</code></a> in the template given to <code>L.branch</code>, it means that
+the element is to be visited by the resulting traversal.</p>
 <p>Note that <code>L.branch</code> is equivalent to <a href="#L-branchOr"><code>L.branchOr(L.zero)</code></a>.</p>
 <p>Note that you can also compose <code>L.branch</code> with other optics.  For example, you
 can compose with <a href="#L-pick"><code>L.pick</code></a> to create a traversal over specific
 elements of an array:</p>
-<pre><code class="hljs lang-js">L.modify([L.pick({z: 2, x: 0}),
-          L.branch({x: L.identity, z: L.identity})],
-         R.negate,
-         [1, 2, 3])
+<pre><code class="hljs lang-js">L.modify(
+  [L.pick({z: 2, x: 0}), L.branch({x: [], z: []})],
+  R.negate,
+  [1, 2, 3]
+)
 </code></pre>
 <p>See the <a href="#bst-traversal">BST traversal</a> section for a more meaningful example.</p>
 <h5><a id="L-branchOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-branchOr">■</a> <a href="#L-branchOr" title="L.branchOr: PTraversal p a -&gt; {p1: PTraversal p1 a, ...pts} -&gt; PTraversal {p1: p1, ...ps} a"><code>L.branchOr(traversal, {prop: traversal, ...props}) ~&gt; traversal</code></a> <small><sup>v13.2.0</sup></small></h5>
@@ -1539,7 +1564,7 @@ for properties not defined in the template.</p>
 <pre><code class="hljs lang-js">L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 </code></pre>
 <p>Note that <a href="#L-branch"><code>L.branch</code></a> is equivalent to <code>L.branchOr(L.zero)</code> and
-<a href="#L-values"><code>L.values</code></a> is equivalent to <code>L.branchOr(L.identity, {})</code>.</p>
+<a href="#L-values"><code>L.values</code></a> is equivalent to <code>L.branchOr([], {})</code>.</p>
 <h5><a id="L-branches"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-branches">■</a> <a href="#L-branches" title="L.branches: (p1: PTraversal p1 a, ...pts) -&gt; PTraversal {p1: p1, ...ps} a"><code>L.branches(...propNames) ~&gt; traversal</code></a> <small><sup>v13.5.0</sup></small></h5>
 <p><code>L.branches</code> creates a new traversal that visits the specified properties of an
 object.  <code>L.branches(p1, ..., pN)</code> is equivalent to <a href="#L-branch"><code>L.branch({[p1]: [],
@@ -1564,9 +1589,11 @@ object.  When written through, <code>L.elems</code> always produces an <code>Arr
 <p>Just like with other optics operating on <a href="#array-like">array-like</a> objects, when
 manipulating non-<code>Array</code> objects, <a href="#L-rewrite"><code>L.rewrite</code></a> can be used to
 convert the result to the desired type, if necessary:</p>
-<pre><code class="hljs lang-js">L.modify([L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
-         R.inc,
-         Int8Array.from([-1, 4, 0, 2, 4]))
+<pre><code class="hljs lang-js">L.modify(
+  [L.rewrite(xs =&gt; Int8Array.from(xs)), L.elems],
+  R.inc,
+  Int8Array.from([-1, 4, 0, 2, 4])
+)
 </code></pre>
 <h5><a id="L-elemsTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-elemsTotal">■</a> <a href="#L-elemsTotal" title="L.elemsTotal: PTraversal [a] a"><code>L.elemsTotal ~&gt; traversal</code></a> <small><sup>v13.11.0</sup></small></h5>
 <p><code>L.elemsTotal</code> is a traversal over the elements of an <a href="#array-like">array-like</a>
@@ -1608,10 +1635,13 @@ and focuses on non-<code>undefined</code> elements whose constructor is neither 
 flag, <code>/.../g</code>, is a partial traversal over the matches that the regular
 expression gives over the focused string.  See also <a href="#L-matches"><code>L.matches</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.collect([L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
-           L.pick({name: L.matches(/^[^=]+/),
-                   value: L.matches(/[^=]+$/)})],
-           &#39;?first=foo&amp;second=bar&#39;)
+<pre><code class="hljs lang-js">L.collect(
+  [
+    L.matches(/[^&amp;=?]+=[^&amp;=]+/g),
+    L.pick({name: L.matches(/^[^=]+/), value: L.matches(/[^=]+$/)})
+  ],
+  &#39;?first=foo&amp;second=bar&#39;
+)
 </code></pre>
 <p>Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
@@ -1667,28 +1697,25 @@ written through, <code>L.values</code> always produces an <code>Object</code>.  
 }
 
 XYZ.prototype.norm = function () {
-  return (this.x * this.x +
-          this.y * this.y +
-          this.z * this.z)
+  return this.x * this.x + this.y * this.y + this.z * this.z
 }</code></pre>
 <p><a href="#L-rewrite"><code>L.rewrite</code></a> can be used to convert the result to the desired type,
 if necessary:</p>
 <pre><code class="hljs lang-js">var objectTo = C =&gt; o =&gt; Object.assign(Object.create(C.prototype), o)
 
-L.modify([L.rewrite(objectTo(XYZ)), L.values],
-         R.negate,
-         new XYZ(1, 2, 3))
+L.modify([L.rewrite(objectTo(XYZ)), L.values], R.negate, new XYZ(1, 2, 3))
 </code></pre>
-<p>Note that <code>L.values</code> is equivalent to <a href="#L-branchOr"><code>L.branchOr(L.identity,
-{})</code></a>.</p>
+<p>Note that <code>L.values</code> is equivalent to <a href="#L-branchOr"><code>L.branchOr([], {})</code></a>.</p>
 <h4><a id="folds-over-traversals"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#folds-over-traversals">■</a> <a href="#folds-over-traversals">Folds over traversals</a></h4>
 <h5><a id="L-all"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-all">■</a> <a href="#L-all" title="L.all: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.all((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
 <p><code>L.all</code> determines whether all of the elements focused on by the given traversal
 satisfy the given predicate.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.all(x =&gt; 1 &lt;= x &amp;&amp; x &lt;= 6,
-      primitives,
-      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">L.all(
+  x =&gt; 1 &lt;= x &amp;&amp; x &lt;= 6,
+  primitives,
+  [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]]
+)
 </code></pre>
 <p>See also: <a href="#L-any"><code>L.any</code></a>, <a href="#L-none"><code>L.none</code></a>, and
 <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
@@ -1704,9 +1731,7 @@ are truthy.</p>
 <p><code>L.any</code> determines whether any of the elements focused on by the given traversal
 satisfy the given predicate.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.any(x =&gt; x &gt; 5,
-      primitives,
-      [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">L.any(x =&gt; x &gt; 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-none"><code>L.none</code></a>, and
 <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
@@ -1730,10 +1755,12 @@ where <code>Collect</code> and <code>toCollect</code> are defined as follows:</p
 <pre><code class="hljs lang-js">var Collect = {empty: R.always([]), concat: R.concat}
 var toCollect = x =&gt; x !== undefined ? [x] : []</code></pre>
 <p>So:</p>
-<pre><code class="hljs lang-js">L.concatAs(toCollect,
-           Collect,
-           [&#39;xs&#39;, L.elems, &#39;x&#39;, R.negate],
-           {xs: [{x: 1}, {x: 2}]})
+<pre><code class="hljs lang-js">L.concatAs(
+  toCollect,
+  Collect,
+  [&#39;xs&#39;, L.elems, &#39;x&#39;, R.negate],
+  {xs: [{x: 1}, {x: 2}]}
+)
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above <a href="implementation.html">naïve implementation</a>.</p>
@@ -1900,9 +1927,7 @@ returned key is <code>undefined</code> are skipped.</p>
 <p><code>L.none</code> determines whether none of the elements focused on by the given
 traversal satisfy the given predicate.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.none(x =&gt; x &gt; 5,
-       primitives,
-       [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">L.none(x =&gt; x &gt; 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <p>See also: <a href="#L-all"><code>L.all</code></a>, <a href="#L-any"><code>L.any</code></a>, and <a href="#L-selectAs"><code>L.selectAs</code></a>.</p>
 <h5><a id="L-or"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-or">■</a> <a href="#L-or" title="L.or: PTraversal s Boolean -&gt; Boolean"><code>L.or(traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></h5>
@@ -1949,9 +1974,7 @@ all/any elements match a predicate.  For example, here is how you could
 implement a for all predicate over traversals:</p>
 <pre><code class="hljs lang-js">var all = (p, t, s) =&gt; !L.selectAs(x =&gt; p(x) ? undefined : true, t, s)</code></pre>
 <p>Now:</p>
-<pre><code class="hljs lang-js">all(x =&gt; x &lt; 9,
-    primitives,
-    [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+<pre><code class="hljs lang-js">all(x =&gt; x &lt; 9, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 </code></pre>
 <h5><a id="L-sum"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-sum">■</a> <a href="#L-sum" title="L.sum: PTraversal s Number -&gt; Maybe s -&gt; Number"><code>L.sum(traversal, maybeData) ~&gt; number</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.sum</code> computes the sum of the optional numbers targeted by the traversal.</p>
@@ -2025,14 +2048,19 @@ convert a pair of <code>start</code> and <code>end</code> times to a duration:</
   }
 )</code></pre>
 <p>Now, for example:</p>
-<pre><code class="hljs lang-js">L.get(timesAsDuration,
-      {start: &#39;2016-12-07T09:39:02.451Z&#39;,
-       end: moment(&#39;2016-12-07T09:39:02.451Z&#39;).add(10, &#39;hours&#39;).toISOString()})
+<pre><code class="hljs lang-js">L.get(
+  timesAsDuration,
+  {
+    start: &#39;2016-12-07T09:39:02.451Z&#39;,
+    end: moment(&#39;2016-12-07T09:39:02.451Z&#39;).add(10, &#39;hours&#39;).toISOString()
+  }
+)
 </code></pre>
-<pre><code class="hljs lang-js">L.set(timesAsDuration,
-      &#39;PT10H&#39;,
-      {start: &#39;2016-12-07T09:39:02.451Z&#39;,
-       end: &#39;2016-12-07T09:39:02.451Z&#39;})
+<pre><code class="hljs lang-js">L.set(
+  timesAsDuration,
+  &#39;PT10H&#39;,
+  {start: &#39;2016-12-07T09:39:02.451Z&#39;, end: &#39;2016-12-07T09:39:02.451Z&#39;}
+)
 </code></pre>
 <p>When composed with <a href="#L-pick"><code>L.pick</code></a>, to flexibly pick the <code>start</code> and <code>end</code>
 times, the above can be adapted to work in a wide variety of cases.  However,
@@ -2179,13 +2207,17 @@ to the predicate as the third argument.  This makes it possible to both
 practically eliminate the linear search and to implement the predicate without
 allocating extra memory for it.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.find(R.whereEq({id: 2}), {hint: 2}), &#39;value&#39;],
-         R.toUpper,
-         [{id: 3, value: &#39;a&#39;},
-          {id: 2, value: &#39;b&#39;},
-          {id: 1, value: &#39;c&#39;},
-          {id: 4, value: &#39;d&#39;},
-          {id: 5, value: &#39;e&#39;}])
+<pre><code class="hljs lang-js">L.modify(
+  [L.find(R.whereEq({id: 2}), {hint: 2}), &#39;value&#39;],
+  R.toUpper,
+  [
+    {id: 3, value: &#39;a&#39;},
+    {id: 2, value: &#39;b&#39;},
+    {id: 1, value: &#39;c&#39;},
+    {id: 4, value: &#39;d&#39;},
+    {id: 5, value: &#39;e&#39;}
+  ]
+)
 </code></pre>
 <p>Note that <code>L.find</code> by itself does not satisfy all lens laws.  To fix this, you
 can e.g. post compose <code>L.find</code> with lenses that ensure that the property being
@@ -2296,7 +2328,7 @@ lenses.</p>
 <p>When writing through an optic that operates on objects, the result is always a
 plain <code>Object</code>.  For example:</p>
 <pre><code class="hljs lang-js">function Custom(gold, silver, bronze) {
-  this.gold   = gold
+  this.gold = gold
   this.silver = silver
   this.bronze = bronze
 }
@@ -2324,8 +2356,10 @@ relative to their path in the template.  This means that using <code>L.pickIn</c
 can effectively create a kind of filter for a nested object structure.  See also
 <a href="#L-props"><code>L.props</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.get(L.pickIn({meta: {file: [], ext: []}}),
-      {meta: {file: &#39;./foo.txt&#39;, base: &#39;foo&#39;, ext: &#39;txt&#39;}})
+<pre><code class="hljs lang-js">L.get(
+  L.pickIn({meta: {file: [], ext: []}}),
+  {meta: {file: &#39;./foo.txt&#39;, base: &#39;foo&#39;, ext: &#39;txt&#39;}}
+)
 </code></pre>
 <h5><a id="L-prop"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-prop">■</a> <a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.prop(propName)</code> or just <code>propName</code> focuses on the specified object property.</p>
@@ -2386,9 +2420,7 @@ flags, <code>/.../</code>, is a partial lens over the match.  When there is no m
 the target is not a string, then <code>L.matches</code> will be read-only.  See also
 <a href="#L-matches-g"><code>L.matches</code></a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.set(L.matches(/\.[^./]+$/),
-      &#39;.txt&#39;,
-      &#39;/dir/file.ext&#39;)
+<pre><code class="hljs lang-js">L.set(L.matches(/\.[^./]+$/), &#39;.txt&#39;, &#39;/dir/file.ext&#39;)
 </code></pre>
 <h4><a id="providing-defaults"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#providing-defaults">■</a> <a href="#providing-defaults">Providing defaults</a></h4>
 <h5><a id="L-valueOr"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-valueOr">■</a> <a href="#L-valueOr" title="L.valueOr: s -&gt; PLens s s"><code>L.valueOr(valueOut) ~&gt; lens</code></a> <small><sup>v3.5.0</sup></small></h5>
@@ -2417,8 +2449,7 @@ semantic restructuring:</p>
 <pre><code class="hljs lang-js">var sampleFlat = {px: 1, py: 2, vx: 1, vy: 0}</code></pre>
 <p>We can use <code>L.pick</code> to create a lens to pick apart the data and put it back
 together into a more meaningful structure:</p>
-<pre><code class="hljs lang-js">var sanitize = L.pick({pos: {x: &#39;px&#39;, y: &#39;py&#39;},
-                         vel: {x: &#39;vx&#39;, y: &#39;vy&#39;}})</code></pre>
+<pre><code class="hljs lang-js">var sanitize = L.pick({pos: {x: &#39;px&#39;, y: &#39;py&#39;}, vel: {x: &#39;vx&#39;, y: &#39;vy&#39;}})</code></pre>
 <p>Note that in the template object the lenses are relative to the root focus of
 <code>L.pick</code>.</p>
 <p>We now have a better structured view of the data:</p>
@@ -2478,8 +2509,7 @@ hand, some forms of optic composition, particularly <a href="#adapting">adapting
 <p>For example:</p>
 <pre><code class="hljs lang-js">var expect = (p, f) =&gt; x =&gt; p(x) ? f(x) : undefined
 
-var offBy1 = L.iso(expect(R.is(Number), R.inc),
-                     expect(R.is(Number), R.dec))
+var offBy1 = L.iso(expect(R.is(Number), R.inc), expect(R.is(Number), R.dec))
 
 L.getInverse(offBy1, 1)
 </code></pre>
@@ -2498,18 +2528,24 @@ Usually the given functions should be inverses of each other, but that isn&#39;t
 strictly necessary.  The functions should also be partial so that when the input
 doesn&#39;t match their expectation, the output is mapped to <code>undefined</code>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var reverseString = L.iso(expect(R.is(String), R.reverse),
-                            expect(R.is(String), R.reverse))
+<pre><code class="hljs lang-js">var reverseString = L.iso(
+  expect(R.is(String), R.reverse),
+  expect(R.is(String), R.reverse)
+)
 
-L.modify([L.uriComponent,
-          L.json(),
-          &#39;bottle&#39;,
-          0,
-          reverseString,
-          L.rewrite(R.join(&#39;&#39;)),
-          0],
-         R.toUpper,
-         &#39;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&#39;)
+L.modify(
+  [
+    L.uriComponent,
+    L.json(),
+    &#39;bottle&#39;,
+    0,
+    reverseString,
+    L.rewrite(R.join(&#39;&#39;)),
+    0
+  ],
+  R.toUpper,
+  &#39;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&#39;
+)
 </code></pre>
 <h4><a id="isomorphism-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#isomorphism-combinators">■</a> <a href="#isomorphism-combinators">Isomorphism combinators</a></h4>
 <h5><a id="L-array"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-array">■</a> <a href="#L-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></h5>
@@ -2532,9 +2568,11 @@ operation only makes sense on isomorphisms.</p>
 <p><code>L.complement</code> is an isomorphism that performs logical negation of any
 non-<code>undefined</code> value when either read or written through.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.set([L.complement, L.log()],
-      &#39;Could be anything truthy&#39;,
-      &#39;Also converted to bool&#39;)
+<pre><code class="hljs lang-js">L.set(
+  [L.complement, L.log()],
+  &#39;Could be anything truthy&#39;,
+  &#39;Also converted to bool&#39;
+)
 </code></pre>
 <h5><a id="L-identity"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-identity">■</a> <a href="#L-identity" title="L.identity: PIso s s"><code>L.identity ~&gt; isomorphism</code></a> <small><sup>v1.3.0</sup></small></h5>
 <p><code>L.identity</code> is the identity element of lens composition and also the identity
@@ -2554,13 +2592,17 @@ L.modify(L.identity, f, x) = f(x)
 <p><code>L.indexed</code> is an isomorphism between an <a href="#array-like">array-like</a> object and an
 array of <code>[index, value]</code> pairs.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modify([L.rewrite(R.join(&#39;&#39;)),
-          L.indexed,
-          L.normalize(R.sortBy(L.get(1))),
-          0,
-          1],
-         R.toUpper,
-         &#39;optics&#39;)
+<pre><code class="hljs lang-js">L.modify(
+  [
+    L.rewrite(R.join(&#39;&#39;)),
+    L.indexed,
+    L.normalize(R.sortBy(L.get(1))),
+    0,
+    1
+  ],
+  R.toUpper,
+  &#39;optics&#39;
+)
 </code></pre>
 <h5><a id="L-reverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-reverse">■</a> <a href="#L-reverse" title="L.reverse: PIso [a] [a]"><code>L.reverse ~&gt; isomorphism</code></a> <small><sup>v11.22.0</sup></small></h5>
 <p><code>L.reverse</code> is an isomorphism between an <a href="#array-like">array-like</a> object
@@ -2761,9 +2803,11 @@ constant strings that we wish to manipulate as if it was a collection of boolean
 flags:</p>
 <pre><code class="hljs lang-js">var sampleFlags = [&#39;id-19&#39;, &#39;id-76&#39;]</code></pre>
 <p>Here is a parameterized lens that does just that:</p>
-<pre><code class="hljs lang-js">var flag = id =&gt; [L.normalize(R.sortBy(R.identity)),
-                    L.find(R.equals(id)),
-                    L.is(id)]</code></pre>
+<pre><code class="hljs lang-js">var flag = id =&gt; [
+  L.normalize(R.sortBy(R.identity)),
+  L.find(R.equals(id)),
+  L.is(id)
+]</code></pre>
 <p>Now we can treat individual constants as boolean flags:</p>
 <pre><code class="hljs lang-js">L.get(flag(&#39;id-69&#39;), sampleFlags)
 </code></pre>
@@ -2795,11 +2839,10 @@ logic.  Here is how it could look like for the <code>maximum</code>:</p>
     else
       return props
   }),
-  &#39;maximum&#39;]</code></pre>
+  &#39;maximum&#39;
+]</code></pre>
 <p>Now:</p>
-<pre><code class="hljs lang-js">L.set(maximum,
-      5,
-      {maximum: 10, initial: 8, something: &#39;else&#39;})
+<pre><code class="hljs lang-js">L.set(maximum, 5, {maximum: 10, initial: 8, something: &#39;else&#39;})
 </code></pre>
 <h3><a id="collection-toggle"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#collection-toggle">■</a> <a href="#collection-toggle">Collection toggle</a></h3>
 <p>A typical element of UIs that display a list of selectable items is a checkbox
@@ -2834,9 +2877,12 @@ lenses based on examining the data structure being manipulated.  Using
 branch based on the key in the currently examined node and the key that we are
 looking for.  So, here is our first attempt at a BST lens:</p>
 <pre><code class="hljs lang-js">var searchAttempt = key =&gt; L.lazy(rec =&gt; [
-  L.cond([n =&gt; !n || key === n.key, L.defaults({key})],
-         [n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec]],
-         [                          [&#39;greater&#39;, rec]])])
+  L.cond(
+    [n =&gt; !n || key === n.key, L.defaults({key})],
+    [n =&gt; key &lt; n.key, [&#39;smaller&#39;, rec]],
+    [[&#39;greater&#39;, rec]]
+  )
+])
 
 var valueOfAttempt = key =&gt; [searchAttempt(key), &#39;value&#39;]</code></pre>
 <p>Note that we also make use of the <a href="#L-lazy"><code>L.lazy</code></a> combinator to create a
@@ -2844,8 +2890,10 @@ recursive lens with a cyclic representation.</p>
 <p>This actually works to a degree.  We can use the <code>valueOfAttempt</code> lens
 constructor to build a binary tree.  Here is a little helper to build a tree
 from pairs:</p>
-<pre><code class="hljs lang-js">var fromPairs =
-  R.reduce((t, [k, v]) =&gt; L.set(valueOfAttempt(k), v, t), undefined)</code></pre>
+<pre><code class="hljs lang-js">var fromPairs = R.reduce(
+  (t, [k, v]) =&gt; L.set(valueOfAttempt(k), v, t),
+  undefined
+)</code></pre>
 <p>Now:</p>
 <pre><code class="hljs lang-js">var sampleBST = fromPairs([[3, &#39;g&#39;], [2, &#39;a&#39;], [1, &#39;m&#39;], [4, &#39;i&#39;], [5, &#39;c&#39;]])
 sampleBST
@@ -2867,9 +2915,12 @@ purpose.  Here is a naïve rewrite to fix a tree after value removal:</p>
 <p>Here is a working <code>search</code> lens and a <code>valueOf</code> lens constructor:</p>
 <pre><code class="hljs lang-js">var search = key =&gt; L.lazy(rec =&gt; [
   naiveBST,
-  L.cond([n =&gt; !n || key === n.key, L.defaults({key})],
-         [n =&gt; key &lt; n.key,         [&#39;smaller&#39;, rec]],
-         [                          [&#39;greater&#39;, rec]])])
+  L.cond(
+    [n =&gt; !n || key === n.key, L.defaults({key})],
+    [n =&gt; key &lt; n.key, [&#39;smaller&#39;, rec]],
+    [[&#39;greater&#39;, rec]]
+  )
+])
 
 var valueOf = key =&gt; [search(key), &#39;value&#39;]</code></pre>
 <p>Now we can also remove values from a binary tree:</p>
@@ -2888,9 +2939,8 @@ values of a BST:</p>
 <pre><code class="hljs lang-js">var values = L.lazy(rec =&gt; [
   L.optional,
   naiveBST,
-  L.branch({smaller: rec,
-            value: L.identity,
-            greater: rec})])</code></pre>
+  L.branch({smaller: rec, value: [], greater: rec})
+])</code></pre>
 <p>Given a binary tree <code>sampleBST</code> we can now manipulate it as a whole.  For
 example:</p>
 <pre><code class="hljs lang-js">L.join(&#39;-&#39;, values, sampleBST)
@@ -2966,10 +3016,12 @@ var isoList = L.iso(fromList, toList)</code></pre>
 <pre><code class="hljs lang-js">L.remove([seqList, L.when(c =&gt; c &lt; &#39;i&#39;)], sampleList)
 </code></pre>
 <p>And:</p>
-<pre><code class="hljs lang-js">L.joinAs(R.toUpper,
-         &#39;&#39;,
-         [seqList, L.when(c =&gt; c &lt;= &#39;i&#39;)],
-         sampleList)
+<pre><code class="hljs lang-js">L.joinAs(
+  R.toUpper,
+  &#39;&#39;,
+  [seqList, L.when(c =&gt; c &lt;= &#39;i&#39;)],
+  sampleList
+)
 </code></pre>
 <h2><a id="deepening-topics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#deepening-topics">■</a> <a href="#deepening-topics">Deepening topics</a></h2>
 <h3><a id="understanding-filter-find-select-and-when"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#understanding-filter-find-select-and-when">■</a> <a href="#understanding-filter-find-select-and-when">Understanding <code>L.filter</code>, <code>L.find</code>, <code>L.select</code>, and <code>L.when</code></a></h3>
@@ -3036,10 +3088,12 @@ computed</a>.</p>
 <p>Traversals do not materialize intermediate aggregates and it is useful to
 understand this performance characteristic.</p>
 <p>Consider the following naïve use of <a href="http://ramdajs.com/">Ramda</a>:</p>
-<pre><code class="hljs lang-js">var sumPositiveXs = R.pipe(R.flatten,
-                             R.map(R.prop(&#39;x&#39;)),
-                             R.filter(R.lt(0)),
-                             R.sum)
+<pre><code class="hljs lang-js">var sumPositiveXs = R.pipe(
+  R.flatten,
+  R.map(R.prop(&#39;x&#39;)),
+  R.filter(R.lt(0)),
+  R.sum
+)
 
 var sampleXs = [[{x: 1}], [{x: -2}, {x: 2}]]
 
@@ -3091,7 +3145,7 @@ from this library.</p>
 <p>For best results, increasing the number of compression passes may allow UglifyJS
 to eliminate more dead code.  Here is a sample snippet from a Rollup config:</p>
 <pre><code class="hljs lang-jsx">import replace from &#39;rollup-plugin-replace&#39;
-import uglify  from &#39;rollup-plugin-uglify&#39;
+import {uglify} from &#39;rollup-plugin-uglify&#39;
 // ...
 
 export default {
@@ -3595,17 +3649,22 @@ are given the following data:</p>
   extra: &#39;crap&#39;,
   that: [
     &#39;we&#39;,
-    {want: &#39;to&#39;,
-     filter: [&#39;out&#39;],
-     including: {the: &#39;following&#39;,
-                 extra: true,
-                 fields: 1}}]
+    {
+      want: &#39;to&#39;,
+      filter: [&#39;out&#39;],
+      including: {the: &#39;following&#39;, extra: true, fields: 1}
+    }
+  ]
 }</code></pre>
 <p>We can now remove the <code>extra</code> <code>fields</code> like this:</p>
-<pre><code class="hljs lang-js">transform(R.ifElse(R.allPass([R.is(Object), R.complement(R.is(Array))]),
-                   L.remove(L.props(&#39;extra&#39;, &#39;fields&#39;)),
-                   R.identity),
-          sampleBloated)
+<pre><code class="hljs lang-js">transform(
+  R.ifElse(
+    R.allPass([R.is(Object), R.complement(R.is(Array))]),
+    L.remove(L.props(&#39;extra&#39;, &#39;fields&#39;)),
+    R.identity
+  ),
+  sampleBloated
+)
 </code></pre>
 <h3><a id="related-work"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#related-work">■</a> <a href="#related-work">Related work</a></h3>
 <p>Lenses are an old concept and there are dozens of academic papers on lenses and
