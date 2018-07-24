@@ -1189,6 +1189,8 @@ with nested data structures.
 `L.compose` creates a nested composition of the given optics and ordinary
 functions such that in `L.compose(bigger, smaller)` the `smaller` optic can only
 see and manipulate the part of the whole as seen through the `bigger` optic.
+See also [`L.toFunction`](#L-toFunction).
+
 The following equations characterize composition:
 
 ```jsx
@@ -1748,13 +1750,22 @@ promises in which case the approximation can be close enough.
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
 
 `L.toFunction` converts a given optic, which can be a [string](#L-prop), an
-[integer](#L-index), an [array](#L-compose), or a function to a function.  This
-can be useful for implementing new combinators that cannot otherwise be
+[integer](#L-index), an [array](#L-compose), or a function to an optic function.
+
+```
+optic = string
+      | number
+      | [ ...optic ]
+      | (x, i) => /* ordinary function = read-only optic */
+      | (x, i, F, xi2yF) => /* optic function */
+```
+
+This can be useful for implementing new combinators that cannot otherwise be
 implemented using the combinators provided by this library.  See also
 [`L.traverse`](#L-traverse).
 
-For [isomorphisms](#isomorphisms) and [lenses](#lenses), the returned function
-will have the signature
+For [isomorphisms](#isomorphisms) and [lenses](#lenses), the returned optic
+function will have the signature
 
 ```jsx
 (Maybe s, Index, Functor c, (Maybe a, Index) -> c b) -> c t

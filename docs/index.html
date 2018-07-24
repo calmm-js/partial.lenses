@@ -1094,7 +1094,8 @@ with nested data structures.</p>
 <p><code>L.compose</code> creates a nested composition of the given optics and ordinary
 functions such that in <code>L.compose(bigger, smaller)</code> the <code>smaller</code> optic can only
 see and manipulate the part of the whole as seen through the <code>bigger</code> optic.
-The following equations characterize composition:</p>
+See also <a href="#L-toFunction"><code>L.toFunction</code></a>.</p>
+<p>The following equations characterize composition:</p>
 <pre><code class="hljs lang-jsx">                  L.compose() = L.identity
                  L.compose(l) = l
 L.modify(L.compose(o, ...os)) = R.compose(L.modify(o), ...os.map(L.modify))
@@ -1446,12 +1447,16 @@ which explains the &quot;monadish&quot;.  Fortunately one usually does not want 
 promises in which case the approximation can be close enough.</p>
 <h5><a id="L-toFunction"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-toFunction">■</a> <a href="#L-toFunction" title="L.toFunction: POptic s t a b -&gt; (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -&gt; c b) -&gt; c t"><code>L.toFunction(optic) ~&gt; optic</code></a> <small><sup>v7.0.0</sup></small></h5>
 <p><code>L.toFunction</code> converts a given optic, which can be a <a href="#L-prop">string</a>, an
-<a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to a function.  This
-can be useful for implementing new combinators that cannot otherwise be
+<a href="#L-index">integer</a>, an <a href="#L-compose">array</a>, or a function to an optic function.</p>
+<pre><code>optic = string
+      | number
+      | [ ...optic ]
+      | (x, i) =&gt; /* ordinary function = read-only optic */
+      | (x, i, F, xi2yF) =&gt; /* optic function */</code></pre><p>This can be useful for implementing new combinators that cannot otherwise be
 implemented using the combinators provided by this library.  See also
 <a href="#L-traverse"><code>L.traverse</code></a>.</p>
-<p>For <a href="#isomorphisms">isomorphisms</a> and <a href="#lenses">lenses</a>, the returned function
-will have the signature</p>
+<p>For <a href="#isomorphisms">isomorphisms</a> and <a href="#lenses">lenses</a>, the returned optic
+function will have the signature</p>
 <pre><code class="hljs lang-jsx">(Maybe s, Index, Functor c, (Maybe a, Index) -&gt; c b) -&gt; c t</code></pre>
 <p>for <a href="#traversals">traversals</a> the signature will be</p>
 <pre><code class="hljs lang-jsx">(Maybe s, Index, Applicative c, (Maybe a, Index) -&gt; c b) -&gt; c t</code></pre>
