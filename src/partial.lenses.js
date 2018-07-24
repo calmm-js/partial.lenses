@@ -1495,6 +1495,8 @@ export function get(l, s) {
 
 export const lens = I.curry(lensU)
 
+export const getter = get => (x, i, F, xi2yF) => xi2yF(get(x, i), i)
+
 export const setter = lens(id)
 
 export const foldTraversalLens = I.curry(function foldTraversalLens(

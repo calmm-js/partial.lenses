@@ -313,6 +313,11 @@ export const lens = T.fn(
   T_lens
 )
 
+export const getter = T.fn(
+  [T.fn([T_maybeDataO, T_index], T_maybeDataI)],
+  T_lens
+)
+
 export const setter = T.fn(
   [T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)],
   T_lens

@@ -266,6 +266,7 @@ describe('arities', () => {
     get: 2,
     getInverse: 2,
     getLog: 2,
+    getter: 1,
     identity: 4,
     ifElse: 3,
     iftes: 2,
@@ -542,6 +543,10 @@ describe('L.reread', () => {
   testEq(() => L.get(L.reread(x => x - 1), undefined), undefined)
   testEq(() => L.set(L.reread(x => x - 1), undefined, 1), undefined)
   testEq(() => L.set(L.reread(x => x - 1), 3, 1), 3)
+})
+
+describe('L.getter', () => {
+  testEq(() => L.get(['x', L.getter(R.pair)], {x: 101}), [101, 'x'])
 })
 
 describe('L.setter', () => {

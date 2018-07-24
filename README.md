@@ -155,6 +155,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.getLog(lens, maybeData) ~> maybeValue`](#L-getLog "L.getLog: PLens s a -> Maybe s -> Maybe a") <small><sup>v13.14.0</sup></small>
     * [Creating new lenses](#creating-new-lenses)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
+      * [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
       * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
       * [`L.foldTraversalLens((traversal, maybeData) => maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
     * [Enforcing invariants](#enforcing-invariants)
@@ -2939,9 +2940,15 @@ adding dependency to [Moment.js](http://momentjs.com/).
 See the [Interfacing with Immutable.js](#interfacing) section for another
 example of using `L.lens`.
 
+##### <a id="L-getter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setter) [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
+
+`L.getter(get)` is shorthand for [`L.lens(get, x => x)`](#L-lens).  See also
+[`L.reread`](#L-reread).
+
 ##### <a id="L-setter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setter) [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
 
-`L.setter(set)` is shorthand for [`L.lens(x => x, set)`](#L-lens).
+`L.setter(set)` is shorthand for [`L.lens(x => x, set)`](#L-lens).  See also
+[`L.rewrite`](#L-rewrite).
 
 ##### <a id="L-foldTraversalLens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-foldTraversalLens) [`L.foldTraversalLens((traversal, maybeData) => maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
 
@@ -3042,12 +3049,14 @@ undefined)`](#L-replace).
 ##### <a id="L-reread"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-reread) [`L.reread((valueIn, index) => maybeValueIn) ~> lens`](#L-reread "L.reread: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v11.21.0</sup></small>
 
 `L.reread` maps the value with the given transform on read and implicitly maps
-`undefined` to `undefined`.  See also [`L.normalize`](#L-normalize).
+`undefined` to `undefined`.  See also [`L.normalize`](#L-normalize) and
+[`L.getter`](#L-getter).
 
 ##### <a id="L-rewrite"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-rewrite) [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v5.1.0</sup></small>
 
 `L.rewrite` maps the value with the given transform when written and implicitly
-maps `undefined` to `undefined`.  See also [`L.normalize`](#L-normalize).
+maps `undefined` to `undefined`.  See also [`L.normalize`](#L-normalize) and
+[`L.setter`](#L-setter).
 
 One use case for `rewrite` is to re-establish data structure invariants after
 changes.
@@ -3526,6 +3535,9 @@ L.set(L.valueOr(0), 0, 1)
 L.remove(L.valueOr(0), 1)
 // undefined
 ```
+
+Note that `L.valueOr(otherwise)` is equivalent to [`L.getter(x => x != null ?
+x : otherwise)`](#L-getter).
 
 #### <a id="transforming-data"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#transforming-data) [Transforming data](#transforming-data)
 
