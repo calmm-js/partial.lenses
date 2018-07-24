@@ -1068,6 +1068,33 @@ export const optional = when(I.isDefined)
 
 export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
 
+// Indices
+
+export const mapIx = ix2j =>
+  function mapIx(x, i, F, xj2yF) {
+    return xj2yF(x, ix2j(i, x))
+  }
+
+export const setIx = j =>
+  function setIx(x, _i, _F, xj2yF) {
+    return xj2yF(x, j)
+  }
+
+export const tieIx = I.curry(function tieIx(ij2k, o) {
+  o = toFunction(o)
+  return copyName(
+    (x, i, F, yk2zF) => o(x, i, F, (y, j) => yk2zF(y, ij2k(j, i))),
+    o
+  )
+})
+
+export const joinIx = setName(
+  tieIx((j, i) => (void 0 !== i ? (void 0 !== j ? [i, j] : i) : j)),
+  'joinIx'
+)
+
+export const skipIx = setName(tieIx(I.sndU), 'skipIx')
+
 // Debugging
 
 export function log() {

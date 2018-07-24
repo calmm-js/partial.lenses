@@ -74,6 +74,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.unless((maybeValue, index) => testable) ~> optic`](#L-unless "L.unless: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v12.1.0</sup></small>
       * [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
       * [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
+    * [Indices](#indices)
+      * [`L.joinIx(optic) ~> optic`](#L-joinIx "L.joinIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
+      * [`L.mapIx((index, maybeValue) => index) ~> optic`](#L-mapIx "L.mapIx: ((Index, Maybe a) -> Index) -> POptic a a") <small><sup>v13.15.0</sup></small>
+      * [`L.setIx(index) ~> optic`](#L-setIx "L.setIx: Index -> POptic a a") <small><sup>v13.15.0</sup></small>
+      * [`L.skipIx(optic) ~> optic`](#L-skipIx "L.skipIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
+      * [`L.tieIx((innerIndex, outerIndex) => index, optic) ~> optic`](#L-tieIx "L.tieIx: ((Index, Index) => Index) -> POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
     * [Debugging](#debugging)
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
@@ -836,7 +842,7 @@ L.modify(L.values, (value, key) => ({key, value}), {x: 1, y: 2})
 
 Only optics directly operating on array elements and object properties produce
 indices.  Most optics do not have an index of their own and they pass the index
-given by the preceding optic as their focus.  For example, [`L.when`](#L-when)
+given by the preceding optic as their index.  For example, [`L.when`](#L-when)
 doesn't have an index by itself, but it passes through the index provided by the
 preceding optic:
 
@@ -858,10 +864,23 @@ L.collectAs(
 ```
 
 When accessing a focus deep inside a data structure, the indices along the path
-to the focus are not collected into a path.  However, it is possible to define
-combinators to construct paths.  The reason for not collecting paths by default
-is that doing so would be relatively expensive due to additional allocations.
-The [`L.choose`](#L-choose) combinator can be useful in cases where there is a
+to the focus are not collected into a path.  However, it is possible to use
+[index manipulating combinators](#indices) to construct paths of indices and
+more.  For example:
+
+```js
+L.collectAs(
+  (value, path) => [L.collect(L.flatten, path), value],
+  L.lazy(rec => L.ifElse(R.is(Object), [L.joinIx(L.children), rec], [])),
+  {a: {b: {c: 'abc'}}, x: [{y: [{z: 'xyz'}]}]}
+)
+// [ [ [ "a", "b", "c", ], "abc", ],
+//   [ [ "x", 0, "y", 0, "z", ], "xyz", ] ]
+```
+
+The reason for not collecting paths by default is that doing so would be
+relatively expensive due to the additional allocations.  The
+[`L.choose`](#L-choose) combinator can also be useful in cases where there is a
 need to access some index or context along the path to a focus.
 
 #### <a id="on-immutability"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#on-immutability) [On immutability](#on-immutability)
@@ -1571,6 +1590,107 @@ L.collect(
 )
 // [ 2, 3, 4 ]
 ```
+
+#### <a id="indices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#indices) [Indices](#indices)
+
+The indexing combinators allow one to manipulate the indices passed down by
+optics.  Although [optics do not construct paths by default](#on-indexing) one
+can use the indexing combinators to construct paths.  Because optics do not
+generally depend on the index values, it is also possible to use the index to
+pass down arbitrary information.  For example, one could collect contexts or a
+list of values from the path to the focus and pass that down as the index.
+
+##### <a id="L-joinIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-joinIx) [`L.joinIx(optic) ~> optic`](#L-joinIx "L.joinIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
+
+`L.joinIx` pairs the index produced by the inner optic with the incoming outer
+index to form a (nested) path.  In case either index is `undefined`, no pair is
+constructed and the other index is produced as is.  See also
+[`L.skipIx`](#L-skipIx) and [`L.mapIx`](#L-mapIx).
+
+For example:
+
+```js
+L.get(
+  [
+    L.joinIx('a'),
+    L.joinIx('b'),
+    L.joinIx('c'),
+    R.pair
+  ],
+  {a: {b: {c: 'abc'}}}
+)
+// [ 'abc', [ [ 'a', 'b' ], 'c' ] ]
+```
+
+##### <a id="L-mapIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-mapIx) [`L.mapIx((index, maybeValue) => index) ~> optic`](#L-mapIx "L.mapIx: ((Index, Maybe a) -> Index) -> POptic a a") <small><sup>v13.15.0</sup></small>
+
+`L.mapIx` passes the value returned by the given function as the index.
+
+For example:
+
+```js
+L.get(
+  [
+    L.joinIx('a'),
+    L.joinIx('b'),
+    L.joinIx('c'),
+    L.mapIx(L.collect(L.flatten)),
+    R.pair
+  ],
+  {a: {b: {c: 'abc'}}}
+)
+// [ 'abc', [ 'a', 'b', 'c' ] ]
+```
+
+##### <a id="L-setIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setIx) [`L.setIx(index) ~> optic`](#L-setIx "L.setIx: Index -> POptic a a") <small><sup>v13.15.0</sup></small>
+
+`L.setIx` passes the given value as the index.  Note that `L.setIx(v)` is
+equivalent to [`L.mapIx(R.always(v))`](#L-mapIx).  See also
+[`L.tieIx`](#L-tieIx) and [`List` indexing](#list-indexing).
+
+##### <a id="L-skipIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-skipIx) [`L.skipIx(optic) ~> optic`](#L-skipIx "L.skipIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
+
+`L.skipIx` passes the incoming outer index as the index from the optic.  See
+also [`L.joinIx`](#L-joinIx).
+
+For example:
+
+```js
+L.get(
+  [
+    L.joinIx('a'),
+    L.skipIx('b'),
+    L.joinIx('c'),
+    R.pair
+  ],
+  {a: {b: {c: 'abc'}}}
+)
+// [ 'abc', [ 'a', 'c' ] ]
+```
+
+##### <a id="L-tieIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-tieIx)[`L.tieIx((innerIndex, outerIndex) => index, optic) ~> optic`](#L-tieIx "L.tieIx: ((Index, Index) => Index) -> POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
+
+`L.tieIx` sets the index to the result of the given function on the index
+produced by the wrapped optic and the index passed from the outer context.
+
+For example:
+
+```js
+L.get(
+  [
+    L.setIx([]),
+    L.tieIx(R.append, 'a'),
+    L.tieIx(R.append, 'b'),
+    L.tieIx(R.append, 'c'),
+    R.pair
+  ],
+  {a: {b: {c: 'abc'}}}
+)
+// [ 'abc', [ 'a', 'b', 'c' ] ]
+```
+
+Note that both [`L.skipIx`](#L-skipIx) and [`L.joinIx`](#L-joinIx) can be
+implemented via `L.tieIx`.
 
 #### <a id="debugging"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#debugging) [Debugging](#debugging)
 
@@ -4278,13 +4398,14 @@ const setList = i => (x, xs) => {
   return xs.delete(i)
 }
 
-const idxList = i => L.lens(getList(i), setList(i))
+const idxList = i => [L.lens(getList(i), setList(i)), L.setIx(i)]
 ```
 
 Note how the above uses `isList` to check the input.  When viewing, in case the
 input is not a `List`, the proper result is `undefined`.  When updating the
 proper way to handle a non-`List` is to treat it as empty.  Also, when updating,
-we treat `undefined` as a request to `delete` rather than `set`.
+we treat `undefined` as a request to `delete` rather than `set`.  `idxList` also
+uses [`L.setIx`](#L-setIx) to set the index to the given index `i`.
 
 We can now view existing elements:
 

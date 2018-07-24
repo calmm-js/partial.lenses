@@ -278,6 +278,7 @@ describe('arities', () => {
     iso: 2,
     join: 3,
     joinAs: 4,
+    joinIx: 1,
     json: 1,
     keyed: 4,
     keys: 4,
@@ -286,6 +287,7 @@ describe('arities', () => {
     leafs: 4,
     lens: 2,
     log: 0,
+    mapIx: 1,
     matches: 1,
     maximum: 2,
     maximumBy: 3,
@@ -328,15 +330,18 @@ describe('arities', () => {
     selectAs: 3,
     seq: 0,
     set: 3,
+    setIx: 1,
     setOp: 1,
     setter: 1,
     singleton: 4,
+    skipIx: 1,
     slice: 2,
     split: 1,
     subtract: 1,
     suffix: 1,
     sum: 2,
     sumAs: 3,
+    tieIx: 2,
     toFunction: 1,
     transform: 2,
     transformAsync: 2,
@@ -2065,6 +2070,66 @@ describe('L.flat', () => {
         {a: {b: {c: [[[3]]]}}}
       ]),
     [{a: [[{b: {c: -1}}], [{b: [{c: -2}]}]]}, {a: {b: {c: [[[-3]]]}}}]
+  )
+})
+
+describe('ix', () => {
+  const leavesWithKeys = L.lazy(rec =>
+    L.cond(
+      [R.is(Array), [L.skipIx(L.elems), rec]],
+      [R.is(Object), [L.joinIx(L.values), rec]],
+      [L.mapIx(L.collect(L.flatten))]
+    )
+  )
+  testEq(
+    () =>
+      L.modify(leavesWithKeys, (value, keys) => ({value, keys}), {
+        l1: [{l2: {l3: [1]}, l4: 2}]
+      }),
+    {
+      l1: [
+        {
+          l2: {l3: [{value: 1, keys: ['l1', 'l2', 'l3']}]},
+          l4: {value: 2, keys: ['l1', 'l4']}
+        }
+      ]
+    }
+  )
+
+  const leavesWithContexts = [
+    L.setIx([]),
+    L.lazy(rec =>
+      L.cond(
+        [R.is(Array), [L.skipIx(L.elems), rec]],
+        [R.is(Object), [L.mapIx((i, v) => [...i, v]), L.skipIx(L.values), rec]],
+        [[]]
+      )
+    )
+  ]
+  testEq(
+    () =>
+      X.modify(leavesWithContexts, (value, contexts) => ({value, contexts}), {
+        l1: [{l2: {l3: [1]}}]
+      }),
+    {
+      l1: [
+        {
+          l2: {
+            l3: [
+              {
+                value: 1,
+                contexts: [{l1: [{l2: {l3: [1]}}]}, {l2: {l3: [1]}}, {l3: [1]}]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  )
+
+  testEq(
+    () => L.selectAs((v, i) => [v, i], ['foo', L.setIx('bar')], {foo: 101}),
+    [101, 'bar']
   )
 })
 
