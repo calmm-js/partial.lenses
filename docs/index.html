@@ -229,6 +229,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
 <li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
+<li><a href="#L-getter" title="L.getter: ((Maybe s, Index) -&gt; Maybe a) -&gt; PLens s a"><code>L.getter((maybeData, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v13.16.0</sup></small></li>
 <li><a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v10.3.0</sup></small></li>
 <li><a href="#L-foldTraversalLens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) =&gt; maybeValue, traversal) ~&gt; lens</code></a> <small><sup>v11.5.0</sup></small></li>
 </ul>
@@ -2161,8 +2162,12 @@ the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 <p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
 example of using <code>L.lens</code>.</p>
+<h5><a id="L-getter"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-setter">■</a> <a href="#L-getter" title="L.getter: ((Maybe s, Index) -&gt; Maybe a) -&gt; PLens s a"><code>L.getter((maybeData, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v13.16.0</sup></small></h5>
+<p><code>L.getter(get)</code> is shorthand for <a href="#L-lens"><code>L.lens(get, x =&gt; x)</code></a>.  See also
+<a href="#L-reread"><code>L.reread</code></a>.</p>
 <h5><a id="L-setter"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-setter">■</a> <a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v10.3.0</sup></small></h5>
-<p><code>L.setter(set)</code> is shorthand for <a href="#L-lens"><code>L.lens(x =&gt; x, set)</code></a>.</p>
+<p><code>L.setter(set)</code> is shorthand for <a href="#L-lens"><code>L.lens(x =&gt; x, set)</code></a>.  See also
+<a href="#L-rewrite"><code>L.rewrite</code></a>.</p>
 <h5><a id="L-foldTraversalLens"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-foldTraversalLens">■</a> <a href="#L-foldTraversalLens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) =&gt; maybeValue, traversal) ~&gt; lens</code></a> <small><sup>v11.5.0</sup></small></h5>
 <p><code>L.foldTraversalLens</code> creates a lens from a fold and a traversal.  To make
 sense, the fold should compute or pick a representative from the elements
@@ -2219,10 +2224,12 @@ is removed, the given value will be substituted instead.</p>
 undefined)</code></a>.</p>
 <h5><a id="L-reread"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-reread">■</a> <a href="#L-reread" title="L.reread: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.reread((valueIn, index) =&gt; maybeValueIn) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.reread</code> maps the value with the given transform on read and implicitly maps
-<code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a>.</p>
+<code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a> and
+<a href="#L-getter"><code>L.getter</code></a>.</p>
 <h5><a id="L-rewrite"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-rewrite">■</a> <a href="#L-rewrite" title="L.rewrite: ((s, Index) -&gt; Maybe s) -&gt; PLens s s"><code>L.rewrite((valueOut, index) =&gt; maybeValueOut) ~&gt; lens</code></a> <small><sup>v5.1.0</sup></small></h5>
 <p><code>L.rewrite</code> maps the value with the given transform when written and implicitly
-maps <code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a>.</p>
+maps <code>undefined</code> to <code>undefined</code>.  See also <a href="#L-normalize"><code>L.normalize</code></a> and
+<a href="#L-setter"><code>L.setter</code></a>.</p>
 <p>One use case for <code>rewrite</code> is to re-establish data structure invariants after
 changes.</p>
 <p>See the <a href="#bst-as-a-lens">BST as a lens</a> section for a meaningful example.</p>
@@ -2527,6 +2534,8 @@ lens.  See also <a href="#L-defaults"><code>L.defaults</code></a>.</p>
 </code></pre>
 <pre><code class="hljs lang-js">L.remove(L.valueOr(0), 1)
 </code></pre>
+<p>Note that <code>L.valueOr(otherwise)</code> is equivalent to <a href="#L-getter"><code>L.getter(x =&gt; x != null ?
+x : otherwise)</code></a>.</p>
 <h4><a id="transforming-data"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#transforming-data">■</a> <a href="#transforming-data">Transforming data</a></h4>
 <h5><a id="L-pick"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-pick">■</a> <a href="#L-pick" title="L.pick: {p1: PLens s a1, ...pls} -&gt; PLens s {p1: a1, ...pls}"><code>L.pick({prop: lens, ...props}) ~&gt; lens</code></a> <small><sup>v1.2.0</sup></small></h5>
 <p><code>L.pick</code> creates a lens out of the given possibly nested object template of

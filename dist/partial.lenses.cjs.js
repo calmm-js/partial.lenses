@@ -1642,6 +1642,12 @@ function get(l, s) {
 
 var lens = /*#__PURE__*/I.curry(lensU);
 
+var getter = function getter(get) {
+  return function (x, i, F, xi2yF) {
+    return xi2yF(get(x, i), i);
+  };
+};
+
 var setter = /*#__PURE__*/lens(id);
 
 var foldTraversalLens = /*#__PURE__*/I.curry(function foldTraversalLens(fold, traversal) {
@@ -2123,6 +2129,7 @@ exports.sumAs = sumAs;
 exports.sum = sum;
 exports.get = get;
 exports.lens = lens;
+exports.getter = getter;
 exports.setter = setter;
 exports.foldTraversalLens = foldTraversalLens;
 exports.defaults = defaults;

@@ -1638,6 +1638,12 @@ function get(l, s) {
 
 var lens = /*#__PURE__*/curry(lensU);
 
+var getter = function getter(get) {
+  return function (x, i, F, xi2yF) {
+    return xi2yF(get(x, i), i);
+  };
+};
+
 var setter = /*#__PURE__*/lens(id$1);
 
 var foldTraversalLens = /*#__PURE__*/curry(function foldTraversalLens(fold, traversal) {
@@ -2029,4 +2035,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, log, getLog, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, log, getLog, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
