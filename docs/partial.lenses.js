@@ -1143,14 +1143,6 @@
 
   var set = /*#__PURE__*/I.curry(setU);
 
-  var transform = /*#__PURE__*/I.curry(function transform(o, s) {
-    return modifyU(o, id, s);
-  });
-
-  var transformAsync = /*#__PURE__*/I.curry(function transformAsync(o, s) {
-    return modifyAsyncU(o, id, s);
-  });
-
   var traverse = /*#__PURE__*/I.curry(traverseU);
 
   // Nesting
@@ -1294,25 +1286,34 @@
     return zeroOp(x, i, C, xi2yC);
   };
 
-  // Transforming
+  // Indices
 
-  var assignOp = function assignOp(x) {
-    return [propsOf(x), setOp(x)];
-  };
-
-  var modifyOp = function modifyOp(xi2y) {
-    return function modifyOp(x, i, C, xi2yC) {
-      return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
+  var mapIx = function mapIx(ix2j) {
+    return function mapIx(x, i, F, xj2yF) {
+      return xj2yF(x, ix2j(i, x));
     };
   };
 
-  var setOp = function setOp(y) {
-    return function setOp(_x, i, C, xi2yC) {
-      return zeroOp(y, i, C, xi2yC, y);
+  var setIx = function setIx(j) {
+    return function setIx(x, _i, _F, xj2yF) {
+      return xj2yF(x, j);
     };
   };
 
-  var removeOp = /*#__PURE__*/setOp();
+  var tieIx = /*#__PURE__*/I.curry(function tieIx(ij2k, o) {
+    o = toFunction(o);
+    return copyName(function (x, i, F, yk2zF) {
+      return o(x, i, F, function (y, j) {
+        return yk2zF(y, ij2k(j, i));
+      });
+    }, o);
+  });
+
+  var joinIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(function (j, i) {
+    return void 0 !== i ? void 0 !== j ? [i, j] : i : j;
+  }), 'joinIx');
+
+  var skipIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(I.sndU), 'skipIx');
 
   // Debugging
 
@@ -1334,6 +1335,16 @@
     return c;
   });
 
+  // Operations on transforms
+
+  var transform = /*#__PURE__*/I.curry(function transform(o, s) {
+    return modifyU(o, id, s);
+  });
+
+  var transformAsync = /*#__PURE__*/I.curry(function transformAsync(o, s) {
+    return modifyAsyncU(o, id, s);
+  });
+
   // Sequencing
 
   var seq = /*#__PURE__*/(function (fn$$1) {
@@ -1351,6 +1362,26 @@
     }
     return r;
   });
+
+  // Transforming
+
+  var assignOp = function assignOp(x) {
+    return [propsOf(x), setOp(x)];
+  };
+
+  var modifyOp = function modifyOp(xi2y) {
+    return function modifyOp(x, i, C, xi2yC) {
+      return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
+    };
+  };
+
+  var setOp = function setOp(y) {
+    return function setOp(_x, i, C, xi2yC) {
+      return zeroOp(y, i, C, xi2yC, y);
+    };
+  };
+
+  var removeOp = /*#__PURE__*/setOp();
 
   // Creating new traversals
 
@@ -2008,8 +2039,6 @@
   exports.modifyAsync = modifyAsync;
   exports.remove = remove;
   exports.set = set;
-  exports.transform = transform;
-  exports.transformAsync = transformAsync;
   exports.traverse = traverse;
   exports.compose = compose;
   exports.flat = flat;
@@ -2027,13 +2056,20 @@
   exports.when = when;
   exports.optional = optional;
   exports.zero = zero;
+  exports.mapIx = mapIx;
+  exports.setIx = setIx;
+  exports.tieIx = tieIx;
+  exports.joinIx = joinIx;
+  exports.skipIx = skipIx;
+  exports.log = log;
+  exports.getLog = getLog;
+  exports.transform = transform;
+  exports.transformAsync = transformAsync;
+  exports.seq = seq;
   exports.assignOp = assignOp;
   exports.modifyOp = modifyOp;
   exports.setOp = setOp;
   exports.removeOp = removeOp;
-  exports.log = log;
-  exports.getLog = getLog;
-  exports.seq = seq;
   exports.branchOr = branchOr;
   exports.branch = branch;
   exports.branches = branches;

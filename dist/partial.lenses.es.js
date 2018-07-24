@@ -1143,14 +1143,6 @@ var remove = /*#__PURE__*/curry(function remove(o, s) {
 
 var set = /*#__PURE__*/curry(setU);
 
-var transform = /*#__PURE__*/curry(function transform(o, s) {
-  return modifyU(o, id$1, s);
-});
-
-var transformAsync = /*#__PURE__*/curry(function transformAsync(o, s) {
-  return modifyAsyncU(o, id$1, s);
-});
-
 var traverse = /*#__PURE__*/curry(traverseU);
 
 // Nesting
@@ -1294,25 +1286,34 @@ var zero = function zero(x, i, C, xi2yC) {
   return zeroOp(x, i, C, xi2yC);
 };
 
-// Transforming
+// Indices
 
-var assignOp = function assignOp(x) {
-  return [propsOf(x), setOp(x)];
-};
-
-var modifyOp = function modifyOp(xi2y) {
-  return function modifyOp(x, i, C, xi2yC) {
-    return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
+var mapIx = function mapIx(ix2j) {
+  return function mapIx(x, i, F, xj2yF) {
+    return xj2yF(x, ix2j(i, x));
   };
 };
 
-var setOp = function setOp(y) {
-  return function setOp(_x, i, C, xi2yC) {
-    return zeroOp(y, i, C, xi2yC, y);
+var setIx = function setIx(j) {
+  return function setIx(x, _i, _F, xj2yF) {
+    return xj2yF(x, j);
   };
 };
 
-var removeOp = /*#__PURE__*/setOp();
+var tieIx = /*#__PURE__*/curry(function tieIx(ij2k, o) {
+  o = toFunction(o);
+  return copyName(function (x, i, F, yk2zF) {
+    return o(x, i, F, function (y, j) {
+      return yk2zF(y, ij2k(j, i));
+    });
+  }, o);
+});
+
+var joinIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(function (j, i) {
+  return void 0 !== i ? void 0 !== j ? [i, j] : i : j;
+}), 'joinIx');
+
+var skipIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(sndU), 'skipIx');
 
 // Debugging
 
@@ -1334,6 +1335,16 @@ var getLog = /*#__PURE__*/curry(function getLog(l, s) {
   return c;
 });
 
+// Operations on transforms
+
+var transform = /*#__PURE__*/curry(function transform(o, s) {
+  return modifyU(o, id$1, s);
+});
+
+var transformAsync = /*#__PURE__*/curry(function transformAsync(o, s) {
+  return modifyAsyncU(o, id$1, s);
+});
+
 // Sequencing
 
 var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
@@ -1351,6 +1362,26 @@ var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function 
   }
   return r;
 });
+
+// Transforming
+
+var assignOp = function assignOp(x) {
+  return [propsOf(x), setOp(x)];
+};
+
+var modifyOp = function modifyOp(xi2y) {
+  return function modifyOp(x, i, C, xi2yC) {
+    return zeroOp(x = xi2y(x, i), i, C, xi2yC, x);
+  };
+};
+
+var setOp = function setOp(y) {
+  return function setOp(_x, i, C, xi2yC) {
+    return zeroOp(y, i, C, xi2yC, y);
+  };
+};
+
+var removeOp = /*#__PURE__*/setOp();
 
 // Creating new traversals
 
@@ -1998,4 +2029,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, transform, transformAsync, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, assignOp, modifyOp, setOp, removeOp, log, getLog, seq, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Constant, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, iftes, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, log, getLog, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, selectAs, select, sumAs, sum, get, lens, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
