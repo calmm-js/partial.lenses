@@ -194,6 +194,10 @@ describe('L.log', () => {
 
 describe('L.getLog', () => {
   testEq(() => L.getLog(['x', 0, 'y'], {x: [{y: 101}]}), 101)
+  testEq(
+    () => L.getLog(['data', L.elems, 'y'], {data: [{x: 1}, {y: 2}, {y: 3}]}),
+    2
+  )
 })
 
 describe('L.compose', () => {
@@ -219,9 +223,9 @@ describe('L.identity', () => {
 
 describe('arities', () => {
   const arities = {
-    Constant: undefined,
     Identity: undefined,
     IdentityAsync: undefined,
+    Select: undefined,
     add: 1,
     all: 3,
     and: 2,
@@ -271,12 +275,12 @@ describe('arities', () => {
     forEach: 3,
     forEachWith: 4,
     get: 2,
+    getAs: 3,
     getInverse: 2,
     getLog: 2,
     getter: 1,
     identity: 4,
     ifElse: 3,
-    iftes: 2,
     index: 1,
     indexed: 4,
     inverse: 1,
@@ -570,7 +574,7 @@ describe('L.setter', () => {
 
 describe('L.zero', () => {
   testEq(() => L.get(L.zero, 'anything'), undefined)
-  testEq(() => L.get([L.zero, L.valueOr('whatever')], 'anything'), 'whatever')
+  testEq(() => L.get([L.zero, L.valueOr('whatever')], 'anything'), undefined)
   testEq(() => L.set(L.zero, 'anything', 'original'), 'original')
   testEq(() => L.collect([L.elems, L.zero], [1, 3]), [])
   testEq(() => L.remove([L.elems, L.zero], [1, 2]), [1, 2])
@@ -908,7 +912,7 @@ describe('L.optional', () => {
 
 describe('L.when', () => {
   testEq(() => L.get(L.when(x => x > 2), 1), undefined)
-  testEq(() => L.get([L.when(x => x > 2), I.always(2)], 1), 2)
+  testEq(() => L.get([L.when(x => x > 2), I.always(2)], 1), undefined)
   testEq(() => L.get(L.when(x => x > 2), 3), 3)
   testEq(() => L.collect([L.elems, L.when(x => x > 2)], [1, 3, 2, 4]), [3, 4])
   testEq(
@@ -919,7 +923,7 @@ describe('L.when', () => {
 
 describe('L.unless', () => {
   testEq(() => L.get(L.unless(x => x <= 2), 1), undefined)
-  testEq(() => L.get([L.unless(x => x <= 2), I.always(2)], 1), 2)
+  testEq(() => L.get([L.unless(x => x <= 2), I.always(2)], 1), undefined)
   testEq(() => L.get(L.unless(x => x <= 2), 3), 3)
   testEq(() => L.collect([L.elems, L.unless(x => x <= 2)], [1, 3, 2, 4]), [
     3,
@@ -1408,12 +1412,13 @@ describe('L.seq', () => {
 })
 
 describe('lazy folds', () => {
-  testEq(() => L.select(flatten, [[[[[[[[[[101]]]]]]]]]]), 101)
-  testEq(() => L.select(L.elems, []), undefined)
-  testEq(() => L.select(L.values, {}), undefined)
+  testEq(() => L.get([L.elems, 'y'], [{x: 1}, {y: 2}, {z: 3}]), 2)
+  testEq(() => L.get(flatten, [[[[[[[[[[101]]]]]]]]]]), 101)
+  testEq(() => L.get(L.elems, []), undefined)
+  testEq(() => L.get(L.values, {}), undefined)
   testEq(
     () =>
-      L.selectAs((x, i) => (x > 3 ? [x + 2, i] : undefined), L.elems, [
+      L.getAs((x, i) => (x > 3 ? [x + 2, i] : undefined), L.elems, [
         3,
         1,
         4,
@@ -1424,7 +1429,7 @@ describe('lazy folds', () => {
   )
   testEq(
     () =>
-      L.selectAs((x, i) => (x > 3 ? [x + 2, i] : undefined), L.values, {
+      L.getAs((x, i) => (x > 3 ? [x + 2, i] : undefined), L.values, {
         a: 3,
         b: 1,
         c: 4,
@@ -1433,10 +1438,10 @@ describe('lazy folds', () => {
       }),
     [6, 'c']
   )
-  testEq(() => L.selectAs(_ => {}, L.values, {x: 1}), undefined)
+  testEq(() => L.getAs(_ => {}, L.values, {x: 1}), undefined)
   testEq(
     () =>
-      L.selectAs(x => (x < 9 ? undefined : [x]), flatten, [
+      L.getAs(x => (x < 9 ? undefined : [x]), flatten, [
         [[1], 2],
         {y: 3},
         [{l: 41, r: [5]}, {x: 6}]
@@ -1446,7 +1451,7 @@ describe('lazy folds', () => {
   testEq(
     () => {
       let n = 0
-      const v = X.selectAs(
+      const v = X.getAs(
         x => {
           n += 1
           return x === 42 ? x : undefined
@@ -1461,7 +1466,7 @@ describe('lazy folds', () => {
   testEq(
     () => {
       let n = 0
-      const v = X.selectAs(
+      const v = X.getAs(
         x => {
           n += 1
           return x === 42 ? x : undefined
@@ -1476,7 +1481,7 @@ describe('lazy folds', () => {
   testEq(
     () => {
       let n = 0
-      const v = X.selectAs(
+      const v = X.getAs(
         x => {
           n += 1
           return x === 42 ? x : undefined
@@ -1491,7 +1496,7 @@ describe('lazy folds', () => {
   testEq(
     () => {
       let n = 0
-      const v = X.selectAs(
+      const v = X.getAs(
         x => {
           n += 1
           return x === 'ba' ? x : undefined
@@ -1630,7 +1635,7 @@ describe('transforming', () => {
       L.transform([L.elems, L.when(x => x > 3), L.removeOp], [3, 1, 4, 1, 5]),
     [3, 1, 1]
   )
-  testEq(() => L.get(L.setOp(42), 101), 42)
+  testEq(() => L.get(L.setOp(42), 101), undefined)
   testEq(() => L.set(L.setOp(42), 96, 101), 42)
 })
 
@@ -1706,6 +1711,38 @@ describe('L.condOf', () => {
     [42, 101]
   )
   testEq(() => L.get(L.condOf([]), 'anything'), undefined)
+  testEq(
+    () =>
+      L.get(
+        L.condOf(
+          ['c', L.elems],
+          [R.equals(1), ['d', 0]],
+          [R.equals(2), ['d', 1]],
+          [R.equals(3), ['d', 2]]
+        ),
+        {
+          c: [3, 1, 2],
+          d: ['a', 'b', 'c']
+        }
+      ),
+    'a'
+  )
+  testEq(
+    () =>
+      L.get(
+        L.condOf(
+          ['c', L.elems],
+          [R.equals(1), ['d', 0]],
+          [R.equals(2), ['d', 1]],
+          [R.equals(3), ['d', 2]]
+        ),
+        {
+          c: [3, -1, 2],
+          d: ['a', 'b', 'c']
+        }
+      ),
+    'b'
+  )
 })
 
 describe('L.ifElse', () => {
@@ -1713,29 +1750,6 @@ describe('L.ifElse', () => {
   testEq(() => L.set(L.ifElse(R.not, L.setOp(1), L.zero), 3, 0), 1)
   testEq(() => L.transform(L.ifElse(R.not, L.setOp(1), L.setOp(0)), null), 1)
   testEq(() => L.transform(L.ifElse(R.not, L.setOp(1), L.setOp(0)), 2), 0)
-})
-
-describe('L.iftes', () => {
-  testEq(() => L.set(L.iftes(R.not, L.setOp(1)), 3, 2), 2)
-  testEq(() => L.set(L.iftes(R.not, L.setOp(1)), 3, 0), 1)
-  testEq(() => L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), null), 1)
-  testEq(() => L.transform(L.iftes(R.not, L.setOp(1), L.setOp(0)), 2), 0)
-  testEq(
-    () =>
-      L.transform(
-        L.iftes(R.equals(1), L.setOp(-1), R.equals(2), L.setOp(1), L.setOp(2)),
-        -1
-      ),
-    2
-  )
-  testEq(
-    () =>
-      L.transform(
-        L.iftes(R.equals(1), L.setOp(-1), R.equals(2), L.setOp(1), L.setOp(2)),
-        2
-      ),
-    1
-  )
 })
 
 describe('L.singleton', () => {
@@ -2141,11 +2155,11 @@ describe('ix', () => {
     }
   )
 
-  testEq(
-    () => L.selectAs((v, i) => [v, i], ['foo', L.setIx('bar')], {foo: 101}),
-    [101, 'bar']
-  )
-  testEq(() => L.selectAs(x => x + 1, x => x * 2, 3), 7)
+  testEq(() => L.getAs((v, i) => [v, i], ['foo', L.setIx('bar')], {foo: 101}), [
+    101,
+    'bar'
+  ])
+  testEq(() => L.getAs(x => x + 1, x => x * 2, 3), 7)
 })
 
 describe('async', () => {
@@ -2198,11 +2212,6 @@ if (process.env.NODE_ENV !== 'production') {
     testThrows(() => X.prop(2))
     testThrows(() => X.prop(x => x))
     testThrows(() => X.prop())
-
-    testThrows(() => L.get(L.elems, []))
-    testThrows(() => L.get(L.values, {}))
-    testThrows(() => L.get(L.branch({a: []}), {}))
-    testThrows(() => L.get(L.matches(/a/g), 'foo'))
 
     testThrows(() => L.set(L.props('length'), 'lol', undefined))
     testThrows(() => L.set(L.slice(undefined, undefined), 11, []))
@@ -2258,4 +2267,12 @@ describe('cloning avoidance', () => {
     y: [2],
     z: NaN
   })
+})
+
+describe('obsoleted', () => {
+  testEq(() => L.select([L.elems, 'x'], [{}, {x: 101}]), 101)
+  testEq(
+    () => L.selectAs(x => x + 1, [L.elems, 'x', L.optional], [{}, {x: 100}]),
+    101
+  )
 })

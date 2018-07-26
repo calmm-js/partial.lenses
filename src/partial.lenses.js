@@ -50,6 +50,8 @@ const singletonPartial = x => (void 0 !== x ? [x] : x)
 
 const expect = (p, f) => copyName(x => (p(x) ? f(x) : void 0), f)
 
+const freezeInDev = process.env.NODE_ENV === 'production' ? id : I.freeze
+
 function deepFreeze(x) {
   if (I.isArray(x)) {
     x.forEach(deepFreeze)
@@ -156,15 +158,26 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-const Select = {
-  map: I.sndU,
-  of: () => {},
-  ap: (l, r) => (void 0 !== l ? l : r)
+function Applicative(map, of, ap) {
+  if (!this) return freezeInDev(new Applicative(map, of, ap))
+  this.map = map
+  this.of = of
+  this.ap = ap
 }
 
-const ConcatOf = (ap, empty) => ({map: I.sndU, ap, of: I.always(empty)})
+const Monad = I.inherit(function Monad(map, of, ap, chain) {
+  if (!this) return freezeInDev(new Monad(map, of, ap, chain))
+  Applicative.call(this, map, of, ap)
+  this.chain = chain
+}, Applicative)
 
-const Sum = ConcatOf(I.addU, 0)
+//
+
+const ConstantWith = (ap, empty) => Applicative(I.sndU, I.always(empty), ap)
+
+const ConstantOf = ({concat, empty}) => ConstantWith(concat, empty())
+
+const Sum = ConstantWith(I.addU, 0)
 
 const mumBy = ord =>
   I.curry(function mumBy(xi2y, t, s) {
@@ -264,15 +277,6 @@ const reqMaybeArray = msg => zs => {
 
 //
 
-const reqApplicative = (name, arg) => C => {
-  if (!C.of)
-    errorGiven(
-      `\`${name}${arg ? `(${arg})` : ''}\` requires an applicative`,
-      C,
-      'Note that you cannot `get` a traversal. Perhaps you wanted to `collect` it?'
-    )
-}
-
 const reqMonad = name => C => {
   if (!C.chain)
     errorGiven(
@@ -325,10 +329,18 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
 
 //
 
-const ConstantLog = {
-  map: (f, {m, p, c}) => ({m: `%O <= ${m}`, p: [f(p[0]), p], c})
-}
-const getLogFn = x => ({m: '%O', p: [x, consExcept], c: x})
+const SelectLog = Applicative(
+  (f, {p, x, c}) => {
+    x = f(x)
+    if (!I.isFunction(x)) p = [x, p]
+    return {p, x, c}
+  },
+  x => ({p: [], x, c: undefined}),
+  (l, r) => {
+    const v = undefined !== l.c ? l : r
+    return {p: v.p, x: l.x(r.x), c: v.c}
+  }
+)
 
 //
 
@@ -428,40 +440,17 @@ const modifyU = (process.env.NODE_ENV === 'production'
 const modifyAsyncU = (o, f, s) =>
   returnAsync(toFunction(o)(s, void 0, IdentityAsync, f))
 
-function makeIx(i) {
-  const ix = (s, j) => ((ix.v = j), s)
-  ix.v = i
-  return ix
-}
-
-function getNestedU(l, s, j, ix) {
-  for (let n = l.length, o; j < n; ++j)
-    switch (typeof (o = l[j])) {
-      case 'string':
-        s = getProp((ix.v = o), s)
-        break
-      case 'number':
-        s = getIndex((ix.v = o), s)
-        break
-      case 'object':
-        s = getNestedU(o, s, 0, ix)
-        break
-      default:
-        s = o(s, ix.v, Constant, ix)
-    }
-  return s
-}
-
-const getU = (process.env.NODE_ENV === 'production'
+const getAsU = (process.env.NODE_ENV === 'production'
   ? id
-  : C.par(0, C.ef(reqOptic)))((l, s) => {
+  : C.par(1, C.ef(reqOptic)))(function getAs(xi2y, l, s) {
   switch (typeof l) {
     case 'string':
-      return getProp(l, s)
+      return xi2y(getProp(l, s), l)
     case 'number':
-      return getIndex(l, s)
-    case 'object':
-      for (let i = 0, n = l.length, o; i < n; ++i)
+      return xi2y(getIndex(l, s), l)
+    case 'object': {
+      const n = l.length
+      for (let i = 0, o; i < n; ++i)
         switch (typeof (o = l[i])) {
           case 'string':
             s = getProp(o, s)
@@ -470,11 +459,14 @@ const getU = (process.env.NODE_ENV === 'production'
             s = getIndex(o, s)
             break
           default:
-            return getNestedU(l, s, i, makeIx(l[i - 1]))
+            return composed(i, l)(s, l[i - 1], Select, xi2y)
         }
-      return s
+      return xi2y(s, l[n - 1])
+    }
     default:
-      return l(s, void 0, Constant, id)
+      return xi2y !== id && l.length !== 4
+        ? xi2y(l(s, void 0), void 0)
+        : l(s, void 0, Select, xi2y)
   }
 })
 
@@ -528,7 +520,7 @@ const getPick = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
     let r
     for (const k in template) {
       const t = template[k]
-      const v = I.isObject(t) ? getPick(t, x) : getU(t, x)
+      const v = I.isObject(t) ? getPick(t, x) : getAsU(id, t, x)
       if (void 0 !== v) {
         if (!r) r = {}
         r[k] = v
@@ -858,10 +850,7 @@ const orElseU = function orElse(back, prim) {
   }
 }
 
-function zeroOp(y, i, C, xi2yC, x) {
-  const of = C.of
-  return of ? of(y) : C.map(I.always(y), xi2yC(x, i))
-}
+const zero = (x, _i, C, _xi2yC) => C.of(x)
 
 //
 
@@ -883,9 +872,6 @@ const pickInAux = (t, k) => [k, pickIn(t)]
 
 //
 
-const condOfDefault = I.always(zeroOp)
-const condOfCase = (p, o, r) => (y, j) => (p(y, j) ? o : r(y, j))
-
 // Auxiliary
 
 export const seemsArrayLike = x =>
@@ -894,29 +880,16 @@ export const seemsArrayLike = x =>
 
 // Internals
 
-export const Identity = (process.env.NODE_ENV === 'production' ? id : I.freeze)(
-  {
-    map: I.applyU,
-    of: id,
-    ap: I.applyU,
-    chain: I.applyU
-  }
+export const Identity = Monad(I.applyU, id, I.applyU, I.applyU)
+
+export const IdentityAsync = Monad(
+  chainAsync,
+  id,
+  (xyP, xP) => chainAsync(xP => chainAsync(xyP => xyP(xP), xyP), xP),
+  chainAsync
 )
 
-export const IdentityAsync = (process.env.NODE_ENV === 'production'
-  ? id
-  : I.freeze)({
-  map: chainAsync,
-  ap: (xyP, xP) => chainAsync(xP => chainAsync(xyP => xyP(xP), xyP), xP),
-  of: id,
-  chain: chainAsync
-})
-
-export const Constant = (process.env.NODE_ENV === 'production' ? id : I.freeze)(
-  {
-    map: I.sndU
-  }
-)
+export const Select = ConstantWith((l, r) => (void 0 !== l ? l : r))
 
 export const toFunction = (process.env.NODE_ENV === 'production'
   ? id
@@ -1017,39 +990,44 @@ export const condOf = (process.env.NODE_ENV === 'production'
         return fn(of, ...cs)
       })(function condOf(of) {
   of = toFunction(of)
-  let op = condOfDefault
-  let n = arguments.length
-  while (--n) {
-    const c = arguments[n]
-    op =
-      c.length === 1
-        ? I.always(toFunction(c[0]))
-        : condOfCase(c[0], toFunction(c[1]), op)
+
+  let n = arguments.length - 1
+  if (!n) return zero
+
+  let def = arguments[n]
+  if (def.length === 1) {
+    --n
+    def = toFunction(def[0])
+  } else {
+    def = zero
   }
-  return function condOf(x, i, C, xi2yC) {
-    return of(x, i, Constant, op)(x, i, C, xi2yC)
+
+  const ps = Array(n)
+  const os = Array(n + 1)
+  for (let i = 0; i < n; ++i) {
+    const c = arguments[i + 1]
+    ps[i] = c[0]
+    os[i] = toFunction(c[1])
+  }
+  os[n] = def
+
+  return function condOf(x, i, F, xi2yF) {
+    let min = n
+    of(x, i, Select, (y, j) => {
+      for (let i = 0; i < min; ++i) {
+        if (ps[i](y, j)) {
+          min = i
+          if (i === 0) return 0
+          else break
+        }
+      }
+    })
+    return os[min](x, i, F, xi2yF)
   }
 })
 
 export const ifElse = I.curry(function ifElse(c, t, e) {
   return eitherU(toFunction(t), toFunction(e))(c)
-})
-
-export const iftes = (process.env.NODE_ENV === 'production'
-  ? id
-  : fn =>
-      function iftes(_c, _t) {
-        warn(
-          iftes,
-          '`iftes` has been obsoleted.  Use `ifElse` or `cond` instead.  See CHANGELOG for details.'
-        )
-        return fn.apply(null, arguments)
-      })(function iftes(_c, _t) {
-  let n = arguments.length
-  let r = n & 1 ? toFunction(arguments[--n]) : zero
-  while (0 <= (n -= 2))
-    r = eitherU(toFunction(arguments[n + 1]), r)(arguments[n])
-  return r
 })
 
 export const orElse = I.curry(orElseU)
@@ -1062,13 +1040,13 @@ export const chain = I.curry(function chain(xi2yO, xO) {
 
 export const choice = (...os) => os.reduceRight(orElseU, zero)
 
-export const unless = eitherU(zeroOp, identity)
+export const unless = eitherU(zero, identity)
 
-export const when = eitherU(identity, zeroOp)
+export const when = eitherU(identity, zero)
 
 export const optional = when(I.isDefined)
 
-export const zero = (x, i, C, xi2yC) => zeroOp(x, i, C, xi2yC)
+export {zero}
 
 // Indices
 
@@ -1099,11 +1077,13 @@ export const skipIx = setName(tieIx(I.sndU), 'skipIx')
 
 // Debugging
 
-export const getLog = I.curry(function getLog(l, s) {
-  const {m, p, c} = traverseU(ConstantLog, getLogFn, l, s)
-  console.log.apply(console, pushTo(p, [m]))
+export function getLog(l, s) {
+  let {p, c} = traverseU(SelectLog, x => ({p: [x, consExcept], x, c: x}), l, s)
+  p = pushTo(p, ['%O'])
+  for (let i = 2; i < p.length; ++i) p[0] += ' <= %O'
+  console.log.apply(console, p)
   return c
-})
+}
 
 export function log() {
   const show = I.curry(function log(dir, x) {
@@ -1148,13 +1128,13 @@ export const seq = (process.env.NODE_ENV === 'production'
 export const assignOp = x => [propsOf(x), setOp(x)]
 
 export const modifyOp = xi2y =>
-  function modifyOp(x, i, C, xi2yC) {
-    return zeroOp((x = xi2y(x, i)), i, C, xi2yC, x)
+  function modifyOp(x, i, C, _xi2yC) {
+    return C.of(xi2y(x, i))
   }
 
 export const setOp = y =>
-  function setOp(_x, i, C, xi2yC) {
-    return zeroOp(y, i, C, xi2yC, y)
+  function setOp(_x, _i, C, _xi2yC) {
+    return C.of(y)
   }
 
 export const removeOp = setOp()
@@ -1183,11 +1163,9 @@ export function branches() {
 
 // Traversals and combinators
 
-export const elems = (process.env.NODE_ENV === 'production'
-  ? id
-  : C.par(2, C.ef(reqApplicative('elems'))))(function elems(xs, i, A, xi2yA) {
+export function elems(xs, i, A, xi2yA) {
   return seemsArrayLike(xs) ? elemsI(xs, i, A, xi2yA) : A.of(xs)
-})
+}
 
 export const elemsTotal = (xs, i, A, xi2yA) =>
   seemsArrayLike(xs)
@@ -1202,12 +1180,7 @@ export const entries = setName(toFunction([keyed, elems]), 'entries')
 
 export const keys = setName(toFunction([keyed, elems, 0]), 'keys')
 
-export const matches = (process.env.NODE_ENV === 'production'
-  ? id
-  : C.dep(
-      re =>
-        re.global ? C.res(C.par(2, C.ef(reqApplicative('matches', re)))) : id
-    ))(function matches(re) {
+export function matches(re) {
   return function matches(x, _i, C, xi2yC) {
     if (I.isString(x)) {
       const {map} = C
@@ -1230,43 +1203,25 @@ export const matches = (process.env.NODE_ENV === 'production'
           )
       }
     }
-    return zeroOp(x, void 0, C, xi2yC)
+    return C.of(x)
   }
-})
+}
 
-export const values = (process.env.NODE_ENV === 'production'
-  ? id
-  : C.par(2, C.ef(reqApplicative('values'))))(
-  setName(branchOr1Level(identity, I.protoless0), 'values')
-)
+export const values = setName(branchOr1Level(identity, I.protoless0), 'values')
 
-export const children = (process.env.NODE_ENV === 'production'
-  ? id
-  : C.par(2, C.ef(reqApplicative('children'))))(function children(
-  x,
-  i,
-  C,
-  xi2yC
-) {
+export function children(x, i, C, xi2yC) {
   return I.isArray(x)
     ? elemsI(x, i, C, xi2yC)
     : I.isObject(x)
       ? values(x, i, C, xi2yC)
       : C.of(x)
-})
+}
 
-export const flatten = (process.env.NODE_ENV === 'production'
-  ? id
-  : C.par(2, C.ef(reqApplicative('flatten'))))(function flatten(
-  x,
-  i,
-  C,
-  xi2yC
-) {
+export function flatten(x, i, C, xi2yC) {
   const rec = (x, i) =>
     I.isArray(x) ? elemsI(x, i, C, rec) : void 0 !== x ? xi2yC(x, i) : C.of(x)
   return rec(x, i)
-})
+}
 
 export function query() {
   const r = []
@@ -1290,8 +1245,7 @@ export const leafs = satisfying(
 // Folds over traversals
 
 export const all = I.curry(function all(xi2b, t, s) {
-  return !traverseU(
-    Select,
+  return !getAsU(
     (x, i) => {
       if (!xi2b(x, i)) return true
     },
@@ -1303,8 +1257,7 @@ export const all = I.curry(function all(xi2b, t, s) {
 export const and = all(id)
 
 export const any = I.curry(function any(xi2b, t, s) {
-  return !!traverseU(
-    Select,
+  return !!getAsU(
     (x, i) => {
       if (xi2b(x, i)) return true
     },
@@ -1331,9 +1284,7 @@ export const collectAs = (process.env.NODE_ENV === 'production'
 
 export const collect = collectAs(id)
 
-export const concatAs = mkTraverse(id, function concatAs(m) {
-  return ConcatOf(m.concat, m.empty())
-})
+export const concatAs = mkTraverse(id, ConstantOf)
 
 export const concat = concatAs(id)
 
@@ -1412,12 +1363,18 @@ export const forEachWith = I.curry(function forEachWith(newC, ef, t, s) {
   return c
 })
 
+export function get(l, s) {
+  return 1 < arguments.length ? getAsU(id, l, s) : s => getAsU(id, l, s)
+}
+
+export const getAs = I.curry(getAsU)
+
 export const isDefined = I.curry(function isDefined(t, s) {
-  return void 0 !== traverseU(Select, id, t, s)
+  return void 0 !== getAsU(id, t, s)
 })
 
 export const isEmpty = I.curry(function isEmpty(t, s) {
-  return !traverseU(Select, toTrue, t, s)
+  return !getAsU(toTrue, t, s)
 })
 
 export const joinAs = mkTraverse(
@@ -1428,7 +1385,7 @@ export const joinAs = mkTraverse(
         0,
         C.ef(reqString('`join` and `joinAs` expect a string delimiter'))
       ))(function joinAs(d) {
-    return ConcatOf(
+    return ConstantWith(
       (x, y) => (void 0 !== x ? (void 0 !== y ? x + d + y : x) : y)
     )
   })
@@ -1465,8 +1422,7 @@ export const minimumBy = mumBy(I.ltU)
 export const minimum = minimumBy(id)
 
 export const none = I.curry(function none(xi2b, t, s) {
-  return !traverseU(
-    Select,
+  return !getAsU(
     (x, i) => {
       if (xi2b(x, i)) return true
     },
@@ -1477,23 +1433,35 @@ export const none = I.curry(function none(xi2b, t, s) {
 
 export const or = any(id)
 
-export const productAs = traverse(ConcatOf(I.multiplyU, 1))
+export const productAs = traverse(ConstantWith(I.multiplyU, 1))
 
 export const product = productAs(unto(1))
 
-export const selectAs = traverse(Select)
+export const select =
+  process.env.NODE_ENV === 'production'
+    ? get
+    : I.curry(function select(l, s) {
+        warn(
+          select,
+          '`select` has been obsoleted.  Just use `get`.  See CHANGELOG for details.'
+        )
+        return get(l, s)
+      })
 
-export const select = selectAs(id)
+export const selectAs =
+  process.env.NODE_ENV === 'production'
+    ? getAs
+    : I.curry(function selectAs(f, l, s) {
+        warn(
+          selectAs,
+          '`selectAs` has been obsoleted.  Just use `getAs`.  See CHANGELOG for details.'
+        )
+        return getAs(f, l, s)
+      })
 
 export const sumAs = traverse(Sum)
 
 export const sum = sumAs(unto0)
-
-// Operations on lenses
-
-export function get(l, s) {
-  return 1 < arguments.length ? getU(l, s) : s => getU(l, s)
-}
 
 // Creating new lenses
 
@@ -1736,7 +1704,7 @@ export const array = elem => {
 }
 
 export const inverse = iso => (x, i, F, xi2yF) =>
-  F.map(x => getU(iso, x), xi2yF(setU(iso, x, void 0), i))
+  F.map(x => getAsU(id, iso, x), xi2yF(setU(iso, x, void 0), i))
 
 // Basic isomorphisms
 
@@ -1907,7 +1875,7 @@ export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 // Interop
 
 export const pointer = s => {
-  if (s[0] === '#') s = getU(uriComponent, s)
+  if (s[0] === '#') s = getAsU(id, uriComponent, s)
   const ts = s.split('/')
   const n = ts.length
   for (let i = 1; i < n; ++i) {

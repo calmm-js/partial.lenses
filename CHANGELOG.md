@@ -1,5 +1,79 @@
 # Partial Lenses Changelog
 
+## 14.0.0
+
+*The current plan is to change Partial Lenses to support so called naked or
+prototypeless objects with `null` prototype (i.e. `Object.create(null)`) in a
+following major version.  This is a breaking change although it is likely that
+it will not affect most users.  Usefully warning for this change of behaviour by
+adding diagnostics to optics seems somewhat difficult.*
+
+Previously obsoleted `L.iftes` was removed.
+
+The `L.Constant` functor was removed.  It can be replaced as follows:
+
+```diff
+-L.constant
++{map: (_, x) => x}
+```
+
+`L.get` has been changed to use the now exported `L.Select` applicative instead
+of the removed `L.Constant` functor.  The reason for this change is that it
+simplifies things overall.
+
+`L.get` now works exactly like `L.select`.  `L.select` and `L.selectAs` have
+been consequently obsoleted.  Change usages as follows:
+
+```diff
+-L.select(...)
++L.get(...)
+```
+
+```diff
+-L.selectAs(...)
++L.getAs(...)
+```
+
+In the cases where `L.get` previously returned a valid result, the only
+differences are in the cases where `L.zero` is involved.  `L.zero` is used by
+several other combinators that could be used as lenses including at least
+
+* `L.choice`.
+* `L.cond`,
+* `L.modifyOp`,
+* `L.optional`,
+* `L.removeOp`,
+* `L.setOp`,
+* `L.unless`, and
+* `L.when`,
+
+Previously `L.zero` was implemented so that it did something reasonable even
+with a plain functor.  Since no operation in this library now uses a plain
+functor, the special case behaviour of `L.zero` has been removed.  When
+previously used with `L.get`, `L.zero` passed `undefined` to the inner optics
+and ignored what the inner optics returned.  For example, previously:
+
+```js
+L.get(['x', L.when(x => x > 0), L.valueOr(0)], {x: -1})
+// 0
+```
+
+but now `L.zero` exits early:
+
+```js
+L.get(['x', L.when(x => x > 0), L.valueOr(0)], {x: -1})
+// undefined
+```
+
+This is clearly a breaking change.  However, this is unlikely to affect a large
+number of use cases.  To get the old behavior, use of `L.zero` need to be
+avoided.  In the example case, one could write:
+
+```js
+L.get(['x', L.ifElse(x => x > 0, [], R.always(0))], {x: -1})
+// 0
+```
+
 ## 13.10.0
 
 There is no longer guarantee that optic operations return newly allocated data
@@ -68,13 +142,6 @@ cases where removal of empty values is desired, one can e.g. compose with
 with `L.valueOr`.
 
 Removed previously obsoleted `L.findHint`.
-
-The current plan is to change Partial Lenses to support so called naked or
-prototypeless objects with `null` prototype (i.e. `Object.create(null)`) in the
-next major version.  This is a breaking change although it is likely that it
-will not affect most users.  Usefully warning for this change of behaviour by
-adding diagnostics to optics seems somewhat difficult.  *This note was moved
-from 12.0.0.*
 
 ## 12.0.0
 

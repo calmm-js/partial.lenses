@@ -10,12 +10,13 @@
 
   //
 
+  function _defineNameU(fn, value) {
+    return Object.defineProperty(fn, 'name', { value: value, configurable: true });
+  }
+
   var defineNameU = /*#__PURE__*/function () {
-    var _defineNameU = function _defineNameU(fn, value) {
-      return Object.defineProperty(fn, 'name', { value: value });
-    };
     try {
-      return _defineNameU(_defineNameU, _defineNameU.name.slice(1));
+      return _defineNameU(_defineNameU, 'defineNameU');
     } catch (_) {
       return function (fn, _) {
         return fn;

@@ -63,9 +63,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.choices(optic, ...optics) ~> optic`](#L-choices "L.choices: (POptic s a, ...POptic s a) -> POptic s a") <small><sup>v11.10.0</sup></small>
       * [`L.choose((maybeValue, index) => optic) ~> optic`](#L-choose "L.choose: ((Maybe s, Index) -> POptic s a) -> POptic s a") <small><sup>v1.0.0</sup></small>
       * <a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small>
-      * <a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small>
+      * <a href="#L-condOf" title="L.condOf: (PTraversal s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(traversal, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small>
       * [`L.ifElse((maybeValue, index) => testable, optic, optic) ~> optic`](#L-ifElse "L.ifElse: ((Maybe s, Index) -> Boolean) -> POptic s a -> POptic s a -> POptic s a") <small><sup>v13.1.0</sup></small>
-      * ~~[`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>~~
       * [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
     * [Querying](#querying)
       * [`L.chain((value, index) => optic, optic) ~> optic`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> POptic s b") <small><sup>v3.1.0</sup></small>
@@ -84,9 +83,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.getLog(lens, maybeData) ~> maybeValue`](#L-getLog "L.getLog: PLens s a -> Maybe s -> Maybe a") <small><sup>v13.14.0</sup></small>
       * [`L.log(...labels) ~> optic`](#L-log "L.log: (...Any) -> POptic s s") <small><sup>v3.2.0</sup></small>
     * [Internals](#internals)
-      * [`L.Constant ~> Functor`](#L-Constant "L.Constant: Functor") <small><sup>v13.7.0</sup></small>
       * [`L.Identity ~> Monad`](#L-Identity "L.Identity: Monad") <small><sup>v13.7.0</sup></small>
       * [`L.IdentityAsync ~> Monadish`](#L-IdentityAsync "L.IdentityAsync: Monadish") <small><sup>v13.12.0</sup></small>
+      * [`L.Select ~> Applicative`](#L-Select "L.Select: Applicative") <small><sup>v14.0.0</sup></small>
       * [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
   * [Transforms](#transforms)
     * [Operations on transforms](#operations-on-transforms)
@@ -132,6 +131,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.foldr((value, maybeValue, index) => value, value, traversal, maybeData) ~> value`](#L-foldr "L.foldr: ((r, Maybe a, Index) -> r) -> r -> PTraversal s a -> Maybe s -> r") <small><sup>v7.2.0</sup></small>
       * [`L.forEach((maybeValue, index) => undefined, traversal, maybeData) ~> undefined`](#L-forEach "L.forEach: ((Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> Undefined") <small><sup>v11.20.0</sup></small>
       * [`L.forEachWith(() => context, (context, maybeValue, index) => undefined, traversal, maybeData) ~> context`](#L-forEachWith "L.forEachWith: (() -> c) -> ((c, Maybe a, Index) -> Undefined) -> PTraversal s a -> Maybe s -> c") <small><sup>v13.4.0</sup></small>
+      * [`L.get(traversal, maybeData) ~> maybeValue`](#L-get "L.get: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v2.2.0</sup></small>
+      * [`L.getAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-getAs "L.getAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v14.0.0</sup></small>
       * [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.8.0</sup></small>
       * [`L.isEmpty(traversal, maybeData) ~> boolean`](#L-isEmpty "L.isEmpty: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.5.0</sup></small>
       * [`L.join(string, traversal, maybeData) ~> string`](#L-join "L.join: String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
@@ -146,13 +147,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
       * [`L.product(traversal, maybeData) ~> number`](#L-product "L.product: PTraversal s Number -> Maybe s -> Number") <small><sup>v7.2.0</sup></small>
       * [`L.productAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-productAs "L.productAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.2.0</sup></small>
-      * [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>
-      * [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v9.8.0</sup></small>
+      * ~~[`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>~~
+      * ~~[`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v9.8.0</sup></small>~~
       * [`L.sum(traversal, maybeData) ~> number`](#L-sum "L.sum: PTraversal s Number -> Maybe s -> Number") <small><sup>v7.2.0</sup></small>
       * [`L.sumAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-sumAs "L.sumAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.2.0</sup></small>
   * [Lenses](#lenses)
-    * [Operations on lenses](#operations-on-lenses)
-      * [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a") <small><sup>v2.2.0</sup></small>
     * [Creating new lenses](#creating-new-lenses)
       * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
       * [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
@@ -238,7 +237,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [`List` indexing](#list-indexing)
     * [Interfacing traversals](#interfacing-traversals)
 * [Deepening topics](#deepening-topics)
-  * [Understanding `L.filter`, `L.find`, `L.select`, and `L.when`](#understanding-filter-find-select-and-when)
+  * [Understanding `L.filter`, `L.find`, `L.get`, and `L.when`](#understanding-filter-find-get-and-when)
 * [Advanced topics](#advanced-topics)
   * [Performance tips](#performance-tips)
     * [Nesting traversals does not create intermediate aggregates](#nesting-traversals-does-not-create-intermediate-aggregates)
@@ -1399,10 +1398,24 @@ vice versa.  [`L.choose`](#L-choose) not only allows the optic to be chosen
 dynamically, but also allows the optic to be constructed dynamically and using
 the data at the focus.
 
-##### <a id="L-condOf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-condOf) <a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small>
+##### <a id="L-condOf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-condOf) <a href="#L-condOf" title="L.condOf: (PTraversal s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(traversal, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small>
 
 `L.condOf` is like [`L.cond`](#L-cond) except the first argument to `L.condOf`
-is a lens to get the parameters for the predicates from the underlying view.
+is a traversal whose focuses are tested with the predicates.
+
+```jsx
+L.condOf(traversal,
+         [ predicate, consequent ]
+       , ...
+     [ , [ alternative ] ] )
+```
+
+`L.condOf` acts like the *consequent* optic of first `[predicate, consequent]`
+pair whose *predicate* accepts [any](#L-any) focus produced by the traversal.
+The last argument to `L.condOf` can be an `[alternative]` singleton, where the
+*alternative* is an optic to be used in case none of the predicates accepts
+[any](#L-any) focus produced by the traversal.  If there is no `[alternative]`
+[`L.zero`](#L-zero) is used.
 
 For example:
 
@@ -1417,6 +1430,10 @@ L.get(
 )
 // 'Try writing this with `L.cond`.'
 ```
+
+Note that `L.condOf(t, [p1, o1], ..., [pN, oN], [o])` is roughly equivalent to a
+combination of [`L.any`](#L-any) and [`L.cond`](#L-cond): `L.cond([L.any(p1, t),
+o1], ..., [L.any(pN, t), oN], [o])`.
 
 ##### <a id="L-ifElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-ifElse) [`L.ifElse((maybeValue, index) => testable, optic, optic) ~> optic`](#L-ifElse "L.ifElse: ((Maybe s, Index) -> Boolean) -> POptic s a -> POptic s a -> POptic s a") <small><sup>v13.1.0</sup></small>
 
@@ -1436,45 +1453,6 @@ L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, [1, 2, 3])
 L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, {x: 1, y: 2, z: 3})
 // { x: 2, y: 3, z: 4 }
 ```
-
-##### <a id="L-iftes"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-iftes) ~~[`L.iftes((maybeValue, index) => testable, consequentOptic, ...[, alternativeOptic]) ~> optic`](#L-iftes "L.iftes: ((Maybe s, Index) -> Boolean) -> PLens s a -> PLens s a -> PLens s a") <small><sup>v11.14.0</sup></small>~~
-
-**WARNING: `L.iftes` has been obsoleted.  Use [`L.ifElse`](#L-ifElse) or
-[`L.cond`](#L-cond) instead.  See [CHANGELOG](./CHANGELOG.md#1310) for
-details.**
-
-`L.iftes` creates an optic whose operation is selected from the given optics and
-predicates on the underlying view.
-
-```jsx
-L.iftes( predicate, consequent
-     [ , ... ]
-     [ , alternative ] )
-```
-
-`L.iftes` is not curried unlike most functions in this library.  `L.iftes`
-requires at least two arguments and successive arguments form *predicate* -
-*consequent* pairs.  The predicates are functions on the underlying view and are
-tested sequentially.  The consequents are optics and `L.iftes` acts like the
-consequent corresponding to the first predicate that returns true.  If `L.iftes`
-is given an odd number of arguments, the last argument is the *alternative*
-taken in case none of the predicates returns true.  If all predicates return
-false and there is no alternative, `L.iftes` acts like [`L.zero`](#L-zero).
-
-For example:
-
-```js
-const minorAxis = L.iftes(({x, y} = {}) => Math.abs(y) < Math.abs(x), 'y', 'x')
-
-L.get(minorAxis, {x: -3, y: 1})
-// 1
-```
-```js
-L.modify(minorAxis, R.negate, {x: -3, y: 1})
-// { x: -3, y: -1 }
-```
-
-Note that `L.iftes` can be implemented using [`L.choose`](#L-choose).
 
 ##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
 
@@ -1550,9 +1528,8 @@ undefined)`](#L-when).
 
 ##### <a id="L-unless"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-unless) [`L.unless((maybeValue, index) => testable) ~> optic`](#L-unless "L.unless: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v12.1.0</sup></small>
 
-`L.unless` allows one to selectively skip elements within a traversal or to
-selectively turn a lens into a read-only lens whose view is `undefined`.  See
-also [`L.when`](#L-when).
+`L.unless` allows one to selectively skip elements within a traversal.  See also
+[`L.when`](#L-when).
 
 For example:
 
@@ -1563,9 +1540,8 @@ L.modify([L.elems, L.unless(x => x < 0)], R.negate, [0, -1, 2, -3, 4])
 
 ##### <a id="L-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-when) [`L.when((maybeValue, index) => testable) ~> optic`](#L-when "L.when: ((Maybe a, Index) -> Boolean) -> POptic a a") <small><sup>v5.2.0</sup></small>
 
-`L.when` allows one to selectively skip elements within a traversal or to
-selectively turn a lens into a read-only lens whose view is `undefined`.  See
-also [`L.unless`](#L-unless).
+`L.when` allows one to selectively skip elements within a traversal.  See also
+[`L.unless`](#L-unless).
 
 For example:
 
@@ -1579,10 +1555,8 @@ L.identity : L.zero)`](#L-choose).
 
 ##### <a id="L-zero"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-zero) [`L.zero ~> optic`](#L-zero "L.zero: POptic s a") <small><sup>v6.0.0</sup></small>
 
-`L.zero` is the identity element of [`L.choice`](#L-choice) and
-[`L.chain`](#L-chain).  As a traversal, `L.zero` is a traversal of no elements
-and as a lens, i.e. when used with [`L.get`](#L-get), `L.zero` is a read-only
-lens whose view is always `undefined`.
+`L.zero` is a traversal of no elements and is the identity element of
+[`L.choice`](#L-choice) and [`L.chain`](#L-chain).
 
 For example:
 
@@ -1709,9 +1683,9 @@ returned.  `L.getLog`, like [`L.log`](#L-log), is intended for debugging.
 For example:
 
 ```js
-L.getLog(['x', 0, 'y'], {x: [{y: 101}]})
-// { x: [ { y: 101 } ] } <= [ { y: 101 } ] <= { y: 101 } <= 101
-// 101
+L.getLog(['data', L.elems, 'y'], {data: [{x: 1}, {y: 2}]})
+// { data: [ { x: 1 }, { y: 2 } ] } <= [ { x: 1 }, { y: 2 } ] <= { y: 2 } <= 2
+// 2
 ```
 
 (If you are looking at the above snippet in the interactive version of this
@@ -1747,14 +1721,6 @@ L.set(['x', L.log('%s x: %j')], '11', {x: 10})
 
 #### <a id="internals"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#internals) [Internals](#internals)
 
-##### <a id="L-Constant"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-Constant) [`L.Constant ~> Functor`](#L-Constant "L.Constant: Functor") <small><sup>v13.7.0</sup></small>
-
-`L.Constant` is the [Static
-Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
-compatible constant
-[`Functor`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#functor)
-definition used by Partial Lenses.
-
 ##### <a id="L-Identity"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-Identity) [`L.Identity ~> Monad`](#L-Identity "L.Identity: Monad") <small><sup>v13.7.0</sup></small>
 
 `L.Identity` is the [Static
@@ -1771,6 +1737,15 @@ definition used by Partial Lenses.
 monad](https://buzzdecafe.github.io/2018/04/10/no-promises-are-not-monads),
 which explains the "monadish".  Fortunately one usually does not want nested
 promises in which case the approximation can be close enough.
+
+##### <a id="L-Select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-Constant) [`L.Select ~> Applicative`](#L-Select "L.Select: Applicative") <small><sup>v13.7.0</sup></small>
+
+`L.Select` is the [Static
+Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
+compatible
+[`Applicative`](https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative)
+definition that extends the constant functor to select the first non-`undefined`
+element.
 
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
 
@@ -1968,9 +1943,8 @@ L.transform([L.elems, L.assignOp({y: 1})], [{x: 3}, {x: 4, y: 5}])
 ##### <a id="L-modifyOp"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-modifyOp) [`L.modifyOp((maybeValue, index) => maybeValue) ~> optic`](#L-modifyOp "L.modifyOp: ((Maybe a, Index) -> Maybe a) -> POptic a a") <small><sup>v11.7.0</sup></small>
 
 `L.modifyOp` creates an optic that maps the focus with the given function.  When
-used as a traversal, `L.modifyOp` acts as a traversal of no elements.  When used
-as a lens, `L.modifyOp` acts as a read-only lens whose view is the mapped focus.
-Usually, however, `L.modifyOp` is used within [transforms](#transforms).
+used as a traversal, `L.modifyOp` acts as a traversal of no elements.  Usually,
+however, `L.modifyOp` is used within [transforms](#transforms).
 
 For example:
 
@@ -2270,10 +2244,10 @@ L.modify(
 //     { language: 'sv', text: 'Rubrik' } ] }
 ```
 
-And one can also view the text of a specific language using [select](#L-select):
+And one can also view the text of a specific language:
 
 ```js
-L.select(L.query(L.when(R.propEq('language', 'sv')), 'text'), sampleTitles)
+L.get(L.query(L.when(R.propEq('language', 'sv')), 'text'), sampleTitles)
 // 'Rubrik'
 ```
 
@@ -2351,7 +2325,7 @@ L.all(
 ```
 
 See also: [`L.any`](#L-any), [`L.none`](#L-none), and
-[`L.selectAs`](#L-selectAs).
+[`L.getAs`](#L-getAs).
 
 ##### <a id="L-and"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-and) [`L.and(traversal, maybeData) ~> boolean`](#L-and "L.and: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
 
@@ -2381,7 +2355,7 @@ L.any(x => x > 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 ```
 
 See also: [`L.all`](#L-all), [`L.none`](#L-none), and
-[`L.selectAs`](#L-selectAs).
+[`L.getAs`](#L-getAs).
 
 ##### <a id="L-collect"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-collect) [`L.collect(traversal, maybeData) ~> [...values]`](#L-collect "L.collect: PTraversal s a -> Maybe s -> [a]") <small><sup>v3.6.0</sup></small>
 
@@ -2588,6 +2562,58 @@ L.forEachWith(() => new Map(), (m, v, k) => m.set(k, v), L.values, {x: 2, y: 1})
 
 Note that a new `Map` is returned each time the above expression is evaluated.
 
+##### <a id="L-get"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-get) [`L.get(traversal, maybeData) ~> maybeValue`](#L-get "L.get: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>
+
+`L.get` returns the element focused on by a [lens](#lenses) from a data
+structure or goes lazily over the elements focused on by the given
+[traversal](#traversals) and returns the first non-`undefined` element.  See
+also [`L.getLog`](#L-getLog).
+
+For example:
+
+```js
+L.get('y', {x: 112, y: 101})
+// 101
+```
+
+```js
+L.get([L.elems, 'y'], [{x:1}, {y:2}, {z:3}])
+// 2
+```
+
+Note that `L.get` is equivalent to [`L.getAs(x => x)`](#L-getAs).
+
+##### <a id="L-getAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-getAs) [`L.getAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-getAs "L.getAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v14.0.0</sup></small>
+
+`L.getAs` goes lazily over the elements focused on by the given traversal,
+applying the given function to each element, and returns the first
+non-`undefined` value returned by the function.
+
+```js
+L.getAs(x => x > 3 ? -x : undefined, L.elems, [3, 1, 4, 1, 5])
+// -4
+```
+
+`L.getAs` operates lazily.  The user specified function is only applied to
+elements until the first non-`undefined` value is returned and after that
+`L.getAs` returns without examining more elements.
+
+Note that `L.getAs` can be used to implement many other operations over
+traversals such as finding an element matching a predicate and checking whether
+all/any elements match a predicate.  For example, here is how you could
+implement a for all predicate over traversals:
+
+```js
+const all = (p, t, s) => !L.getAs(x => p(x) ? undefined : true, t, s)
+```
+
+Now:
+
+```js
+all(x => x < 9, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
+// true
+```
+
 ##### <a id="L-isDefined"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-isDefined) [`L.isDefined(traversal, maybeData) ~> boolean`](#L-isDefined "L.isDefined: PTraversal s a -> Maybe s -> Boolean") <small><sup>v11.8.0</sup></small>
 
 `L.isDefined` determines whether or not the given traversal focuses on any
@@ -2736,7 +2762,7 @@ L.none(x => x > 5, primitives, [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]])
 // false
 ```
 
-See also: [`L.all`](#L-all), [`L.any`](#L-any), and [`L.selectAs`](#L-selectAs).
+See also: [`L.all`](#L-all), [`L.any`](#L-any), and [`L.getAs`](#L-getAs).
 
 ##### <a id="L-or"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-or) [`L.or(traversal, maybeData) ~> boolean`](#L-or "L.or: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
 
@@ -2781,7 +2807,10 @@ Note that unlike many other folds, `L.productAs` expects the function to only
 return numbers and `undefined` is not treated in a special way.  If you need to
 skip elements, you can return the number `1`.
 
-##### <a id="L-select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-select) [`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>
+##### <a id="L-select"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-select) ~~[`L.select(traversal, maybeData) ~> maybeValue`](#L-select "L.select: PTraversal s a -> Maybe s -> Maybe a") <small><sup>v9.8.0</sup></small>~~
+
+**WARNING: `L.select` has been obsoleted.  Just use [`L.get`](#L-get).  See
+[CHANGELOG](./CHANGELOG.md#1400) for details.**
 
 `L.select` goes lazily over the elements focused on by the given traversal and
 returns the first non-`undefined` element.
@@ -2793,7 +2822,10 @@ L.select([L.elems, 'y'], [{x:1}, {y:2}, {z:3}])
 
 Note that `L.select` is equivalent to [`L.selectAs(x => x)`](#L-selectAs).
 
-##### <a id="L-selectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-selectAs) [`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v9.8.0</sup></small>
+##### <a id="L-selectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-selectAs) ~~[`L.selectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> maybeValue`](#L-selectAs "L.selectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> Maybe b") <small><sup>v9.8.0</sup></small>~~
+
+**WARNING: `L.selectAs` has been obsoleted.  Just use [`L.getAs`](#L-getAs).
+See [CHANGELOG](./CHANGELOG.md#1400) for details.**
 
 `L.selectAs` goes lazily over the elements focused on by the given traversal,
 applying the given function to each element, and returns the first
@@ -2855,22 +2887,6 @@ elements, you can return the number `0`.
 
 Lenses always have a single focus which can be [viewed](#L-get) directly.  Put
 in another way, a lens specifies a path to a single element in a data structure.
-
-#### <a id="operations-on-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#operations-on-lenses) [Operations on lenses](#operations-on-lenses)
-
-##### <a id="L-get"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-get) [`L.get(lens, maybeData) ~> maybeValue`](#L-get "L.get: PLens s a -> Maybe s -> Maybe a") <small><sup>v2.2.0</sup></small>
-
-`L.get` returns the element focused on by a [lens](#lenses) from a data
-structure.
-
-For example:
-
-```js
-L.get('y', {x: 112, y: 101})
-// 101
-```
-
-Note that `L.get` does not work on [traversals](#traversals).
 
 #### <a id="creating-new-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-lenses) [Creating new lenses](#creating-new-lenses)
 
@@ -4515,9 +4531,9 @@ L.joinAs(
 
 ## <a id="deepening-topics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#deepening-topics) [Deepening topics](#deepening-topics)
 
-### <a id="understanding-filter-find-select-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#understanding-filter-find-select-and-when) [Understanding `L.filter`, `L.find`, `L.select`, and `L.when`](#understanding-filter-find-select-and-when)
+### <a id="understanding-filter-find-get-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#understanding-filter-find-select-and-when) [Understanding `L.filter`, `L.find`, `L.get`, and `L.when`](#understanding-filter-find-get-and-when)
 
-The [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.select`](#L-select), and
+The [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.get`](#L-get), and
 [`L.when`](#L-when) serve related, but different, purposes and it is important
 to understand their differences in order to make best use of them.
 
@@ -4527,24 +4543,23 @@ Here is a table of their call patterns and type signatures:
 | ------------------------------------------ | ----------------------------------------------------------
 | `L.filter((value, index) => bool) ~> lens` | `L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]`
 | `L.find((value, index) => bool) ~> lens`   | `L.find: ((Maybe a, Index) -> Boolean) -> PLens [a] a`
-| `L.select(traversal, data) ~> value`       | `L.select: PTraversal s a -> Maybe s -> Maybe a`
+| `L.get(traversal, data) ~> value`          | `L.get: PTraversal s a -> Maybe s -> Maybe a`
 | `L.when((value, index) => bool) ~> optic`  | `L.when: ((Maybe a, Index) -> Boolean) -> POptic a a`
 
 As can be read from above, both [`L.filter`](#L-filter) and [`L.find`](#L-find)
-introduce lenses, [`L.select`](#L-select) eliminates a traversal, and
+introduce lenses, [`L.get`](#L-get) eliminates a traversal, and
 [`L.when`](#L-when) introduces an optic, which will always be a traversal in
 this section.  We can also read that [`L.filter`](#L-filter) and
-[`L.find`](#L-find) operate on arrays, while [`L.select`](#L-select) and
+[`L.find`](#L-find) operate on arrays, while [`L.get`](#L-get) and
 [`L.when`](#L-when) operate on arbitrary traversals.  Yet another thing to make
-note of is that both [`L.find`](#L-find) and [`L.select`](#L-select) are
-many-to-one while both [`L.filter`](#L-filter) and [`L.when`](#L-when) retain
-cardinality.
+note of is that both [`L.find`](#L-find) and [`L.get`](#L-get) are many-to-one
+while both [`L.filter`](#L-filter) and [`L.when`](#L-when) retain cardinality.
 
 The following equations relate the operations in the read direction:
 
 ```jsx
         L.get([L.filter(p), 0]) = L.get(L.find(p))
- L.select([L.elems, L.when(p)]) = L.get(L.find(p))
+    L.get([L.elems, L.when(p)]) = L.get(L.find(p))
 L.collect([L.elems, L.when(p)]) = L.get(L.filter(p))
 ```
 
@@ -4555,7 +4570,7 @@ an array identified by a given predicate.  Despite the name, [`L.find`](#L-find)
 is probably not what one should use to generally search for something in a data
 structure.
 
-[`L.select`](#L-select) (and [`L.selectAs`](#L-selectAs)) can be used to search
+[`L.get`](#L-get) (and [`L.getAs`](#L-getAs)) can be used to search
 for an element in a data structure following an arbitrary traversal.  That
 traversal can, of course, also make use of [`L.when`](#L-when) to filter elements
 or to limit the traversal.
@@ -5024,10 +5039,10 @@ pinch of salt and preferably try and measure your actual use cases!
      200,548/s    19.27   O.Setter.set(o_x_y_z, 0, xyzn)
 
    1,280,471/s     1.00   R.find(x => x > 3, xs100)
-   1,066,129/s     1.20   L.selectAs(x => x > 3 ? x : undefined, L.elems, xs100)
+   1,066,129/s     1.20   L.getAs(x => x > 3 ? x : undefined, L.elems, xs100)
        2,529/s   506.25   O.Fold.findOf(O.Traversal.traversed, x => x > 3, xs100)
 
-   9,325,674/s     1.00   L.selectAs(x => x < 3 ? x : undefined, L.elems, xs100)
+   9,325,674/s     1.00   L.getAs(x => x < 3 ? x : undefined, L.elems, xs100)
    4,411,876/s     2.11   R.find(x => x < 3, xs100)
        2,473/s  3770.86   O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100) -- NO SHORTCUT EVALUATION
 
@@ -5129,7 +5144,7 @@ pinch of salt and preferably try and measure your actual use cases!
 
       49,965/s     1.00   L.modify(L.flatten, inc, xsss100)
 
-   7,833,540/s     1.00   L.selectAs(x => x > 3 ? x : undefined, L.elems, pi)
+   7,833,540/s     1.00   L.getAs(x => x > 3 ? x : undefined, L.elems, pi)
    4,448,086/s     1.76   R.find(x => x > 3, pi)
       32,770/s   239.05   O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)
 
