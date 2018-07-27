@@ -35,7 +35,9 @@ export const fromPredicate = p => x => {
 const type = t => fromPredicate(x => typeof x === t)
 export const instanceOf = c => fromPredicate(x => x instanceof c)
 
-const isFreezable = x => I.isArray(x) || I.isObject(x)
+const isFreezable = x =>
+  I.isArray(x) ||
+  (x instanceof Object && !(x instanceof Promise || x instanceof Int8Array))
 const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
 const isDeepFrozen = x =>
   !isFreezable(x) ||
@@ -82,7 +84,7 @@ export const thenable = t => v => {
 
 export const object = template => object => {
   const result = {}
-  if (!I.isObject(object)) throw Error(`Expected object, got ${object}`)
+  if (!(object instanceof Object)) throw Error(`Expected object, got ${object}`)
   if (!I.hasKeysOfU(template, object))
     throw Error(
       `Expected object with keys ${I.keys(template)}, got ${I.keys(object)}`
