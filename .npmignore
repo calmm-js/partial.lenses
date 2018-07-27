@@ -6,6 +6,7 @@
 .travis.yml
 bench
 bower.json
+codecov.yml
 coverage
 docs
 klipse-github-docs.config.js
