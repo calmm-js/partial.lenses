@@ -2136,6 +2136,7 @@ describe('ix', () => {
     () => L.selectAs((v, i) => [v, i], ['foo', L.setIx('bar')], {foo: 101}),
     [101, 'bar']
   )
+  testEq(() => L.selectAs(x => x + 1, x => x * 2, 3), 7)
 })
 
 describe('async', () => {
