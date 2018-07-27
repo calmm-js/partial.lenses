@@ -141,8 +141,8 @@ export const tieIx = T.fn([T.fn([T_index, T_index], T_index), T_optic], T_optic)
 
 // Debugging
 
-export const log = T.fnVarN(0, T.string, T_optic)
 export const getLog = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
+export const log = T.fnVarN(0, T.string, T_optic)
 
 // Operations on transforms
 

@@ -1097,6 +1097,12 @@ export const skipIx = setName(tieIx(I.sndU), 'skipIx')
 
 // Debugging
 
+export const getLog = I.curry(function getLog(l, s) {
+  const {m, p, c} = traverseU(ConstantLog, getLogFn, l, s)
+  console.log.apply(console, pushTo(p, [m]))
+  return c
+})
+
 export function log() {
   const show = I.curry(function log(dir, x) {
     console.log.apply(
@@ -1107,12 +1113,6 @@ export function log() {
   })
   return isoU(show('get'), show('set'))
 }
-
-export const getLog = I.curry(function getLog(l, s) {
-  const {m, p, c} = traverseU(ConstantLog, getLogFn, l, s)
-  console.log.apply(console, pushTo(p, [m]))
-  return c
-})
 
 // Operations on transforms
 
