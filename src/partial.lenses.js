@@ -40,6 +40,8 @@ const cpair = xs => x => [x, xs]
 const unto = c => x => (void 0 !== x ? x : c)
 const unto0 = unto(0)
 
+const toTrue = I.always(true)
+
 const notPartial = function complement(x) {
   return void 0 !== x ? !x : x
 }
@@ -1413,7 +1415,7 @@ export const isDefined = I.curry(function isDefined(t, s) {
 })
 
 export const isEmpty = I.curry(function isEmpty(t, s) {
-  return !traverseU(Select, I.always(true), t, s)
+  return !traverseU(Select, toTrue, t, s)
 })
 
 export const joinAs = mkTraverse(
