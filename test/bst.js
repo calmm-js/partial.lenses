@@ -13,12 +13,10 @@ const naiveBST = L.rewrite(n => {
 const search = key =>
   L.lazy(rec => [
     naiveBST,
-    L.iftes(
-      n => !n || key === n.key,
-      L.defaults({key}),
-      n => key < n.key,
-      ['smaller', rec],
-      ['greater', rec]
+    L.cond(
+      [n => !n || key === n.key, L.defaults({key})],
+      [n => key < n.key, ['smaller', rec]],
+      [['greater', rec]]
     )
   ])
 
