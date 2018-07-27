@@ -46,8 +46,10 @@ const l_x = R.lensProp('x')
 const l_y = R.lensProp('y')
 const l_z = R.lensProp('z')
 const l_0_x_0_y = R.compose(l_0, l_x, l_0, l_y)
+const f_0_x_0_y = L.toFunction([0, 'x', 0, 'y'])
 const l_0x0y = R.lensPath([0, 'x', 0, 'y'])
 const l_xyz = R.lensPath(['x', 'y', 'z'])
+const f_xyz = L.toFunction(['x', 'y', 'z'])
 const l_x_y_z = R.compose(l_x, l_y, l_z)
 const K_0_x_0_y =
   K &&
@@ -387,6 +389,7 @@ R.forEach(
     [
       `K_0_x_0_y.get(axay)`,
       `L.get([0, 'x', 0, 'y'], axay)`,
+      `L.get(f_0_x_0_y, axay)`,
       `R.path([0, 'x', 0, 'y'], axay)`,
       `R.view(l_0_x_0_y, axay)`,
       `R.view(l_0x0y, axay)`,
@@ -412,6 +415,7 @@ R.forEach(
     [
       `K_xyz.get(xyzn)`,
       `L.get(['x', 'y', 'z'], xyzn)`,
+      `L.get(f_xyz, xyzn)`,
       `O.Getter.view(o_x_y_z, xyzn)`,
       `R.path(['x', 'y', 'z'], xyzn)`,
       `R.view(l_x_y_z, xyzn)`,
