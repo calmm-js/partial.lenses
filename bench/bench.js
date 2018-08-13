@@ -442,12 +442,12 @@ R.forEach(
       `U.set(['x', 'y', 'z'], 0, xyzn)`
     ],
     [
-      `L.selectAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
+      `L.getAs(x => x > 3 ? x : undefined, L.elems, xs100)`,
       `R.find(x => x > 3, xs100)`,
       `O.Fold.findOf(O.Traversal.traversed, x => x > 3, xs100)`
     ],
     [
-      `L.selectAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
+      `L.getAs(x => x < 3 ? x : undefined, L.elems, xs100)`,
       `R.find(x => x < 3, xs100)`,
       [
         `O.Fold.findOf(O.Traversal.traversed, x => x < 3, xs100)`,
@@ -577,7 +577,7 @@ R.forEach(
       `L.traverse(Ident, inc, L.leafs, xsss100)`
     ],
     [
-      `L.selectAs(x => x > 3 ? x : undefined, L.elems, pi)`,
+      `L.getAs(x => x > 3 ? x : undefined, L.elems, pi)`,
       `R.find(x => x > 3, pi)`,
       `O.Fold.findOf(O.Traversal.traversed, x => x > 3, pi)`
     ],

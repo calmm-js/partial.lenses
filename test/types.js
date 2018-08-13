@@ -66,11 +66,11 @@ const template = c => T.lazy(rec => T.props(T.or(c, rec)))
 
 // Internals
 
-export const Constant = T_functor
-
 export const Identity = T_monad
 
 export const IdentityAsync = T_monad
+
+export const Select = T_applicative
 
 export const toFunction = T.fn(
   [T_optic],
@@ -119,7 +119,6 @@ export const ifElse = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_optic, T_optic],
   T_optic
 )
-export const iftes = T.fnVarN(2, T.any, T_optic)
 export const orElse = T.fn([T_optic, T_optic], T_optic)
 
 // Querying
@@ -141,7 +140,7 @@ export const tieIx = T.fn([T.fn([T_index, T_index], T_index), T_optic], T_optic)
 
 // Debugging
 
-export const getLog = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
+export const getLog = T.fn([T_traversal, T_maybeDataI], T_maybeDataO)
 export const log = T.fnVarN(0, T.string, T_optic)
 
 // Operations on transforms
@@ -246,6 +245,13 @@ export const forEachWith = T.fn(
   T.any
 )
 
+export const get = T.fn([T_traversal, T_maybeDataI], T_maybeDataO)
+
+export const getAs = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
+  T.any
+)
+
 export const isDefined = T.fn([T_traversal, T_maybeDataI], T.boolean)
 export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
@@ -298,10 +304,6 @@ export const selectAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.any
 )
-
-// Operations on lenses
-
-export const get = T.fn([T_lens, T_maybeDataI], T_maybeDataO)
 
 // Creating new lenses
 
