@@ -106,8 +106,8 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#adapting">Adapting</a><ul>
 <li><a href="#L-choices" title="L.choices: (POptic s a, ...POptic s a) -&gt; POptic s a"><code>L.choices(optic, ...optics) ~&gt; optic</code></a> <small><sup>v11.10.0</sup></small></li>
 <li><a href="#L-choose" title="L.choose: ((Maybe s, Index) -&gt; POptic s a) -&gt; POptic s a"><code>L.choose((maybeValue, index) =&gt; optic) ~&gt; optic</code></a> <small><sup>v1.0.0</sup></small></li>
-<li><a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></li>
-<li><a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small></li>
+<li><a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></li>
+<li><a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small></li>
 <li><a href="#L-ifElse" title="L.ifElse: ((Maybe s, Index) -&gt; Boolean) -&gt; POptic s a -&gt; POptic s a -&gt; POptic s a"><code>L.ifElse((maybeValue, index) =&gt; testable, optic, optic) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></li>
 <li><del><a href="#L-iftes" title="L.iftes: ((Maybe s, Index) -&gt; Boolean) -&gt; PLens s a -&gt; PLens s a -&gt; PLens s a"><code>L.iftes((maybeValue, index) =&gt; testable, consequentOptic, ...[, alternativeOptic]) ~&gt; optic</code></a> <small><sup>v11.14.0</sup></small></del></li>
 <li><a href="#L-orElse" title="L.orElse: (POptic s a, POptic s a) -&gt; POptic s a"><code>L.orElse(backupOptic, primaryOptic) ~&gt; optic</code></a> <small><sup>v2.1.0</sup></small></li>
@@ -131,6 +131,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#debugging">Debugging</a><ul>
+<li><a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></li>
 <li><a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></li>
 </ul>
 </li>
@@ -224,7 +225,6 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#lenses">Lenses</a><ul>
 <li><a href="#operations-on-lenses">Operations on lenses</a><ul>
 <li><a href="#L-get" title="L.get: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.get(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v2.2.0</sup></small></li>
-<li><a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#creating-new-lenses">Creating new lenses</a><ul>
@@ -1187,7 +1187,7 @@ L.get(majorAxis, {x: -3, y: 1})
 </code></pre>
 <pre><code class="hljs lang-js">L.modify(majorAxis, R.negate, {x: -3, y: 1})
 </code></pre>
-<h5><a id="L-cond"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-cond">■</a> <a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></h5>
+<h5><a id="L-cond"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-cond">■</a> <a href="#L-cond" title="L.cond: (...[(Maybe s, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.cond(...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.1.0</sup></small></h5>
 <p><code>L.cond</code> creates an optic whose operation is selected from the given optics and
 predicates on the underlying view.  See also <a href="#L-condOf"><code>L.condOf</code></a>,
 <a href="#L-choose"><code>L.choose</code></a> and <a href="#L-ifElse"><code>L.ifElse</code></a>.</p>
@@ -1222,7 +1222,7 @@ predicate will always be true and has to construct a more expensive optic.</p>
 vice versa.  <a href="#L-choose"><code>L.choose</code></a> not only allows the optic to be chosen
 dynamically, but also allows the optic to be constructed dynamically and using
 the data at the focus.</p>
-<h5><a id="L-condOf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-condOf">■</a> <a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, PLens s a][, [PLens s a]]) -&gt; PLens s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small></h5>
+<h5><a id="L-condOf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-condOf">■</a> <a href="#L-condOf" title="L.condOf: (PLens s c, ...[(Maybe c, Index) -&gt; Boolean, POptic s a][, [POptic s a]]) -&gt; POptic s a"><code>L.condOf(lens, ...[(maybeValue, index) =&gt; testable, consequentOptic][, [alternativeOptic]]) ~&gt; optic</code></a> <small><sup>v13.5.0</sup></small></h5>
 <p><code>L.condOf</code> is like <a href="#L-cond"><code>L.cond</code></a> except the first argument to <code>L.condOf</code>
 is a lens to get the parameters for the predicates from the underlying view.</p>
 <p>For example:</p>
@@ -1414,6 +1414,22 @@ produced by the wrapped optic and the index passed from the outer context.</p>
 <p>Note that both <a href="#L-skipIx"><code>L.skipIx</code></a> and <a href="#L-joinIx"><code>L.joinIx</code></a> can be
 implemented via <code>L.tieIx</code>.</p>
 <h4><a id="debugging"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#debugging">■</a> <a href="#debugging">Debugging</a></h4>
+<h5><a id="L-getLog"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-getLog">■</a> <a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></h5>
+<p><code>L.getLog</code> returns the element focused on by a <a href="#lenses">lens</a> from a data
+structure like <a href="#L-get"><code>L.get</code></a>, but <code>L.getLog</code> also
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>s
+the sequence of values that the corresponding <a href="#L-set"><code>L.set</code></a> operation would
+create.  This can be useful for understanding why a particular value was
+returned.  <code>L.getLog</code>, like <a href="#L-log"><code>L.log</code></a>, is intended for debugging.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.getLog([&#39;x&#39;, 0, &#39;y&#39;], {x: [{y: 101}]})
+</code></pre>
+<p>(If you are looking at the above snippet in the interactive version of this
+page, then note that the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
+function is replaced by <a href="https://github.com/viebel/klipse/">Klipse</a> and the
+replacement function unfortunately does not handle substitution strings
+correctly.)</p>
 <h5><a id="L-log"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-log">■</a> <a href="#L-log" title="L.log: (...Any) -&gt; POptic s s"><code>L.log(...labels) ~&gt; optic</code></a> <small><sup>v3.2.0</sup></small></h5>
 <p><code>L.log(...labels)</code> is an identity optic that outputs
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
@@ -2095,22 +2111,6 @@ structure.</p>
 <pre><code class="hljs lang-js">L.get(&#39;y&#39;, {x: 112, y: 101})
 </code></pre>
 <p>Note that <code>L.get</code> does not work on <a href="#traversals">traversals</a>.</p>
-<h5><a id="L-getLog"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-getLog">■</a> <a href="#L-getLog" title="L.getLog: PLens s a -&gt; Maybe s -&gt; Maybe a"><code>L.getLog(lens, maybeData) ~&gt; maybeValue</code></a> <small><sup>v13.14.0</sup></small></h5>
-<p><code>L.getLog</code> returns the element focused on by a <a href="#lenses">lens</a> from a data
-structure like <a href="#L-get"><code>L.get</code></a>, but <code>L.getLog</code> also
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>s
-the sequence of values that the corresponding <a href="#L-set"><code>L.set</code></a> operation would
-create.  This can be useful for understanding why a particular value was
-returned.  <code>L.getLog</code>, like <a href="#L-log"><code>L.log</code></a>, is intended for debugging.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.getLog([&#39;x&#39;, 0, &#39;y&#39;], {x: [{y: 101}]})
-</code></pre>
-<p>(If you are looking at the above snippet in the interactive version of this
-page, then note that the
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Console/log"><code>console.log</code></a>
-function is replaced by <a href="https://github.com/viebel/klipse/">Klipse</a> and the
-replacement function unfortunately does not handle substitution strings
-correctly.)</p>
 <h4><a id="creating-new-lenses"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#creating-new-lenses">■</a> <a href="#creating-new-lenses">Creating new lenses</a></h4>
 <h5><a id="L-lens"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-lens">■</a> <a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></h5>
 <p><code>L.lens</code> creates a new primitive lens.  The first parameter is the <em>getter</em> and
