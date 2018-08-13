@@ -200,7 +200,14 @@ describe('L.compose', () => {
   testEq(() => L.get(L.compose(), 'any'), 'any')
   testEq(() => L.compose('x'), 'x')
   testEq(() => L.compose(101), 101)
-  testEq(() => L.compose(101, 'x'), [101, 'x'])
+  testEq(
+    () =>
+      L.compose(
+        101,
+        'x'
+      ),
+    [101, 'x']
+  )
 })
 
 describe('L.identity', () => {
@@ -384,14 +391,16 @@ describe(`L.find`, () => {
   testEq(() => L.get(L.find(R.equals(1), {hint: 5}), 0), undefined)
   testEq(
     () =>
-      L.get(L.find(R.pipe(Math.abs, R.equals(2)), {hint: 2}), [
-        -1,
-        -2,
-        3,
-        1,
-        2,
-        1
-      ]),
+      L.get(
+        L.find(
+          R.pipe(
+            Math.abs,
+            R.equals(2)
+          ),
+          {hint: 2}
+        ),
+        [-1, -2, 3, 1, 2, 1]
+      ),
     -2
   )
   testEq(() => L.get(L.find(R.equals(2), {hint: 10}), [3, 2, 1, 0]), 2)

@@ -1250,7 +1250,9 @@ export const children = (process.env.NODE_ENV === 'production'
 ) {
   return I.isArray(x)
     ? elemsI(x, i, C, xi2yC)
-    : I.isObject(x) ? values(x, i, C, xi2yC) : C.of(x)
+    : I.isObject(x)
+      ? values(x, i, C, xi2yC)
+      : C.of(x)
 })
 
 export const flatten = (process.env.NODE_ENV === 'production'
@@ -1743,9 +1745,12 @@ export const complement = isoU(notPartial, notPartial)
 export {identity}
 
 export const is = v =>
-  isoU(function is(x) {
-    return I.acyclicEqualsU(v, x)
-  }, b => (true === b ? v : void 0))
+  isoU(
+    function is(x) {
+      return I.acyclicEqualsU(v, x)
+    },
+    b => (true === b ? v : void 0)
+  )
 
 // Array isomorphisms
 
@@ -1834,14 +1839,20 @@ export const json = (process.env.NODE_ENV === 'production'
 // String isomorphisms
 
 export const dropPrefix = pfx =>
-  stringIsoU(function dropPrefix(x) {
-    return x.startsWith(pfx) ? x.slice(pfx.length) : undefined
-  }, x => pfx + x)
+  stringIsoU(
+    function dropPrefix(x) {
+      return x.startsWith(pfx) ? x.slice(pfx.length) : undefined
+    },
+    x => pfx + x
+  )
 
 export const dropSuffix = sfx =>
-  stringIsoU(function dropSuffix(x) {
-    return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined
-  }, x => x + sfx)
+  stringIsoU(
+    function dropSuffix(x) {
+      return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined
+    },
+    x => x + sfx
+  )
 
 export const replaces = I.curry(function replaces(i, o) {
   return stringIsoU(
