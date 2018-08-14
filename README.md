@@ -1994,8 +1994,9 @@ L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 // { x: -1, y: 1 }
 ```
 
-Note that [`L.branch`](#L-branch) is equivalent to `L.branchOr(L.zero)` and
-[`L.values`](#L-values) is equivalent to `L.branchOr([], {})`.
+Note that [`L.branch`](#L-branch) is equivalent to
+[`L.branchOr(L.zero)`](#L-zero) and [`L.values`](#L-values) is equivalent to
+[`L.branchOr([], {})`](#L-identity).
 
 ##### <a id="L-branches"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-branches) [`L.branches(...propNames) ~> traversal`](#L-branches "L.branches: (p1: PTraversal p1 a, ...pts) -> PTraversal {p1: p1, ...ps} a") <small><sup>v13.5.0</sup></small>
 
@@ -4825,11 +4826,11 @@ Fortunately this is fairly rarely the case so inventing a new value to represent
 nothingness doesn't seem to add much.
 
 Some libraries implement special `Maybe` types, but the benefits do not seem
-worth the trouble or the disadvantages in this context.  The main disadvantage
+worth the trouble nor the disadvantages in this context.  The main disadvantage
 is that wrapping values with `Just` objects introduces a significant performance
 overhead due to extra allocations, because operations with optics do not
-otherwise necessarily require large numbers of allocations and can be made
-highly efficient.  Also, a `Maybe`
+otherwise necessarily require large numbers of allocations and [can be made
+highly efficient](#benchmarks).  Also, a `Maybe`
 [monad](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad)
 is not necessary for optics.  A
 [monoid](https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid)
@@ -5443,6 +5444,6 @@ or you can use the watch
 npm run watch
 ```
 
-which builds the docs if you save `README.md`.  The watch also runs
+which builds the docs if you save a `.md` file.  The watch also runs
 [LiveReload](http://livereload.com/) so if you have the plugin, your browser
 will refresh automatically after changes.

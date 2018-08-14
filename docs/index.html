@@ -1620,8 +1620,9 @@ for properties not defined in the template.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.transform(L.branchOr(L.modifyOp(R.inc), {x: L.modifyOp(R.dec)}), {x: 0, y: 0})
 </code></pre>
-<p>Note that <a href="#L-branch"><code>L.branch</code></a> is equivalent to <code>L.branchOr(L.zero)</code> and
-<a href="#L-values"><code>L.values</code></a> is equivalent to <code>L.branchOr([], {})</code>.</p>
+<p>Note that <a href="#L-branch"><code>L.branch</code></a> is equivalent to
+<a href="#L-zero"><code>L.branchOr(L.zero)</code></a> and <a href="#L-values"><code>L.values</code></a> is equivalent to
+<a href="#L-identity"><code>L.branchOr([], {})</code></a>.</p>
 <h5><a id="L-branches"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-branches">■</a> <a href="#L-branches" title="L.branches: (p1: PTraversal p1 a, ...pts) -&gt; PTraversal {p1: p1, ...ps} a"><code>L.branches(...propNames) ~&gt; traversal</code></a> <small><sup>v13.5.0</sup></small></h5>
 <p><code>L.branches</code> creates a new traversal that visits the specified properties of an
 object.  <code>L.branches(p1, ..., pN)</code> is equivalent to <a href="#L-branch"><code>L.branch({[p1]: [],
@@ -3363,11 +3364,11 @@ is ambiguous.</p>
 Fortunately this is fairly rarely the case so inventing a new value to represent
 nothingness doesn&#39;t seem to add much.</p>
 <p>Some libraries implement special <code>Maybe</code> types, but the benefits do not seem
-worth the trouble or the disadvantages in this context.  The main disadvantage
+worth the trouble nor the disadvantages in this context.  The main disadvantage
 is that wrapping values with <code>Just</code> objects introduces a significant performance
 overhead due to extra allocations, because operations with optics do not
-otherwise necessarily require large numbers of allocations and can be made
-highly efficient.  Also, a <code>Maybe</code>
+otherwise necessarily require large numbers of allocations and <a href="#benchmarks">can be made
+highly efficient</a>.  Also, a <code>Maybe</code>
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monad">monad</a>
 is not necessary for optics.  A
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
@@ -3902,7 +3903,7 @@ locally:</p>
 <pre><code class="hljs lang-bash">npm run docs</code></pre>
 <p>or you can use the watch</p>
 <pre><code class="hljs lang-bash">npm run watch</code></pre>
-<p>which builds the docs if you save <code>index.html</code>.  The watch also runs
+<p>which builds the docs if you save a <code>.md</code> file.  The watch also runs
 <a href="http://livereload.com/">LiveReload</a> so if you have the plugin, your browser
 will refresh automatically after changes.</p>
 
