@@ -1675,7 +1675,7 @@ MonoidLaws(Defined, {Try: 'any'}, 'JavaScript', ['values'])
 // {associativity: true, leftIdentity: true, rightIdentity: true}
 ```
 
-In Partial Lenses [`undefined` is used to representing
+In Partial Lenses [`undefined` is used to represent
 nothingness](#use-of-undefined).
 
 ##### <a id="L-toFunction"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-toFunction) [`L.toFunction(optic) ~> optic`](#L-toFunction "L.toFunction: POptic s t a b -> (Maybe s, Index, (Functor|Applicative|Monad) c, (Maybe a, Index) -> c b) -> c t") <small><sup>v7.0.0</sup></small>
