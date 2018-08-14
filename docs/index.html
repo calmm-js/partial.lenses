@@ -303,7 +303,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#object-isomorphisms">Object isomorphisms</a><ul>
-<li><a href="#L-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphisms</code></a> <small><sup>v13.13.0</sup></small></li>
+<li><a href="#L-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphism</code></a> <small><sup>v13.13.0</sup></small></li>
 <li><a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
 </ul>
 </li>
@@ -2757,7 +2757,7 @@ for this behaviour is that it allows <code>L.singleton</code> to not only be use
 the first element of an array-like object, but to also check that the object is
 of the expected form.</p>
 <h4><a id="object-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#object-isomorphisms">■</a> <a href="#object-isomorphisms">Object isomorphisms</a></h4>
-<h5><a id="L-disjoint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-disjoint">■</a> <a href="#L-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphisms</code></a> <small><sup>v13.13.0</sup></small></h5>
+<h5><a id="L-disjoint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-disjoint">■</a> <a href="#L-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphism</code></a> <small><sup>v13.13.0</sup></small></h5>
 <p><code>L.disjoint</code> divides an object into disjoint subsets based on the given function
 that maps keys to group keys.</p>
 <p>For example:</p>

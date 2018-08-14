@@ -205,7 +205,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
     * [Object isomorphisms](#object-isomorphisms)
-      * [`L.disjoint(propName => propName) ~> isomorphisms`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
+      * [`L.disjoint(propName => propName) ~> isomorphism`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
       * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3896,7 +3896,7 @@ of the expected form.
 
 #### <a id="object-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#object-isomorphisms) [Object isomorphisms](#object-isomorphisms)
 
-##### <a id="L-disjoint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-disjoint) [`L.disjoint(propName => propName) ~> isomorphisms`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
+##### <a id="L-disjoint"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-disjoint) [`L.disjoint(propName => propName) ~> isomorphism`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
 
 `L.disjoint` divides an object into disjoint subsets based on the given function
 that maps keys to group keys.
