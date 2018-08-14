@@ -63,11 +63,6 @@ function deepFreeze(x) {
   return x
 }
 
-function freezeArrayOfObjects(xs) {
-  xs.forEach(I.freeze)
-  return I.freeze(xs)
-}
-
 function freezeObjectOfObjects(xs) {
   if (xs) for (const k in xs) I.freeze(xs[k])
   return I.freeze(xs)
@@ -753,7 +748,7 @@ function iterEager(map, ap, of, xi2yA, t, s) {
 const keyed = isoU(
   expect(
     I.isInstanceOf(Object),
-    (process.env.NODE_ENV === 'production' ? id : C.res(freezeArrayOfObjects))(
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
       function keyed(x) {
         x = toObject(x)
         const es = []
@@ -1725,7 +1720,7 @@ export const is = v =>
 export const indexed = isoU(
   expect(
     seemsArrayLike,
-    (process.env.NODE_ENV === 'production' ? id : C.res(freezeArrayOfObjects))(
+    (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
       function indexed(xs) {
         const n = xs.length
         const xis = Array(n)
