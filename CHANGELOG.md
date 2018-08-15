@@ -76,7 +76,7 @@ L.get(['x', L.when(x => x > 0), L.valueOr(0)], {x: -1})
 ```
 
 This is clearly a breaking change.  However, this is unlikely to affect a large
-number of use cases.  To get the old behavior, use of `L.zero` need to be
+number of use cases.  To get the old behavior, use of `L.zero` needs to be
 avoided.  In the example case, one could write:
 
 ```js
