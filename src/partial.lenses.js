@@ -23,6 +23,16 @@ const toRegExpU = (str, flags) =>
 
 //
 
+const tryCatch = fn => x => {
+  try {
+    return fn(x)
+  } catch (e) {
+    return e
+  }
+}
+
+//
+
 const returnAsync = x => Promise.resolve(x)
 
 const chainAsync = (xyP, xP) =>
@@ -1822,9 +1832,12 @@ export {keyed}
 
 // Standard isomorphisms
 
-export const uri = stringIsoU(decodeURI, encodeURI)
+export const uri = stringIsoU(tryCatch(decodeURI), encodeURI)
 
-export const uriComponent = stringIsoU(decodeURIComponent, encodeURIComponent)
+export const uriComponent = stringIsoU(
+  tryCatch(decodeURIComponent),
+  encodeURIComponent
+)
 
 export const json = (process.env.NODE_ENV === 'production'
   ? id
@@ -1833,7 +1846,7 @@ export const json = (process.env.NODE_ENV === 'production'
 ) {
   const {reviver, replacer, space} = options || I.object0
   return isoU(
-    expect(I.isString, text => JSON.parse(text, reviver)),
+    expect(I.isString, tryCatch(text => JSON.parse(text, reviver))),
     expect(I.isDefined, value => JSON.stringify(value, replacer, space))
   )
 })
@@ -1909,7 +1922,7 @@ export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 // Interop
 
 export const pointer = s => {
-  if (s[0] === '#') s = getAsU(id, uriComponent, s)
+  if (s[0] === '#') s = decodeURIComponent(s)
   const ts = s.split('/')
   const n = ts.length
   for (let i = 1; i < n; ++i) {

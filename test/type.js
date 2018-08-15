@@ -37,7 +37,8 @@ export const instanceOf = c => fromPredicate(x => x instanceof c)
 
 const isFreezable = x =>
   I.isArray(x) ||
-  (x instanceof Object && !(x instanceof Promise || x instanceof Int8Array))
+  (x instanceof Object &&
+    !(x instanceof Promise || x instanceof Int8Array || x instanceof Error))
 const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
 const isDeepFrozen = x =>
   !isFreezable(x) ||
