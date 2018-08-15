@@ -413,10 +413,12 @@ produces and consumes JSON objects that include, among many other properties, a
   ]
 }</code></pre>
 <p>We ultimately want to present the user with a rich enough editor, with features
-such as undo-redo and validation, for manipulating the content represented by
-those JSON objects.  The <code>titles</code> property is really just one tiny part of the
-data model, but, in this tutorial, we only look at it, because it is sufficient
-for introducing most of the basic ideas.</p>
+such as <a href="https://github.com/calmm-js/partial.lenses.history">undo-redo</a> and
+<a href="https://github.com/calmm-js/partial.lenses.validation">validation</a>, for
+manipulating the content represented by those JSON objects.  The <code>titles</code>
+property is really just one tiny part of the data model, but, in this tutorial,
+we only look at it, because it is sufficient for introducing most of the basic
+ideas.</p>
 <p>So, what we&#39;d like to have is a way to access the <code>text</code> of titles in a given
 language.  Given a language, we want to be able to</p>
 <ul>

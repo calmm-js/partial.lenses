@@ -284,10 +284,12 @@ const sampleTitles = {
 ```
 
 We ultimately want to present the user with a rich enough editor, with features
-such as undo-redo and validation, for manipulating the content represented by
-those JSON objects.  The `titles` property is really just one tiny part of the
-data model, but, in this tutorial, we only look at it, because it is sufficient
-for introducing most of the basic ideas.
+such as [undo-redo](https://github.com/calmm-js/partial.lenses.history) and
+[validation](https://github.com/calmm-js/partial.lenses.validation), for
+manipulating the content represented by those JSON objects.  The `titles`
+property is really just one tiny part of the data model, but, in this tutorial,
+we only look at it, because it is sufficient for introducing most of the basic
+ideas.
 
 So, what we'd like to have is a way to access the `text` of titles in a given
 language.  Given a language, we want to be able to
