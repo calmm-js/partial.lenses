@@ -1565,6 +1565,9 @@ describe('standard isos', () => {
     this: ['Is', true]
   })
   testEq(() => L.getInverse(L.json(), undefined), undefined)
+  testEq(() => L.get(L.uri, '%') instanceof Error, true)
+  testEq(() => L.get(L.uriComponent, '%') instanceof Error, true)
+  testEq(() => L.get(L.json(), '%') instanceof Error, true)
 })
 
 describe('L.matches', () => {
@@ -2037,6 +2040,7 @@ describe('L.pointer', () => {
     a: 1,
     b: [3, 3]
   })
+  testThrows(() => L.pointer('#%'))
 })
 
 describe('L.dropPrefix', () => {

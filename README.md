@@ -3976,13 +3976,51 @@ L.set(
 
 #### <a id="standard-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standard-isomorphisms) [Standard isomorphisms](#standard-isomorphisms)
 
+Several pairs of standard functions, such as the
+[`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
+and
+[`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
+functions, form partial isomorphisms.  Some of those pairs of functions are
+wrapped for direct use as isomorphisms in this library, such as the
+[`L.uriComponent`](#L-uriComponent) isomorphism.
+
+Invalid inputs are sometimes reported by standard functions by throwing
+[`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+objects.  As a general principle, performing an otherwise valid read or write
+through an optic in this library should not throw on invalid inputs to support
+optimistic queries and updates.  On the other hand, discarding the information
+provided by a thrown
+[`Error`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)
+object is undesirable.  Therefore standard isomorphisms based on throwing
+standard functions catch and pass the error as the result.  For example:
+
+```js
+L.get(L.uriComponent, '%') instanceof Error // Does not throw!
+// true
+```
+
+Such errors can be, for example, filtered out via composition to obtain the
+ordinary partial behavior of producing `undefined` for unexpected inputs:
+
+```js
+L.get(
+  [
+    L.uriComponent,
+    L.unless(R.is(Error))
+  ],
+  '%'
+)
+// undefined
+```
+
 ##### <a id="L-uri"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uri) [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
 
 `L.uri` is an isomorphism based on the standard
 [`decodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI)
 and
 [`encodeURI`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI)
-functions.
+functions.  Decoding [errors are caught](#standard-isomorphisms) and passed as
+results.
 
 ##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
 
@@ -3990,7 +4028,8 @@ functions.
 [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
 and
 [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
-functions.
+functions.  Decoding [errors are caught](#standard-isomorphisms) and passed as
+results.
 
 ##### <a id="L-json"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-json) [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON") <small><sup>v11.3.0</sup></small>
 
@@ -3999,7 +4038,8 @@ standard
 [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 and
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)
-functions.  The optional `reviver` is passed to
+functions.  Parsing [errors are caught](#standard-isomorphisms) and passed as
+results.  The optional `reviver` is passed to
 [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse)
 and the optional `replacer` and `space` are passed to
 [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify).

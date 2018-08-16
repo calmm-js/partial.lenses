@@ -1,5 +1,12 @@
 # Partial Lenses Changelog
 
+## 14.1.0
+
+Previously `L.uri`, `L.uriComponent`, and `L.json` threw an exception on invalid
+inputs.  Now they instead produce the error object as their result.  This
+behaviour was neither documented nor tested earlier, so the change is considered
+a bug fix.
+
 ## 14.0.0
 
 *The current plan is to change Partial Lenses to support so called naked or
