@@ -207,6 +207,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Object isomorphisms](#object-isomorphisms)
       * [`L.disjoint(propName => propName) ~> isomorphism`](#L-disjoint "L.disjoint: (String k -> String g) -> PIso {[k]: a} {[g]: {[k]: a}}") <small><sup>v13.13.0</sup></small>
       * [`L.keyed ~> isomorphism`](#L-keyed "L.keyed: PIso {p: a, ...ps} [[String, a]]") <small><sup>v11.21.0</sup></small>
+      * [`L.multikeyed ~> isomorphism`](#L-multikeyed "L.multikeyed: PIso {p: a|[a], ...ps} [[String, a]]") <small><sup>v14.1.0</sup></small>
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
@@ -3937,6 +3938,40 @@ For example:
 ```js
 L.get(L.keyed, {a: 1, b: 2})
 // [ ['a', 1], ['b', 2] ]
+```
+
+##### <a id="L-multikeyed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-multikeyed) [`L.multikeyed ~> isomorphism`](#L-multikeyed "L.multikeyed: PIso {p: a|[a], ...ps} [[String, a]]") <small><sup>v14.1.0</sup></small>
+
+`L.multikeyed` is an isomorphism between an object and an array of `[key,
+value]` pairs where a `key` may appear multiple times and in which case the
+corresponding object property value is an array.
+
+An application of `L.multikeyed` is manipulating URL query strings.  For
+example:
+
+```js
+const querystring = [
+  L.dropPrefix('?'),
+  L.replaces('+', '%20'),
+  L.split('&'),
+  L.array([
+    L.uncouple('='),
+    L.array(L.uriComponent)
+  ]),
+  L.inverse(L.multikeyed)
+]
+```
+```js
+L.get(querystring, '?foo=bar&abc=xyz&abc=123')
+// { foo: 'bar', abc: ['xyz', '123'] }
+```
+```js
+L.set(
+  [querystring, 'foo'],
+  'baz',
+  '?foo=bar&abc=xyz&abc=123'
+)
+// '?foo=baz&abc=xyz&abc=123'
 ```
 
 #### <a id="standard-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standard-isomorphisms) [Standard isomorphisms](#standard-isomorphisms)
