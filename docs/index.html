@@ -305,6 +305,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#object-isomorphisms">Object isomorphisms</a><ul>
 <li><a href="#L-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphism</code></a> <small><sup>v13.13.0</sup></small></li>
 <li><a href="#L-keyed" title="L.keyed: PIso {p: a, ...ps} [[String, a]]"><code>L.keyed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
+<li><a href="#L-multikeyed" title="L.multikeyed: PIso {p: a|[a], ...ps} [[String, a]]"><code>L.multikeyed ~&gt; isomorphism</code></a> <small><sup>v14.1.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#standard-isomorphisms">Standard isomorphisms</a><ul>
@@ -2788,26 +2789,81 @@ pairs.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.keyed, {a: 1, b: 2})
 </code></pre>
+<h5><a id="L-multikeyed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-multikeyed">■</a> <a href="#L-multikeyed" title="L.multikeyed: PIso {p: a|[a], ...ps} [[String, a]]"><code>L.multikeyed ~&gt; isomorphism</code></a> <small><sup>v14.1.0</sup></small></h5>
+<p><code>L.multikeyed</code> is an isomorphism between an object and an array of <code>[key,
+value]</code> pairs where a <code>key</code> may appear multiple times and in which case the
+corresponding object property value is an array.</p>
+<p>An application of <code>L.multikeyed</code> is manipulating URL query strings.  For
+example:</p>
+<pre><code class="hljs lang-js">var querystring = [
+  L.dropPrefix(&#39;?&#39;),
+  L.replaces(&#39;+&#39;, &#39;%20&#39;),
+  L.split(&#39;&amp;&#39;),
+  L.array([
+    L.uncouple(&#39;=&#39;),
+    L.array(L.uriComponent)
+  ]),
+  L.inverse(L.multikeyed)
+]</code></pre>
+<pre><code class="hljs lang-js">L.get(querystring, &#39;?foo=bar&amp;abc=xyz&amp;abc=123&#39;)
+</code></pre>
+<pre><code class="hljs lang-js">L.set(
+  [querystring, &#39;foo&#39;],
+  &#39;baz&#39;,
+  &#39;?foo=bar&amp;abc=xyz&amp;abc=123&#39;
+)
+</code></pre>
 <h4><a id="standard-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#standard-isomorphisms">■</a> <a href="#standard-isomorphisms">Standard isomorphisms</a></h4>
+<p>Several pairs of standard functions, such as the
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
+functions, form partial isomorphisms.  Some of those pairs of functions are
+wrapped for direct use as isomorphisms in this library, such as the
+<a href="#L-uriComponent"><code>L.uriComponent</code></a> isomorphism.</p>
+<p>Invalid inputs are sometimes reported by standard functions by throwing
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"><code>Error</code></a>
+objects.  As a general principle, performing an otherwise valid read or write
+through an optic in this library should not throw on invalid inputs to support
+optimistic queries and updates.  On the other hand, discarding the information
+provided by a thrown
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"><code>Error</code></a>
+object is undesirable.  Therefore standard isomorphisms based on throwing
+standard functions catch and pass the error as the result.  For example:</p>
+<pre><code class="hljs lang-js">L.get(L.uriComponent, &#39;%&#39;) instanceof Error // Does not throw!
+</code></pre>
+<p>Such errors can be, for example, filtered out via composition to obtain the
+ordinary partial behavior of producing <code>undefined</code> for unexpected inputs:</p>
+<pre><code class="hljs lang-js">L.get(
+  [
+    L.uriComponent,
+    L.unless(R.is(Error))
+  ],
+  &#39;%&#39;
+)
+</code></pre>
 <h5><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.uri</code> is an isomorphism based on the standard
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a>
 and
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a>
-functions.</p>
+functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
+results.</p>
 <h5><a id="L-uriComponent"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uriComponent">■</a> <a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.uriComponent</code> is an isomorphism based on the standard
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a>
 and
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
-functions.</p>
+functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
+results.</p>
 <h5><a id="L-json"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-json">■</a> <a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.json({reviver, replacer, space})</code> returns an isomorphism based on the
 standard
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a>
 and
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>
-functions.  The optional <code>reviver</code> is passed to
+functions.  Parsing <a href="#standard-isomorphisms">errors are caught</a> and passed as
+results.  The optional <code>reviver</code> is passed to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse"><code>JSON.parse</code></a>
 and the optional <code>replacer</code> and <code>space</code> are passed to
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify"><code>JSON.stringify</code></a>.</p>

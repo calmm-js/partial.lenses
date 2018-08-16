@@ -163,6 +163,18 @@ var toRegExpU = function toRegExpU(str, flags) {
 
 //
 
+var tryCatch = function tryCatch(fn$$1) {
+  return function (x) {
+    try {
+      return fn$$1(x);
+    } catch (e) {
+      return e;
+    }
+  };
+};
+
+//
+
 var returnAsync = function returnAsync(x) {
   return Promise.resolve(x);
 };
@@ -222,11 +234,6 @@ function deepFreeze(x) {
     }I.freeze(x);
   }
   return x;
-}
-
-function freezeArrayOfObjects(xs) {
-  xs.forEach(I.freeze);
-  return I.freeze(xs);
 }
 
 function freezeObjectOfObjects(xs) {
@@ -950,7 +957,7 @@ function iterEager(map, ap, of, xi2yA, t, s) {
 
 //
 
-var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeArrayOfObjects))(function keyed(x) {
+var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function keyed(x) {
   x = toObject(x);
   var es = [];
   for (var key in x) {
@@ -963,6 +970,30 @@ var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Ob
     if (entry.length === 2) o[entry[0]] = entry[1];
   }
   return o;
+})));
+
+var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (o) {
+  o = toObject(o);
+  var ps = [];
+  for (var k in o) {
+    var v = o[k];
+    if (I.isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
+      ps.push([k, v[i]]);
+    } else ps.push([k, v]);
+  }
+  return ps;
+})), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (ps) {
+  var o = create(null);
+  for (var i = 0, n = ps.length; i < n; ++i) {
+    var entry = ps[i];
+    if (entry.length === 2) {
+      var k = entry[0];
+      var v = entry[1];
+      var was = o[k];
+      if (was === void 0) o[k] = v;else if (I.isArray(was)) was.push(v);else o[k] = [was, v];
+    }
+  }
+  return I.assign({}, o);
 })));
 
 //
@@ -1878,7 +1909,7 @@ var is = function is(v) {
 
 // Array isomorphisms
 
-var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeArrayOfObjects))(function indexed(xs) {
+var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function indexed(xs) {
   var n = xs.length;
   var xis = Array(n);
   for (var i = 0; i < n; ++i) {
@@ -1923,9 +1954,9 @@ var disjoint = function disjoint(groupOf) {
 
 // Standard isomorphisms
 
-var uri = /*#__PURE__*/stringIsoU(decodeURI, encodeURI);
+var uri = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURI), encodeURI);
 
-var uriComponent = /*#__PURE__*/stringIsoU(decodeURIComponent, encodeURIComponent);
+var uriComponent = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURIComponent), encodeURIComponent);
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id)]);
@@ -1935,9 +1966,9 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(functi
       replacer = _ref3.replacer,
       space = _ref3.space;
 
-  return isoU(expect(I.isString, function (text) {
+  return isoU(expect(I.isString, tryCatch(function (text) {
     return JSON.parse(text, reviver);
-  }), expect(I.isDefined, function (value) {
+  })), expect(I.isDefined, function (value) {
     return JSON.stringify(value, replacer, space);
   }));
 });
@@ -2014,7 +2045,7 @@ var subtract = function subtract(c) {
 // Interop
 
 var pointer = function pointer(s) {
-  if (s[0] === '#') s = getAsU(id, uriComponent, s);
+  if (s[0] === '#') s = decodeURIComponent(s);
   var ts = s.split('/');
   var n = ts.length;
   for (var i = 1; i < n; ++i) {
@@ -2025,6 +2056,7 @@ var pointer = function pointer(s) {
   return ts;
 };
 
+exports.multikeyed = multikeyed;
 exports.seemsArrayLike = seemsArrayLike;
 exports.Identity = Identity;
 exports.IdentityAsync = IdentityAsync;
