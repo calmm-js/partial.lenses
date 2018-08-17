@@ -1911,6 +1911,15 @@ export const uncouple = (process.env.NODE_ENV === 'production'
   )
 })
 
+// Standardish isomorphisms
+
+export const querystring = toFunction([
+  reread(s => (I.isString(s) ? s.replace(/\+/g, '%20') : s)),
+  split('&'),
+  array([uncouple('='), array(uriComponent)]),
+  inverse(multikeyed)
+])
+
 // Arithmetic isomorphisms
 
 export const add = c => numberIsoU(I.add(c), I.add(-c))

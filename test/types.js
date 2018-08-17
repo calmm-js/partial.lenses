@@ -409,6 +409,10 @@ export const json = T.fn([T.any], T_isomorphism)
 export const uri = T_isomorphism
 export const uriComponent = T_isomorphism
 
+// Standardish isomorphisms
+
+export const querystring = T_isomorphism
+
 // String isomorphisms
 
 export const dropPrefix = T.fn([T.string], T_isomorphism)

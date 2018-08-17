@@ -212,6 +212,8 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON") <small><sup>v11.3.0</sup></small>
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
       * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String (Boolean|Number|String)") <small><sup>v11.3.0</sup></small>
+    * [Standardish isomorphisms](#standardish-isomorphisms)
+      * [`L.querystring ~> isomorphism`](#L-querystring "L.querystring: PIso String {p: Boolean|Number|String|[Boolean|Number|String], ...ps}") <small><sup>v14.2.0</sup></small>
     * [String isomorphisms](#string-isomorphisms)
       * [`L.dropPrefix(prefix) ~> isomorphism`](#L-dropPrefix "L.dropPrefix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
       * [`L.dropSuffix(suffix) ~> isomorphism`](#L-dropSuffix "L.dropSuffix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
@@ -3944,7 +3946,8 @@ L.get(L.keyed, {a: 1, b: 2})
 
 `L.multikeyed` is an isomorphism between an object and an array of `[key,
 value]` pairs where a `key` may appear multiple times and in which case the
-corresponding object property value is an array.
+corresponding object property value is an array.  See also
+[`L.querystring`](#L-querystring).
 
 An application of `L.multikeyed` is manipulating URL query strings.  For
 example:
@@ -4053,6 +4056,22 @@ and
 [`encodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent)
 functions.  Decoding [errors are caught](#standard-isomorphisms) and passed as
 results.
+
+#### <a id="standardish-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#standardish-isomorphisms) [Standardish isomorphisms](#standardish-isomorphisms)
+
+##### <a id="L-querystring"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-querystring) [`L.querystring ~> isomorphism`](#L-querystring "L.querystring: PIso String {p: Boolean|Number|String|[Boolean|Number|String], ...ps}") <small><sup>v14.2.0</sup></small>
+
+`L.querystring` is an isomorphism between URL query strings and parameter
+objects.  `L.querystring` approximates Node's [Query
+String](https://nodejs.org/api/querystring.html) functionality, but does not
+produce identical results.  See also [`L.dropPrefix`](#L-dropPrefix).
+
+For example:
+
+```js
+L.getInverse(L.querystring, { foo: 'bar', abc: ['xyz', 123], corge: '' })
+// 'foo=bar&abc=xyz&abc=123&corge'
+```
 
 #### <a id="string-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#string-isomorphisms) [String isomorphisms](#string-isomorphisms)
 
