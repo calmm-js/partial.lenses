@@ -405,9 +405,9 @@ export const multikeyed = T_isomorphism
 
 // Standard isomorphisms
 
+export const json = T.fn([T.any], T_isomorphism)
 export const uri = T_isomorphism
 export const uriComponent = T_isomorphism
-export const json = T.fn([T.any], T_isomorphism)
 
 // String isomorphisms
 

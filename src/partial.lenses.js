@@ -1832,13 +1832,6 @@ export {keyed}
 
 // Standard isomorphisms
 
-export const uri = stringIsoU(tryCatch(decodeURI), encodeURI)
-
-export const uriComponent = stringIsoU(
-  tryCatch(decodeURIComponent),
-  encodeURIComponent
-)
-
 export const json = (process.env.NODE_ENV === 'production'
   ? id
   : C.res(iso => toFunction([iso, isoU(deepFreeze, id)])))(function json(
@@ -1850,6 +1843,13 @@ export const json = (process.env.NODE_ENV === 'production'
     expect(I.isDefined, value => JSON.stringify(value, replacer, space))
   )
 })
+
+export const uri = stringIsoU(tryCatch(decodeURI), encodeURI)
+
+export const uriComponent = stringIsoU(
+  tryCatch(decodeURIComponent),
+  encodeURIComponent
+)
 
 // String isomorphisms
 
