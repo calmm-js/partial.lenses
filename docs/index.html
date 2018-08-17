@@ -309,9 +309,9 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#standard-isomorphisms">Standard isomorphisms</a><ul>
+<li><a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></li>
 <li><a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></li>
 <li><a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></li>
-<li><a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#string-isomorphisms">String isomorphisms</a><ul>
@@ -2842,20 +2842,6 @@ ordinary partial behavior of producing <code>undefined</code> for unexpected inp
   &#39;%&#39;
 )
 </code></pre>
-<h5><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
-<p><code>L.uri</code> is an isomorphism based on the standard
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a>
-and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a>
-functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
-results.</p>
-<h5><a id="L-uriComponent"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uriComponent">■</a> <a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
-<p><code>L.uriComponent</code> is an isomorphism based on the standard
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a>
-and
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
-functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
-results.</p>
 <h5><a id="L-json"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-json">■</a> <a href="#L-json" title="L.json: {reviver, replacer, space} -&gt; PIso String JSON"><code>L.json({reviver, replacer, space}) ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
 <p><code>L.json({reviver, replacer, space})</code> returns an isomorphism based on the
 standard
@@ -2873,6 +2859,20 @@ and the optional <code>replacer</code> and <code>space</code> are passed to
   &#39;{&quot;foo&quot;:[3,1,4]}&#39;
 )
 </code></pre>
+<h5><a id="L-uri"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uri">■</a> <a href="#L-uri" title="L.uri: PIso String String"><code>L.uri ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
+<p><code>L.uri</code> is an isomorphism based on the standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURI"><code>decodeURI</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURI"><code>encodeURI</code></a>
+functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
+results.</p>
+<h5><a id="L-uriComponent"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-uriComponent">■</a> <a href="#L-uriComponent" title="L.uriComponent: PIso String String"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></h5>
+<p><code>L.uriComponent</code> is an isomorphism based on the standard
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent"><code>decodeURIComponent</code></a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
+functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
+results.</p>
 <h4><a id="string-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#string-isomorphisms">■</a> <a href="#string-isomorphisms">String isomorphisms</a></h4>
 <h5><a id="L-dropPrefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-dropPrefix">■</a> <a href="#L-dropPrefix" title="L.dropPrefix: String -&gt; PIso String String"><code>L.dropPrefix(prefix) ~&gt; isomorphism</code></a> <small><sup>v13.8.0</sup></small></h5>
 <p><code>L.dropPrefix</code> drops the given prefix from the beginning of the string when read

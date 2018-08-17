@@ -154,14 +154,17 @@
   box-shadow: 2px 0 8px 0 rgba(0, 0, 0, 0.4);
   background: #eee;
   color: #000;
-  overflow-y: scroll;
+  overflow: hidden;
 }
+
+.menu .menu-body::-webkit-scrollbar { display: none: }
 
 .menu.open .menu-body {
   min-width: 40%;
   max-width: 100%;
   background: #fff;
   color: #333;
+  overflow-y: scroll;
 }
 
 .menu .menu-side {
