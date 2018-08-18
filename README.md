@@ -211,7 +211,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Standard isomorphisms](#standard-isomorphisms)
       * [`L.json({reviver, replacer, space}) ~> isomorphism`](#L-json "L.json: {reviver, replacer, space} -> PIso String JSON") <small><sup>v11.3.0</sup></small>
       * [`L.uri ~> isomorphism`](#L-uri "L.uri: PIso String String") <small><sup>v11.3.0</sup></small>
-      * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
+      * [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String (Boolean|Number|String)") <small><sup>v11.3.0</sup></small>
     * [String isomorphisms](#string-isomorphisms)
       * [`L.dropPrefix(prefix) ~> isomorphism`](#L-dropPrefix "L.dropPrefix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
       * [`L.dropSuffix(suffix) ~> isomorphism`](#L-dropSuffix "L.dropSuffix: String -> PIso String String") <small><sup>v13.8.0</sup></small>
@@ -4045,7 +4045,7 @@ and
 functions.  Decoding [errors are caught](#standard-isomorphisms) and passed as
 results.
 
-##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String String") <small><sup>v11.3.0</sup></small>
+##### <a id="L-uriComponent"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-uriComponent) [`L.uriComponent ~> isomorphism`](#L-uriComponent "L.uriComponent: PIso String (Boolean|Number|String)") <small><sup>v11.3.0</sup></small>
 
 `L.uriComponent` is an isomorphism based on the standard
 [`decodeURIComponent`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/decodeURIComponent)
