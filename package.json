@@ -1,6 +1,6 @@
 {
   "name": "partial.lenses",
-  "version": "14.1.0",
+  "version": "14.2.0",
   "description": "Partial lenses is a comprehensive, high-performance optics library for JavaScript",
   "module": "dist/partial.lenses.es.js",
   "main": "dist/partial.lenses.cjs.js",
@@ -69,7 +69,7 @@
     "benchmark": "^2.1.4",
     "codecov": "^3.0.4",
     "concurrently": "^3.6.1",
-    "eslint": "^5.3.0",
+    "eslint": "^5.4.0",
     "klipse-github-docs-generator": "^0.3.6",
     "livereload": "^0.7.0",
     "mocha": "^5.2.0",

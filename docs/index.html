@@ -314,6 +314,10 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#L-uriComponent" title="L.uriComponent: PIso String (Boolean|Number|String)"><code>L.uriComponent ~&gt; isomorphism</code></a> <small><sup>v11.3.0</sup></small></li>
 </ul>
 </li>
+<li><a href="#standardish-isomorphisms">Standardish isomorphisms</a><ul>
+<li><a href="#L-querystring" title="L.querystring: PIso String {p: Boolean|Number|String|[Boolean|Number|String], ...ps}"><code>L.querystring ~&gt; isomorphism</code></a> <small><sup>v14.2.0</sup></small></li>
+</ul>
+</li>
 <li><a href="#string-isomorphisms">String isomorphisms</a><ul>
 <li><a href="#L-dropPrefix" title="L.dropPrefix: String -&gt; PIso String String"><code>L.dropPrefix(prefix) ~&gt; isomorphism</code></a> <small><sup>v13.8.0</sup></small></li>
 <li><a href="#L-dropSuffix" title="L.dropSuffix: String -&gt; PIso String String"><code>L.dropSuffix(suffix) ~&gt; isomorphism</code></a> <small><sup>v13.8.0</sup></small></li>
@@ -2792,7 +2796,8 @@ pairs.</p>
 <h5><a id="L-multikeyed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-multikeyed">■</a> <a href="#L-multikeyed" title="L.multikeyed: PIso {p: a|[a], ...ps} [[String, a]]"><code>L.multikeyed ~&gt; isomorphism</code></a> <small><sup>v14.1.0</sup></small></h5>
 <p><code>L.multikeyed</code> is an isomorphism between an object and an array of <code>[key,
 value]</code> pairs where a <code>key</code> may appear multiple times and in which case the
-corresponding object property value is an array.</p>
+corresponding object property value is an array.  See also
+<a href="#L-querystring"><code>L.querystring</code></a>.</p>
 <p>An application of <code>L.multikeyed</code> is manipulating URL query strings.  For
 example:</p>
 <pre><code class="hljs lang-js">var querystring = [
@@ -2873,6 +2878,15 @@ and
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/encodeURIComponent"><code>encodeURIComponent</code></a>
 functions.  Decoding <a href="#standard-isomorphisms">errors are caught</a> and passed as
 results.</p>
+<h4><a id="standardish-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#standardish-isomorphisms">■</a> <a href="#standardish-isomorphisms">Standardish isomorphisms</a></h4>
+<h5><a id="L-querystring"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-querystring">■</a> <a href="#L-querystring" title="L.querystring: PIso String {p: Boolean|Number|String|[Boolean|Number|String], ...ps}"><code>L.querystring ~&gt; isomorphism</code></a> <small><sup>v14.2.0</sup></small></h5>
+<p><code>L.querystring</code> is an isomorphism between URL query strings and parameter
+objects.  <code>L.querystring</code> approximates Node&#39;s <a href="https://nodejs.org/api/querystring.html">Query
+String</a> functionality, but does not
+produce identical results.  See also <a href="#L-dropPrefix"><code>L.dropPrefix</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.getInverse(L.querystring, { foo: &#39;bar&#39;, abc: [&#39;xyz&#39;, 123], corge: &#39;&#39; })
+</code></pre>
 <h4><a id="string-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#string-isomorphisms">■</a> <a href="#string-isomorphisms">String isomorphisms</a></h4>
 <h5><a id="L-dropPrefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-dropPrefix">■</a> <a href="#L-dropPrefix" title="L.dropPrefix: String -&gt; PIso String String"><code>L.dropPrefix(prefix) ~&gt; isomorphism</code></a> <small><sup>v13.8.0</sup></small></h5>
 <p><code>L.dropPrefix</code> drops the given prefix from the beginning of the string when read

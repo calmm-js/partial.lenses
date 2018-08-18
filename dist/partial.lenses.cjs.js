@@ -43,6 +43,17 @@ var replace = /*#__PURE__*/I.curry(function (p, r, s) {
   return s.replace(p, r);
 });
 
+function isPrimitiveData(x) {
+  switch (typeof x) {
+    case 'boolean':
+    case 'number':
+    case 'string':
+      return true;
+    default:
+      return false;
+  }
+}
+
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
     return I.arityN(xsy.length, I.defineNameU(function () {
@@ -1954,10 +1965,6 @@ var disjoint = function disjoint(groupOf) {
 
 // Standard isomorphisms
 
-var uri = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURI), encodeURI);
-
-var uriComponent = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURIComponent), encodeURIComponent);
-
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id)]);
 }))(function json(options) {
@@ -1972,6 +1979,10 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(functi
     return JSON.stringify(value, replacer, space);
   }));
 });
+
+var uri = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURI), encodeURI);
+
+var uriComponent = /*#__PURE__*/isoU( /*#__PURE__*/expect(I.isString, /*#__PURE__*/tryCatch(decodeURIComponent)), /*#__PURE__*/expect(isPrimitiveData, encodeURIComponent));
 
 // String isomorphisms
 
@@ -2025,6 +2036,12 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : functi
     }
   });
 });
+
+// Standardish isomorphisms
+
+var querystring = /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
+  return I.isString(s) ? s.replace(/\+/g, '%20') : s;
+}), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]);
 
 // Arithmetic isomorphisms
 
@@ -2186,14 +2203,15 @@ exports.reverse = reverse;
 exports.singleton = singleton;
 exports.disjoint = disjoint;
 exports.keyed = keyed;
+exports.json = json;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
-exports.json = json;
 exports.dropPrefix = dropPrefix;
 exports.dropSuffix = dropSuffix;
 exports.replaces = replaces;
 exports.split = split;
 exports.uncouple = uncouple;
+exports.querystring = querystring;
 exports.add = add$1;
 exports.divide = divide;
 exports.multiply = multiply$1;

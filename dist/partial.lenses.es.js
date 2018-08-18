@@ -39,6 +39,17 @@ var replace = /*#__PURE__*/curry(function (p, r, s) {
   return s.replace(p, r);
 });
 
+function isPrimitiveData(x) {
+  switch (typeof x) {
+    case 'boolean':
+    case 'number':
+    case 'string':
+      return true;
+    default:
+      return false;
+  }
+}
+
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
     return arityN(xsy.length, defineNameU(function () {
@@ -1950,10 +1961,6 @@ var disjoint = function disjoint(groupOf) {
 
 // Standard isomorphisms
 
-var uri = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURI), encodeURI);
-
-var uriComponent = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURIComponent), encodeURIComponent);
-
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(function (iso) {
   return toFunction([iso, isoU(deepFreeze, id$1)]);
 }))(function json(options) {
@@ -1968,6 +1975,10 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(func
     return JSON.stringify(value, replacer, space);
   }));
 });
+
+var uri = /*#__PURE__*/stringIsoU( /*#__PURE__*/tryCatch(decodeURI), encodeURI);
+
+var uriComponent = /*#__PURE__*/isoU( /*#__PURE__*/expect(isString, /*#__PURE__*/tryCatch(decodeURIComponent)), /*#__PURE__*/expect(isPrimitiveData, encodeURIComponent));
 
 // String isomorphisms
 
@@ -2022,6 +2033,12 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : func
   });
 });
 
+// Standardish isomorphisms
+
+var querystring = /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
+  return isString(s) ? s.replace(/\+/g, '%20') : s;
+}), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]);
+
 // Arithmetic isomorphisms
 
 var add$1 = function add$$1(c) {
@@ -2052,4 +2069,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { multikeyed, seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, uri, uriComponent, json, dropPrefix, dropSuffix, replaces, split, uncouple, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { multikeyed, seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
