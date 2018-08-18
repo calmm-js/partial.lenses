@@ -22,3 +22,14 @@ export const protoless = o => I.assign(create(null), o)
 export const protoless0 = I.freeze(protoless(I.object0))
 
 export const replace = I.curry((p, r, s) => s.replace(p, r))
+
+export function isPrimitiveData(x) {
+  switch (typeof x) {
+    case 'boolean':
+    case 'number':
+    case 'string':
+      return true
+    default:
+      return false
+  }
+}

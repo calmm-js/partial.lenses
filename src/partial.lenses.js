@@ -1846,9 +1846,9 @@ export const json = (process.env.NODE_ENV === 'production'
 
 export const uri = stringIsoU(tryCatch(decodeURI), encodeURI)
 
-export const uriComponent = stringIsoU(
-  tryCatch(decodeURIComponent),
-  encodeURIComponent
+export const uriComponent = isoU(
+  expect(I.isString, tryCatch(decodeURIComponent)),
+  expect(I.isPrimitiveData, encodeURIComponent)
 )
 
 // String isomorphisms
