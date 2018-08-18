@@ -328,6 +328,7 @@ describe('arities', () => {
     props: 0,
     propsOf: 1,
     query: 0,
+    querystring: 4,
     removable: 0,
     remove: 2,
     removeOp: 4,
@@ -1961,6 +1962,23 @@ describe('L.entries', () => {
     {
       y: 'b'
     }
+  )
+})
+
+describe('L.querystring', () => {
+  testEq(() => L.get(L.querystring, 'foo=bar+baz&abc=xyz&abc=123&corge'), {
+    foo: 'bar baz',
+    abc: ['xyz', '123'],
+    corge: ''
+  })
+  testEq(
+    () =>
+      L.getInverse(L.querystring, {
+        foo: 'bar baz',
+        abc: [true, 123],
+        corge: ''
+      }),
+    'foo=bar%20baz&abc=true&abc=123&corge'
   )
 })
 
