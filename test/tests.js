@@ -1549,6 +1549,7 @@ describe('standard isos', () => {
     'http://www.Not a URL.com'
   )
   testEq(() => L.getInverse(L.uri, null), undefined)
+  testEq(() => L.get(L.uri, '%') instanceof Error, true)
 
   testEq(
     () => L.getInverse(L.uriComponent, 'Hello, world!'),
@@ -1556,6 +1557,9 @@ describe('standard isos', () => {
   )
   testEq(() => L.get(L.uriComponent, 'Hello%2C%20world!'), 'Hello, world!')
   testEq(() => L.getInverse(L.uriComponent, {}), undefined)
+  testEq(() => L.getInverse(L.uriComponent, 101), '101')
+  testEq(() => L.getInverse(L.uriComponent, true), 'true')
+  testEq(() => L.get(L.uriComponent, '%') instanceof Error, true)
 
   testEq(
     () => L.getInverse(L.json({space: 2}), {this: ['Is', true]}),
@@ -1565,8 +1569,6 @@ describe('standard isos', () => {
     this: ['Is', true]
   })
   testEq(() => L.getInverse(L.json(), undefined), undefined)
-  testEq(() => L.get(L.uri, '%') instanceof Error, true)
-  testEq(() => L.get(L.uriComponent, '%') instanceof Error, true)
   testEq(() => L.get(L.json(), '%') instanceof Error, true)
 })
 

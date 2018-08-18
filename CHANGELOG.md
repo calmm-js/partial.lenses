@@ -1,5 +1,13 @@
 # Partial Lenses Changelog
 
+## 14.2.0
+
+Previously `L.uriComponent` only allowed strings to be encoded through it.  Now
+it also allows booleans and numbers similarly to e.g. Node's [Query
+String](https://nodejs.org/api/querystring.html) module.  Because this behavior
+was not previously documented or tested earlier, the change is considered a bug
+fix.
+
 ## 14.1.0
 
 Previously `L.uri`, `L.uriComponent`, and `L.json` threw an exception on invalid
