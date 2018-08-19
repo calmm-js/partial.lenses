@@ -879,6 +879,10 @@ const disjointFwd = (process.env.NODE_ENV === 'production'
 
 //
 
+const isDefinedAtU = (o, x, i) => void 0 !== o(x, i, Select, id)
+
+const isDefinedAt = o => (x, i) => isDefinedAtU(o, x, i)
+
 const eitherU = (t, e) =>
   function either(c) {
     return function either(x, i, C, xi2yC) {
@@ -890,7 +894,7 @@ const orElseU = function orElse(back, prim) {
   prim = toFunction(prim)
   back = toFunction(back)
   return function orElse(x, i, C, xi2yC) {
-    return (isDefined(prim, x) ? prim : back)(x, i, C, xi2yC)
+    return (isDefinedAtU(prim, x, i) ? prim : back)(x, i, C, xi2yC)
   }
 }
 
@@ -1271,7 +1275,7 @@ export function query() {
   const r = []
   for (let i = 0, n = arguments.length; i < n; ++i) {
     const o = toFunction(arguments[i])
-    r.push(satisfying(isDefined(o)), o)
+    r.push(satisfying(isDefinedAt(o)), o)
   }
   return r
 }
@@ -1623,7 +1627,7 @@ export function find(xih2b) {
 
 export function findWith(o) {
   const oo = toFunction(o)
-  const p = isDefined(oo)
+  const p = isDefinedAt(oo)
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo]
 }
 

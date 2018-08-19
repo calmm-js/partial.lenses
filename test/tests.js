@@ -650,6 +650,20 @@ describe('L.orElse', () => {
     1,
     4
   ])
+  testEq(
+    () =>
+      L.collect(
+        [
+          L.elems,
+          L.orElse(
+            (x, i) => (i === 1 ? [1, x] : undefined),
+            (x, i) => (i !== 1 ? [x, 0] : undefined)
+          )
+        ],
+        ['a', 'b']
+      ),
+    [['a', 0], [1, 'b']]
+  )
 })
 
 describe('L.choices', () => {
@@ -687,6 +701,10 @@ describe('L.findWith', () => {
     {x: ['b']}
   ])
   testEq(() => L.collect(L.findWith(L.elems), [1, [2], 3]), [2])
+  testEq(
+    () => L.get(L.findWith((x, i) => (i === 1 ? x : undefined)), ['a', 'b']),
+    'b'
+  )
 })
 
 describe('L.filter', () => {
@@ -1803,6 +1821,10 @@ describe('L.query', () => {
         {a: 4}
       ]),
     [{foo: [{a: 2}, {b: 3}]}, {bar: {b: 4}}, {a: 5}]
+  )
+  testEq(
+    () => L.get(L.query((x, i) => (i === 1 ? x : undefined)), ['a', 'b']),
+    'b'
   )
 })
 

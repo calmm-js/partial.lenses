@@ -2194,9 +2194,9 @@ Like CSS selectors, `L.query` can be quite convenient, but should be used with
 care.  The search for matching elements can be expensive and specifying a query
 that matches precisely the desired elements can be difficult.
 
-Note that `L.query(...ts)`, in general, is equivalent to [`ts.map(t =>
+Note that `L.query(...ts)` is roughly equivalent to [`ts.map(t =>
 [L.satisfying(L.isDefined(t)), t])`](#L-satisfying) and
-[`L.query(L.when(predicate))`](#L-when) is equivalent to
+[`L.query(L.when(predicate))`](#L-when) is roughly equivalent to
 [`L.satisfying(predicate)`](#L-satisfying).
 
 ##### <a id="L-satisfying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-satisfying) [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#L-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
