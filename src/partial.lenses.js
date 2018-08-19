@@ -23,13 +23,14 @@ const toRegExpU = (str, flags) =>
 
 //
 
-const tryCatch = fn => x => {
-  try {
-    return fn(x)
-  } catch (e) {
-    return e
-  }
-}
+const tryCatch = fn =>
+  copyName(x => {
+    try {
+      return fn(x)
+    } catch (e) {
+      return e
+    }
+  }, fn)
 
 //
 
@@ -1799,7 +1800,7 @@ export const multikeyed = isoU(
   expect(
     I.isInstanceOf(Object),
     (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
-      o => {
+      function multikeyed(o) {
         o = toObject(o)
         const ps = []
         for (const k in o) {
@@ -1843,7 +1844,12 @@ export const json = (process.env.NODE_ENV === 'production'
 ) {
   const {reviver, replacer, space} = options || I.object0
   return isoU(
-    expect(I.isString, tryCatch(text => JSON.parse(text, reviver))),
+    expect(
+      I.isString,
+      tryCatch(function json(text) {
+        return JSON.parse(text, reviver)
+      })
+    ),
     expect(I.isDefined, value => JSON.stringify(value, replacer, space))
   )
 })
