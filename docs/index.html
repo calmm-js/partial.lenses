@@ -1738,9 +1738,9 @@ all the texts is to just query for them:</p>
 <p>Like CSS selectors, <code>L.query</code> can be quite convenient, but should be used with
 care.  The search for matching elements can be expensive and specifying a query
 that matches precisely the desired elements can be difficult.</p>
-<p>Note that <code>L.query(...ts)</code>, in general, is equivalent to <a href="#L-satisfying"><code>ts.map(t =&gt;
+<p>Note that <code>L.query(...ts)</code> is roughly equivalent to <a href="#L-satisfying"><code>ts.map(t =&gt;
 [L.satisfying(L.isDefined(t)), t])</code></a> and
-<a href="#L-when"><code>L.query(L.when(predicate))</code></a> is equivalent to
+<a href="#L-when"><code>L.query(L.when(predicate))</code></a> is roughly equivalent to
 <a href="#L-satisfying"><code>L.satisfying(predicate)</code></a>.</p>
 <h5><a id="L-satisfying"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-satisfying">■</a> <a href="#L-satisfying" title="L.satisfying: ((Maybe s, Index) -&gt; Boolean) -&gt; PTraversal JSON a"><code>L.satisfying((maybeValue, index) =&gt; testable) ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.satisfying</code> is a traversal that focuses on elements that satisfy the given

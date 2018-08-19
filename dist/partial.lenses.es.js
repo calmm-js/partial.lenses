@@ -1063,6 +1063,16 @@ var disjointFwd = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : r
 
 //
 
+var isDefinedAtU = function isDefinedAtU(o, x, i) {
+  return void 0 !== o(x, i, Select, id$1);
+};
+
+var isDefinedAt = function isDefinedAt(o) {
+  return function (x, i) {
+    return isDefinedAtU(o, x, i);
+  };
+};
+
 var eitherU = function eitherU(t, e) {
   return function either(c) {
     return function either(x, i, C, xi2yC) {
@@ -1075,7 +1085,7 @@ var orElseU = function orElse(back, prim) {
   prim = toFunction(prim);
   back = toFunction(back);
   return function orElse(x, i, C, xi2yC) {
-    return (isDefined$1(prim, x) ? prim : back)(x, i, C, xi2yC);
+    return (isDefinedAtU(prim, x, i) ? prim : back)(x, i, C, xi2yC);
   };
 };
 
@@ -1487,7 +1497,7 @@ function query() {
   var r = [];
   for (var i = 0, n = arguments.length; i < n; ++i) {
     var o = toFunction(arguments[i]);
-    r.push(satisfying(isDefined$1(o)), o);
+    r.push(satisfying(isDefinedAt(o)), o);
   }
   return r;
 }
@@ -1766,7 +1776,7 @@ function find(xih2b) {
 
 function findWith(o) {
   var oo = toFunction(o);
-  var p = isDefined$1(oo);
+  var p = isDefinedAt(oo);
   return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo];
 }
 
