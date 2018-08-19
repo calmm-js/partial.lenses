@@ -1,5 +1,11 @@
 # Partial Lenses Changelog
 
+## 14.2.1
+
+Fixed `L.query`, `L.findWith`, and `L.orElse` (and other optics using `L.orElse`
+underneath including e.g. `L.choice` and `L.choices`) to pass the outer index to
+the optics passed as parameters.
+
 ## 14.2.0
 
 Previously `L.uriComponent` only allowed strings to be encoded through it.  Now
