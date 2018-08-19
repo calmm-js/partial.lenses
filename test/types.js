@@ -342,6 +342,7 @@ export const rewrite = T.fn([T.fn([T_dataO, T_index], T_maybeDataI)], T_lens)
 // Lensing arrays
 
 export const append = T_lens
+export const cross = T.fn([T.array(T_lens)], T_lens)
 export const filter = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const find = T.fn([T.fn([T_maybeDataO, T_index], T.any)], T_lens)
 export const findWith = T.fn([T_optic], T_optic)
@@ -384,12 +385,14 @@ export const iso = T.fn(
 
 export const array = T.fn([T_isomorphism], T_isomorphism)
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
+export const iterate = T.fn([T_isomorphism], T_isomorphism)
 
 // Basic isomorphisms
 
 export const complement = T_isomorphism
 export const identity = T_isomorphism
 export const is = T.fn([T.def], T_lens)
+export const subset = T.fn([T.fn([T_maybeDataI], T.any)], T_isomorphism)
 
 // Array isomorphisms
 

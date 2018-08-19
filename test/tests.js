@@ -254,6 +254,7 @@ describe('arities', () => {
     countIf: 3,
     counts: 2,
     countsAs: 3,
+    cross: 1,
     defaults: 1,
     define: 1,
     disjoint: 1,
@@ -288,6 +289,7 @@ describe('arities', () => {
     isDefined: 2,
     isEmpty: 2,
     iso: 2,
+    iterate: 1,
     join: 3,
     joinAs: 4,
     joinIx: 1,
@@ -351,6 +353,7 @@ describe('arities', () => {
     skipIx: 1,
     slice: 2,
     split: 1,
+    subset: 1,
     subtract: 1,
     suffix: 1,
     sum: 2,
@@ -1866,6 +1869,55 @@ describe('L.array', () => {
     'N',
     'G'
   ])
+})
+
+describe('L.cross', () => {
+  testEq(() => L.get(L.cross([]), []), [])
+  testEq(() => L.get(L.cross([]), {arrayLike: false}), undefined)
+  testEq(() => L.get(L.cross([L.negate, L.add(2)]), [1, 2]), [-1, 4])
+  testEq(() => L.getInverse(L.cross([L.negate, L.add(2)]), [1, 2]), [-1, 0])
+
+  testEq(() => L.get(L.cross([[], []]), [1]), undefined)
+  testEq(() => L.get(L.cross([[], []]), [1, 2, 3]), undefined)
+  testEq(() => L.getInverse(L.cross([[], []]), [1]), undefined)
+  testEq(() => L.getInverse(L.cross([[], []]), [1, 2, 3]), undefined)
+
+  testEq(() => L.set(L.cross([L.append, 'x']), [1, 2], [[0], {y: 1}]), [
+    [0, 1],
+    {y: 1, x: 2}
+  ])
+  testEq(() => L.get(L.cross([0, 'y']), [[101], {y: 1}]), [101, 1])
+})
+
+describe('L.subset', () => {
+  testEq(() => L.get(L.array(L.subset(R.lt(0))), [1, -2, 3, -4]), [1, 3])
+})
+
+describe('L.iterate', () => {
+  const step = abIa => [
+    L.iso(
+      ([a, bs]) => (bs.length ? [[a, bs[0]], bs.slice(1)] : undefined),
+      ([[a, b], bs]) => [[a, [b, ...bs]]]
+    ),
+    L.cross([abIa, L.identity])
+  ]
+  const foldl = abIa => [
+    L.iterate(step(abIa)),
+    L.iso(([a, xs]) => (xs.length ? undefined : a), a => [a, []])
+  ]
+  testEq(
+    () =>
+      L.get(
+        foldl(
+          L.iso(
+            ([xs, x]) => [x, ...xs],
+            xs => (xs.length ? [xs.slice(1), xs[0]] : undefined)
+          )
+        ),
+        [[], [0, 1, 2, 3]]
+      ),
+    [3, 2, 1, 0]
+  )
 })
 
 describe('L.forEach', () => {
