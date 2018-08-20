@@ -1,4 +1,4 @@
-import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, acyclicEqualsU, array0, object0, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, assign, applyU, isDefined, keys, hasU, arityN, id } from 'infestines';
+import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, acyclicEqualsU, array0, object0, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, id, applyU, isDefined, keys, hasU, assign, arityN } from 'infestines';
 
 var addU = function addU(x, y) {
   return x + y;
@@ -171,13 +171,13 @@ var toRegExpU = function toRegExpU(str, flags) {
 //
 
 var tryCatch = function tryCatch(fn$$1) {
-  return function (x) {
+  return copyName(function (x) {
     try {
       return fn$$1(x);
     } catch (e) {
       return e;
     }
-  };
+  }, fn$$1);
 };
 
 //
@@ -665,6 +665,10 @@ var getAsU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : par(1,
   }
 });
 
+var getU = function getU(l, s) {
+  return getAsU(id$1, l, s);
+};
+
 function modifyComposed(os, xi2y, x, y) {
   var n = os.length;
   var xs = Array(n);
@@ -979,30 +983,6 @@ var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Ob
   return o;
 })));
 
-var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freezeObjectOfObjects))(function (o) {
-  o = toObject$1(o);
-  var ps = [];
-  for (var k in o) {
-    var v = o[k];
-    if (isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
-      ps.push([k, v[i]]);
-    } else ps.push([k, v]);
-  }
-  return ps;
-})), /*#__PURE__*/expect(isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freezeObjectOfObjects))(function (ps) {
-  var o = create(null);
-  for (var i = 0, n = ps.length; i < n; ++i) {
-    var entry = ps[i];
-    if (entry.length === 2) {
-      var k = entry[0];
-      var v = entry[1];
-      var was = o[k];
-      if (was === void 0) o[k] = v;else if (isArray(was)) was.push(v);else o[k] = [was, v];
-    }
-  }
-  return assign({}, o);
-})));
-
 //
 
 var matchesJoin = function matchesJoin(input) {
@@ -1116,6 +1096,44 @@ var pickInAux = function pickInAux(t, k) {
 };
 
 //
+
+var iteratePartial = function iteratePartial(aa) {
+  return function (a) {
+    var r = a;
+    while (a !== undefined) {
+      r = a;
+      a = aa(a);
+    }
+    return r;
+  };
+};
+
+var crossPartial = function crossPartial(op, ls, or$$1) {
+  return function (xs, ss) {
+    var n = ls.length;
+    if (!seemsArrayLike(xs)) return;
+    if (!seemsArrayLike(ss)) ss = '';
+    var m = Math.max(n, xs.length, ss.length);
+    var ys = Array(m);
+    for (var i = 0; i < m; ++i) {
+      if (void 0 === (ys[i] = op(i < n ? ls[i] : or$$1, xs[i], ss[i]))) return;
+    }return ys;
+  };
+};
+
+var crossOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? curry : function (fn$$1) {
+  return curry(function crossOr(or$$1, ls) {
+    return toFunction([isoU(id, freeze), fn$$1(or$$1, ls), isoU(freeze, id)]);
+  });
+})(function crossOr(or$$1, ls) {
+  return lensU(crossPartial(getU, ls, or$$1), crossPartial(setU, ls, or$$1));
+});
+
+var subsetPartial = function subsetPartial(p) {
+  return function subset(x) {
+    return p(x) ? x : undefined;
+  };
+};
 
 // Auxiliary
 
@@ -1747,6 +1765,8 @@ function append(xs, _, F, xi2yF) {
   }, xi2yF(void 0, i));
 }
 
+var cross = /*#__PURE__*/setName( /*#__PURE__*/crossOr(removeOp), 'cross');
+
 var filter = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(function (lens) {
   return toFunction([lens, isoU(id$1, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
 }))(function filter(xi2b) {
@@ -1912,6 +1932,10 @@ var inverse = function inverse(iso) {
   };
 };
 
+var iterate = function iterate(aIa) {
+  return isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)));
+};
+
 // Basic isomorphisms
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
@@ -1923,6 +1947,11 @@ var is = function is(v) {
     return true === b ? v : void 0;
   });
 };
+
+function subset(predicate) {
+  var subsetFn = subsetPartial(predicate);
+  return isoU(subsetFn, subsetFn);
+}
 
 // Array isomorphisms
 
@@ -1969,6 +1998,30 @@ var disjoint = function disjoint(groupOf) {
   };
 };
 
+var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freezeObjectOfObjects))(function multikeyed(o) {
+  o = toObject$1(o);
+  var ps = [];
+  for (var k in o) {
+    var v = o[k];
+    if (isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
+      ps.push([k, v[i]]);
+    } else ps.push([k, v]);
+  }
+  return ps;
+})), /*#__PURE__*/expect(isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freezeObjectOfObjects))(function (ps) {
+  var o = create(null);
+  for (var i = 0, n = ps.length; i < n; ++i) {
+    var entry = ps[i];
+    if (entry.length === 2) {
+      var k = entry[0];
+      var v = entry[1];
+      var was = o[k];
+      if (was === void 0) o[k] = v;else if (isArray(was)) was.push(v);else o[k] = [was, v];
+    }
+  }
+  return assign({}, o);
+})));
+
 // Standard isomorphisms
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(function (iso) {
@@ -1979,7 +2032,7 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(func
       replacer = _ref3.replacer,
       space = _ref3.space;
 
-  return isoU(expect(isString, tryCatch(function (text) {
+  return isoU(expect(isString, tryCatch(function json(text) {
     return JSON.parse(text, reviver);
   })), expect(isDefined, function (value) {
     return JSON.stringify(value, replacer, space);
@@ -2079,4 +2132,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { multikeyed, seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, complement, identity, is, indexed, reverse, singleton, disjoint, keyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };

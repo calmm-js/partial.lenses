@@ -175,13 +175,13 @@ var toRegExpU = function toRegExpU(str, flags) {
 //
 
 var tryCatch = function tryCatch(fn$$1) {
-  return function (x) {
+  return copyName(function (x) {
     try {
       return fn$$1(x);
     } catch (e) {
       return e;
     }
-  };
+  }, fn$$1);
 };
 
 //
@@ -669,6 +669,10 @@ var getAsU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(1, e
   }
 });
 
+var getU = function getU(l, s) {
+  return getAsU(id, l, s);
+};
+
 function modifyComposed(os, xi2y, x, y) {
   var n = os.length;
   var xs = Array(n);
@@ -983,30 +987,6 @@ var keyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Ob
   return o;
 })));
 
-var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (o) {
-  o = toObject(o);
-  var ps = [];
-  for (var k in o) {
-    var v = o[k];
-    if (I.isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
-      ps.push([k, v[i]]);
-    } else ps.push([k, v]);
-  }
-  return ps;
-})), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (ps) {
-  var o = create(null);
-  for (var i = 0, n = ps.length; i < n; ++i) {
-    var entry = ps[i];
-    if (entry.length === 2) {
-      var k = entry[0];
-      var v = entry[1];
-      var was = o[k];
-      if (was === void 0) o[k] = v;else if (I.isArray(was)) was.push(v);else o[k] = [was, v];
-    }
-  }
-  return I.assign({}, o);
-})));
-
 //
 
 var matchesJoin = function matchesJoin(input) {
@@ -1120,6 +1100,44 @@ var pickInAux = function pickInAux(t, k) {
 };
 
 //
+
+var iteratePartial = function iteratePartial(aa) {
+  return function (a) {
+    var r = a;
+    while (a !== undefined) {
+      r = a;
+      a = aa(a);
+    }
+    return r;
+  };
+};
+
+var crossPartial = function crossPartial(op, ls, or$$1) {
+  return function (xs, ss) {
+    var n = ls.length;
+    if (!seemsArrayLike(xs)) return;
+    if (!seemsArrayLike(ss)) ss = '';
+    var m = Math.max(n, xs.length, ss.length);
+    var ys = Array(m);
+    for (var i = 0; i < m; ++i) {
+      if (void 0 === (ys[i] = op(i < n ? ls[i] : or$$1, xs[i], ss[i]))) return;
+    }return ys;
+  };
+};
+
+var crossOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.curry : function (fn$$1) {
+  return I.curry(function crossOr(or$$1, ls) {
+    return toFunction([isoU(I.id, I.freeze), fn$$1(or$$1, ls), isoU(I.freeze, I.id)]);
+  });
+})(function crossOr(or$$1, ls) {
+  return lensU(crossPartial(getU, ls, or$$1), crossPartial(setU, ls, or$$1));
+});
+
+var subsetPartial = function subsetPartial(p) {
+  return function subset(x) {
+    return p(x) ? x : undefined;
+  };
+};
 
 // Auxiliary
 
@@ -1751,6 +1769,8 @@ function append(xs, _, F, xi2yF) {
   }, xi2yF(void 0, i));
 }
 
+var cross = /*#__PURE__*/setName( /*#__PURE__*/crossOr(removeOp), 'cross');
+
 var filter = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (lens) {
   return toFunction([lens, isoU(id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
 }))(function filter(xi2b) {
@@ -1916,6 +1936,10 @@ var inverse = function inverse(iso) {
   };
 };
 
+var iterate = function iterate(aIa) {
+  return isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)));
+};
+
 // Basic isomorphisms
 
 var complement = /*#__PURE__*/isoU(notPartial, notPartial);
@@ -1927,6 +1951,11 @@ var is = function is(v) {
     return true === b ? v : void 0;
   });
 };
+
+function subset(predicate) {
+  var subsetFn = subsetPartial(predicate);
+  return isoU(subsetFn, subsetFn);
+}
 
 // Array isomorphisms
 
@@ -1973,6 +2002,30 @@ var disjoint = function disjoint(groupOf) {
   };
 };
 
+var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstanceOf(Object), /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function multikeyed(o) {
+  o = toObject(o);
+  var ps = [];
+  for (var k in o) {
+    var v = o[k];
+    if (I.isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
+      ps.push([k, v[i]]);
+    } else ps.push([k, v]);
+  }
+  return ps;
+})), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (ps) {
+  var o = create(null);
+  for (var i = 0, n = ps.length; i < n; ++i) {
+    var entry = ps[i];
+    if (entry.length === 2) {
+      var k = entry[0];
+      var v = entry[1];
+      var was = o[k];
+      if (was === void 0) o[k] = v;else if (I.isArray(was)) was.push(v);else o[k] = [was, v];
+    }
+  }
+  return I.assign({}, o);
+})));
+
 // Standard isomorphisms
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (iso) {
@@ -1983,7 +2036,7 @@ var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(functi
       replacer = _ref3.replacer,
       space = _ref3.space;
 
-  return isoU(expect(I.isString, tryCatch(function (text) {
+  return isoU(expect(I.isString, tryCatch(function json(text) {
     return JSON.parse(text, reviver);
   })), expect(I.isDefined, function (value) {
     return JSON.stringify(value, replacer, space);
@@ -2083,7 +2136,6 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-exports.multikeyed = multikeyed;
 exports.seemsArrayLike = seemsArrayLike;
 exports.Identity = Identity;
 exports.IdentityAsync = IdentityAsync;
@@ -2184,6 +2236,7 @@ exports.required = required;
 exports.reread = reread;
 exports.rewrite = rewrite;
 exports.append = append;
+exports.cross = cross;
 exports.filter = filter;
 exports.find = find;
 exports.findWith = findWith;
@@ -2205,14 +2258,17 @@ exports.getInverse = getInverse;
 exports.iso = iso;
 exports.array = array;
 exports.inverse = inverse;
+exports.iterate = iterate;
 exports.complement = complement;
 exports.identity = identity;
 exports.is = is;
+exports.subset = subset;
 exports.indexed = indexed;
 exports.reverse = reverse;
 exports.singleton = singleton;
 exports.disjoint = disjoint;
 exports.keyed = keyed;
+exports.multikeyed = multikeyed;
 exports.json = json;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
