@@ -476,6 +476,8 @@ const getAsU = (process.env.NODE_ENV === 'production'
   }
 })
 
+const getU = (l, s) => getAsU(id, l, s)
+
 function modifyComposed(os, xi2y, x, y) {
   let n = os.length
   const xs = Array(n)
@@ -881,6 +883,44 @@ const seq2U = (l, r) => (x, i, M, xi2yM) =>
 const pickInAux = (t, k) => [k, pickIn(t)]
 
 //
+
+const iteratePartial = aa => a => {
+  let r = a
+  while (a !== undefined) {
+    r = a
+    a = aa(a)
+  }
+  return r
+}
+
+const crossPartial = (op, ls, or) => (xs, ss) => {
+  const n = ls.length
+  if (!seemsArrayLike(xs)) return
+  if (!seemsArrayLike(ss)) ss = ''
+  const m = Math.max(n, xs.length, ss.length)
+  const ys = Array(m)
+  for (let i = 0; i < m; ++i)
+    if (void 0 === (ys[i] = op(i < n ? ls[i] : or, xs[i], ss[i]))) return
+  return ys
+}
+
+const crossOr = (process.env.NODE_ENV === 'production'
+  ? I.curry
+  : fn =>
+      I.curry(function crossOr(or, ls) {
+        return toFunction([
+          isoU(I.id, I.freeze),
+          fn(or, ls),
+          isoU(I.freeze, I.id)
+        ])
+      }))(function crossOr(or, ls) {
+  return lensU(crossPartial(getU, ls, or), crossPartial(setU, ls, or))
+})
+
+const subsetPartial = p =>
+  function subset(x) {
+    return p(x) ? x : undefined
+  }
 
 // Auxiliary
 
@@ -1548,6 +1588,8 @@ export function append(xs, _, F, xi2yF) {
   return F.map(x => setIndex(i, x, xs), xi2yF(void 0, i))
 }
 
+export const cross = setName(crossOr(removeOp), 'cross')
+
 export const filter = (process.env.NODE_ENV === 'production'
   ? id
   : C.res(lens =>
@@ -1716,6 +1758,9 @@ export const array = elem => {
 export const inverse = iso => (x, i, F, xi2yF) =>
   F.map(x => getAsU(id, iso, x), xi2yF(setU(iso, x, void 0), i))
 
+export const iterate = aIa =>
+  isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)))
+
 // Basic isomorphisms
 
 export const complement = isoU(notPartial, notPartial)
@@ -1729,6 +1774,11 @@ export const is = v =>
     },
     b => (true === b ? v : void 0)
   )
+
+export function subset(predicate) {
+  const subsetFn = subsetPartial(predicate)
+  return isoU(subsetFn, subsetFn)
+}
 
 // Array isomorphisms
 

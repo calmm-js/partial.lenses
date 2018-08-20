@@ -166,6 +166,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.rewrite((valueOut, index) => maybeValueOut) ~> lens`](#L-rewrite "L.rewrite: ((s, Index) -> Maybe s) -> PLens s s") <small><sup>v5.1.0</sup></small>
     * [Lensing array-like objects](#array-like)
       * [`L.append ~> lens`](#L-append "L.append: PLens [a] a") <small><sup>v1.0.0</sup></small>
+      * [`L.cross([...lenses]) ~> lens`](#L-cross "L.cross: [PLens s1 a1, ...PLens sN aN] -> PLens [s1, ...sN] [a1, ...aN]") <small><sup>v14.3.0</sup></small>
       * [`L.filter((maybeValue, index) => testable) ~> lens`](#L-filter "L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]") <small><sup>v1.0.0</sup></small>
       * [`L.find((maybeValue, index, {hint: index}) => testable[, {hint: index}]) ~> lens`](#L-find "L.find: ((Maybe a, Index, {hint: Index}) -> Boolean[, {hint: Index}]) -> PLens [a] a") <small><sup>v1.0.0</sup></small>
       * [`L.findWith(optic[, {hint: index}]) ~> optic`](#L-findWith "L.findWith: (POptic s a[, {hint: Index}]) -> POptic [s] a") <small><sup>v1.0.0</sup></small>
@@ -196,10 +197,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Isomorphism combinators](#isomorphism-combinators)
       * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
+      * [`L.iterate(isomorphism) ~> isomorphism`](#L-iterate "L.iterate: PIso a a -> PIso a a") <small><sup>v14.3.0</sup></small>
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
+      * [`L.subset(maybeValue => testable) ~> isomorphism`](#L-subset "L.subset: (Maybe a -> Boolean) -> PIso a a") <small><sup>v14.3.0</sup></small>
     * [Array isomorphisms](#array-isomorphisms)
       * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
@@ -3182,6 +3185,24 @@ Note that `L.append` is equivalent to [`L.index(i)`](#L-index) with the index
 `i` set to the length of the focused array or 0 in case the focus is not a
 defined array.
 
+##### <a id="L-cross"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-cross) [`L.cross([...lenses]) ~> lens`](#L-cross "L.cross: [PLens s1 a1, ...PLens sN aN] -> PLens [s1, ...sN] [a1, ...aN]") <small><sup>v14.3.0</sup></small>
+
+`L.cross` constructs a lens or isomorphism between fixed length arrays or tuples
+from the given array of lenses or isomorphisms.  The optic returned by `L.cross`
+is strict such that in case any elements of the resulting array in either
+direction would be `undefined` then the whole result will be `undefined`.
+
+For example
+
+```js
+L.get(L.cross(['x', [], 'y']), [{x: 1, y: 2}, 2, {x: 3, y: 4}])
+// [ 1, 2, 4 ]
+```
+```js
+L.set(L.cross(['x', [], 'y']), [-1, -2, -4], [{x: 1, y: 2}, 2, {x: 3, y: 4}])
+// [ { x: -1, y: 2 }, -2, { x: 3, y: -4 } ]
+```
+
 ##### <a id="L-filter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-filter) [`L.filter((maybeValue, index) => testable) ~> lens`](#L-filter "L.filter: ((Maybe a, Index) -> Boolean) -> PLens [a] [a]") <small><sup>v1.0.0</sup></small>
 
 `L.filter` operates on [array-like](#array-like) objects.  When not viewing an
@@ -3805,6 +3826,28 @@ L.get(L.inverse(offBy1), 1)
 // 0
 ```
 
+##### <a id="L-iterate"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-iterate) [`L.iterate(isomorphism) ~> isomorphism`](#L-iterate "L.iterate: PIso a a -> PIso a a") <small><sup>v14.3.0</sup></small>
+
+`L.iterate` returns a partial isomorphism that applies the given partial
+isomorphism repeatedly until it produces `undefined` at which point the previous
+result is produced.
+
+For example:
+
+```js
+const reverseStep = L.iso(
+  ([xs, ys] = [[], []]) => ys.length ? [[ys[0], ...xs], ys.slice(1)] : undefined,
+  ([xs, ys] = [[], []]) => xs.length ? [xs.slice(1), [xs[0], ...ys]] : undefined
+)
+
+L.get(L.iterate(reverseStep), [[], [3, 1, 4, 1]])
+// [ [ 1, 4, 1, 3 ], [] ]
+```
+```js
+L.getInverse(L.iterate(reverseStep), [[1, 4, 1, 3], []])
+// [ [], [ 3, 1, 4, 1 ] ]
+```
+
 #### <a id="basic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#basic-isomorphisms) [Basic isomorphisms](#basic-isomorphisms)
 
 ##### <a id="L-complement"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-complement) [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
@@ -3844,6 +3887,11 @@ L.modify(L.identity, f, x) = f(x)
 `L.is` reads the given value as `true` and everything else as `false` and writes
 `true` as the given value and everything else as `undefined`.  See
 [here](#an-array-of-ids-as-boolean-flags) for an example.
+
+##### <a id="L-subset"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-subset) [`L.subset(maybeValue => testable) ~> isomorphism`](#L-subset "L.subset: (Maybe a -> Boolean) -> PIso a a") <small><sup>v14.3.0</sup></small>
+
+`L.subset` returns an isomorphism that acts like the identity when the data
+passes the given predicate and otherwise maps the data to `undefined`.
 
 #### <a id="array-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#array-isomorphisms) [Array isomorphisms](#array-isomorphisms)
 
