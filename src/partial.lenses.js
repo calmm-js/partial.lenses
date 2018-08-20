@@ -908,11 +908,7 @@ const crossOr = (process.env.NODE_ENV === 'production'
   ? I.curry
   : fn =>
       I.curry(function crossOr(or, ls) {
-        return toFunction([
-          isoU(I.id, I.freeze),
-          fn(or, ls),
-          isoU(I.freeze, I.id)
-        ])
+        return toFunction([isoU(id, I.freeze), fn(or, ls), isoU(I.freeze, id)])
       }))(function crossOr(or, ls) {
   return lensU(crossPartial(getU, ls, or), crossPartial(setU, ls, or))
 })
