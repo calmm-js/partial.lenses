@@ -191,7 +191,10 @@ export const all = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.boolean
 )
+export const all1 = all
+
 export const and = T.fn([T_traversal, T_maybeDataI], T.boolean)
+export const and1 = and
 
 export const any = all
 

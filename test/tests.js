@@ -228,7 +228,9 @@ describe('arities', () => {
     Select: undefined,
     add: 1,
     all: 3,
+    all1: 3,
     and: 2,
+    and1: 2,
     any: 3,
     append: 4,
     array: 1,
@@ -1535,9 +1537,14 @@ describe('lazy folds', () => {
   testEq(() => L.any((x, i) => x > i, L.elems, [0, 1, 2]), false)
   testEq(() => L.all((x, i) => x > i, L.elems, [1, 2, 3]), true)
   testEq(() => L.all((x, i) => x > i, L.elems, [1, 2, 2]), false)
+  testEq(() => L.all1((x, i) => x > i, L.elems, [1, 2, 3]), true)
+  testEq(() => L.all1((x, i) => x > i, L.elems, []), false)
   testEq(() => L.none((x, i) => x > i, L.elems, [0, 1, 3]), false)
   testEq(() => L.none((x, i) => x > i, L.elems, [0, 1, 2]), true)
   testEq(() => L.and(L.elems, []), true)
+  testEq(() => L.and1(L.elems, [1]), true)
+  testEq(() => L.and1(L.elems, [1, 0]), false)
+  testEq(() => L.and1(L.elems, []), false)
   testEq(() => L.or(L.elems, []), false)
 })
 
