@@ -1301,6 +1301,21 @@ export const all = I.curry(function all(xi2b, t, s) {
 
 export const and = all(id)
 
+export const all1 = I.curry(function all1(xi2b, t, s) {
+  let result = false
+  getAsU(
+    (x, i) => {
+      if (xi2b(x, i)) result = true
+      else return (result = false)
+    },
+    t,
+    s
+  )
+  return result
+})
+
+export const and1 = all1(id)
+
 export const any = I.curry(function any(xi2b, t, s) {
   return !!getAsU(
     (x, i) => {
