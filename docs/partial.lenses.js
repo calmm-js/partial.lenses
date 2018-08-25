@@ -365,7 +365,7 @@
     return I.curry(function mumBy(xi2y, t, s) {
       var minX = void 0;
       var minY = void 0;
-      traverseU(Select, function (x, i) {
+      getAsU(function (x, i) {
         var y = xi2y(x, i);
         if (void 0 !== y && (void 0 === minY || ord(y, minY))) {
           minX = x;
@@ -1123,7 +1123,7 @@
 
   var crossOr = /*#__PURE__*/(function (fn$$1) {
     return I.curry(function crossOr(or$$1, ls) {
-      return toFunction([isoU(I.id, I.freeze), fn$$1(or$$1, ls), isoU(I.freeze, I.id)]);
+      return toFunction([isoU(id, I.freeze), fn$$1(or$$1, ls), isoU(I.freeze, id)]);
     });
   })(function crossOr(or$$1, ls) {
     return lensU(crossPartial(getU, ls, or$$1), crossPartial(setU, ls, or$$1));
@@ -1543,6 +1543,16 @@
 
   var and$1 = /*#__PURE__*/all(id);
 
+  var all1 = /*#__PURE__*/I.curry(function all1(xi2b, t, s) {
+    var result = false;
+    getAsU(function (x, i) {
+      if (xi2b(x, i)) result = true;else return result = false;
+    }, t, s);
+    return result;
+  });
+
+  var and1 = /*#__PURE__*/all1(id);
+
   var any = /*#__PURE__*/I.curry(function any(xi2b, t, s) {
     return !!getAsU(function (x, i) {
       if (xi2b(x, i)) return true;
@@ -1551,7 +1561,7 @@
 
   var collectAs = /*#__PURE__*/(res(I.freeze))(function collectAs(xi2y, t, s) {
     var results = [];
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       var y = xi2y(x, i);
       if (void 0 !== y) results.push(y);
     }, t, s);
@@ -1574,7 +1584,7 @@
 
   var countsAs = /*#__PURE__*/I.curry(function countsAs(xi2k, t, s) {
     var counts = new Map();
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       var k = xi2k(x, i);
       var n = counts.get(k);
       counts.set(k, void 0 !== n ? n + 1 : 1);
@@ -1585,7 +1595,7 @@
   var counts = /*#__PURE__*/countsAs(id);
 
   var foldl = /*#__PURE__*/I.curry(function foldl(f, r, t, s) {
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       r = f(r, x, i);
     }, t, s);
     return r;
@@ -1594,7 +1604,7 @@
   var foldr = /*#__PURE__*/I.curry(function foldr(f, r, t, s) {
     var is = [];
     var xs = [];
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       xs.push(x);
       is.push(i);
     }, t, s);
@@ -1604,14 +1614,14 @@
   });
 
   var forEach = /*#__PURE__*/I.curry(function forEach(f, t, s) {
-    return traverseU(Select, function (x, i) {
+    return getAsU(function (x, i) {
       f(x, i);
     }, t, s);
   });
 
   var forEachWith = /*#__PURE__*/I.curry(function forEachWith(newC, ef$$1, t, s) {
     var c = newC();
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       ef$$1(c, x, i);
     }, t, s);
     return c;
@@ -1648,7 +1658,7 @@
   var meanAs = /*#__PURE__*/I.curry(function meanAs(xi2y, t, s) {
     var sum = 0;
     var num = 0;
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       var y = xi2y(x, i);
       if (void 0 !== y) {
         num += 1;
@@ -2188,6 +2198,8 @@
   exports.leafs = leafs;
   exports.all = all;
   exports.and = and$1;
+  exports.all1 = all1;
+  exports.and1 = and1;
   exports.any = any;
   exports.collectAs = collectAs;
   exports.collect = collect;

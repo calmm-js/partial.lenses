@@ -1,4 +1,4 @@
-import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, acyclicEqualsU, array0, object0, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, id, applyU, isDefined, keys, hasU, assign, arityN } from 'infestines';
+import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, acyclicEqualsU, array0, object0, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign, arityN, id } from 'infestines';
 
 var addU = function addU(x, y) {
   return x + y;
@@ -365,7 +365,7 @@ var mumBy = function mumBy(ord) {
   return curry(function mumBy(xi2y, t, s) {
     var minX = void 0;
     var minY = void 0;
-    traverseU(Select, function (x, i) {
+    getAsU(function (x, i) {
       var y = xi2y(x, i);
       if (void 0 !== y && (void 0 === minY || ord(y, minY))) {
         minX = x;
@@ -1123,7 +1123,7 @@ var crossPartial = function crossPartial(op, ls, or$$1) {
 
 var crossOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? curry : function (fn$$1) {
   return curry(function crossOr(or$$1, ls) {
-    return toFunction([isoU(id, freeze), fn$$1(or$$1, ls), isoU(freeze, id)]);
+    return toFunction([isoU(id$1, freeze), fn$$1(or$$1, ls), isoU(freeze, id$1)]);
   });
 })(function crossOr(or$$1, ls) {
   return lensU(crossPartial(getU, ls, or$$1), crossPartial(setU, ls, or$$1));
@@ -1543,6 +1543,16 @@ var all = /*#__PURE__*/curry(function all(xi2b, t, s) {
 
 var and$1 = /*#__PURE__*/all(id$1);
 
+var all1 = /*#__PURE__*/curry(function all1(xi2b, t, s) {
+  var result = false;
+  getAsU(function (x, i) {
+    if (xi2b(x, i)) result = true;else return result = false;
+  }, t, s);
+  return result;
+});
+
+var and1 = /*#__PURE__*/all1(id$1);
+
 var any = /*#__PURE__*/curry(function any(xi2b, t, s) {
   return !!getAsU(function (x, i) {
     if (xi2b(x, i)) return true;
@@ -1551,7 +1561,7 @@ var any = /*#__PURE__*/curry(function any(xi2b, t, s) {
 
 var collectAs = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? curry : res(freeze))(function collectAs(xi2y, t, s) {
   var results = [];
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     var y = xi2y(x, i);
     if (void 0 !== y) results.push(y);
   }, t, s);
@@ -1574,7 +1584,7 @@ var count = /*#__PURE__*/countIf(isDefined);
 
 var countsAs = /*#__PURE__*/curry(function countsAs(xi2k, t, s) {
   var counts = new Map();
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     var k = xi2k(x, i);
     var n = counts.get(k);
     counts.set(k, void 0 !== n ? n + 1 : 1);
@@ -1585,7 +1595,7 @@ var countsAs = /*#__PURE__*/curry(function countsAs(xi2k, t, s) {
 var counts = /*#__PURE__*/countsAs(id$1);
 
 var foldl = /*#__PURE__*/curry(function foldl(f, r, t, s) {
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     r = f(r, x, i);
   }, t, s);
   return r;
@@ -1594,7 +1604,7 @@ var foldl = /*#__PURE__*/curry(function foldl(f, r, t, s) {
 var foldr = /*#__PURE__*/curry(function foldr(f, r, t, s) {
   var is = [];
   var xs = [];
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     xs.push(x);
     is.push(i);
   }, t, s);
@@ -1604,14 +1614,14 @@ var foldr = /*#__PURE__*/curry(function foldr(f, r, t, s) {
 });
 
 var forEach = /*#__PURE__*/curry(function forEach(f, t, s) {
-  return traverseU(Select, function (x, i) {
+  return getAsU(function (x, i) {
     f(x, i);
   }, t, s);
 });
 
 var forEachWith = /*#__PURE__*/curry(function forEachWith(newC, ef$$1, t, s) {
   var c = newC();
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     ef$$1(c, x, i);
   }, t, s);
   return c;
@@ -1648,7 +1658,7 @@ var maximum = /*#__PURE__*/maximumBy(id$1);
 var meanAs = /*#__PURE__*/curry(function meanAs(xi2y, t, s) {
   var sum = 0;
   var num = 0;
-  traverseU(Select, function (x, i) {
+  getAsU(function (x, i) {
     var y = xi2y(x, i);
     if (void 0 !== y) {
       num += 1;
@@ -2132,4 +2142,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
