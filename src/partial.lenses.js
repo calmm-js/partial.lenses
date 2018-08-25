@@ -189,8 +189,7 @@ const mumBy = ord =>
   I.curry(function mumBy(xi2y, t, s) {
     let minX = void 0
     let minY = void 0
-    traverseU(
-      Select,
+    getAsU(
       (x, i) => {
         const y = xi2y(x, i)
         if (void 0 !== y && (void 0 === minY || ord(y, minY))) {
@@ -1316,8 +1315,7 @@ export const collectAs = (process.env.NODE_ENV === 'production'
   ? I.curry
   : C.res(I.freeze))(function collectAs(xi2y, t, s) {
   const results = []
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       const y = xi2y(x, i)
       if (void 0 !== y) results.push(y)
@@ -1342,8 +1340,7 @@ export const count = countIf(I.isDefined)
 
 export const countsAs = I.curry(function countsAs(xi2k, t, s) {
   const counts = new Map()
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       const k = xi2k(x, i)
       const n = counts.get(k)
@@ -1358,8 +1355,7 @@ export const countsAs = I.curry(function countsAs(xi2k, t, s) {
 export const counts = countsAs(id)
 
 export const foldl = I.curry(function foldl(f, r, t, s) {
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       r = f(r, x, i)
     },
@@ -1372,8 +1368,7 @@ export const foldl = I.curry(function foldl(f, r, t, s) {
 export const foldr = I.curry(function foldr(f, r, t, s) {
   const is = []
   const xs = []
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       xs.push(x)
       is.push(i)
@@ -1386,8 +1381,7 @@ export const foldr = I.curry(function foldr(f, r, t, s) {
 })
 
 export const forEach = I.curry(function forEach(f, t, s) {
-  return traverseU(
-    Select,
+  return getAsU(
     (x, i) => {
       f(x, i)
     },
@@ -1398,8 +1392,7 @@ export const forEach = I.curry(function forEach(f, t, s) {
 
 export const forEachWith = I.curry(function forEachWith(newC, ef, t, s) {
   const c = newC()
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       ef(c, x, i)
     },
@@ -1446,8 +1439,7 @@ export const maximum = maximumBy(id)
 export const meanAs = I.curry(function meanAs(xi2y, t, s) {
   let sum = 0
   let num = 0
-  traverseU(
-    Select,
+  getAsU(
     (x, i) => {
       const y = xi2y(x, i)
       if (void 0 !== y) {
