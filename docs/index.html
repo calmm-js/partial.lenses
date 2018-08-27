@@ -342,7 +342,17 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#interop">Interop</a><ul>
+<li><a href="#fantasy-land">Fantasy Land</a><ul>
+<li><a href="#L-FantasyFunctor" title="L.FantasyFunctor: Functor"><code>L.FantasyFunctor ~&gt; Functor</code></a> <small><sup>v14.5.0</sup></small></li>
+<li><a href="#L-fromFantasy" title="L.fromFantasy: TypeRep -&gt; Functor|Applicative|Monad"><code>L.fromFantasy(TypeRep) ~&gt; Functor|Applicative|Monad</code></a> <small><sup>v14.5.0</sup></small></li>
+<li><a href="#L-fromFantasyApplicative" title="L.fromFantasy: TypeRep -&gt; Applicative"><code>L.fromFantasyApplicative(TypeRep) ~&gt; Applicative</code></a> <small><sup>v14.5.0</sup></small></li>
+<li><a href="#L-fromFantasy" title="L.fromFantasyMonad: TypeRep -&gt; Monad"><code>L.fromFantasyMonad(TypeRep) ~&gt; Monad</code></a> <small><sup>v14.5.0</sup></small></li>
+</ul>
+</li>
+<li><a href="#json-pointer">JSON Pointer</a><ul>
 <li><a href="#L-pointer" title="L.pointer: JSONPointer s a -&gt; PLens s a"><code>L.pointer(jsonPointer) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#auxiliary">Auxiliary</a><ul>
@@ -3010,6 +3020,35 @@ through and adds when written through.</p>
 <pre><code class="hljs lang-js">L.get(L.subtract(1), 3)
 </code></pre>
 <h3><a id="interop"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#interop">■</a> <a href="#interop">Interop</a></h3>
+<h4><a id="fantasy-land"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#fantasy-land">■</a> <a href="#fantasy-land">Fantasy Land</a></h4>
+<p>Partial Lenses directly supports only the <a href="https://github.com/rpominov/static-land">Static
+Land</a> specification, but it is possible
+to also use <a href="https://github.com/fantasyland/fantasy-land">Fantasy Land</a>
+compatible types with Partial Lenses.  Note that many Fantasy Land compatible
+libraries are also directly Static Land compatible and can be used directly with
+Partial Lenses without using the below conversion functions.</p>
+<h4><a id="L-FantasyFunctor"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-FantasyFunctor">■</a> <a href="#L-FantasyFunctor" title="L.FantasyFunctor: Functor"><code>L.FantasyFunctor ~&gt; Functor</code></a> <small><sup>v14.5.0</sup></small></h4>
+<p><code>L.FantasyFunctor</code> is a Static Land compatible functor that dispatches to the
+<code>fantasy-land/map</code> method.</p>
+<h4><a id="L-fromFantasy"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-fromFantasy">■</a> <a href="#L-fromFantasy" title="L.fromFantasy: TypeRep -&gt; Functor|Applicative|Monad"><code>L.fromFantasy(TypeRep) ~&gt; Functor|Applicative|Monad</code></a> <small><sup>v14.5.0</sup></small></h4>
+<p><code>L.fromFantasy</code> attempts to convert a given Fantasy Land compatible type
+representative to a Static Land compatible functor, applicative, or monad based
+on which dynamic and static methods the type representative provides.  See also
+<a href="#L-fromFantasyApplicative"><code>L.fromFantasyApplicative</code></a> and
+<a href="#L-fromFantasyMonad"><code>L.fromFantasyMonad</code></a>.</p>
+<h4><a id="L-fromFantasyApplicative"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-fromFantasyApplicative">■</a> <a href="#L-fromFantasyApplicative" title="L.fromFantasy: TypeRep -&gt; Applicative"><code>L.fromFantasyApplicative(TypeRep) ~&gt; Applicative</code></a> <small><sup>v14.5.0</sup></small></h4>
+<p><code>L.fromFantasyApplicative</code> converts a given Fantasy Land compatible type
+representative of an applicative to a Static Land compatible applicative.  The
+type must provide a static <code>fantasy-land/of</code> method and dynamic
+<code>fantasy-land/map</code> and <code>fantasy-land/ap</code> methods.  See also
+<a href="#L-fromFantasy"><code>L.fromFantasy</code></a>.</p>
+<h4><a id="L-fromFantasyMonad"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-fromFantasyMonad">■</a> <a href="#L-fromFantasy" title="L.fromFantasyMonad: TypeRep -&gt; Monad"><code>L.fromFantasyMonad(TypeRep) ~&gt; Monad</code></a> <small><sup>v14.5.0</sup></small></h4>
+<p><code>L.fromFantasyMonad</code> converts a given Fantasy Land compatible type
+representative of a monad to a Static Land compatible monad.  The type must
+provide a static <code>fantasy-land/of</code> method and dynamic <code>fantasy-land/map</code>,
+<code>fantasy-land/ap</code>, and <code>fantasy-land/chain</code> methods.  See also
+<a href="#L-fromFantasy"><code>L.fromFantasy</code></a>.</p>
+<h3><a id="json-pointer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#json-pointer">■</a> <a href="#json-pointer">JSON Pointer</a></h3>
 <h4><a id="L-pointer"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-pointer">■</a> <a href="#L-pointer" title="L.pointer: JSONPointer s a -&gt; PLens s a"><code>L.pointer(jsonPointer) ~&gt; lens</code></a> <small><sup>v11.21.0</sup></small></h4>
 <p><code>L.pointer</code> converts a valid <a href="https://tools.ietf.org/html/rfc6901">JSON Pointer</a>
 (string) into a bidirectional lens. Works with <a href="https://tools.ietf.org/html/rfc6901#section-5">JSON

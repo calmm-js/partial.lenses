@@ -266,20 +266,6 @@
 
   //
 
-  var isEmptyArrayStringOrObject = function isEmptyArrayStringOrObject(x) {
-    return I.acyclicEqualsU(I.array0, x) || I.acyclicEqualsU(I.object0, x) || x === '';
-  };
-
-  var warnEmpty = function warnEmpty(o, v, f) {
-    var msg = '`' + f + '(' + JSON.stringify(v) + ')` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.';
-    return function (x) {
-      if (I.acyclicEqualsU(v, x)) warn(o, msg);
-      return x;
-    };
-  };
-
-  //
-
   var mapPartialIndexU = /*#__PURE__*/(function (fn$$1) {
     return function (xi2y, xs, skip) {
       var ys = fn$$1(xi2y, xs, skip);
@@ -334,18 +320,52 @@
 
   //
 
-  function Applicative(map, of, ap) {
-    if (!this) return freezeInDev(new Applicative(map, of, ap));
+  function Functor(map) {
+    if (!this) return freezeInDev(new Functor(map));
     this.map = map;
+  }
+
+  var Applicative = /*#__PURE__*/I.inherit(function Applicative(map, of, ap) {
+    if (!this) return freezeInDev(new Applicative(map, of, ap));
+    Functor.call(this, map);
     this.of = of;
     this.ap = ap;
-  }
+  }, Functor);
 
   var Monad = /*#__PURE__*/I.inherit(function Monad(map, of, ap, chain) {
     if (!this) return freezeInDev(new Monad(map, of, ap, chain));
     Applicative.call(this, map, of, ap);
     this.chain = chain;
   }, Applicative);
+
+  //
+
+  var fantasyLand = 'fantasy-land/';
+  var fantasyLandOf = fantasyLand + 'of';
+  var fantasyLandMap = fantasyLand + 'map';
+  var fantasyLandAp = fantasyLand + 'ap';
+  var fantasyLandChain = fantasyLand + 'chain';
+  var fantasyBop = function fantasyBop(m) {
+    return setName(function (f, x) {
+      return x[m](f);
+    }, m);
+  };
+  var fantasyMap = /*#__PURE__*/fantasyBop(fantasyLandMap);
+  var fantasyAp = /*#__PURE__*/fantasyBop(fantasyLandAp);
+  var fantasyChain = /*#__PURE__*/fantasyBop(fantasyLandChain);
+
+  var FantasyFunctor = /*#__PURE__*/Functor(fantasyMap);
+
+  var fromFantasyApplicative = function fromFantasyApplicative(Type) {
+    return Applicative(fantasyMap, Type[fantasyLandOf], fantasyAp);
+  };
+  var fromFantasyMonad = function fromFantasyMonad(Type) {
+    return Monad(fantasyMap, Type[fantasyLandOf], fantasyAp, fantasyChain);
+  };
+
+  var fromFantasy = function fromFantasy(Type) {
+    return Type.prototype[fantasyLandChain] ? fromFantasyMonad(Type) : Type[fantasyLandOf] ? fromFantasyApplicative(Type) : FantasyFunctor;
+  };
 
   //
 
@@ -1727,30 +1747,20 @@
     };
   }
 
-  var define = /*#__PURE__*/(function (fn$$1) {
-    return function define(inn) {
-      var res$$1 = fn$$1(inn);
-      if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, 'define'), id), res$$1, isoU(id, warnEmpty(define, inn, 'define'))]);else return res$$1;
-    };
-  })(function define(v) {
+  function define(v) {
     var untoV = unto(v);
     return function define(x, i, F, xi2yF) {
       return F.map(untoV, xi2yF(void 0 !== x ? x : v, i));
     };
-  });
+  }
 
   var normalize = function normalize(xi2x) {
     return [reread(xi2x), rewrite(xi2x)];
   };
 
-  var required = /*#__PURE__*/(function (fn$$1) {
-    return function required(inn) {
-      var res$$1 = fn$$1(inn);
-      if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(id, warnEmpty(required, inn, 'required'))]);else return res$$1;
-    };
-  })(function required(inn) {
+  function required(inn) {
     return replace$1(inn, void 0);
-  });
+  }
 
   var reread = function reread(xi2x) {
     return function (x, i, _F, xi2yF) {
@@ -2128,8 +2138,6 @@
     return numberIsoU(add(-c), add(c));
   };
 
-  // Interop
-
   var pointer = function pointer(s) {
     if (s[0] === '#') s = decodeURIComponent(s);
     var ts = s.split('/');
@@ -2291,6 +2299,10 @@
   exports.multiply = multiply$1;
   exports.negate = negate$1;
   exports.subtract = subtract;
+  exports.FantasyFunctor = FantasyFunctor;
+  exports.fromFantasy = fromFantasy;
+  exports.fromFantasyApplicative = fromFantasyApplicative;
+  exports.fromFantasyMonad = fromFantasyMonad;
   exports.pointer = pointer;
 
   Object.defineProperty(exports, '__esModule', { value: true });

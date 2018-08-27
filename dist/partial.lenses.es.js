@@ -1,4 +1,4 @@
-import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, acyclicEqualsU, array0, object0, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, isNumber, constructorOf, toObject, applyU, isDefined, keys, hasU, assign, arityN, id } from 'infestines';
+import { defineNameU, isString, isFunction, always, freeze, isArray, isObject, inherit, sndU, curry, curryN, assocPartialU, dissocPartialU, object0, isNumber, constructorOf, toObject, acyclicEqualsU, applyU, isDefined, array0, keys, hasU, assign, arityN, id } from 'infestines';
 
 var addU = function addU(x, y) {
   return x + y;
@@ -266,20 +266,6 @@ var rev = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freez
 
 //
 
-var isEmptyArrayStringOrObject = function isEmptyArrayStringOrObject(x) {
-  return acyclicEqualsU(array0, x) || acyclicEqualsU(object0, x) || x === '';
-};
-
-var warnEmpty = function warnEmpty(o, v, f) {
-  var msg = '`' + f + '(' + JSON.stringify(v) + ')` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.';
-  return function (x) {
-    if (acyclicEqualsU(v, x)) warn(o, msg);
-    return x;
-  };
-};
-
-//
-
 var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
   return function (xi2y, xs, skip) {
     var ys = fn$$1(xi2y, xs, skip);
@@ -334,18 +320,52 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-function Applicative(map, of, ap) {
-  if (!this) return freezeInDev(new Applicative(map, of, ap));
+function Functor(map) {
+  if (!this) return freezeInDev(new Functor(map));
   this.map = map;
+}
+
+var Applicative = /*#__PURE__*/inherit(function Applicative(map, of, ap) {
+  if (!this) return freezeInDev(new Applicative(map, of, ap));
+  Functor.call(this, map);
   this.of = of;
   this.ap = ap;
-}
+}, Functor);
 
 var Monad = /*#__PURE__*/inherit(function Monad(map, of, ap, chain) {
   if (!this) return freezeInDev(new Monad(map, of, ap, chain));
   Applicative.call(this, map, of, ap);
   this.chain = chain;
 }, Applicative);
+
+//
+
+var fantasyLand = 'fantasy-land/';
+var fantasyLandOf = fantasyLand + 'of';
+var fantasyLandMap = fantasyLand + 'map';
+var fantasyLandAp = fantasyLand + 'ap';
+var fantasyLandChain = fantasyLand + 'chain';
+var fantasyBop = function fantasyBop(m) {
+  return setName(function (f, x) {
+    return x[m](f);
+  }, m);
+};
+var fantasyMap = /*#__PURE__*/fantasyBop(fantasyLandMap);
+var fantasyAp = /*#__PURE__*/fantasyBop(fantasyLandAp);
+var fantasyChain = /*#__PURE__*/fantasyBop(fantasyLandChain);
+
+var FantasyFunctor = /*#__PURE__*/Functor(fantasyMap);
+
+var fromFantasyApplicative = function fromFantasyApplicative(Type) {
+  return Applicative(fantasyMap, Type[fantasyLandOf], fantasyAp);
+};
+var fromFantasyMonad = function fromFantasyMonad(Type) {
+  return Monad(fantasyMap, Type[fantasyLandOf], fantasyAp, fantasyChain);
+};
+
+var fromFantasy = function fromFantasy(Type) {
+  return Type.prototype[fantasyLandChain] ? fromFantasyMonad(Type) : Type[fantasyLandOf] ? fromFantasyApplicative(Type) : FantasyFunctor;
+};
 
 //
 
@@ -1727,30 +1747,20 @@ function defaults(out) {
   };
 }
 
-var define = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
-  return function define(inn) {
-    var res$$1 = fn$$1(inn);
-    if (isEmptyArrayStringOrObject(inn)) return toFunction([isoU(warnEmpty(fn$$1, inn, 'define'), id$1), res$$1, isoU(id$1, warnEmpty(define, inn, 'define'))]);else return res$$1;
-  };
-})(function define(v) {
+function define(v) {
   var untoV = unto(v);
   return function define(x, i, F, xi2yF) {
     return F.map(untoV, xi2yF(void 0 !== x ? x : v, i));
   };
-});
+}
 
 var normalize = function normalize(xi2x) {
   return [reread(xi2x), rewrite(xi2x)];
 };
 
-var required = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
-  return function required(inn) {
-    var res$$1 = fn$$1(inn);
-    if (isEmptyArrayStringOrObject(inn)) return toFunction([res$$1, isoU(id$1, warnEmpty(required, inn, 'required'))]);else return res$$1;
-  };
-})(function required(inn) {
+function required(inn) {
   return replace$1(inn, void 0);
-});
+}
 
 var reread = function reread(xi2x) {
   return function (x, i, _F, xi2yF) {
@@ -2128,8 +2138,6 @@ var subtract = function subtract(c) {
   return numberIsoU(add(-c), add(c));
 };
 
-// Interop
-
 var pointer = function pointer(s) {
   if (s[0] === '#') s = decodeURIComponent(s);
   var ts = s.split('/');
@@ -2142,4 +2150,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
