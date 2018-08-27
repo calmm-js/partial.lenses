@@ -2373,12 +2373,6 @@ if (process.env.NODE_ENV !== 'production') {
 
     testThrows(() => L.cond([0, 1]))
   })
-
-  describe('diagnostics', () => {
-    testEq(() => L.set(L.required([]), [], undefined), [])
-    testEq(() => L.get(L.define([]), []), [])
-    testEq(() => L.set(L.define([]), [], []), [])
-  })
 }
 
 describe('cloning avoidance', () => {

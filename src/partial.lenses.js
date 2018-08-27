@@ -95,21 +95,6 @@ const rev = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
 
 //
 
-const isEmptyArrayStringOrObject = x =>
-  I.acyclicEqualsU(I.array0, x) || I.acyclicEqualsU(I.object0, x) || x === ''
-
-const warnEmpty = (o, v, f) => {
-  const msg = `\`${f}(${JSON.stringify(
-    v
-  )})\` is likely unnecessary, because combinators no longer remove empty arrays, objects, or strings by default.  See CHANGELOG for more information.`
-  return x => {
-    if (I.acyclicEqualsU(v, x)) warn(o, msg)
-    return x
-  }
-}
-
-//
-
 const mapPartialIndexU = (process.env.NODE_ENV === 'production'
   ? id
   : fn => (xi2y, xs, skip) => {
@@ -1542,41 +1527,18 @@ export function defaults(out) {
   }
 }
 
-export const define = (process.env.NODE_ENV === 'production'
-  ? id
-  : fn =>
-      function define(inn) {
-        const res = fn(inn)
-        if (isEmptyArrayStringOrObject(inn))
-          return toFunction([
-            isoU(warnEmpty(fn, inn, 'define'), id),
-            res,
-            isoU(id, warnEmpty(define, inn, 'define'))
-          ])
-        else return res
-      })(function define(v) {
+export function define(v) {
   const untoV = unto(v)
   return function define(x, i, F, xi2yF) {
     return F.map(untoV, xi2yF(void 0 !== x ? x : v, i))
   }
-})
+}
 
 export const normalize = xi2x => [reread(xi2x), rewrite(xi2x)]
 
-export const required = (process.env.NODE_ENV === 'production'
-  ? id
-  : fn =>
-      function required(inn) {
-        const res = fn(inn)
-        if (isEmptyArrayStringOrObject(inn))
-          return toFunction([
-            res,
-            isoU(id, warnEmpty(required, inn, 'required'))
-          ])
-        else return res
-      })(function required(inn) {
+export function required(inn) {
   return replace(inn, void 0)
-})
+}
 
 export const reread = xi2x => (x, i, _F, xi2yF) =>
   xi2yF(void 0 !== x ? xi2x(x, i) : x, i)
