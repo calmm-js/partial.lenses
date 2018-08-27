@@ -437,6 +437,13 @@ export const subtract = T.fn([T.number], T_isomorphism)
 
 // Interop
 
+export const FantasyFunctor = T_functor
+export const fromFantasy = T.fn(
+  [T.def],
+  T.or(T_monad, T_applicative, T_functor)
+)
+export const fromFantasyApplicative = T.fn([T.def], T_applicative)
+export const fromFantasyMonad = T.fn([T.def], T_monad)
 export const pointer = T.fn([T.string], T_lens)
 
 // Auxiliary

@@ -223,6 +223,7 @@ describe('L.identity', () => {
 
 describe('arities', () => {
   const arities = {
+    FantasyFunctor: undefined,
     Identity: undefined,
     IdentityAsync: undefined,
     Select: undefined,
@@ -277,6 +278,9 @@ describe('arities', () => {
     foldr: 4,
     forEach: 3,
     forEachWith: 4,
+    fromFantasy: 1,
+    fromFantasyApplicative: 1,
+    fromFantasyMonad: 1,
     get: 2,
     getAs: 3,
     getInverse: 2,
@@ -2400,6 +2404,93 @@ describe('cloning avoidance', () => {
     y: [2],
     z: NaN
   })
+})
+
+describe('fantasy interop', () => {
+  class MaybeFunctor {
+    ['fantasy-land/map'](f) {
+      return new Some(f(this.value))
+    }
+  }
+
+  class MaybeApplicative extends MaybeFunctor {
+    static ['fantasy-land/of'](x) {
+      return new Some(x)
+    }
+    ['fantasy-land/ap'](f) {
+      if (f instanceof Some) {
+        return new Some(f.value(this.value))
+      } else {
+        return new None()
+      }
+    }
+  }
+
+  class MaybeMonad extends MaybeApplicative {
+    ['fantasy-land/chain'](f) {
+      return f(this.value)
+    }
+  }
+
+  class None extends MaybeMonad {
+    ['fantasy-land/map'](_f) {
+      return this
+    }
+    ['fantasy-land/ap'](_f) {
+      return this
+    }
+    ['fantasy-land/chain'](_f) {
+      return this
+    }
+  }
+
+  class Some extends MaybeMonad {
+    constructor(value) {
+      super()
+      this.value = value
+    }
+  }
+
+  testEq(
+    () =>
+      L.traverse(
+        L.fromFantasy(MaybeFunctor),
+        R.identity,
+        [0, 'x'],
+        [{x: new Some(3)}]
+      ),
+    new Some([{x: 3}])
+  )
+
+  testEq(
+    () =>
+      L.traverse(L.fromFantasy(MaybeApplicative), R.identity, L.elems, [
+        new Some(3),
+        new Some(1),
+        new Some(4)
+      ]),
+    new Some([3, 1, 4])
+  )
+
+  testEq(
+    () =>
+      L.traverse(L.fromFantasy(MaybeApplicative), R.identity, L.elems, [
+        new Some(3),
+        new None(),
+        new Some(4)
+      ]),
+    new None()
+  )
+
+  testEq(
+    () =>
+      L.traverse(L.fromFantasy(MaybeMonad), R.identity, L.elems, [
+        new Some(3),
+        new Some(1),
+        new Some(4)
+      ]),
+    new Some([3, 1, 4])
+  )
 })
 
 describe('obsoleted', () => {
