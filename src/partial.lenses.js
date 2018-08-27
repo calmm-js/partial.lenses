@@ -149,18 +149,49 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-function Applicative(map, of, ap) {
-  if (!this) return freezeInDev(new Applicative(map, of, ap))
+function Functor(map) {
+  if (!this) return freezeInDev(new Functor(map))
   this.map = map
+}
+
+const Applicative = I.inherit(function Applicative(map, of, ap) {
+  if (!this) return freezeInDev(new Applicative(map, of, ap))
+  Functor.call(this, map)
   this.of = of
   this.ap = ap
-}
+}, Functor)
 
 const Monad = I.inherit(function Monad(map, of, ap, chain) {
   if (!this) return freezeInDev(new Monad(map, of, ap, chain))
   Applicative.call(this, map, of, ap)
   this.chain = chain
 }, Applicative)
+
+//
+
+const fantasyLand = 'fantasy-land/'
+const fantasyLandOf = fantasyLand + 'of'
+const fantasyLandMap = fantasyLand + 'map'
+const fantasyLandAp = fantasyLand + 'ap'
+const fantasyLandChain = fantasyLand + 'chain'
+const fantasyBop = m => setName((f, x) => x[m](f), m)
+const fantasyMap = fantasyBop(fantasyLandMap)
+const fantasyAp = fantasyBop(fantasyLandAp)
+const fantasyChain = fantasyBop(fantasyLandChain)
+
+const FantasyFunctor = Functor(fantasyMap)
+
+const fromFantasyApplicative = Type =>
+  Applicative(fantasyMap, Type[fantasyLandOf], fantasyAp)
+const fromFantasyMonad = Type =>
+  Monad(fantasyMap, Type[fantasyLandOf], fantasyAp, fantasyChain)
+
+const fromFantasy = Type =>
+  Type.prototype[fantasyLandChain]
+    ? fromFantasyMonad(Type)
+    : Type[fantasyLandOf]
+      ? fromFantasyApplicative(Type)
+      : FantasyFunctor
 
 //
 
@@ -1954,6 +1985,8 @@ export const negate = numberIsoU(I.negate, I.negate)
 export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 
 // Interop
+
+export {FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad}
 
 export const pointer = s => {
   if (s[0] === '#') s = decodeURIComponent(s)
