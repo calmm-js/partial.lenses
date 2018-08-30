@@ -426,6 +426,12 @@ function composed(oi0, os) {
   }
 }
 
+const disperseU = function disperse(traversal, values, data) {
+  if (!seemsArrayLike(values)) values = ''
+  let i = 0
+  return modifyU(traversal, () => values[i++], data)
+}
+
 const setU = (process.env.NODE_ENV === 'production'
   ? id
   : C.par(0, C.ef(reqOptic)))(function set(o, x, s) {
@@ -973,6 +979,8 @@ export const assign = I.curry(function assign(o, x, s) {
   return setU([o, propsOf(x)], x, s)
 })
 
+export const disperse = I.curry(disperseU)
+
 export const modify = I.curry(modifyU)
 
 export const modifyAsync = I.curry(modifyAsyncU)
@@ -1359,6 +1367,22 @@ export const collectAs = (process.env.NODE_ENV === 'production'
 
 export const collect = collectAs(id)
 
+export const collectTotalAs = (process.env.NODE_ENV === 'production'
+  ? I.curry
+  : C.res(I.freeze))(function collectTotalAs(xi2y, t, s) {
+  const results = []
+  getAsU(
+    (x, i) => {
+      results.push(xi2y(x, i))
+    },
+    t,
+    s
+  )
+  return results
+})
+
+export const collectTotal = collectTotalAs(id)
+
 export const concatAs = mkTraverse(id, ConstantOf)
 
 export const concat = concatAs(id)
@@ -1544,6 +1568,9 @@ export const foldTraversalLens = I.curry(function foldTraversalLens(
 export const getter = get => (x, i, F, xi2yF) => xi2yF(get(x, i), i)
 
 export const lens = I.curry(lensU)
+
+export const partsOf = t => (x, i, F, xi2yF) =>
+  F.map(y => disperseU(t, y, x), xi2yF(collectTotal(t, x), i))
 
 export const setter = lens(id)
 

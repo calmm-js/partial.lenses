@@ -247,6 +247,8 @@ describe('arities', () => {
     choose: 1,
     collect: 2,
     collectAs: 3,
+    collectTotal: 2,
+    collectTotalAs: 3,
     complement: 4,
     compose: 0,
     concat: 3,
@@ -261,6 +263,7 @@ describe('arities', () => {
     defaults: 1,
     define: 1,
     disjoint: 1,
+    disperse: 3,
     divide: 1,
     dropPrefix: 1,
     dropSuffix: 1,
@@ -326,6 +329,7 @@ describe('arities', () => {
     optional: 4,
     or: 2,
     orElse: 2,
+    partsOf: 1,
     pick: 1,
     pickIn: 1,
     pointer: 1,
@@ -1654,6 +1658,125 @@ describe('L.foldTraversalLens', () => {
   testEq(
     () => L.set(L.foldTraversalLens(L.maximum, L.elems), 2, [3, 1, 4, 1]),
     [2, 2, 2, 2]
+  )
+})
+
+describe('L.collectTotal', () => {
+  testEq(() => L.collectTotal([L.elems, 'x'], [{x: 'a'}, {y: 'b'}]), [
+    'a',
+    undefined
+  ])
+})
+
+describe('L.collectTotalAs', () => {
+  testEq(
+    () =>
+      L.collectTotalAs(
+        (v, i) => (v ? undefined : i),
+        [L.elems, 'x'],
+        [{x: 'a'}, {y: 'b'}]
+      ),
+    [undefined, 'x']
+  )
+})
+
+describe('L.disperse', () => {
+  testEq(
+    () => L.disperse(['xs', L.elems], {not: 'an array-like'}, {xs: [3, 1, 4]}),
+    {xs: []}
+  )
+  testEq(
+    () =>
+      L.disperse([L.elems, 'x'], [-3, undefined, -4], [{x: 3}, {x: 1}, {x: 4}]),
+    [{x: -3}, {}, {x: -4}]
+  )
+})
+
+describe('L.partsOf', () => {
+  testEq(() => L.getInverse(L.partsOf(L.branches('x', 'y')), [4, 2]), {
+    x: 4,
+    y: 2
+  })
+  testEq(
+    () =>
+      L.get(L.partsOf([L.values, 1]), {
+        foo: [false, 'oldUser1'],
+        bar: [true, 'oldUser2'],
+        quux: [false, 'oldUser3']
+      }),
+    ['oldUser1', 'oldUser2', 'oldUser3']
+  )
+  testEq(
+    () =>
+      L.set(L.partsOf([L.values, 1]), ['user1', 'user2', 'user3'], {
+        foo: [false, 'oldUser1'],
+        bar: [true, 'oldUser2'],
+        quux: [false, 'oldUser3']
+      }),
+    {foo: [false, 'user1'], bar: [true, 'user2'], quux: [false, 'user3']}
+  )
+  testEq(
+    () =>
+      L.remove(L.partsOf([L.values, 1]), {
+        foo: [false, 'oldUser1'],
+        bar: [true, 'oldUser2'],
+        quux: [false, 'oldUser3']
+      }),
+    {foo: [false], bar: [true], quux: [false]}
+  )
+  testEq(
+    () =>
+      L.get(
+        L.pick({
+          results: L.partsOf(L.flat('results')),
+          total: [L.elems, 'total']
+        }),
+        [
+          {total: 3, and: 'also1', results: ['a']},
+          {total: 3, and: 'also2', results: ['b']},
+          {total: 3, and: 'also3', results: ['c']}
+        ]
+      ),
+    {results: ['a', 'b', 'c'], total: 3}
+  )
+  testEq(
+    () =>
+      L.set(
+        L.pick({
+          results: L.partsOf(L.flat('results')),
+          total: [L.elems, 'total']
+        }),
+        {total: 4, results: ['C', 'B', 'A']},
+        [
+          {total: 3, and: 'also1', results: ['a']},
+          {total: 3, and: 'also2', results: ['b']},
+          {total: 3, and: 'also3', results: ['c']}
+        ]
+      ),
+    [
+      {total: 4, and: 'also1', results: ['C']},
+      {total: 4, and: 'also2', results: ['B']},
+      {total: 4, and: 'also3', results: ['A']}
+    ]
+  )
+  testEq(
+    () =>
+      L.remove(
+        L.pick({
+          results: L.partsOf(L.flat('results')),
+          total: [L.elems, 'total']
+        }),
+        [
+          {total: 3, and: 'also1', results: ['a']},
+          {total: 3, and: 'also2', results: ['b']},
+          {total: 3, and: 'also3', results: ['c']}
+        ]
+      ),
+    [
+      {and: 'also1', results: []},
+      {and: 'also2', results: []},
+      {and: 'also3', results: []}
+    ]
   )
 })
 

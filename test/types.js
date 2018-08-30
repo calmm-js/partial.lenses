@@ -83,6 +83,7 @@ export const assign = T.fn(
   [T_optic, T.instanceOf(Object), T_maybeDataI],
   T_maybeDataO
 )
+export const disperse = T.fn([T_optic, T.any, T_maybeDataI], T_maybeDataO)
 export const modify = T.fn(
   [T_optic, T.fn([T_maybeDataO, T_index], T_maybeDataI), T_maybeDataI],
   T_maybeDataO
@@ -202,6 +203,12 @@ export const collect = T.fn([T_traversal, T_maybeDataI], T.array(T.def))
 export const collectAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.array(T.def)
+)
+
+export const collectTotal = T.fn([T_traversal, T_maybeDataI], T.array(T.any))
+export const collectTotalAs = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
+  T.array(T.any)
 )
 
 export const concat = T.fn([T_monoid, T_traversal, T_maybeDataI], T.any)
@@ -327,6 +334,8 @@ export const lens = T.fn(
   ],
   T_lens
 )
+
+export const partsOf = T.fn([T_traversal], T_lens)
 
 export const setter = T.fn(
   [T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)],
