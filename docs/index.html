@@ -1890,9 +1890,8 @@ given traversal or lens from a data structure.</p>
 </code></pre>
 <p>Note that <code>L.collect</code> is equivalent to <a href="#L-collectAs"><code>L.collectAs(x =&gt; x)</code></a>.</p>
 <h5><a id="L-collectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-collectAs">■</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v7.2.0</sup></small></h5>
-<p><code>L.collectAs</code> returns an array of the elements focused on by the given traversal
-or lens from a data structure and mapped by the given function to a
-non-<code>undefined</code> value.</p>
+<p><code>L.collectAs</code> returns an array of the non-<code>undefined</code> values returned by the
+given function from the elements focused on by the given traversal.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collectAs(R.negate, [&#39;xs&#39;, L.elems, &#39;x&#39;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>

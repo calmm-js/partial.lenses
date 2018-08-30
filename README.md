@@ -2438,9 +2438,8 @@ Note that `L.collect` is equivalent to [`L.collectAs(x => x)`](#L-collectAs).
 
 ##### <a id="L-collectAs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-collectAs) [`L.collectAs((maybeValue, index) => maybeValue, traversal, maybeData) ~> [...values]`](#L-collectAs "L.collectAs: ((Maybe a, Index) -> Maybe b) -> PTraversal s a -> Maybe s -> [b]") <small><sup>v7.2.0</sup></small>
 
-`L.collectAs` returns an array of the elements focused on by the given traversal
-or lens from a data structure and mapped by the given function to a
-non-`undefined` value.
+`L.collectAs` returns an array of the non-`undefined` values returned by the
+given function from the elements focused on by the given traversal.
 
 For example:
 
