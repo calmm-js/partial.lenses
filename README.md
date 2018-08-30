@@ -155,10 +155,10 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.sumAs((maybeValue, index) => number, traversal, maybeData) ~> number`](#L-sumAs "L.sumAs: ((Maybe a, Index) -> Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.2.0</sup></small>
   * [Lenses](#lenses)
     * [Creating new lenses](#creating-new-lenses)
-      * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
-      * [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
-      * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
       * [`L.foldTraversalLens((traversal, maybeData) => maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
+      * [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
+      * [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
+      * [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
     * [Enforcing invariants](#enforcing-invariants)
       * [`L.defaults(valueIn) ~> lens`](#L-defaults "L.defaults: s -> PLens s s") <small><sup>v2.0.0</sup></small>
       * [`L.define(value) ~> lens`](#L-define "L.define: s -> PLens s s") <small><sup>v1.0.0</sup></small>
@@ -2955,6 +2955,33 @@ in another way, a lens specifies a path to a single element in a data structure.
 
 #### <a id="creating-new-lenses"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#creating-new-lenses) [Creating new lenses](#creating-new-lenses)
 
+##### <a id="L-foldTraversalLens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-foldTraversalLens) [`L.foldTraversalLens((traversal, maybeData) => maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
+
+`L.foldTraversalLens` creates a lens from a fold and a traversal.  To make
+sense, the fold should compute or pick a representative from the elements
+focused on by the traversal such that when all the elements are equal then so is
+the representative.
+
+For example:
+
+```js
+L.get(L.foldTraversalLens(L.minimum, L.elems), [3, 1, 4])
+// 1
+```
+
+```js
+L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
+// [ 2, 2, 2 ]
+```
+
+See the [Collection toggle](#collection-toggle) section for a more interesting
+example.
+
+##### <a id="L-getter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setter) [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
+
+`L.getter(get)` is shorthand for [`L.lens(get, x => x)`](#L-lens).  See also
+[`L.reread`](#L-reread).
+
 ##### <a id="L-lens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-lens) [`L.lens((maybeData, index) => maybeValue, (maybeValue, maybeData, index) => maybeData) ~> lens`](#L-lens "L.lens: ((Maybe s, Index) -> Maybe a) -> ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v1.0.0</sup></small>
 
 `L.lens` creates a new primitive lens.  The first parameter is the *getter* and
@@ -3021,37 +3048,10 @@ adding dependency to [Moment.js](http://momentjs.com/).
 See the [Interfacing with Immutable.js](#interfacing) section for another
 example of using `L.lens`.
 
-##### <a id="L-getter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setter) [`L.getter((maybeData, index) => maybeValue) ~> lens`](#L-getter "L.getter: ((Maybe s, Index) -> Maybe a) -> PLens s a") <small><sup>v13.16.0</sup></small>
-
-`L.getter(get)` is shorthand for [`L.lens(get, x => x)`](#L-lens).  See also
-[`L.reread`](#L-reread).
-
 ##### <a id="L-setter"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setter) [`L.setter((maybeValue, maybeData, index) => maybeData) ~> lens`](#L-setter "L.setter: ((Maybe a, Maybe s, Index) -> Maybe s) -> PLens s a") <small><sup>v10.3.0</sup></small>
 
 `L.setter(set)` is shorthand for [`L.lens(x => x, set)`](#L-lens).  See also
 [`L.rewrite`](#L-rewrite).
-
-##### <a id="L-foldTraversalLens"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-foldTraversalLens) [`L.foldTraversalLens((traversal, maybeData) => maybeValue, traversal) ~> lens`](#L-foldTraversalLens "L.foldTraversalLens: (PTraversal s a -> Maybe s -> Maybe a) -> PTraversal s a -> PLens s a") <small><sup>v11.5.0</sup></small>
-
-`L.foldTraversalLens` creates a lens from a fold and a traversal.  To make
-sense, the fold should compute or pick a representative from the elements
-focused on by the traversal such that when all the elements are equal then so is
-the representative.
-
-For example:
-
-```js
-L.get(L.foldTraversalLens(L.minimum, L.elems), [3, 1, 4])
-// 1
-```
-
-```js
-L.set(L.foldTraversalLens(L.minimum, L.elems), 2, [3, 1, 4])
-// [ 2, 2, 2 ]
-```
-
-See the [Collection toggle](#collection-toggle) section for a more interesting
-example.
 
 #### <a id="enforcing-invariants"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#enforcing-invariants) [Enforcing invariants](#enforcing-invariants)
 

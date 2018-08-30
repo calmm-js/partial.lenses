@@ -310,11 +310,8 @@ export const selectAs = T.fn(
 
 // Creating new lenses
 
-export const lens = T.fn(
-  [
-    T.fn([T_maybeDataO, T_index], T_maybeDataI),
-    T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)
-  ],
+export const foldTraversalLens = T.fn(
+  [T.fn([T_traversal, T_maybeDataO], T.any), T_traversal],
   T_lens
 )
 
@@ -323,13 +320,16 @@ export const getter = T.fn(
   T_lens
 )
 
-export const setter = T.fn(
-  [T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)],
+export const lens = T.fn(
+  [
+    T.fn([T_maybeDataO, T_index], T_maybeDataI),
+    T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)
+  ],
   T_lens
 )
 
-export const foldTraversalLens = T.fn(
-  [T.fn([T_traversal, T_maybeDataO], T.any), T_traversal],
+export const setter = T.fn(
+  [T.fn([T_maybeDataO, T_maybeDataO, T_index], T_maybeDataI)],
   T_lens
 )
 

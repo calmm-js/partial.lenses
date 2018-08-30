@@ -1534,18 +1534,18 @@ export const sum = sumAs(unto0)
 
 // Creating new lenses
 
-export const lens = I.curry(lensU)
-
-export const getter = get => (x, i, F, xi2yF) => xi2yF(get(x, i), i)
-
-export const setter = lens(id)
-
 export const foldTraversalLens = I.curry(function foldTraversalLens(
   fold,
   traversal
 ) {
   return lensU(fold(traversal), set(traversal))
 })
+
+export const getter = get => (x, i, F, xi2yF) => xi2yF(get(x, i), i)
+
+export const lens = I.curry(lensU)
+
+export const setter = lens(id)
 
 // Enforcing invariants
 
