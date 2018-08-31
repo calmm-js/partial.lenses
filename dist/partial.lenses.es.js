@@ -628,6 +628,14 @@ function composed(oi0, os) {
   }
 }
 
+var disperseU = function disperse(traversal, values, data) {
+  if (!seemsArrayLike(values)) values = '';
+  var i = 0;
+  return modifyU(traversal, function () {
+    return values[i++];
+  }, data);
+};
+
 var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : par(0, ef(reqOptic)))(function set(o, x, s) {
   switch (typeof o) {
     case 'string':
@@ -1196,6 +1204,8 @@ var assign$1 = /*#__PURE__*/curry(function assign$$1(o, x, s) {
   return setU([o, propsOf(x)], x, s);
 });
 
+var disperse = /*#__PURE__*/curry(disperseU);
+
 var modify = /*#__PURE__*/curry(modifyU);
 
 var modifyAsync = /*#__PURE__*/curry(modifyAsyncU);
@@ -1590,6 +1600,16 @@ var collectAs = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? curry : re
 
 var collect = /*#__PURE__*/collectAs(id$1);
 
+var collectTotalAs = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? curry : res(freeze))(function collectTotalAs(xi2y, t, s) {
+  var results = [];
+  getAsU(function (x, i) {
+    results.push(xi2y(x, i));
+  }, t, s);
+  return results;
+});
+
+var collectTotal = /*#__PURE__*/collectTotalAs(id$1);
+
 var concatAs = /*#__PURE__*/mkTraverse(id$1, ConstantOf);
 
 var concat = /*#__PURE__*/concatAs(id$1);
@@ -1722,7 +1742,9 @@ var sum = /*#__PURE__*/sumAs(unto0);
 
 // Creating new lenses
 
-var lens = /*#__PURE__*/curry(lensU);
+var foldTraversalLens = /*#__PURE__*/curry(function foldTraversalLens(fold, traversal) {
+  return lensU(fold(traversal), set(traversal));
+});
 
 var getter = function getter(get) {
   return function (x, i, F, xi2yF) {
@@ -1730,11 +1752,17 @@ var getter = function getter(get) {
   };
 };
 
-var setter = /*#__PURE__*/lens(id$1);
+var lens = /*#__PURE__*/curry(lensU);
 
-var foldTraversalLens = /*#__PURE__*/curry(function foldTraversalLens(fold, traversal) {
-  return lensU(fold(traversal), set(traversal));
-});
+var partsOf = function partsOf(t) {
+  return function (x, i, F, xi2yF) {
+    return F.map(function (y) {
+      return disperseU(t, y, x);
+    }, xi2yF(collectTotal(t, x), i));
+  };
+};
+
+var setter = /*#__PURE__*/lens(id$1);
 
 // Enforcing invariants
 
@@ -2150,4 +2178,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, lens, getter, setter, foldTraversalLens, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };

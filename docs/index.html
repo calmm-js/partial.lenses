@@ -87,6 +87,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </li>
 <li><a href="#operations-on-optics">Operations on optics</a><ul>
 <li><a href="#L-assign" title="L.assign: PLens s {p1: a1, ...ps, ...o} -&gt; {p1: a1, ...ps} -&gt; Maybe s -&gt; Maybe s"><code>L.assign(optic, object, maybeData) ~&gt; maybeData</code></a> <small><sup>v11.13.0</sup></small></li>
+<li><a href="#L-disperse" title="L.disperse: POptic s a -&gt; Maybe [Maybe a] -&gt; Maybe s -&gt; Maybe s"><code>L.disperse(optic, [...maybeValues], maybeData) ~&gt; maybeData</code></a> <small><sup>v14.6.0</sup></small></li>
 <li><a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></li>
 <li><a href="#L-modifyAsync" title="L.modifyAsync: POptic s a -&gt; ((Maybe a, Index) -&gt; Promise (Maybe a)) -&gt; Maybe s -&gt; Promise (Maybe s)"><code>L.modifyAsync(optic, (maybeValue, index) =&gt; maybeValuePromise, maybeData) ~&gt; maybeDataPromise</code></a> <small><sup>v13.12.0</sup></small></li>
 <li><a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></li>
@@ -191,6 +192,8 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#L-any" title="L.any: ((Maybe a, Index) -&gt; Boolean) -&gt; PTraversal s a -&gt; Boolean"><code>L.any((maybeValue, index) =&gt; testable, traversal, maybeData) ~&gt; boolean</code></a> <small><sup>v9.6.0</sup></small></li>
 <li><a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v3.6.0</sup></small></li>
 <li><a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v7.2.0</sup></small></li>
+<li><a href="#L-collectTotal" title="L.collectTotal: PTraversal s a -&gt; Maybe s -&gt; [Maybe a]"><code>L.collectTotal(traversal, maybeData) ~&gt; [...maybeValues]</code></a> <small><sup>v14.6.0</sup></small></li>
+<li><a href="#L-collectTotalAs" title="L.collectTotalAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [Maybe b]"><code>L.collectTotalAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...maybeValues]</code></a> <small><sup>v14.6.0</sup></small></li>
 <li><a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-concatAs" title="L.concatAs: ((Maybe a, Index) -&gt; r) -&gt; Monoid r -&gt; (PTraversal s a -&gt; Maybe s -&gt; r)"><code>L.concatAs((maybeValue, index) =&gt; value, monoid, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></li>
 <li><a href="#L-count" title="L.count: PTraversal s a -&gt; Number"><code>L.count(traversal, maybeData) ~&gt; number</code></a> <small><sup>v9.7.0</sup></small></li>
@@ -230,6 +233,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#L-foldTraversalLens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) =&gt; maybeValue, traversal) ~&gt; lens</code></a> <small><sup>v11.5.0</sup></small></li>
 <li><a href="#L-getter" title="L.getter: ((Maybe s, Index) -&gt; Maybe a) -&gt; PLens s a"><code>L.getter((maybeData, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v13.16.0</sup></small></li>
 <li><a href="#L-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
+<li><a href="#L-partsOf" title="L.partsOf: (PTraversal s a -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></li>
 <li><a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v10.3.0</sup></small></li>
 </ul>
 </li>
@@ -1034,6 +1038,26 @@ focused on by the given optic.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.assign(L.elems, {y: 1}, [{x: 3, y: 2}, {x: 4}])
 </code></pre>
+<h5><a id="L-disperse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-disperse">■</a> <a href="#L-disperse" title="L.disperse: POptic s a -&gt; Maybe [Maybe a] -&gt; Maybe s -&gt; Maybe s"><code>L.disperse(optic, [...maybeValues], maybeData) ~&gt; maybeData</code></a> <small><sup>v14.6.0</sup></small></h5>
+<p><code>L.disperse</code> replaces values in focuses targeted by the given optic with
+optional values taken from the given <a href="#L-seemsArrayLike">array-like</a> object.
+See also <a href="#L-partsOf"><code>L.partsOf</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.disperse(
+  L.leafs,
+  [&#39;a&#39;, undefined, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;],
+  [[[1], 2], {y: 3}, [{l: 4, r: [5]}, {x: 6}]]
+)
+</code></pre>
+<p>To understand <code>L.disperse</code>, it is perhaps helpful to consider under what
+conditions the following equations hold:</p>
+<pre><code class="hljs lang-jsx">ColDis:     L.disperse(o, L.collectTotal(o, d), d) = d
+DisCol:    L.collectTotal(o, L.disperse(o, vs, d)) = vs
+DolDis:   L.disperse(o, vs, L.disperse(o, vs0, d)) = L.disperse(o, vs, d)</code></pre>
+<p>The point is that <code>L.disperse</code> is roughly to <a href="#L-collectTotal"><code>L.collectTotal</code></a>
+as <a href="#L-set"><code>L.set</code></a> is to <a href="#L-get"><code>L.get</code></a>.  However, just like with
+<a href="#L-set"><code>L.set</code></a> and <a href="#L-get"><code>L.get</code></a>, the <a href="#on-lens-laws">equations</a> do not
+hold for all (combinations of) optics (and arrays of values).</p>
 <h5><a id="L-modify"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-modify">■</a> <a href="#L-modify" title="L.modify: POptic s a -&gt; ((Maybe a, Index) -&gt; Maybe a) -&gt; Maybe s -&gt; Maybe s"><code>L.modify(optic, (maybeValue, index) =&gt; maybeValue, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.2.0</sup></small></h5>
 <p><code>L.modify</code> allows one to map over the elements focused on by the given optic.</p>
 <p>For example:</p>
@@ -1884,14 +1908,16 @@ satisfy the given predicate.</p>
 <a href="#L-getAs"><code>L.getAs</code></a>.</p>
 <h5><a id="L-collect"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-collect">■</a> <a href="#L-collect" title="L.collect: PTraversal s a -&gt; Maybe s -&gt; [a]"><code>L.collect(traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v3.6.0</sup></small></h5>
 <p><code>L.collect</code> returns an array of the non-<code>undefined</code> elements focused on by the
-given traversal or lens from a data structure.</p>
+given traversal or lens from a data structure.  See also
+<a href="#L-collectTotal"><code>L.collectTotal</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collect([&#39;xs&#39;, L.elems, &#39;x&#39;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
 <p>Note that <code>L.collect</code> is equivalent to <a href="#L-collectAs"><code>L.collectAs(x =&gt; x)</code></a>.</p>
 <h5><a id="L-collectAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-collectAs">■</a> <a href="#L-collectAs" title="L.collectAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [b]"><code>L.collectAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...values]</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.collectAs</code> returns an array of the non-<code>undefined</code> values returned by the
-given function from the elements focused on by the given traversal.</p>
+given function from the elements focused on by the given traversal.  See also
+<a href="#L-collectTotalAs"><code>L.collectTotalAs</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.collectAs(R.negate, [&#39;xs&#39;, L.elems, &#39;x&#39;], {xs: [{x: 1}, {x: 2}]})
 </code></pre>
@@ -1910,6 +1936,15 @@ var toCollect = x =&gt; x !== undefined ? [x] : []</code></pre>
 </code></pre>
 <p>The internal implementation of <code>L.collectAs</code> is optimized and faster than the
 above <a href="implementation.html">naïve implementation</a>.</p>
+<h5><a id="L-collectTotal"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-collectTotal">■</a> <a href="#L-collectTotal" title="L.collectTotal: PTraversal s a -&gt; Maybe s -&gt; [Maybe a]"><code>L.collectTotal(traversal, maybeData) ~&gt; [...maybeValues]</code></a> <small><sup>v14.6.0</sup></small></h5>
+<p><code>L.collectTotal</code> returns an array of the elements focused on by the given
+traversal or lens from a data structure.  See also <a href="#L-collect"><code>L.collect</code></a>.</p>
+<pre><code class="hljs lang-js">L.collectTotal([L.elems, &#39;x&#39;], [{x: &#39;a&#39;}, {y: &#39;b&#39;}])
+</code></pre>
+<h5><a id="L-collectTotalAs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-collectTotalAs">■</a> <a href="#L-collectTotalAs" title="L.collectTotalAs: ((Maybe a, Index) -&gt; Maybe b) -&gt; PTraversal s a -&gt; Maybe s -&gt; [Maybe b]"><code>L.collectTotalAs((maybeValue, index) =&gt; maybeValue, traversal, maybeData) ~&gt; [...maybeValues]</code></a> <small><sup>v14.6.0</sup></small></h5>
+<p><code>L.collectTotalAs</code> returns an array of the values returned by the given function
+from the elements focused on by the given traversal.  See also
+<a href="#L-collectAs"><code>L.collectAs</code></a>.</p>
 <h5><a id="L-concat"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-concat">■</a> <a href="#L-concat" title="L.concat: Monoid a -&gt; (PTraversal s a -&gt; Maybe s -&gt; a)"><code>L.concat(monoid, traversal, maybeData) ~&gt; value</code></a> <small><sup>v7.2.0</sup></small></h5>
 <p><code>L.concat({empty, concat}, t, s)</code> performs a fold, using the given <code>concat</code> and
 <code>empty</code> operations, over the elements focused on by the given traversal or lens
@@ -2176,7 +2211,7 @@ in another way, a lens specifies a path to a single element in a data structure.
 <p><code>L.foldTraversalLens</code> creates a lens from a fold and a traversal.  To make
 sense, the fold should compute or pick a representative from the elements
 focused on by the traversal such that when all the elements are equal then so is
-the representative.</p>
+the representative.  See also <a href="#L-partsOf"><code>L.partsOf</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.foldTraversalLens(L.minimum, L.elems), [3, 1, 4])
 </code></pre>
@@ -2237,6 +2272,20 @@ the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 <p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
 example of using <code>L.lens</code>.</p>
+<h5><a id="L-partsOf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-partsOf">■</a> <a href="#L-partsOf" title="L.partsOf: (PTraversal s a -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></h5>
+<p><code>L.partsOf</code> creates a lens from a given traversal.  When read through, the
+result is always an array of elements targeted by the traversal as if produced
+by <a href="#L-collectTotal"><code>L.collectTotal</code></a>.  When written through, the elements of
+the written <a href="#L-seemsArrayLike">array-like</a> object are used to replace the
+focuses of the traversal as if done by <a href="#L-disperse"><code>L.disperse</code></a>.  See also
+<a href="#L-foldTraversalLens"><code>L.foldTraversalLens</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.set(
+  L.partsOf([L.elems, &#39;x&#39;]),
+  [3, 4],
+  [{x: 1}, {y: 2}]
+)
+</code></pre>
 <h5><a id="L-setter"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-setter">■</a> <a href="#L-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v10.3.0</sup></small></h5>
 <p><code>L.setter(set)</code> is shorthand for <a href="#L-lens"><code>L.lens(x =&gt; x, set)</code></a>.  See also
 <a href="#L-rewrite"><code>L.rewrite</code></a>.</p>

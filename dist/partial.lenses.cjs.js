@@ -632,6 +632,14 @@ function composed(oi0, os) {
   }
 }
 
+var disperseU = function disperse(traversal, values, data) {
+  if (!seemsArrayLike(values)) values = '';
+  var i = 0;
+  return modifyU(traversal, function () {
+    return values[i++];
+  }, data);
+};
+
 var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(reqOptic)))(function set(o, x, s) {
   switch (typeof o) {
     case 'string':
@@ -1200,6 +1208,8 @@ var assign = /*#__PURE__*/I.curry(function assign(o, x, s) {
   return setU([o, propsOf(x)], x, s);
 });
 
+var disperse = /*#__PURE__*/I.curry(disperseU);
+
 var modify = /*#__PURE__*/I.curry(modifyU);
 
 var modifyAsync = /*#__PURE__*/I.curry(modifyAsyncU);
@@ -1594,6 +1604,16 @@ var collectAs = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.curry : 
 
 var collect = /*#__PURE__*/collectAs(id);
 
+var collectTotalAs = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.curry : res(I.freeze))(function collectTotalAs(xi2y, t, s) {
+  var results = [];
+  getAsU(function (x, i) {
+    results.push(xi2y(x, i));
+  }, t, s);
+  return results;
+});
+
+var collectTotal = /*#__PURE__*/collectTotalAs(id);
+
 var concatAs = /*#__PURE__*/mkTraverse(id, ConstantOf);
 
 var concat = /*#__PURE__*/concatAs(id);
@@ -1726,7 +1746,9 @@ var sum = /*#__PURE__*/sumAs(unto0);
 
 // Creating new lenses
 
-var lens = /*#__PURE__*/I.curry(lensU);
+var foldTraversalLens = /*#__PURE__*/I.curry(function foldTraversalLens(fold, traversal) {
+  return lensU(fold(traversal), set(traversal));
+});
 
 var getter = function getter(get) {
   return function (x, i, F, xi2yF) {
@@ -1734,11 +1756,17 @@ var getter = function getter(get) {
   };
 };
 
-var setter = /*#__PURE__*/lens(id);
+var lens = /*#__PURE__*/I.curry(lensU);
 
-var foldTraversalLens = /*#__PURE__*/I.curry(function foldTraversalLens(fold, traversal) {
-  return lensU(fold(traversal), set(traversal));
-});
+var partsOf = function partsOf(t) {
+  return function (x, i, F, xi2yF) {
+    return F.map(function (y) {
+      return disperseU(t, y, x);
+    }, xi2yF(collectTotal(t, x), i));
+  };
+};
+
+var setter = /*#__PURE__*/lens(id);
 
 // Enforcing invariants
 
@@ -2160,6 +2188,7 @@ exports.IdentityAsync = IdentityAsync;
 exports.Select = Select;
 exports.toFunction = toFunction;
 exports.assign = assign;
+exports.disperse = disperse;
 exports.modify = modify;
 exports.modifyAsync = modifyAsync;
 exports.remove = remove;
@@ -2215,6 +2244,8 @@ exports.and1 = and1;
 exports.any = any;
 exports.collectAs = collectAs;
 exports.collect = collect;
+exports.collectTotalAs = collectTotalAs;
+exports.collectTotal = collectTotal;
 exports.concatAs = concatAs;
 exports.concat = concat;
 exports.countIf = countIf;
@@ -2245,10 +2276,11 @@ exports.select = select;
 exports.selectAs = selectAs;
 exports.sumAs = sumAs;
 exports.sum = sum;
-exports.lens = lens;
-exports.getter = getter;
-exports.setter = setter;
 exports.foldTraversalLens = foldTraversalLens;
+exports.getter = getter;
+exports.lens = lens;
+exports.partsOf = partsOf;
+exports.setter = setter;
 exports.defaults = defaults;
 exports.define = define;
 exports.normalize = normalize;
