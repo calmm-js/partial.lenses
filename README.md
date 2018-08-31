@@ -4846,7 +4846,7 @@ L.joinAs(
 
 ### <a id="understanding-filter-find-get-and-when"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#understanding-filter-find-select-and-when) [Understanding `L.filter`, `L.find`, `L.get`, and `L.when`](#understanding-filter-find-get-and-when)
 
-The [`L.filter`](#L-filter), [`L.find`](#L-find), [`L.get`](#L-get), and
+[`L.filter`](#L-filter), [`L.find`](#L-find), [`L.get`](#L-get), and
 [`L.when`](#L-when) serve related, but different, purposes and it is important
 to understand their differences in order to make best use of them.
 
