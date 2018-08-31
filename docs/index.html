@@ -1053,7 +1053,7 @@ See also <a href="#L-partsOf"><code>L.partsOf</code></a>.</p>
 conditions the following equations hold:</p>
 <pre><code class="hljs lang-jsx">ColDis:     L.disperse(o, L.collectTotal(o, d), d) = d
 DisCol:    L.collectTotal(o, L.disperse(o, vs, d)) = vs
-DolDis:   L.disperse(o, vs, L.disperse(o, vs0, d)) = L.disperse(o, vs, d)</code></pre>
+DisDis:   L.disperse(o, vs, L.disperse(o, vs0, d)) = L.disperse(o, vs, d)</code></pre>
 <p>The point is that <code>L.disperse</code> is roughly to <a href="#L-collectTotal"><code>L.collectTotal</code></a>
 as <a href="#L-set"><code>L.set</code></a> is to <a href="#L-get"><code>L.get</code></a>.  However, just like with
 <a href="#L-set"><code>L.set</code></a> and <a href="#L-get"><code>L.get</code></a>, the <a href="#on-lens-laws">equations</a> do not

@@ -1111,7 +1111,7 @@ conditions the following equations hold:
 ```jsx
 ColDis:     L.disperse(o, L.collectTotal(o, d), d) = d
 DisCol:    L.collectTotal(o, L.disperse(o, vs, d)) = vs
-DolDis:   L.disperse(o, vs, L.disperse(o, vs0, d)) = L.disperse(o, vs, d)
+DisDis:   L.disperse(o, vs, L.disperse(o, vs0, d)) = L.disperse(o, vs, d)
 ```
 
 The point is that `L.disperse` is roughly to [`L.collectTotal`](#L-collectTotal)
