@@ -221,6 +221,16 @@ const mumBy = ord =>
 
 //
 
+const predicateFn = x => x || void 0
+
+const toPredicate = predicate => {
+  if (typeof predicate === 'function' && predicate.length < 4) return predicate
+  predicate = toFunction(predicate)
+  return (x, i) => predicate(x, i, Select, predicateFn)
+}
+
+//
+
 const traverseU = function traverse(C, xi2yC, t, s) {
   return toFunction(t)(s, void 0, C, xi2yC)
 }
@@ -870,6 +880,7 @@ const isDefinedAt = o => (x, i) => isDefinedAtU(o, x, i)
 
 const eitherU = (t, e) =>
   function either(c) {
+    c = toPredicate(c)
     return function either(x, i, C, xi2yC) {
       return (c(x, i) ? t : e)(x, i, C, xi2yC)
     }
@@ -1075,7 +1086,7 @@ export const condOf = (process.env.NODE_ENV === 'production'
   const os = Array(n + 1)
   for (let i = 0; i < n; ++i) {
     const c = arguments[i + 1]
-    ps[i] = c[0]
+    ps[i] = toPredicate(c[0])
     os[i] = toFunction(c[1])
   }
   os[n] = def
@@ -1301,11 +1312,13 @@ export function query() {
   return r
 }
 
-export const satisfying = p =>
-  function satisfying(x, i, C, xi2yC) {
+export const satisfying = p => {
+  p = toPredicate(p)
+  return function satisfying(x, i, C, xi2yC) {
     const rec = (x, i) => (p(x, i) ? xi2yC(x, i) : children(x, i, C, rec))
     return rec(x, i)
   }
+}
 
 export const leafs = satisfying(
   x => void 0 !== x && !I.isArray(x) && !I.isObject(x)
@@ -1314,6 +1327,7 @@ export const leafs = satisfying(
 // Folds over traversals
 
 export const all = I.curry(function all(xi2b, t, s) {
+  xi2b = toPredicate(xi2b)
   return !getAsU(
     (x, i) => {
       if (!xi2b(x, i)) return true
@@ -1341,6 +1355,7 @@ export const all1 = I.curry(function all1(xi2b, t, s) {
 export const and1 = all1(id)
 
 export const any = I.curry(function any(xi2b, t, s) {
+  xi2b = toPredicate(xi2b)
   return !!getAsU(
     (x, i) => {
       if (xi2b(x, i)) return true
@@ -1388,6 +1403,7 @@ export const concatAs = mkTraverse(id, ConstantOf)
 export const concat = concatAs(id)
 
 export const countIf = I.curry(function countIf(p, t, s) {
+  p = toPredicate(p)
   return traverseU(Sum, (x, i) => (p(x, i) ? 1 : 0), t, s)
 })
 
@@ -1515,6 +1531,7 @@ export const minimumBy = mumBy(I.ltU)
 export const minimum = minimumBy(id)
 
 export const none = I.curry(function none(xi2b, t, s) {
+  xi2b = toPredicate(xi2b)
   return !getAsU(
     (x, i) => {
       if (xi2b(x, i)) return true
@@ -1628,6 +1645,7 @@ export const filter = (process.env.NODE_ENV === 'production'
         )
       ])
     ))(function filter(xi2b) {
+  xi2b = toPredicate(xi2b)
   return function filter(xs, i, F, xi2yF) {
     let ts
     let fs = I.array0
@@ -1644,6 +1662,7 @@ export const filter = (process.env.NODE_ENV === 'production'
 })
 
 export function find(xih2b) {
+  xih2b = toPredicate(xih2b)
   const hint = arguments.length > 1 ? arguments[1] : {hint: 0}
   return function find(xs, _i, F, xi2yF) {
     const ys = seemsArrayLike(xs) ? xs : ''
