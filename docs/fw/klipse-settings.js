@@ -23,8 +23,10 @@ function test(name, actual, expect) {
   else console.log(name, 'Error', actual)
 }
 
-function log() {
-  console.log.apply(null, arguments)
+if (typeof window.log === 'undefined') {
+  window.log = function log() {
+    console.log.apply(null, arguments)
+  }
 }
 
 window.klipse_settings = window.klipse_settings || {
