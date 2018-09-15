@@ -883,6 +883,30 @@ const orElseU = function orElse(back, prim) {
   }
 }
 
+const orAlternativelyU = function orAlternatively(back, prim) {
+  prim = toFunction(prim)
+  back = toFunction(back)
+  const fwd = y => {
+    y = I.always(y)
+    const yP = prim(void 0, void 0, Identity, y)
+    return void 0 === yP ? back(void 0, void 0, Identity, y) : yP
+  }
+  return function orAlternatively(x, i, F, xi2yF) {
+    const xP = prim(x, i, Select, id)
+    return F.map(fwd, xi2yF(void 0 === xP ? back(x, i, Select, id) : xP, i))
+  }
+}
+
+const makeSemi = op =>
+  copyName(function(_) {
+    let n = arguments.length
+    let r = arguments[--n]
+    while (n) {
+      r = op(r, arguments[--n])
+    }
+    return r
+  }, op)
+
 const zero = (x, _i, C, _xi2yC) => C.of(x)
 
 //
@@ -1025,8 +1049,7 @@ export function lazy(o2o) {
 
 // Adapting
 
-export const choices = (o, ...os) =>
-  os.length ? orElseU(os.reduceRight(orElseU), o) : o
+export const choices = makeSemi(orElseU)
 
 export const choose = xiM2o =>
   copyName((x, i, C, xi2yC) => toFunction(xiM2o(x, i))(x, i, C, xi2yC), xiM2o)
@@ -1771,6 +1794,8 @@ export const iso = I.curry(isoU)
 
 // Isomorphism combinators
 
+export const alternatives = makeSemi(orAlternativelyU)
+
 export const array = elem => {
   const fwd = getInverse(elem)
   const bwd = get(elem)
@@ -1783,6 +1808,8 @@ export const inverse = iso => (x, i, F, xi2yF) =>
 
 export const iterate = aIa =>
   isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)))
+
+export const orAlternatively = I.curry(orAlternativelyU)
 
 // Basic isomorphisms
 

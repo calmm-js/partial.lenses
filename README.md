@@ -201,9 +201,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a") <small><sup>v5.3.0</sup></small>
     * [Isomorphism combinators](#isomorphism-combinators)
+      * [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
       * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
       * [`L.iterate(isomorphism) ~> isomorphism`](#L-iterate "L.iterate: PIso a a -> PIso a a") <small><sup>v14.3.0</sup></small>
+      * [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIsomorphism s a, PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
@@ -1364,7 +1366,8 @@ Adapting combinators allow one to build optics that adapt to their input.
 `L.choices` returns a partial optic that acts like the first of the given optics
 whose view is not `undefined` on the given data structure.  When the views of
 all of the given optics are `undefined`, the returned optic acts like the last
-of the given optics.  See also [`L.choice`](#L-choice).
+of the given optics.  See also [`L.orElse`](#L-orElse), [`L.choice`](#L-choice),
+and [`L.alternatives`](#L-alternatives).
 
 For example:
 
@@ -1519,11 +1522,12 @@ L.modify(L.ifElse(Array.isArray, L.elems, L.values), R.inc, {x: 1, y: 2, z: 3})
 ##### <a id="L-orElse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-orElse) [`L.orElse(backupOptic, primaryOptic) ~> optic`](#L-orElse "L.orElse: (POptic s a, POptic s a) -> POptic s a") <small><sup>v2.1.0</sup></small>
 
 `L.orElse(backupOptic, primaryOptic)` acts like `primaryOptic` when its view is
-not `undefined` and otherwise like `backupOptic`.
+not `undefined` and otherwise like `backupOptic`.  See also
+[`L.orAlternatively`](#L-orAlternatively).
 
 Note that [`L.choice(...optics)`](#L-choice) is equivalent to
 `optics.reduceRight(L.orElse, L.zero)` and [`L.choices(...optics)`](#L-choices)
-is equivalent to `optics.reduce(L.orElse)`.
+is equivalent to `optics.reduceRight(L.orElse)`.
 
 #### <a id="indices"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#indices) [Indices](#indices)
 
@@ -3903,6 +3907,27 @@ L.modify(
 
 #### <a id="isomorphism-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphism-combinators) [Isomorphism combinators](#isomorphism-combinators)
 
+##### <a id="L-alternatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-alternatives) [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+
+`L.alternatives` returns a partial isomorphism that, in both read and write
+directions, acts like the first of the given partial isomorphisms whose view is
+not `undefined` on the given data structure.  See also
+[`L.orAlternatively`](#L-orAlternatively) and [`L.choices`](#L-choices).
+
+For example:
+
+```js
+L.modify(
+  L.alternatives(
+    L.negate,
+    L.dropPrefix('-')
+  ),
+  R.toString,
+  -1
+)
+// '-1'
+```
+
 ##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
 
 `L.array` lifts an isomorphism between elements, `a ≅ b`, to an isomorphism
@@ -3952,6 +3977,15 @@ L.get(L.iterate(reverseStep), [[], [3, 1, 4, 1]])
 L.getInverse(L.iterate(reverseStep), [[1, 4, 1, 3], []])
 // [ [], [ 3, 1, 4, 1 ] ]
 ```
+
+##### <a id="L-orAlternatively"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-orAlternatively) [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIsomorphism s a, PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+
+`L.orAlternatively(backupIsomorphism, primaryIsomorphism)`, in both read and
+write direction, acts like `primaryIsomorphism` when its view is not `undefined`
+and otherwise like `backupIsomorphism`.  See also [`L.orElse`](#L-orElse).
+
+Note that [`L.alternatives(...isomorphisms)`](#L-alternatives) is equivalent to
+`isomorphisms.reduceRight(L.orAlternatively)`.
 
 #### <a id="basic-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#basic-isomorphisms) [Basic isomorphisms](#basic-isomorphisms)
 

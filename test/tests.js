@@ -6,8 +6,7 @@ import * as PL from '../dist/partial.lenses.cjs'
 import * as BST from './bst'
 import * as T from './types'
 
-// L is a variable so we can override it for the tests.
-let L = PL
+let L = PL // L is a variable so we can override it for the tests.
 
 const typedL = R.mapObjIndexed((val, key) => {
   const type = T[key]
@@ -230,8 +229,9 @@ describe('arities', () => {
     add: 1,
     all: 3,
     all1: 3,
-    and: 2,
+    alternatives: 1,
     and1: 2,
+    and: 2,
     any: 3,
     append: 4,
     array: 1,
@@ -328,6 +328,7 @@ describe('arities', () => {
     normalize: 1,
     optional: 4,
     or: 2,
+    orAlternatively: 2,
     orElse: 2,
     partsOf: 1,
     pick: 1,
@@ -2614,6 +2615,19 @@ describe('fantasy interop', () => {
       ]),
     new Some([3, 1, 4])
   )
+})
+
+describe('L.alternatives', () => {
+  const iso = L.alternatives(
+    L.cross([L.add(1)]),
+    L.cross([L.add(1), L.add(2)]),
+    L.cross([L.add(1), L.add(2), L.add(3)])
+  )
+  testEq(() => L.get(iso, []), undefined)
+  testEq(() => L.get(iso, [1]), [2])
+  testEq(() => L.getInverse(iso, [1]), [0])
+  testEq(() => L.getInverse(iso, [1, 2]), [0, 0])
+  testEq(() => L.get(iso, [1, 2]), [2, 4])
 })
 
 describe('obsoleted', () => {
