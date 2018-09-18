@@ -1074,11 +1074,13 @@ hold for all (combinations of) optics (and arrays of values).</p>
 focused on by the given optic.  The result of <code>L.modifyAsync</code> is always a
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promise</a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.modifyAsync(
-  [&#39;elems&#39;, L.elems, &#39;x&#39;],
-  async x =&gt; x - 1,
-  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
-).then(console.log)
+<pre><code class="hljs lang-js">log(
+  L.modifyAsync(
+    [&#39;elems&#39;, L.elems, &#39;x&#39;],
+    async x =&gt; x - 1,
+    {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+  )
+)
 </code></pre>
 <h5><a id="L-remove"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-remove">■</a> <a href="#L-remove" title="L.remove: POptic s a -&gt; Maybe s -&gt; Maybe s"><code>L.remove(optic, maybeData) ~&gt; maybeData</code></a> <small><sup>v2.0.0</sup></small></h5>
 <p><code>L.remove</code> allows one to remove the elements focused on by the given optic.</p>
@@ -1545,10 +1547,20 @@ s)</code></a>.</li>
 <code>L.transformAsync</code> is always a
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise">promise</a>.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">L.transformAsync(
-  [L.elems, L.modifyOp(async x =&gt; -x)],
-  [1, 2, 3]
-).then(console.log)
+<pre><code class="hljs lang-js">log(
+  L.transformAsync(L.leafs, {
+    combine: Promise.resolve(&#39;a nested template&#39;),
+    of: [Promise.resolve(&#39;promises&#39;)],
+    or: &#39;constants&#39;
+  })
+)
+</code></pre>
+<pre><code class="hljs lang-js">log(
+  L.transformAsync(
+    [L.elems, L.modifyOp(async x =&gt; -x)],
+    [1, 2, 3]
+  )
+)
 </code></pre>
 <h4><a id="sequencing"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#sequencing">■</a> <a href="#sequencing">Sequencing</a></h4>
 <p>The <a href="#L-seq"><code>L.seq</code></a> combinator allows one to build <a href="#transforms">transforms</a>
@@ -4117,6 +4129,7 @@ will refresh automatically after changes.</p>
     <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="fw/klipse-settings.js"></script>
     <script type="text/javascript" src="https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>

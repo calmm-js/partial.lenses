@@ -1147,11 +1147,13 @@ focused on by the given optic.  The result of `L.modifyAsync` is always a
 For example:
 
 ```js
-L.modifyAsync(
-  ['elems', L.elems, 'x'],
-  async x => x - 1,
-  {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
-).then(console.log)
+log(
+  L.modifyAsync(
+    ['elems', L.elems, 'x'],
+    async x => x - 1,
+    {elems: [{x: 1, y: 2}, {x: 3, y: 4}]}
+  )
+)
 // Promise { elems: [ { x: 0, y: 2 }, { x: 2, y: 4 } ] }
 ```
 
@@ -1859,10 +1861,23 @@ Note that
 For example:
 
 ```js
-L.transformAsync(
-  [L.elems, L.modifyOp(async x => -x)],
-  [1, 2, 3]
-).then(console.log)
+log(
+  L.transformAsync(L.leafs, {
+    combine: Promise.resolve('a nested template'),
+    of: [Promise.resolve('promises')],
+    or: 'constants'
+  })
+)
+// Promise { combine: 'a nested template', of: [ 'promises' ], or: 'constants' }
+```
+
+```js
+log(
+  L.transformAsync(
+    [L.elems, L.modifyOp(async x => -x)],
+    [1, 2, 3]
+  )
+)
 // Promise [-1, -2, -3]
 ```
 

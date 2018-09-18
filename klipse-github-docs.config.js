@@ -1,4 +1,4 @@
-() => {
+;() => {
   const targetDefaults = {
     user: 'calmm-js',
     project: 'partial.lenses',
@@ -10,7 +10,8 @@
       'partial.lenses.js',
       'https://unpkg.com/ramda/dist/ramda.min.js',
       'https://unpkg.com/immutable/dist/immutable.min.js',
-      'https://unpkg.com/moment/min/moment.min.js'
+      'https://unpkg.com/moment/min/moment.min.js',
+      'setup.js'
     ]
   }
 
