@@ -1097,6 +1097,31 @@ var orElseU = function orElse(back, prim) {
   };
 };
 
+var orAlternativelyU = function orAlternatively(back, prim) {
+  prim = toFunction(prim);
+  back = toFunction(back);
+  var fwd = function fwd(y) {
+    y = always(y);
+    var yP = prim(void 0, void 0, Identity, y);
+    return void 0 === yP ? back(void 0, void 0, Identity, y) : yP;
+  };
+  return function orAlternatively(x, i, F, xi2yF) {
+    var xP = prim(x, i, Select, id$1);
+    return F.map(fwd, xi2yF(void 0 === xP ? back(x, i, Select, id$1) : xP, i));
+  };
+};
+
+var makeSemi = function makeSemi(op) {
+  return copyName(function (_) {
+    var n = arguments.length;
+    var r = arguments[--n];
+    while (n) {
+      r = op(r, arguments[--n]);
+    }
+    return r;
+  }, op);
+};
+
 var zero = function zero(x, _i, C, _xi2yC) {
   return C.of(x);
 };
@@ -1253,13 +1278,7 @@ function lazy(o2o) {
 
 // Adapting
 
-var choices = function choices(o) {
-  for (var _len = arguments.length, os = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-    os[_key - 1] = arguments[_key];
-  }
-
-  return os.length ? orElseU(os.reduceRight(orElseU), o) : o;
-};
+var choices = /*#__PURE__*/makeSemi(orElseU);
 
 var choose = function choose(xiM2o) {
   return copyName(function (x, i, C, xi2yC) {
@@ -1271,8 +1290,8 @@ var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function
   return function cond() {
     var pair = tup(ef(reqFn), ef(reqOptic));
 
-    for (var _len2 = arguments.length, cs = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
-      cs[_key2] = arguments[_key2];
+    for (var _len = arguments.length, cs = Array(_len), _key = 0; _key < _len; _key++) {
+      cs[_key] = arguments[_key];
     }
 
     arr(pair)(cs.slice(0, -1));
@@ -1293,8 +1312,8 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : functi
   return function condOf(of) {
     var pair = tup(ef(reqFn), ef(reqOptic));
 
-    for (var _len3 = arguments.length, cs = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-      cs[_key3 - 1] = arguments[_key3];
+    for (var _len2 = arguments.length, cs = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
+      cs[_key2 - 1] = arguments[_key2];
     }
 
     arr(pair)(cs.slice(0, -1));
@@ -1353,8 +1372,8 @@ var chain = /*#__PURE__*/curry(function chain(xi2yO, xO) {
 });
 
 var choice = function choice() {
-  for (var _len4 = arguments.length, os = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
-    os[_key4] = arguments[_key4];
+  for (var _len3 = arguments.length, os = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+    os[_key3] = arguments[_key3];
   }
 
   return os.reduceRight(orElseU, zero);
@@ -1905,8 +1924,8 @@ var propsOf = function propsOf(o) {
 };
 
 function removable() {
-  for (var _len5 = arguments.length, ps = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
-    ps[_key5] = arguments[_key5];
+  for (var _len4 = arguments.length, ps = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+    ps[_key4] = arguments[_key4];
   }
 
   function drop(y) {
@@ -1961,6 +1980,8 @@ var iso = /*#__PURE__*/curry(isoU);
 
 // Isomorphism combinators
 
+var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
+
 var array = function array(elem) {
   var fwd = getInverse(elem);
   var bwd = get(elem);
@@ -1983,6 +2004,8 @@ var inverse = function inverse(iso) {
 var iterate = function iterate(aIa) {
   return isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)));
 };
+
+var orAlternatively = /*#__PURE__*/curry(orAlternativelyU);
 
 // Basic isomorphisms
 
@@ -2178,4 +2201,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, array, inverse, iterate, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, alternatives, array, inverse, iterate, orAlternatively, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
