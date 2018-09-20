@@ -290,6 +290,11 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </li>
 <li><a href="#creating-new-isomorphisms">Creating new isomorphisms</a><ul>
 <li><a href="#L-iso" title="L.iso: (Maybe s -&gt; Maybe a) -&gt; (Maybe a -&gt; Maybe s) -&gt; PIso s a"><code>L.iso(maybeData =&gt; maybeValue, maybeValue =&gt; maybeData) ~&gt; isomorphism</code></a> <small><sup>v5.3.0</sup></small></li>
+<li><a href="#L-mapping" title="L.mapping: ([Pattern s, Pattern a] | (...Variable) -&gt; [Pattern s, Pattern a]) -&gt; PIso s a"><code>L.mapping([patternFwd, patternBwd] | (...variables) =&gt; [patternFwd, patternBwd]) ~&gt; isomorphism</code></a> <small><sup>v14.8.0</sup></small><ul>
+<li><a href="#L-_" title="L._: Pattern a"><code>L._ ~&gt; pattern</code></a> <small><sup>v14.8.0</sup></small></li>
+</ul>
+</li>
+<li><a href="#L-mappings" title="L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -&gt; [[Pattern s, Pattern a]]) -&gt; PIso s a"><code>L.mappings([...[patternFwd, patternBwd]] | (...variables) =&gt; [...[patternFwd, patternBwd]]) ~&gt; isomorphism</code></a> <small><sup>v14.8.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#isomorphism-combinators">Isomorphism combinators</a><ul>
@@ -2784,6 +2789,59 @@ L.modify(
   &#39;%7B%22bottle%22%3A%5B%22egassem%22%5D%7D&#39;
 )
 </code></pre>
+<h5><a id="L-mapping"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-mapping">■</a> <a href="#L-mapping" title="L.mapping: ([Pattern s, Pattern a] | (...Variable) -&gt; [Pattern s, Pattern a]) -&gt; PIso s a"><code>L.mapping([patternFwd, patternBwd] | (...variables) =&gt; [patternFwd, patternBwd]) ~&gt; isomorphism</code></a> <small><sup>v14.8.0</sup></small></h5>
+<p><code>L.mapping</code> creates an isomorphism based on the given pair of patterns.  A
+pattern can be an arbitrarily nested structure of plain arrays and plain objects
+containing variables or constant values.  Variables other than <a href="#L-_"><code>L._</code></a> are
+obtained using a function that returns the pair of patterns when given variables
+by <code>L.mapping</code>.  When reading, all properties and elements of the input data
+structure must be explicitly matched by the pattern and each variable must match
+a non-<code>undefined</code> value.  When a variable appears multiple times in a pattern,
+the matches must be structurally equal.  Variables can further be used with the
+<code>...variable</code> rest-spread notation within objects and arrays and will match or
+substitute to zero or more object properties or array elements.  Only a single
+rest-spread match can be used within a single object or array pattern.  See also
+<a href="#L-mappings"><code>L.mappings</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(
+  L.mapping((x, y) =&gt; [[x, L._, ...y], {x, y}]),
+  [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;]
+)
+</code></pre>
+<pre><code class="hljs lang-js">L.getInverse(
+  L.array(
+    L.alternatives(
+      L.mapping([&#39;foo&#39;, &#39;bar&#39;]),
+      L.mapping([&#39;you&#39;, &#39;me&#39;])
+    )
+  ),
+  [&#39;me&#39;, &#39;bar&#39;]
+)
+</code></pre>
+<h6><a id="L-_"></a> <a href="#contents">≡</a> <a href="#L-_">▶</a> <a href="#L-_" title="L._: Pattern a"><code>L._ ~&gt; pattern</code></a> <small><sup>v14.8.0</sup></small></h6>
+<p><code>L._</code> is a don&#39;t care or ignore pattern for use with <a href="#L-mapping"><code>L.mapping</code></a>
+and <a href="#L-mappings"><code>L.mappings</code></a>.  When reading, a <code>L._</code> pattern matches any
+non-<code>undefined</code> value and each use of <code>L._</code> is considered as a new variable so
+the values matched by them do not need to be equal.  When writing, uses of <code>L._</code>
+translate to <code>undefined</code> and <code>undefined</code> values are not written to objects nor
+arrays by <a href="#L-mapping"><code>L.mapping</code></a>.</p>
+<h5><a id="L-mappings"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-mappings">■</a> <a href="#L-mappings" title="L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -&gt; [[Pattern s, Pattern a]]) -&gt; PIso s a"><code>L.mappings([...[patternFwd, patternBwd]] | (...variables) =&gt; [...[patternFwd, patternBwd]]) ~&gt; isomorphism</code></a> <small><sup>v14.8.0</sup></small></h5>
+<p><code>L.mappings</code> is a shorthand for multiple <a href="#L-mapping"><code>L.mapping</code></a>
+<a href="#L-alternatives"><code>L.alternatives</code></a>.</p>
+<p>Basically</p>
+<pre><code class="hljs lang-jsx">L.mappings((...variables) =&gt; [patternPair1, ..., patternPairN])</code></pre>
+<p>is equivalent to</p>
+<pre><code class="hljs lang-jsx">L.alternatives(
+  L.mappings((...variables) =&gt; patternPair1),
+  ...,
+  L.mappings((...variables) =&gt; patternPairN)
+)</code></pre>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.getInverse(
+  L.array(L.mappings((x, y) =&gt; [[[x, y], {x, y}], [{x, y}, [x, y]]])),
+  [[&#39;a&#39;, &#39;b&#39;], {x: 1, y: 2}]
+)
+</code></pre>
 <h4><a id="isomorphism-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#isomorphism-combinators">■</a> <a href="#isomorphism-combinators">Isomorphism combinators</a></h4>
 <h5><a id="L-alternatives"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-alternatives">■</a> <a href="#L-alternatives" title="L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -&gt; PIsomorphism s a"><code>L.alternatives(isomorphism, ...isomorphisms) ~&gt; isomorphism</code></a> <small><sup>v14.7.0</sup></small></h5>
 <p><code>L.alternatives</code> returns a partial isomorphism that, in both read and write
@@ -2820,10 +2878,10 @@ operation only makes sense on isomorphisms.</p>
 isomorphism repeatedly until it produces <code>undefined</code> at which point the previous
 result is produced.</p>
 <p>For example:</p>
-<pre><code class="hljs lang-js">var reverseStep = L.iso(
-  ([xs, ys] = [[], []]) =&gt; ys.length ? [[ys[0], ...xs], ys.slice(1)] : undefined,
-  ([xs, ys] = [[], []]) =&gt; xs.length ? [xs.slice(1), [xs[0], ...ys]] : undefined
-)
+<pre><code class="hljs lang-js">var reverseStep = L.mapping((xs, y, ys) =&gt; [
+  [ys, [y, ...xs]],
+  [[y, ...ys], xs]
+])
 
 L.get(L.iterate(reverseStep), [[], [3, 1, 4, 1]])
 </code></pre>

@@ -54,6 +54,12 @@ function isPrimitiveData(x) {
   }
 }
 
+var iterator = Symbol.iterator;
+
+var length = function length(x) {
+  return x.length;
+};
+
 var dep = function dep(xs2xsyC) {
   return function (xsy) {
     return I.arityN(xsy.length, I.defineNameU(function () {
@@ -223,10 +229,6 @@ var notPartial = function complement(x) {
   return void 0 !== x ? !x : x;
 };
 
-var singletonPartial = function singletonPartial(x) {
-  return void 0 !== x ? [x] : x;
-};
-
 var expect = function expect(p, f) {
   return copyName(function (x) {
     return p(x) ? f(x) : void 0;
@@ -235,17 +237,19 @@ var expect = function expect(p, f) {
 
 var freezeInDev = process.env.NODE_ENV === 'production' ? id : I.freeze;
 
-function deepFreeze(x) {
+var freezeResultInDev = process.env.NODE_ENV === 'production' ? id : /*#__PURE__*/res(I.freeze);
+
+var deepFreezeInDev = process.env.NODE_ENV === 'production' ? id : function deepFreezeInDev(x) {
   if (I.isArray(x)) {
-    x.forEach(deepFreeze);
+    x.forEach(deepFreezeInDev);
     I.freeze(x);
   } else if (I.isObject(x)) {
     for (var k in x) {
-      deepFreeze(x[k]);
+      deepFreezeInDev(x[k]);
     }I.freeze(x);
   }
   return x;
-}
+};
 
 function freezeObjectOfObjects(xs) {
   if (xs) for (var k in xs) {
@@ -1192,6 +1196,247 @@ var subsetPartial = function subsetPartial(p) {
   };
 };
 
+//
+
+var PAYLOAD = '珳襱댎纚䤤鬖罺좴';
+
+var isPayload = function isPayload(k) {
+  return I.isString(k) && k.indexOf(PAYLOAD) === 0;
+};
+
+function Spread(i) {
+  this[PAYLOAD] = i;
+  I.freeze(this);
+}
+
+var isSpread = /*#__PURE__*/isInstanceOf(Spread);
+
+var Variable = /*#__PURE__*/I.inherit(function Variable(i) {
+  this[PAYLOAD + i] = this[PAYLOAD] = I.freeze([new Spread(i)]);
+  I.freeze(this);
+}, Object, /*#__PURE__*/I.assocPartialU(iterator, function () {
+  return this[PAYLOAD][iterator]();
+}));
+var isVariable = /*#__PURE__*/isInstanceOf(Variable);
+
+var vars = [];
+function nVars(n) {
+  while (length(vars) < n) {
+    vars.push(new Variable(length(vars)));
+  }return vars;
+}
+
+var isPrimitive = function isPrimitive(x) {
+  return x == null || typeof x !== 'object';
+};
+
+function match1(kinds, i, e, x) {
+  if (void 0 !== x) {
+    if (i in e) return I.acyclicEqualsU(e[i], x);
+    e[i] = x;
+    var k = kinds[i];
+    return !k || k(x);
+  }
+}
+
+function checkKind(kinds, i, kind) {
+  if (0 <= i) {
+    if (kinds[i]) {
+      if (kinds[i] !== kind) throw Error('Spread patterns must be used consistently either as arrays or as objects.');
+    } else {
+      kinds[i] = kind;
+    }
+  }
+}
+
+var arrayKind = function arrayKind(x) {
+  return void 0 === x || I.isArray(x);
+};
+var objectKind = function objectKind(x) {
+  return void 0 === x || isInstanceOf(Object);
+};
+
+function checkPattern(kinds, p) {
+  if (isSpread(p)) {
+    throw Error('Spread patterns must be inside objects or arrays.');
+  } else if (I.isArray(p)) {
+    var nSpread = 0;
+    for (var i = 0, n = length(p); i < n; ++i) {
+      var pi = p[i];
+      if (isSpread(pi)) {
+        if (nSpread++) throw Error('At most one spread is allowed in an array or object.');
+        checkKind(kinds, pi[PAYLOAD], arrayKind);
+      } else {
+        checkPattern(kinds, pi);
+      }
+    }
+  } else if (I.isObject(p)) {
+    var spread = p[PAYLOAD];
+    if (spread) {
+      spread = spread[0][PAYLOAD];
+      checkKind(kinds, spread, objectKind);
+    }
+    var _n = 0;
+    for (var k in p) {
+      if (isPayload(k)) {
+        if (2 < ++_n) throw Error('At most one spread is allowed in an array or object.');
+      } else {
+        checkPattern(kinds, p[k]);
+      }
+    }
+  } else if (!isPrimitive(p) && !isVariable(p)) {
+    throw Error('Only plain arrays and objects are allowed in patterns.');
+  }
+}
+
+var checkPatternPairInDev = process.env.NODE_ENV === 'production' ? id : function (ps) {
+  var kinds = [];
+  checkPattern(kinds, ps[0]);
+  checkPattern(kinds, ps[1]);
+  return deepFreezeInDev(ps);
+};
+
+var setDefined = function setDefined(o, k, x) {
+  if (void 0 !== x) o[k] = x;
+};
+
+var pushDefined = function pushDefined(xs, x) {
+  if (void 0 !== x) xs.push(x);
+};
+
+function toMatch(kinds, p) {
+  if (all1(isPrimitive, leafs, p)) {
+    return function (e, x) {
+      return I.acyclicEqualsU(p, x);
+    };
+  } else if (isVariable(p)) {
+    var i = p[PAYLOAD][0][PAYLOAD];
+    return i < 0 ? id : function (e, x) {
+      return match1(kinds, i, e, x);
+    };
+  } else if (I.isArray(p)) {
+    var init = [];
+    var rest = [];
+    var spread = void 0;
+    var n = length(p);
+    for (var _i3 = 0; _i3 < n; ++_i3) {
+      var x = p[_i3];
+      if (isSpread(x)) {
+        spread = x[PAYLOAD];
+        kinds[spread] = arrayKind;
+      } else {
+        var side = void 0 !== spread ? rest : init;
+        side.push(toMatch(kinds, x));
+      }
+    }
+    return function (e, x) {
+      if (!seemsArrayLike(x)) return;
+      var l = x.length;
+      if (void 0 !== spread ? l < n - 1 : l !== n) return;
+      var j = init.length;
+      for (var _i4 = 0; _i4 < j; ++_i4) {
+        if (!init[_i4](e, x[_i4])) return;
+      }var k = rest.length;
+      l -= k;
+      for (var _i5 = 0; _i5 < k; ++_i5) {
+        if (!rest[_i5](e, x[l + _i5])) return;
+      }return !(0 <= spread) || match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l));
+    };
+  } else {
+    var _spread = p[PAYLOAD];
+    if (_spread) {
+      _spread = _spread[0][PAYLOAD];
+      kinds[_spread] = objectKind;
+    }
+    p = modify(values, function (p, k) {
+      return isPayload(k) ? void 0 : toMatch(kinds, p);
+    }, p);
+    var _n2 = count(values, p);
+    return function (e, x) {
+      if (isPrimitive(x) || I.isArray(x)) return;
+      x = toObject(x);
+      var rest = 0 <= _spread && {};
+      var i = 0;
+      for (var k in x) {
+        var m = p[k];
+        if (m) {
+          if (!m(e, x[k])) return;
+          i++;
+        } else if (void 0 !== _spread) {
+          if (rest) rest[k] = x[k];
+        } else {
+          return;
+        }
+      }
+      return i === _n2 && (!rest || match1(kinds, _spread, e, freezeInDev(rest)));
+    };
+  }
+}
+
+function toSubst(p, k) {
+  if (isPayload(k)) {
+    return void 0;
+  } else if (all1(isPrimitive, leafs, p)) {
+    return I.always(p);
+  } else if (isVariable(p)) {
+    var i = p[PAYLOAD][0][PAYLOAD];
+    return function (e) {
+      return e[i];
+    };
+  } else if (I.isArray(p)) {
+    var init = [];
+    var rest = [];
+    var spread = void 0;
+    var n = length(p);
+    for (var _i6 = 0; _i6 < n; ++_i6) {
+      var x = p[_i6];
+      if (isSpread(x)) {
+        spread = x[PAYLOAD];
+      } else {
+        var side = void 0 !== spread ? rest : init;
+        side.push(toSubst(x));
+      }
+    }
+    return freezeResultInDev(function (e) {
+      var r = [];
+      for (var _i7 = 0, _n3 = init.length; _i7 < _n3; ++_i7) {
+        pushDefined(r, init[_i7](e));
+      }if (0 <= spread) {
+        var xs = e[spread];
+        if (xs) for (var _i8 = 0, _n4 = xs.length; _i8 < _n4; ++_i8) {
+          pushDefined(r, xs[_i8]);
+        }
+      }
+      for (var _i9 = 0, _n5 = rest.length; _i9 < _n5; ++_i9) {
+        pushDefined(r, rest[_i9](e));
+      }return r;
+    });
+  } else {
+    var _spread2 = p[PAYLOAD];
+    if (_spread2) _spread2 = _spread2[0][PAYLOAD];
+    p = modify(values, toSubst, p);
+    return freezeResultInDev(function (e) {
+      var r = {};
+      for (var _k5 in p) {
+        setDefined(r, _k5, p[_k5](e));
+      }if (0 <= _spread2) {
+        var _x4 = e[_spread2];
+        if (_x4) for (var _k6 in _x4) {
+          setDefined(r, _k6, _x4[_k6]);
+        }
+      }
+      return r;
+    });
+  }
+}
+
+var oneway = function oneway(n, m, s) {
+  return function (x) {
+    var e = Array(n);
+    if (m(e, x)) return s(e);
+  };
+};
+
 // Auxiliary
 
 var seemsArrayLike = function seemsArrayLike(x) {
@@ -1350,10 +1595,10 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function
   return function condOf(x, i, F, xi2yF) {
     var min = n;
     of(x, i, Select, function (y, j) {
-      for (var _i3 = 0; _i3 < min; ++_i3) {
-        if (ps[_i3](y, j)) {
-          min = _i3;
-          if (_i3 === 0) return 0;else break;
+      for (var _i10 = 0; _i10 < min; ++_i10) {
+        if (ps[_i10](y, j)) {
+          min = _i10;
+          if (_i10 === 0) return 0;else break;
         }
       }
     });
@@ -1982,6 +2227,25 @@ function getInverse(o, s) {
 
 var iso = /*#__PURE__*/I.curry(isoU);
 
+var _ = /*#__PURE__*/new Variable(-1);
+
+function mapping(ps) {
+  var n = 0;
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars(n = ps.length));
+  checkPatternPairInDev(ps);
+  var kinds = Array(n);
+  var ms = ps.map(function (p) {
+    return toMatch(kinds, p);
+  });
+  var ss = ps.map(toSubst);
+  return isoU(oneway(n, ms[0], ss[1]), oneway(n, ms[1], ss[0]));
+}
+
+function mappings(ps) {
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps.length));
+  return alternatives.apply(null, ps.map(mapping));
+}
+
 // Isomorphism combinators
 
 var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
@@ -2045,10 +2309,10 @@ var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__
   }
   n = xs.length;
   var j = 0;
-  for (var _i4 = 0; _i4 < n; ++_i4) {
-    var x = xs[_i4];
+  for (var _i11 = 0; _i11 < n; ++_i11) {
+    var x = xs[_i11];
     if (void 0 !== x) {
-      if (_i4 !== j) xs[j] = x;
+      if (_i11 !== j) xs[j] = x;
       ++j;
     }
   }
@@ -2058,13 +2322,9 @@ var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__
 
 var reverse = /*#__PURE__*/isoU(rev, rev);
 
-var singleton = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (iso) {
-  return copyName(toFunction([isoU(id, I.freeze), iso]), iso);
-})(function singleton(x, i, F, xi2yF) {
-  return F.map(singletonPartial, xi2yF((x instanceof Object || I.isString(x)) && x.length === 1 ? x[0] : void 0, i));
+var singleton = /*#__PURE__*/mapping(function (x) {
+  return [[x], x];
 });
-
-// Object isomorphisms
 
 var disjoint = function disjoint(groupOf) {
   return function disjoint(x, i, F, xi2yF) {
@@ -2100,7 +2360,7 @@ var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstance
 // Standard isomorphisms
 
 var json = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (iso) {
-  return toFunction([iso, isoU(deepFreeze, id)]);
+  return toFunction([iso, isoU(deepFreezeInDev, id)]);
 }))(function json(options) {
   var _ref3 = options || I.object0,
       reviver = _ref3.reviver,
@@ -2331,6 +2591,9 @@ exports.pick = pick;
 exports.replace = replace$1;
 exports.getInverse = getInverse;
 exports.iso = iso;
+exports._ = _;
+exports.mapping = mapping;
+exports.mappings = mappings;
 exports.alternatives = alternatives;
 exports.array = array;
 exports.inverse = inverse;
