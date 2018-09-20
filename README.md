@@ -200,6 +200,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.getInverse(isomorphism, maybeData) ~> maybeData`](#L-getInverse "L.getInverse: PIso a b -> Maybe b -> Maybe a") <small><sup>v5.0.0</sup></small>
     * [Creating new isomorphisms](#creating-new-isomorphisms)
       * [`L.iso(maybeData => maybeValue, maybeValue => maybeData) ~> isomorphism`](#L-iso "L.iso: (Maybe s -> Maybe a) -> (Maybe a -> Maybe s) -> PIso s a") <small><sup>v5.3.0</sup></small>
+      * [`L.mapping([patternFwd, patternBwd] | (...variables) => [patternFwd, patternBwd]) ~> isomorphism`](#L-mapping "L.mapping: ([Pattern s, Pattern a] | (...Variable) -> [Pattern s, Pattern a]) -> PIso s a") <small><sup>v14.8.0</sup></small>
+        * [`L._ ~> pattern`](#L-_ "L._: Pattern a") <small><sup>v14.8.0</sup></small>
+      * [`L.mappings([...[patternFwd, patternBwd]] | (...variables) => [...[patternFwd, patternBwd]]) ~> isomorphism`](#L-mappings "L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -> [[Pattern s, Pattern a]]) -> PIso s a") <small><sup>v14.8.0</sup></small>
     * [Isomorphism combinators](#isomorphism-combinators)
       * [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
       * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
@@ -3905,6 +3908,84 @@ L.modify(
 // '%7B%22bottle%22%3A%22egasseM%22%7D'
 ```
 
+##### <a id="L-mapping"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-mapping) [`L.mapping([patternFwd, patternBwd] | (...variables) => [patternFwd, patternBwd]) ~> isomorphism`](#L-mapping "L.mapping: ([Pattern s, Pattern a] | (...Variable) -> [Pattern s, Pattern a]) -> PIso s a") <small><sup>v14.8.0</sup></small>
+
+`L.mapping` creates an isomorphism based on the given pair of patterns.  A
+pattern can be an arbitrarily nested structure of plain arrays and plain objects
+containing variables or constant values.  Variables other than [`L._`](#L-_) are
+obtained using a function that returns the pair of patterns when given variables
+by `L.mapping`.  When reading, all properties and elements of the input data
+structure must be explicitly matched by the pattern and each variable must match
+a non-`undefined` value.  When a variable appears multiple times in a pattern,
+the matches must be structurally equal.  Variables can further be used with the
+`...variable` rest-spread notation within objects and arrays and will match or
+substitute to zero or more object properties or array elements.  Only a single
+rest-spread match can be used within a single object or array pattern.  See also
+[`L.mappings`](#L-mappings).
+
+For example:
+
+```js
+L.get(
+  L.mapping((x, y) => [[x, L._, ...y], {x, y}]),
+  ['a', 'b', 'c', 'd']
+)
+// { x: 'a', y: ['c', 'd'] }
+```
+
+```js
+L.getInverse(
+  L.array(
+    L.alternatives(
+      L.mapping(['foo', 'bar']),
+      L.mapping(['you', 'me'])
+    )
+  ),
+  ['me', 'bar']
+)
+// ['you', 'foo']
+```
+
+###### <a id="L-_"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-_) [`L._ ~> pattern`](#L-_ "L._: Pattern a") <small><sup>v14.8.0</sup></small>
+
+`L._` is a don't care or ignore pattern for use with [`L.mapping`](#L-mapping)
+and [`L.mappings`](#L-mappings).  When reading, a `L._` pattern matches any
+non-`undefined` value and each use of `L._` is considered as a new variable so
+the values matched by them do not need to be equal.  When writing, uses of `L._`
+translate to `undefined` and `undefined` values are not written to objects nor
+arrays by [`L.mapping`](#L-mapping).
+
+##### <a id="L-mappings"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-mappings) [`L.mappings([...[patternFwd, patternBwd]] | (...variables) => [...[patternFwd, patternBwd]]) ~> isomorphism`](#L-mappings "L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -> [[Pattern s, Pattern a]]) -> PIso s a") <small><sup>v14.8.0</sup></small>
+
+`L.mappings` is a shorthand for multiple [`L.mapping`](#L-mapping)
+[`L.alternatives`](#L-alternatives).
+
+Basically
+
+```jsx
+L.mappings((...variables) => [patternPair1, ..., patternPairN])
+```
+
+is equivalent to
+
+```jsx
+L.alternatives(
+  L.mappings((...variables) => patternPair1),
+  ...,
+  L.mappings((...variables) => patternPairN)
+)
+```
+
+For example:
+
+```js
+L.getInverse(
+  L.array(L.mappings((x, y) => [[[x, y], {x, y}], [{x, y}, [x, y]]])),
+  [['a', 'b'], {x: 1, y: 2}]
+)
+// [{x: 'a', y: 'b'}, [1, 2]]
+```
+
 #### <a id="isomorphism-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphism-combinators) [Isomorphism combinators](#isomorphism-combinators)
 
 ##### <a id="L-alternatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-alternatives) [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
@@ -3965,10 +4046,10 @@ result is produced.
 For example:
 
 ```js
-const reverseStep = L.iso(
-  ([xs, ys] = [[], []]) => ys.length ? [[ys[0], ...xs], ys.slice(1)] : undefined,
-  ([xs, ys] = [[], []]) => xs.length ? [xs.slice(1), [xs[0], ...ys]] : undefined
-)
+const reverseStep = L.mapping((xs, y, ys) => [
+  [ys, [y, ...xs]],
+  [[y, ...ys], xs]
+])
 
 L.get(L.iterate(reverseStep), [[], [3, 1, 4, 1]])
 // [ [ 1, 4, 1, 3 ], [] ]

@@ -4,6 +4,7 @@ import * as R from 'ramda'
 import * as PL from '../dist/partial.lenses.cjs'
 
 import * as BST from './bst'
+import * as Lambda from './lambda'
 import * as T from './types'
 
 let L = PL // L is a variable so we can override it for the tests.
@@ -29,8 +30,7 @@ function XYZ(x, y, z) {
   this.z = z
 }
 
-// Note that `norm` is intentionally an enumerable property.  Do not convert
-// `XYZ` into an ES2015 class!
+// Do not convert `XYZ` into an ES2015 class!
 XYZ.prototype.norm = function norm() {
   return this.x * this.x + this.y * this.y + this.z * this.z
 }
@@ -311,6 +311,8 @@ describe('arities', () => {
     lens: 2,
     log: 0,
     mapIx: 1,
+    mapping: 1,
+    mappings: 1,
     matches: 1,
     maximum: 2,
     maximumBy: 3,
@@ -2030,28 +2032,140 @@ describe('L.subset', () => {
 
 describe('L.iterate', () => {
   const step = abIa => [
-    L.iso(
-      ([a, bs]) => (bs.length ? [[a, bs[0]], bs.slice(1)] : undefined),
-      ([[a, b], bs]) => [[a, [b, ...bs]]]
-    ),
+    L.mapping((a, b, bs) => [[a, [b, ...bs]], [[a, b], bs]]),
     L.cross([abIa, L.identity])
   ]
-  const foldl = abIa => [
-    L.iterate(step(abIa)),
-    L.iso(([a, xs]) => (xs.length ? undefined : a), a => [a, []])
-  ]
+  const foldl = abIa => [L.iterate(step(abIa)), L.mapping(a => [[a, []], a])]
   testEq(
     () =>
-      L.get(
-        foldl(
-          L.iso(
-            ([xs, x]) => [x, ...xs],
-            xs => (xs.length ? [xs.slice(1), xs[0]] : undefined)
-          )
-        ),
-        [[], [0, 1, 2, 3]]
-      ),
+      L.get(foldl(L.mapping((xs, x) => [[xs, x], [x, ...xs]])), [
+        [],
+        [0, 1, 2, 3]
+      ]),
     [3, 2, 1, 0]
+  )
+})
+
+describe('L.mapping', () => {
+  testEq(
+    () =>
+      L.get(L.mapping((x, y) => [[x, L._, ...L._, y], [y, ...L._, x]]), [
+        1,
+        2,
+        3
+      ]),
+    [3, 1]
+  )
+  testEq(() => L.get(L.mapping(xs => [xs, [[...xs], [...xs]]]), [1, 2]), [
+    [1, 2],
+    [1, 2]
+  ])
+  testEq(() => L.get(L.mapping(xs => [{xs}, {...xs}]), {xs: {foo: 'bar'}}), {
+    foo: 'bar'
+  })
+  testEq(
+    () => L.get(L.mapping((x, rest) => [{x, ...rest}, {y: x}]), {x: 1, z: 2}),
+    {y: 1}
+  )
+  testEq(() => L.get(L.mapping((x, rest) => [{x}, {x, ...rest}]), {x: 1}), {
+    x: 1
+  })
+  testEq(() => L.get(L.mapping((f, m, l) => [[f, l], [l, ...m, f]]), [1, 2]), [
+    2,
+    1
+  ])
+  testEq(() => L.get(L.mapping(xs => [[...xs, 1], xs]), [1, 2]), undefined)
+  testEq(() => L.get(L.mapping(x => [{x, y: [1]}, x]), {x: 1, y: 2}), undefined)
+  testEq(
+    () => L.get(L.mapping(x => [{x, y: [{x: 1}]}, x]), {x: 42, y: [{x: 1}]}),
+    42
+  )
+  testEq(() => L.get(L.mapping(x => [{x}, x]), {x: 1, y: 2}), undefined)
+  testEq(() => L.get(L.mapping(x => [[x, x], x]), [1, 2]), undefined)
+  testEq(() => L.get(L.mapping(x => [[x, x], x]), [1, 1]), 1)
+  testEq(
+    () =>
+      L.get(L.mapping((p, ps) => [{p, ...ps}, [...p, ps]]), {
+        p: [101, 69],
+        more: 42
+      }),
+    [101, 69, {more: 42}]
+  )
+  testEq(
+    () =>
+      L.getInverse(L.mapping((p, ps) => [{p, ...ps}, [...p, ps]]), [
+        101,
+        69,
+        {more: 42}
+      ]),
+    {p: [101, 69], more: 42}
+  )
+  testEq(() => L.get(Lambda.ppp, 'λx → (x x)'), {
+    type: 'lam',
+    param: 'x',
+    body: {
+      type: 'app',
+      fun: {type: 'ref', name: 'x'},
+      arg: {type: 'ref', name: 'x'}
+    }
+  })
+  testEq(
+    () =>
+      L.getInverse(
+        Lambda.ppp,
+        L.get(Lambda.ppp, '(λn → λm → λx → n (m x)) (λx → x) (λy → y)')
+      ),
+    '(λn → λm → λx → n (m x)) (λx → x) (λy → y)'
+  )
+  testEq(() => L.getInverse(L.mapping(x => [[x, x], x]), 2), [2, 2])
+  testEq(
+    () => L.get(L.mapping([['x', L._, 'z'], ['z', L._, 'x']]), ['x', 'y', 'z']),
+    ['z', 'x']
+  )
+  testEq(
+    () =>
+      L.get(L.mapping((x, z) => [{x, y: L._, z}, {z: x, y: L._, x: z}]), {
+        x: 1,
+        y: 3,
+        z: 2
+      }),
+    {z: 1, x: 2}
+  )
+  testEq(
+    () =>
+      L.get(L.mapping((x, y) => [{x, y, ...L._}, {x: y, y: x, ...L._}]), {
+        x: 1,
+        y: 2,
+        z: 3
+      }),
+    {x: 2, y: 1}
+  )
+  testEq(
+    () =>
+      L.getInverse(
+        L.mapping((x, y) => [{x, y, ...L._}, {x: y, y: x, ...L._}]),
+        {x: 1, y: 2, z: 3}
+      ),
+    {x: 2, y: 1}
+  )
+})
+
+describe('L.mappings', () => {
+  testEq(
+    () =>
+      L.getInverse(L.array(L.mappings([['foo', 'bar'], ['you', 'me']])), [
+        'me',
+        'bar'
+      ]),
+    ['you', 'foo']
+  )
+  testEq(
+    () =>
+      L.getInverse(
+        L.array(L.mappings((x, y) => [[[x, y], {x, y}], [{x, y}, [x, y]]])),
+        [['a', 'b'], {x: 1, y: 2}]
+      ),
+    [{x: 'a', y: 'b'}, [1, 2]]
   )
 })
 
@@ -2500,6 +2614,12 @@ if (process.env.NODE_ENV !== 'production') {
     testThrows(() => L.cond([]))
 
     testThrows(() => L.cond([0, 1]))
+
+    testThrows(() => L.mapping(x => [[...x, ...x], []]))
+    testThrows(() => L.mapping(x => [[...x, {...x}], []]))
+    testThrows(() => L.mapping(x => [...x, []]))
+    testThrows(() => L.mapping(() => [new XYZ(), []]))
+    testThrows(() => L.mapping((x, y) => [{...x, ...y}, []]))
   })
 }
 
