@@ -227,13 +227,14 @@ describe('arities', () => {
     IdentityAsync: undefined,
     Select: undefined,
     add: 1,
-    all: 3,
     all1: 3,
+    all: 3,
     alternatives: 1,
     and1: 2,
     and: 2,
     any: 3,
     append: 4,
+    applyAt: 2,
     array: 1,
     assign: 3,
     assignOp: 1,
@@ -255,6 +256,7 @@ describe('arities', () => {
     concatAs: 4,
     cond: 0,
     condOf: 1,
+    conjugate: 2,
     count: 2,
     countIf: 3,
     counts: 2,
@@ -2166,6 +2168,49 @@ describe('L.mappings', () => {
         [['a', 'b'], {x: 1, y: 2}]
       ),
     [{x: 'a', y: 'b'}, [1, 2]]
+  )
+})
+
+describe('L.conjugate', () => {
+  const invertObj = L.conjugate(
+    L.keyed,
+    L.array(L.mapping((k, v) => [[k, v], [v, k]]))
+  )
+  testEq(() => L.get(invertObj, {foo: 'bar', lol: 'bal'}), {
+    bar: 'foo',
+    bal: 'lol'
+  })
+})
+
+describe('L.applyAt', () => {
+  testEq(
+    () =>
+      L.set([L.applyAt('msg', L.dropPrefix('foo')), 'msg'], 'Bar', {
+        msg: 'foobar',
+        and: 'more'
+      }),
+    {msg: 'fooBar', and: 'more'}
+  )
+
+  const lowerUpperIso = L.iso(
+    R.cond([[R.is(String), R.toUpper]]),
+    R.cond([[R.is(String), R.toLower]])
+  )
+
+  const deepKeys = L.lazy(rec =>
+    L.cond(
+      [R.is(Array), [L.elems, deepKeys]],
+      [R.is(Object), [L.entries, L.elems, L.ifElse((_, i) => i, rec, [])]]
+    )
+  )
+
+  testEq(
+    () =>
+      L.set([L.applyAt(deepKeys, lowerUpperIso), 'Y', 0, 'B'], -3, {
+        x: [1, 'a'],
+        y: [{a: 2, b: 3}]
+      }),
+    {x: [1, 'a'], y: [{a: 2, b: -3}]}
   )
 })
 

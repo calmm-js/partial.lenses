@@ -410,7 +410,9 @@ export const mappings = T.fn(
 // Isomorphism combinators
 
 export const alternatives = T.fnVarN(1, T_isomorphism, T_isomorphism)
+export const applyAt = T.fn([T_optic, T_isomorphism], T_isomorphism)
 export const array = T.fn([T_isomorphism], T_isomorphism)
+export const conjugate = T.fn([T_isomorphism, T_isomorphism], T_isomorphism)
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
 export const iterate = T.fn([T_isomorphism], T_isomorphism)
 export const orAlternatively = T.fn(
