@@ -204,11 +204,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
         * [`L._ ~> pattern`](#L-_ "L._: Pattern a") <small><sup>v14.8.0</sup></small>
       * [`L.mappings([...[patternFwd, patternBwd]] | (...variables) => [...[patternFwd, patternBwd]]) ~> isomorphism`](#L-mappings "L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -> [[Pattern s, Pattern a]]) -> PIso s a") <small><sup>v14.8.0</sup></small>
     * [Isomorphism combinators](#isomorphism-combinators)
-      * [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+      * [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIso s a, ...PIso s a) -> PIso s a") <small><sup>v14.7.0</sup></small>
       * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
       * [`L.iterate(isomorphism) ~> isomorphism`](#L-iterate "L.iterate: PIso a a -> PIso a a") <small><sup>v14.3.0</sup></small>
-      * [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIsomorphism s a, PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+      * [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIso s a, PIso s a) -> PIso s a") <small><sup>v14.7.0</sup></small>
     * [Basic isomorphisms](#basic-isomorphisms)
       * [`L.complement ~> isomorphism`](#L-complement "L.complement: PIso Boolean Boolean") <small><sup>v9.7.0</sup></small>
       * [`L.identity ~> isomorphism`](#L-identity "L.identity: PIso s s") <small><sup>v1.3.0</sup></small>
@@ -3988,7 +3988,7 @@ L.getInverse(
 
 #### <a id="isomorphism-combinators"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#isomorphism-combinators) [Isomorphism combinators](#isomorphism-combinators)
 
-##### <a id="L-alternatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-alternatives) [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIsomorphism s a, ...PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+##### <a id="L-alternatives"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-alternatives) [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIso s a, ...PIso s a) -> PIso s a") <small><sup>v14.7.0</sup></small>
 
 `L.alternatives` returns a partial isomorphism that, in both read and write
 directions, acts like the first of the given partial isomorphisms whose view is
@@ -4059,7 +4059,7 @@ L.getInverse(L.iterate(reverseStep), [[1, 4, 1, 3], []])
 // [ [], [ 3, 1, 4, 1 ] ]
 ```
 
-##### <a id="L-orAlternatively"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-orAlternatively) [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIsomorphism s a, PIsomorphism s a) -> PIsomorphism s a") <small><sup>v14.7.0</sup></small>
+##### <a id="L-orAlternatively"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-orAlternatively) [`L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~> isomorphism`](#L-orAlternatively "L.orAlternatively: (PIso s a, PIso s a) -> PIso s a") <small><sup>v14.7.0</sup></small>
 
 `L.orAlternatively(backupIsomorphism, primaryIsomorphism)`, in both read and
 write direction, acts like `primaryIsomorphism` when its view is not `undefined`
