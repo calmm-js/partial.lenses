@@ -2246,6 +2246,10 @@
 
   var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
 
+  var applyAt = /*#__PURE__*/I.curry(function applyAt(elements, transform) {
+    return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
+  });
+
   var array = function array(elem) {
     var fwd = getInverse(elem);
     var bwd = get(elem);
@@ -2256,6 +2260,10 @@
       return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
     };
   };
+
+  var conjugate = /*#__PURE__*/I.curry(function conjugate(outer, inner) {
+    return [outer, inner, inverse(outer)];
+  });
 
   var inverse = function inverse(iso) {
     return function (x, i, F, xi2yF) {
@@ -2591,7 +2599,9 @@
   exports.mapping = mapping;
   exports.mappings = mappings;
   exports.alternatives = alternatives;
+  exports.applyAt = applyAt;
   exports.array = array;
+  exports.conjugate = conjugate;
   exports.inverse = inverse;
   exports.iterate = iterate;
   exports.orAlternatively = orAlternatively;

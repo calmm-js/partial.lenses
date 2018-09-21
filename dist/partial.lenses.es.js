@@ -2246,6 +2246,10 @@ function mappings(ps) {
 
 var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
 
+var applyAt = /*#__PURE__*/curry(function applyAt(elements, transform) {
+  return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
+});
+
 var array = function array(elem) {
   var fwd = getInverse(elem);
   var bwd = get(elem);
@@ -2256,6 +2260,10 @@ var array = function array(elem) {
     return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
   };
 };
+
+var conjugate = /*#__PURE__*/curry(function conjugate(outer, inner) {
+  return [outer, inner, inverse(outer)];
+});
 
 var inverse = function inverse(iso) {
   return function (x, i, F, xi2yF) {
@@ -2461,4 +2469,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, alternatives, array, inverse, iterate, orAlternatively, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
+export { seemsArrayLike, Identity, IdentityAsync, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, alternatives, applyAt, array, conjugate, inverse, iterate, orAlternatively, complement, identity, is, subset, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad, pointer };
