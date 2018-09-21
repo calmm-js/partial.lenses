@@ -2818,6 +2818,9 @@ rest-spread match can be used within a single object or array pattern.  See also
   [&#39;me&#39;, &#39;bar&#39;]
 )
 </code></pre>
+<p>As an aside, the way variables are introduced into the patterns in <code>L.mapping</code>
+by using a function could be described as a simple use of
+<a href="https://en.wikipedia.org/wiki/Higher-order_abstract_syntax">HOAS</a>.</p>
 <h6><a id="L-_"></a> <a href="#contents">≡</a> <a href="#L-_">▶</a> <a href="#L-_" title="L._: Pattern a"><code>L._ ~&gt; pattern</code></a> <small><sup>v14.8.0</sup></small></h6>
 <p><code>L._</code> is a don&#39;t care or ignore pattern for use with <a href="#L-mapping"><code>L.mapping</code></a>
 and <a href="#L-mappings"><code>L.mappings</code></a>.  When reading, a <code>L._</code> pattern matches any

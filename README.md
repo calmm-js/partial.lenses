@@ -3946,6 +3946,10 @@ L.getInverse(
 // ['you', 'foo']
 ```
 
+As an aside, the way variables are introduced into the patterns in `L.mapping`
+by using a function could be described as a simple use of
+[HOAS](https://en.wikipedia.org/wiki/Higher-order_abstract_syntax).
+
 ###### <a id="L-_"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-_) [`L._ ~> pattern`](#L-_ "L._: Pattern a") <small><sup>v14.8.0</sup></small>
 
 `L._` is a don't care or ignore pattern for use with [`L.mapping`](#L-mapping)
