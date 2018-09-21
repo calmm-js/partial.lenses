@@ -2045,12 +2045,23 @@ export function mappings(ps) {
 
 export const alternatives = makeSemi(orAlternativelyU)
 
+export const applyAt = I.curry(function applyAt(elements, transform) {
+  return isoU(
+    modify(elements, get(transform)),
+    modify(elements, getInverse(transform))
+  )
+})
+
 export const array = elem => {
   const fwd = getInverse(elem)
   const bwd = get(elem)
   const mapFwd = x => mapIfArrayLike(fwd, x)
   return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
 }
+
+export const conjugate = I.curry(function conjugate(outer, inner) {
+  return [outer, inner, inverse(outer)]
+})
 
 export const inverse = iso => (x, i, F, xi2yF) =>
   F.map(x => getAsU(id, iso, x), xi2yF(setU(iso, x, void 0), i))
