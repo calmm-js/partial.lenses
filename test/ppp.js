@@ -20,30 +20,30 @@ const join = (lhs, rhs) => {
 export const token = pattern => {
   const re = RegExp(`^(${sourceOf(pattern)})\\s*((?:.|\n)*)$`)
   return L.iso(
-    s => (R.is(String, s) && (s = re.exec(s)) ? R.tail(s) : undefined),
-    pair => (R.is(Array, pair) ? join(...pair) : undefined)
+    s => (R.is(String, s) && (s = re.exec(s)) ? [s[2], s[1]] : undefined),
+    p => (R.is(Array, p) ? join(p[1], p[0]) : undefined)
   )
 }
 
-export const of = value => L.mapping(input => [input, [value, input]])
+export const of = value => L.mapping(input => [input, [input, value]])
 
-export const isomap = R.curry((iso, ppp) => [ppp, L.cross([iso, []])])
+export const isomap = R.curry((iso, ppp) => [ppp, L.cross([[], iso])])
 
 const empty = of([])
 
 const append = piso => [
-  L.cross([[], piso]),
-  L.mapping((xs, y, s) => [[xs, [y, s]], [[...xs, y], s]])
+  L.cross([piso, []]),
+  L.mapping((xs, y, s) => [[[s, y], xs], [s, [...xs, y]]])
 ]
 
 export const sequence = (...pisos) => [empty, pisos.map(append)]
 
-export const many = piso => [empty, L.iterate(append(piso))]
+export const many = L.unfold
 
 export const alternatives = L.alternatives
 
 export const trim = piso => [
   L.reread(R.replace(/^\s*/, '')),
   piso,
-  L.mapping(r => [[r, ''], r])
+  L.mapping(r => [['', r], r])
 ]

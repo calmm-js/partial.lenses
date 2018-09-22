@@ -20,6 +20,10 @@ const toRegExpU = (str, flags) =>
 
 //
 
+const isPair = x => I.isArray(x) && x[I.LENGTH] === 2
+
+//
+
 const tryCatch = fn =>
   copyName(x => {
     try {
@@ -123,6 +127,21 @@ const mapPartialIndexU = (process.env.NODE_ENV === 'production'
 
 const mapIfArrayLike = (xi2y, xs) =>
   seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs, void 0) : void 0
+
+const mapsIfArray = (process.env.NODE_ENV === 'production'
+  ? id
+  : C.res(I.freeze))((x2y, xs) => {
+  if (I.isArray(xs)) {
+    const n = xs[I.LENGTH]
+    const ys = Array()
+    for (let i = 0; i < n; ++i) {
+      if (void 0 === (ys[i] = x2y(xs[i]))) {
+        return void 0
+      }
+    }
+    return ys
+  }
+})
 
 const copyToFrom = (process.env.NODE_ENV === 'production'
   ? id
@@ -396,6 +415,10 @@ const setU = (process.env.NODE_ENV === 'production'
       return o[I.LENGTH] === 4 ? o(s, void 0, I.Identity, I.always(x)) : s
   }
 })
+
+const getInverseU = function getInverse(o, x) {
+  return setU(o, x, void 0)
+}
 
 const modifyU = (process.env.NODE_ENV === 'production'
   ? id
@@ -831,6 +854,28 @@ const subseqU = function subseq(begin, end, t) {
 
 //
 
+const attemptU = (fn, x) => {
+  if (void 0 !== x) {
+    const y = fn(x)
+    if (void 0 !== y) return y
+  }
+  return x
+}
+
+const rewriteAttempt = fn => (x, i, F, xi2yF) =>
+  F.map(x => attemptU(fn, x), xi2yF(x, i))
+
+const rereadAttempt = fn => (x, i, F, xi2yF) => xi2yF(attemptU(fn, x), i)
+
+//
+
+const transformEvery = optic => transform(lazy(rec => [optic, children, rec]))
+
+const transformSome = fn =>
+  transform(lazy(rec => choices(getter(fn), [children, rec])))
+
+//
+
 const isDefinedAtU = (o, x, i) => void 0 !== o(x, i, Select, id)
 
 const isDefinedAt = o => (x, i) => isDefinedAtU(o, x, i)
@@ -935,6 +980,41 @@ const subsetPartial = p =>
 
 //
 
+const unfoldPartial = (process.env.NODE_ENV === 'production'
+  ? I.id
+  : C.res(
+      C.res(r => {
+        I.freeze(r)
+        I.freeze(r[1])
+        return r
+      })
+    ))(
+  s2sa =>
+    function unfold(s) {
+      const xs = []
+      for (;;) {
+        const sa = s2sa(s)
+        if (!isPair(sa)) return [s, xs]
+        s = sa[0]
+        xs.push(sa[1])
+      }
+    }
+)
+
+const foldPartial = sa2s => sxs => {
+  if (isPair(sxs)) {
+    const xs = sxs[1]
+    if (I.isArray(xs)) {
+      let s = sxs[0]
+      let n = xs[I.LENGTH]
+      while (n--) s = sa2s(freezeInDev([s, xs[n]]))
+      return s
+    }
+  }
+}
+
+//
+
 const PAYLOAD = '珳襱댎纚䤤鬖罺좴'
 
 const isPayload = k => I.isString(k) && k.indexOf(PAYLOAD) === 0
@@ -1026,6 +1106,15 @@ function checkPattern(kinds, p) {
   }
 }
 
+const checkPatternInDev =
+  process.env.NODE_ENV === 'production'
+    ? id
+    : p => {
+        const kinds = []
+        checkPattern(kinds, p)
+        return deepFreezeInDev(p)
+      }
+
 const checkPatternPairInDev =
   process.env.NODE_ENV === 'production'
     ? id
@@ -1045,7 +1134,7 @@ const pushDefined = (xs, x) => {
 }
 
 function toMatch(kinds, p) {
-  if (all1(isPrimitive, leafs, p)) {
+  if (void 0 === p || all1(isPrimitive, leafs, p)) {
     return (e, x) => I.acyclicEqualsU(p, x)
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
@@ -1111,7 +1200,7 @@ function toMatch(kinds, p) {
 function toSubst(p, k) {
   if (isPayload(k)) {
     return void 0
-  } else if (all1(isPrimitive, leafs, p)) {
+  } else if (void 0 === p || all1(isPrimitive, leafs, p)) {
     return I.always(p)
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
@@ -1161,6 +1250,104 @@ const oneway = (n, m, s) => x => {
   const e = Array(n)
   if (m(e, x)) return s(e)
 }
+
+//
+
+const ungroupByFn = (process.env.NODE_ENV === 'production'
+  ? id
+  : C.res(C.res(I.freeze)))(
+  keyOf =>
+    function ungroupBy(xxs) {
+      if (I.isArray(xxs)) {
+        const ys = []
+        for (let i = 0, n = xxs.length; i < n; ++i) {
+          const xs = xxs[i]
+          if (!I.isArray(xs)) return
+          const m = xs.length
+          if (!m) return
+          const k = keyOf(xs[0])
+          if (void 0 === k) return
+          for (let j = 0, m = xs.length; j < m; ++j) {
+            const x = xs[j]
+            if (!I.identicalU(k, keyOf(x))) return
+            ys.push(x)
+          }
+        }
+        return ys
+      }
+    }
+)
+
+const groupByFn = (process.env.NODE_ENV === 'production'
+  ? id
+  : C.res(C.res(freezeObjectOfObjects)))(
+  keyOf =>
+    function groupBy(ys) {
+      if (I.isArray(ys)) {
+        const groups = new Map()
+        for (let i = 0, n = ys.length; i < n; ++i) {
+          const y = ys[i]
+          const k = keyOf(y)
+          if (void 0 === k) return
+          const xs = groups.get(k)
+          if (void 0 !== xs) {
+            xs.push(y)
+          } else {
+            groups.set(k, [y])
+          }
+        }
+        const xxs = []
+        groups.forEach(xs => xxs.push(xs))
+        return xxs
+      }
+    }
+)
+
+//
+
+const zW1Fn = (process.env.NODE_ENV === 'production'
+  ? id
+  : C.res(C.res(I.freeze)))(
+  fn =>
+    function zipWith1(xys) {
+      if (isPair(xys)) {
+        const ys = xys[1]
+        const n = ys[I.LENGTH]
+        if (n) {
+          const x = xys[0]
+          const zs = Array(n)
+          for (let i = 0; i < n; ++i)
+            if (void 0 === (zs[i] = fn([x, ys[i]]))) return
+          return zs
+        }
+      }
+    }
+)
+
+const unzW1Fn = (process.env.NODE_ENV === 'production'
+  ? id
+  : C.res(C.res(freezeObjectOfObjects)))(
+  fn =>
+    function unzipWith1(zs) {
+      if (I.isArray(zs)) {
+        const n = zs[I.LENGTH]
+        if (n) {
+          const xy0 = fn(zs[0])
+          if (isPair(xy0)) {
+            const ys = Array(n)
+            const x = xy0[0]
+            ys[0] = xy0[1]
+            for (let i = 1; i < n; ++i) {
+              const xy = fn(zs[i])
+              if (!isPair(xy) || !I.acyclicEqualsU(x, xy[0])) return
+              ys[i] = xy[1]
+            }
+            return [x, ys]
+          }
+        }
+      }
+    }
+)
 
 // Auxiliary
 
@@ -2012,7 +2199,7 @@ export const replace = I.curry(function replace(inn, out) {
 // Operations on isomorphisms
 
 export function getInverse(o, s) {
-  return 1 < arguments[I.LENGTH] ? setU(o, s, void 0) : s => setU(o, s, void 0)
+  return 1 < arguments[I.LENGTH] ? getInverseU(o, s) : s => getInverseU(o, s)
 }
 
 // Creating new isomorphisms
@@ -2036,6 +2223,20 @@ export function mappings(ps) {
   return alternatives.apply(null, ps.map(mapping))
 }
 
+export function pattern(p) {
+  let n = 0
+  if (I.isFunction(p)) p = p.apply(null, nVars((n = p[I.LENGTH])))
+  checkPatternInDev(p)
+  const kinds = Array(n)
+  const m = toMatch(kinds, p)
+  return subset(x => m(Array(n), x))
+}
+
+export function patterns(ps) {
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps[I.LENGTH]))
+  return alternatives.apply(null, ps.map(pattern))
+}
+
 // Isomorphism combinators
 
 export const alternatives = makeSemi(orAlternativelyU)
@@ -2046,6 +2247,21 @@ export const applyAt = I.curry(function applyAt(elements, transform) {
     modify(elements, getInverse(transform))
   )
 })
+
+export const attemptEveryDown = iso =>
+  isoU(
+    transformEvery(rereadAttempt(get(iso))),
+    transformEvery(rewriteAttempt(getInverse(iso)))
+  )
+
+export const attemptEveryUp = iso =>
+  isoU(
+    transformEvery(rewriteAttempt(get(iso))),
+    transformEvery(rereadAttempt(getInverse(iso)))
+  )
+
+export const attemptSomeDown = iso =>
+  isoU(transformSome(get(iso)), transformSome(getInverse(iso)))
 
 export const conjugate = I.curry(function conjugate(outer, inner) {
   return [outer, inner, inverse(outer)]
@@ -2058,6 +2274,12 @@ export const iterate = aIa =>
   isoU(iteratePartial(get(aIa)), iteratePartial(getInverse(aIa)))
 
 export const orAlternatively = I.curry(orAlternativelyU)
+
+export const fold = saIs =>
+  isoU(foldPartial(get(saIs)), unfoldPartial(getInverse(saIs)))
+
+export const unfold = sIsa =>
+  isoU(unfoldPartial(get(sIsa)), foldPartial(getInverse(sIsa)))
 
 // Basic isomorphisms
 
@@ -2085,6 +2307,13 @@ export const array = elem => {
   const bwd = get(elem)
   const mapFwd = x => mapIfArrayLike(fwd, x)
   return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
+}
+
+export const arrays = elem => {
+  const fwd = getInverse(elem)
+  const bwd = get(elem)
+  const mapFwd = x => mapsIfArray(fwd, x)
+  return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapsIfArray(bwd, x), i))
 }
 
 export const indexed = isoU(
@@ -2125,7 +2354,15 @@ export const indexed = isoU(
 
 export const reverse = isoU(rev, rev)
 
-export const singleton = mapping(x => [[x], x])
+export const singleton = setName(mapping(x => [[x], x]), 'singleton')
+
+export const groupBy = keyOf => isoU(groupByFn(keyOf), ungroupByFn(keyOf))
+
+export const ungroupBy = keyOf => isoU(ungroupByFn(keyOf), groupByFn(keyOf))
+
+export const zipWith1 = iso => isoU(zW1Fn(get(iso)), unzW1Fn(getInverse(iso)))
+
+export const unzipWith1 = iso => isoU(unzW1Fn(get(iso)), zW1Fn(getInverse(iso)))
 
 // Object isomorphisms
 
@@ -2255,7 +2492,7 @@ export const uncouple = (process.env.NODE_ENV === 'production'
       return m ? [x.slice(0, m[INDEX]), x.slice(reLastIndex(m))] : [x, '']
     }),
     kv => {
-      if (I.isArray(kv) && kv[I.LENGTH] === 2) {
+      if (isPair(kv)) {
         const k = kv[0]
         const v = kv[1]
         return v ? k + sep + v : k
@@ -2266,12 +2503,15 @@ export const uncouple = (process.env.NODE_ENV === 'production'
 
 // Standardish isomorphisms
 
-export const querystring = toFunction([
-  reread(s => (I.isString(s) ? s.replace(/\+/g, '%20') : s)),
-  split('&'),
-  array([uncouple('='), array(uriComponent)]),
-  inverse(multikeyed)
-])
+export const querystring = setName(
+  toFunction([
+    reread(s => (I.isString(s) ? s.replace(/\+/g, '%20') : s)),
+    split('&'),
+    array([uncouple('='), array(uriComponent)]),
+    inverse(multikeyed)
+  ]),
+  'querystring'
+)
 
 // Arithmetic isomorphisms
 
