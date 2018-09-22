@@ -2132,6 +2132,8 @@ export const reverse = isoU(rev, rev)
 
 export const singleton = mapping(x => [[x], x])
 
+// Object isomorphisms
+
 export const disjoint = groupOf =>
   function disjoint(x, i, F, xi2yF) {
     const fwd = disjointFwd(groupOf)
