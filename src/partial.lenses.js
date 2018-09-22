@@ -2052,13 +2052,6 @@ export const applyAt = I.curry(function applyAt(elements, transform) {
   )
 })
 
-export const array = elem => {
-  const fwd = getInverse(elem)
-  const bwd = get(elem)
-  const mapFwd = x => mapIfArrayLike(fwd, x)
-  return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
-}
-
 export const conjugate = I.curry(function conjugate(outer, inner) {
   return [outer, inner, inverse(outer)]
 })
@@ -2091,6 +2084,13 @@ export function subset(predicate) {
 }
 
 // Array isomorphisms
+
+export const array = elem => {
+  const fwd = getInverse(elem)
+  const bwd = get(elem)
+  const mapFwd = x => mapIfArrayLike(fwd, x)
+  return (x, i, F, xi2yF) => F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i))
+}
 
 export const indexed = isoU(
   expect(

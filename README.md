@@ -206,7 +206,6 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Isomorphism combinators](#isomorphism-combinators)
       * [`L.alternatives(isomorphism, ...isomorphisms) ~> isomorphism`](#L-alternatives "L.alternatives: (PIso s a, ...PIso s a) -> PIso s a") <small><sup>v14.7.0</sup></small>
       * [`L.applyAt(elementsOptic, isomorphism) ~> isomorphism`](#L-applyAt "L.applyAt: (POptic s a, PIso a a) -> PIso s s") <small><sup>v14.9.0</sup></small>
-      * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.conjugate(contextIsomorphism, isomorphism) ~> isomorphism`](#L-conjugate "L.conjugate: PIso s a -> PIso a a -> PIso s s") <small><sup>v14.9.0</sup></small>
       * [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
       * [`L.iterate(isomorphism) ~> isomorphism`](#L-iterate "L.iterate: PIso a a -> PIso a a") <small><sup>v14.3.0</sup></small>
@@ -217,6 +216,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.is(value) ~> isomorphism`](#L-is "L.is: v -> PIso v Boolean") <small><sup>v11.1.0</sup></small>
       * [`L.subset(maybeValue => testable) ~> isomorphism`](#L-subset "L.subset: (Maybe a -> Boolean) -> PIso a a") <small><sup>v14.3.0</sup></small>
     * [Array isomorphisms](#array-isomorphisms)
+      * [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.reverse ~> isomorphism`](#L-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#L-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
@@ -4027,37 +4027,6 @@ L.get(L.applyAt(L.entries, L.reverse), {bar: 'foo', value: 'key'})
 // { foo: 'bar', key: 'value' }
 ```
 
-##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
-
-`L.array` lifts an isomorphism between elements, `a ≅ b`, to an isomorphism
-between an [array-like](#array-like) object and an array of elements, `[a] ≅
-[b]`.
-
-For example:
-
-```js
-L.getInverse(L.array(L.pick({x: 'y', z: 'x'})), [{x:2, z:1}, {x:4, z:3}])
-// [{x:1, y:2}, {x:3, y:4}]
-```
-
-Elements mapped to `undefined` by the isomorphism on elements are removed from
-the resulting array in both directions.
-
-##### <a id="L-conjugate"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-conjugate) [`L.conjugate(contextIsomorphism, isomorphism) ~> isomorphism`](#L-conjugate "L.conjugate: PIso s a -> PIso a a -> PIso s s") <small><sup>v14.9.0</sup></small>
-
-`L.conjugate(context, iso)` is shorthand for `[context, iso,
-L.inverse(context)]` and allows one to apply an isomorphism, or transform data
-with an isomorphism, within the codomain of another isomorphism.  `L.conjugate`
-can be seen as an optimized version of [`L.applyAt`](#L-applyAt) for cases where
-the elements optic is an isomorphism.
-
-For example:
-
-```js
-L.get(L.conjugate(L.uncouple('='), L.reverse), 'key=value')
-// 'value=key'
-```
-
 ##### <a id="L-inverse"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-inverse) [`L.inverse(isomorphism) ~> isomorphism`](#L-inverse "L.inverse: PIso a b -> PIso b a") <small><sup>v4.1.0</sup></small>
 
 `L.inverse` returns the inverse of the given isomorphism.  Note that this
@@ -4147,6 +4116,37 @@ L.modify(L.identity, f, x) = f(x)
 passes the given predicate and otherwise maps the data to `undefined`.
 
 #### <a id="array-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#array-isomorphisms) [Array isomorphisms](#array-isomorphisms)
+
+##### <a id="L-array"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-array) [`L.array(isomorphism) ~> isomorphism`](#L-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
+
+`L.array` lifts an isomorphism between elements, `a ≅ b`, to an isomorphism
+between an [array-like](#array-like) object and an array of elements, `[a] ≅
+[b]`.
+
+For example:
+
+```js
+L.getInverse(L.array(L.pick({x: 'y', z: 'x'})), [{x:2, z:1}, {x:4, z:3}])
+// [{x:1, y:2}, {x:3, y:4}]
+```
+
+Elements mapped to `undefined` by the isomorphism on elements are removed from
+the resulting array in both directions.
+
+##### <a id="L-conjugate"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-conjugate) [`L.conjugate(contextIsomorphism, isomorphism) ~> isomorphism`](#L-conjugate "L.conjugate: PIso s a -> PIso a a -> PIso s s") <small><sup>v14.9.0</sup></small>
+
+`L.conjugate(context, iso)` is shorthand for `[context, iso,
+L.inverse(context)]` and allows one to apply an isomorphism, or transform data
+with an isomorphism, within the codomain of another isomorphism.  `L.conjugate`
+can be seen as an optimized version of [`L.applyAt`](#L-applyAt) for cases where
+the elements optic is an isomorphism.
+
+For example:
+
+```js
+L.get(L.conjugate(L.uncouple('='), L.reverse), 'key=value')
+// 'value=key'
+```
 
 ##### <a id="L-indexed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-indexed) [`L.indexed ~> isomorphism`](#L-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
 

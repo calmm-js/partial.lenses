@@ -2250,17 +2250,6 @@
     return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
   });
 
-  var array = function array(elem) {
-    var fwd = getInverse(elem);
-    var bwd = get(elem);
-    var mapFwd = function mapFwd(x) {
-      return mapIfArrayLike(fwd, x);
-    };
-    return function (x, i, F, xi2yF) {
-      return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
-    };
-  };
-
   var conjugate = /*#__PURE__*/I.curry(function conjugate(outer, inner) {
     return [outer, inner, inverse(outer)];
   });
@@ -2297,6 +2286,17 @@
   }
 
   // Array isomorphisms
+
+  var array = function array(elem) {
+    var fwd = getInverse(elem);
+    var bwd = get(elem);
+    var mapFwd = function mapFwd(x) {
+      return mapIfArrayLike(fwd, x);
+    };
+    return function (x, i, F, xi2yF) {
+      return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
+    };
+  };
 
   var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeObjectOfObjects))(function indexed(xs) {
     var n = xs.length;
@@ -2600,7 +2600,6 @@
   exports.mappings = mappings;
   exports.alternatives = alternatives;
   exports.applyAt = applyAt;
-  exports.array = array;
   exports.conjugate = conjugate;
   exports.inverse = inverse;
   exports.iterate = iterate;
@@ -2609,6 +2608,7 @@
   exports.identity = identity;
   exports.is = is;
   exports.subset = subset;
+  exports.array = array;
   exports.indexed = indexed;
   exports.reverse = reverse;
   exports.singleton = singleton;
