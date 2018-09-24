@@ -933,14 +933,17 @@ const pickInAux = (t, k) => [k, pickIn(t)]
 
 //
 
-const iteratePartial = aa => a => {
-  let r = a
-  while (a !== undefined) {
-    r = a
-    a = aa(a)
+const iteratePartial = aa =>
+  function iterate(a) {
+    let r = a
+    while (a !== undefined) {
+      r = a
+      a = aa(a)
+    }
+    return r
   }
-  return r
-}
+
+//
 
 const crossPartial = (op, ls, or) => (xs, ss) => {
   const n = ls.length
