@@ -38,12 +38,12 @@
   },
   "homepage": "https://github.com/calmm-js/partial.lenses#readme",
   "dependencies": {
-    "infestines": "^0.4.10"
+    "infestines": "^0.4.11"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.6",
-    "babel-plugin-annotate-pure-calls": "^0.3.0",
+    "babel-plugin-annotate-pure-calls": "^0.4.0",
     "babel-plugin-check-es2015-constants": "^6.22.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-es2015-arrow-functions": "^6.22.0",
@@ -70,7 +70,7 @@
     "benchmark": "^2.1.4",
     "codecov": "^3.1.0",
     "concurrently": "^4.0.1",
-    "eslint": "^5.6.0",
+    "eslint": "^5.6.1",
     "klipse-github-docs-generator": "^0.3.7",
     "livereload": "^0.7.0",
     "mocha": "^5.2.0",
