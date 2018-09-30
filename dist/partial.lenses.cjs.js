@@ -29,13 +29,10 @@ var gtU = function gtU(x, y) {
   return x > y;
 };
 
-var isInstanceOf = /*#__PURE__*/I.curry(function (Class, x) {
-  return x instanceof Class;
-});
+var isInstanceOf = /*#__PURE__*/I.curry(I.isInstanceOfU);
 
-var create = Object.create;
 var protoless = function protoless(o) {
-  return I.assign(create(null), o);
+  return I.assign(I.create(null), o);
 };
 var protoless0 = /*#__PURE__*/I.freeze( /*#__PURE__*/protoless(I.object0));
 
@@ -164,9 +161,7 @@ var id = function id(x) {
 
 var setName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
-} : function (to, name) {
-  return I.defineNameU(to, name);
-};
+} : I.defineNameU;
 
 var copyName = process.env.NODE_ENV === 'production' ? function (x) {
   return x;
@@ -188,16 +183,6 @@ var tryCatch = function tryCatch(fn$$1) {
       return e;
     }
   }, fn$$1);
-};
-
-//
-
-var returnAsync = function returnAsync(x) {
-  return Promise.resolve(x);
-};
-
-var chainAsync = function chainAsync(xyP, xP) {
-  return null != xP && I.isFunction(xP.then) ? xP.then(xyP) : xyP(xP);
 };
 
 //
@@ -328,57 +313,8 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-function Functor(map) {
-  if (!this) return freezeInDev(new Functor(map));
-  this.map = map;
-}
-
-var Applicative = /*#__PURE__*/I.inherit(function Applicative(map, of, ap) {
-  if (!this) return freezeInDev(new Applicative(map, of, ap));
-  Functor.call(this, map);
-  this.of = of;
-  this.ap = ap;
-}, Functor);
-
-var Monad = /*#__PURE__*/I.inherit(function Monad(map, of, ap, chain) {
-  if (!this) return freezeInDev(new Monad(map, of, ap, chain));
-  Applicative.call(this, map, of, ap);
-  this.chain = chain;
-}, Applicative);
-
-//
-
-var fantasyLand = 'fantasy-land/';
-var fantasyLandOf = fantasyLand + 'of';
-var fantasyLandMap = fantasyLand + 'map';
-var fantasyLandAp = fantasyLand + 'ap';
-var fantasyLandChain = fantasyLand + 'chain';
-var fantasyBop = function fantasyBop(m) {
-  return setName(function (f, x) {
-    return x[m](f);
-  }, m);
-};
-var fantasyMap = /*#__PURE__*/fantasyBop(fantasyLandMap);
-var fantasyAp = /*#__PURE__*/fantasyBop(fantasyLandAp);
-var fantasyChain = /*#__PURE__*/fantasyBop(fantasyLandChain);
-
-var FantasyFunctor = /*#__PURE__*/Functor(fantasyMap);
-
-var fromFantasyApplicative = function fromFantasyApplicative(Type) {
-  return Applicative(fantasyMap, Type[fantasyLandOf], fantasyAp);
-};
-var fromFantasyMonad = function fromFantasyMonad(Type) {
-  return Monad(fantasyMap, Type[fantasyLandOf], fantasyAp, fantasyChain);
-};
-
-var fromFantasy = function fromFantasy(Type) {
-  return Type.prototype[fantasyLandChain] ? fromFantasyMonad(Type) : Type[fantasyLandOf] ? fromFantasyApplicative(Type) : FantasyFunctor;
-};
-
-//
-
 var ConstantWith = function ConstantWith(ap, empty) {
-  return Applicative(I.sndU, I.always(empty), ap);
+  return I.Applicative(I.sndU, I.always(empty), ap);
 };
 
 var ConstantOf = function ConstantOf(_ref) {
@@ -538,7 +474,7 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
 
 //
 
-var SelectLog = /*#__PURE__*/Applicative(function (f, _ref2) {
+var SelectLog = /*#__PURE__*/I.Applicative(function (f, _ref2) {
   var p = _ref2.p,
       x = _ref2.x,
       c = _ref2.c;
@@ -653,7 +589,7 @@ var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(
     case 'object':
       return modifyComposed(o, 0, s, x);
     default:
-      return o.length === 4 ? o(s, void 0, Identity, I.always(x)) : s;
+      return o.length === 4 ? o(s, void 0, I.Identity, I.always(x)) : s;
   }
 });
 
@@ -666,12 +602,12 @@ var modifyU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, 
     case 'object':
       return modifyComposed(o, xi2x, s);
     default:
-      return o.length === 4 ? o(s, void 0, Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
+      return o.length === 4 ? o(s, void 0, I.Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
   }
 });
 
 var modifyAsyncU = function modifyAsyncU(o, f, s) {
-  return returnAsync(toFunction(o)(s, void 0, IdentityAsync, f));
+  return I.resolve(toFunction(o)(s, void 0, I.IdentityAsync, f));
 };
 
 var getAsU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(1, ef(reqOptic)))(function getAs(xi2y, l, s) {
@@ -718,7 +654,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x);
         break;
       default:
-        x = composed(i, os)(x, os[i - 1], Identity, xi2y || I.always(y));
+        x = composed(i, os)(x, os[i - 1], I.Identity, xi2y || I.always(y));
         n = i;
         break;
     }
@@ -860,7 +796,7 @@ var branchOr1Level = function branchOr1Level(otherwise, k2o) {
   return function (x, _i, A, xi2yA) {
     var xO = x instanceof Object ? toObject(x) : I.object0;
 
-    if (Identity === A) {
+    if (I.Identity === A) {
       return branchOr1LevelIdentity(otherwise, k2o, xO, x, A, xi2yA);
     } else if (Select === A) {
       for (var k in k2o) {
@@ -897,7 +833,7 @@ var branchOr1Level = function branchOr1Level(otherwise, k2o) {
 };
 
 function branchOrU(otherwise, template) {
-  var k2o = create(null);
+  var k2o = I.create(null);
   for (var k in template) {
     var v = template[k];
     k2o[k] = I.isObject(v) ? branchOrU(otherwise, v) : toFunction(v);
@@ -1110,8 +1046,8 @@ var orAlternativelyU = function orAlternatively(back, prim) {
   back = toFunction(back);
   var fwd = function fwd(y) {
     y = I.always(y);
-    var yP = prim(void 0, void 0, Identity, y);
-    return void 0 === yP ? back(void 0, void 0, Identity, y) : yP;
+    var yP = prim(void 0, void 0, I.Identity, y);
+    return void 0 === yP ? back(void 0, void 0, I.Identity, y) : yP;
   };
   return function orAlternatively(x, i, F, xi2yF) {
     var xP = prim(x, i, Select, id);
@@ -1137,7 +1073,7 @@ var zero = function zero(x, _i, C, _xi2yC) {
 //
 
 var elemsI = function elemsI(xs, _i, A, xi2yA) {
-  return A === Identity ? mapPartialIndexU(xi2yA, xs, void 0) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs, void 0);
+  return A === I.Identity ? mapPartialIndexU(xi2yA, xs, void 0) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs, void 0);
 };
 
 //
@@ -1159,7 +1095,7 @@ var pickInAux = function pickInAux(t, k) {
 //
 
 var iteratePartial = function iteratePartial(aa) {
-  return function (a) {
+  return function iterate(a) {
     var r = a;
     while (a !== undefined) {
       r = a;
@@ -1168,6 +1104,8 @@ var iteratePartial = function iteratePartial(aa) {
     return r;
   };
 };
+
+//
 
 var crossPartial = function crossPartial(op, ls, or$$1) {
   return function (xs, ss) {
@@ -1442,18 +1380,6 @@ var oneway = function oneway(n, m, s) {
 var seemsArrayLike = function seemsArrayLike(x) {
   return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
 };
-
-// Internals
-
-var Identity = /*#__PURE__*/Monad(I.applyU, id, I.applyU, I.applyU);
-
-var IdentityAsync = /*#__PURE__*/Monad(chainAsync, id, function (xyP, xP) {
-  return chainAsync(function (xP) {
-    return chainAsync(function (xyP) {
-      return xyP(xP);
-    }, xyP);
-  }, xP);
-}, chainAsync);
 
 var Select = /*#__PURE__*/ConstantWith(function (l, r) {
   return void 0 !== l ? l : r;
@@ -1761,7 +1687,7 @@ function elems(xs, i, A, xi2yA) {
 }
 
 var elemsTotal = function elemsTotal(xs, i, A, xi2yA) {
-  return seemsArrayLike(xs) ? A === Identity ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs, traversePartialIndex) : A.of(xs);
+  return seemsArrayLike(xs) ? A === I.Identity ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU) : A === Select ? selectInArrayLike(xi2yA, xs) : traversePartialIndex(A, xi2yA, xs, traversePartialIndex) : A.of(xs);
 };
 
 var entries = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems]), 'entries');
@@ -2254,17 +2180,6 @@ var applyAt = /*#__PURE__*/I.curry(function applyAt(elements, transform) {
   return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
 });
 
-var array = function array(elem) {
-  var fwd = getInverse(elem);
-  var bwd = get(elem);
-  var mapFwd = function mapFwd(x) {
-    return mapIfArrayLike(fwd, x);
-  };
-  return function (x, i, F, xi2yF) {
-    return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
-  };
-};
-
 var conjugate = /*#__PURE__*/I.curry(function conjugate(outer, inner) {
   return [outer, inner, inverse(outer)];
 });
@@ -2302,6 +2217,17 @@ function subset(predicate) {
 
 // Array isomorphisms
 
+var array = function array(elem) {
+  var fwd = getInverse(elem);
+  var bwd = get(elem);
+  var mapFwd = function mapFwd(x) {
+    return mapIfArrayLike(fwd, x);
+  };
+  return function (x, i, F, xi2yF) {
+    return F.map(mapFwd, xi2yF(mapIfArrayLike(bwd, x), i));
+  };
+};
+
 var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function indexed(xs) {
   var n = xs.length;
   var xis = Array(n);
@@ -2334,6 +2260,8 @@ var singleton = /*#__PURE__*/mapping(function (x) {
   return [[x], x];
 });
 
+// Object isomorphisms
+
 var disjoint = function disjoint(groupOf) {
   return function disjoint(x, i, F, xi2yF) {
     var fwd = disjointFwd(groupOf);
@@ -2352,7 +2280,7 @@ var multikeyed = /*#__PURE__*/isoU( /*#__PURE__*/expect( /*#__PURE__*/isInstance
   }
   return ps;
 })), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(freezeObjectOfObjects))(function (ps) {
-  var o = create(null);
+  var o = I.create(null);
   for (var i = 0, n = ps.length; i < n; ++i) {
     var entry = ps[i];
     if (entry.length === 2) {
@@ -2473,9 +2401,13 @@ var pointer = function pointer(s) {
   return ts;
 };
 
+exports.Identity = I.Identity;
+exports.IdentityAsync = I.IdentityAsync;
+exports.FantasyFunctor = I.FantasyFunctor;
+exports.fromFantasy = I.fromFantasy;
+exports.fromFantasyApplicative = I.fromFantasyApplicative;
+exports.fromFantasyMonad = I.fromFantasyMonad;
 exports.seemsArrayLike = seemsArrayLike;
-exports.Identity = Identity;
-exports.IdentityAsync = IdentityAsync;
 exports.Select = Select;
 exports.toFunction = toFunction;
 exports.assign = assign;
@@ -2604,7 +2536,6 @@ exports.mapping = mapping;
 exports.mappings = mappings;
 exports.alternatives = alternatives;
 exports.applyAt = applyAt;
-exports.array = array;
 exports.conjugate = conjugate;
 exports.inverse = inverse;
 exports.iterate = iterate;
@@ -2613,6 +2544,7 @@ exports.complement = complement;
 exports.identity = identity;
 exports.is = is;
 exports.subset = subset;
+exports.array = array;
 exports.indexed = indexed;
 exports.reverse = reverse;
 exports.singleton = singleton;
@@ -2633,8 +2565,4 @@ exports.divide = divide;
 exports.multiply = multiply$1;
 exports.negate = negate$1;
 exports.subtract = subtract;
-exports.FantasyFunctor = FantasyFunctor;
-exports.fromFantasy = fromFantasy;
-exports.fromFantasyApplicative = fromFantasyApplicative;
-exports.fromFantasyMonad = fromFantasyMonad;
 exports.pointer = pointer;

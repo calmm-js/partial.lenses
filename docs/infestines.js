@@ -4,6 +4,22 @@
   (factory((global.I = {})));
 }(this, (function (exports) { 'use strict';
 
+  var AP = 'ap';
+  var CHAIN = 'chain';
+  var MAP = 'map';
+  var OF = 'of';
+
+  var FANTASY_LAND_SLASH = 'fantasy-land/';
+  var FANTASY_LAND_SLASH_OF = FANTASY_LAND_SLASH + OF;
+  var FANTASY_LAND_SLASH_MAP = FANTASY_LAND_SLASH + MAP;
+  var FANTASY_LAND_SLASH_AP = FANTASY_LAND_SLASH + AP;
+  var FANTASY_LAND_SLASH_CHAIN = FANTASY_LAND_SLASH + CHAIN;
+
+  var CONSTRUCTOR = 'constructor';
+  var PROTOTYPE = 'prototype';
+
+  //
+
   var id = function id(x) {
     return x;
   };
@@ -16,13 +32,19 @@
 
   var defineNameU = /*#__PURE__*/function () {
     try {
-      return _defineNameU(_defineNameU, 'defineNameU');
+      return _defineNameU(_defineNameU, 'defineName');
     } catch (_) {
       return function (fn, _) {
         return fn;
       };
     }
   }();
+
+  //
+
+  var setName = function (to, name) {
+    return defineNameU(to, name);
+  };
 
   var copyName = function (to, from) {
     return defineNameU(to, from.name);
@@ -33,6 +55,8 @@
       return copyName(ary(fn), fn);
     };
   };
+
+  //
 
   var ary1of2 = /*#__PURE__*/withName(function (fn) {
     return function (x0, x1) {
@@ -197,6 +221,8 @@
 
   //
 
+  var create = Object.create;
+
   var assign = Object.assign;
 
   var toObject = function toObject(x) {
@@ -210,10 +236,10 @@
       return x;
     };
   };
-  var applyU = function applyU(x2y, x) {
+  var applyU = function apply(x2y, x) {
     return x2y(x);
   };
-  var sndU = function sndU(_, y) {
+  var sndU = function snd(_, y) {
     return y;
   };
 
@@ -222,6 +248,8 @@
   var freeze = function freeze(x) {
     return x && Object.freeze(x);
   };
+
+  var freezeInDev = freeze;
 
   var array0 = /*#__PURE__*/freeze([]);
   var object0 = /*#__PURE__*/freeze({});
@@ -234,8 +262,10 @@
 
   //
 
-  var hasU = function hasU(p, x) {
-    return Object.prototype.hasOwnProperty.call(x, p);
+  var hasOwnProperty = Object[PROTOTYPE].hasOwnProperty;
+
+  var hasU = function has(p, x) {
+    return hasOwnProperty.call(x, p);
   };
 
   //
@@ -245,7 +275,7 @@
   };
 
   var constructorOf = function constructorOf(x) {
-    return null == x ? x : (hasU('constructor', x) ? prototypeOf(x) : x).constructor;
+    return null == x ? x : (hasU(CONSTRUCTOR, x) ? prototypeOf(x) : x)[CONSTRUCTOR];
   };
 
   //
@@ -264,21 +294,27 @@
 
   var object = /*#__PURE__*/prototypeOf({});
   var isObject = function isObject(x) {
-    return null != x && typeof x === 'object' && (hasU('constructor', x) ? prototypeOf(x) === object : x.constructor === Object);
+    return null != x && typeof x === 'object' && (hasU(CONSTRUCTOR, x) ? prototypeOf(x) === object : x[CONSTRUCTOR] === Object);
   };
 
   //
 
-  function pipe2U(fn1, fn2) {
+  var isInstanceOfU = function isInstanceOf(C, x) {
+    return x instanceof C;
+  };
+
+  //
+
+  var pipe2U = function pipe2(fn1, fn2) {
     var n = fn1.length;
     return n === 1 ? function (x) {
       return fn2(fn1(x));
     } : arityN(n, function () {
       return fn2(fn1.apply(undefined, arguments));
     });
-  }
+  };
 
-  var compose2U = function compose2U(fn1, fn2) {
+  var compose2U = function compose2(fn1, fn2) {
     return pipe2U(fn2, fn1);
   };
 
@@ -306,27 +342,27 @@
 
   //
 
-  var identicalU = function identicalU(a, b) {
+  var identicalU = function identical(a, b) {
     return a === b && (a !== 0 || 1 / a === 1 / b) || a !== a && b !== b;
   };
 
   //
 
-  function whereEqU(t, o) {
+  var whereEqU = function whereEq(t, o) {
     for (var k in t) {
       var bk = o[k];
       if (!isDefined(bk) && !hasU(k, o) || !acyclicEqualsU(t[k], bk)) return false;
     }
     return true;
-  }
+  };
 
   //
 
-  function hasKeysOfU(t, o) {
+  var hasKeysOfU = function hasKeysOf(t, o) {
     for (var k in t) {
       if (!hasU(k, o)) return false;
     }return true;
-  }
+  };
 
   //
 
@@ -342,7 +378,7 @@
     }return true;
   }
 
-  function acyclicEqualsU(a, b) {
+  var acyclicEqualsU = function acyclicEquals(a, b) {
     if (identicalU(a, b)) return true;
     if (!a || !b) return false;
     var c = constructorOf(a);
@@ -355,19 +391,19 @@
       default:
         return isFunction(a.equals) && a.equals(b);
     }
-  }
+  };
 
   //
 
-  function unzipObjIntoU(o, ks, vs) {
+  var unzipObjIntoU = function unzipObjInto(o, ks, vs) {
     for (var k in o) {
       if (ks) ks.push(k);
       if (vs) vs.push(o[k]);
     }
-  }
+  };
 
   function keys(o) {
-    if (o instanceof Object) {
+    if (isInstanceOfU(Object, o)) {
       if (isObject(o)) {
         var ks = [];
         unzipObjIntoU(o, ks, 0);
@@ -379,14 +415,14 @@
   }
 
   function values(o) {
-    if (o instanceof Object) {
+    if (isInstanceOfU(Object, o)) {
       if (isObject(o)) {
         var vs = [];
         unzipObjIntoU(o, 0, vs);
         return vs;
       } else {
-        var xs = Object.keys(o),
-            n = xs.length;
+        var xs = Object.keys(o);
+        var n = xs.length;
         for (var i = 0; i < n; ++i) {
           xs[i] = o[xs[i]];
         }return xs;
@@ -396,7 +432,7 @@
 
   //
 
-  function assocPartialU(k, v, o) {
+  var assocPartialU = function assocPartial(k, v, o) {
     var r = {};
     if (o instanceof Object) {
       if (!isObject(o)) o = toObject(o);
@@ -411,9 +447,9 @@
     }
     if (isDefined(k)) r[k] = v;
     return r;
-  }
+  };
 
-  function dissocPartialU(k, o) {
+  var dissocPartialU = function dissocPartial(k, o) {
     var r = void 0;
     if (o instanceof Object) {
       if (!isObject(o)) o = toObject(o);
@@ -427,12 +463,104 @@
       }
     }
     return r;
-  }
+  };
 
   //
 
   var inherit = function inherit(Derived, Base, protos, statics) {
-    return assign(Derived.prototype = Object.create(Base.prototype), protos).constructor = assign(Derived, statics);
+    return assign(Derived[PROTOTYPE] = create(Base[PROTOTYPE]), protos)[CONSTRUCTOR] = assign(Derived, statics);
+  };
+
+  //
+
+  function Functor(map) {
+    if (!isInstanceOfU(Functor, this)) return freezeInDev(new Functor(map));
+    this[MAP] = map;
+  }
+
+  var Applicative = /*#__PURE__*/inherit(function Applicative(map, of, ap) {
+    if (!isInstanceOfU(Applicative, this)) return freezeInDev(new Applicative(map, of, ap));
+    Functor.call(this, map);
+    this[OF] = of;
+    this[AP] = ap;
+  }, Functor);
+
+  var Monad = /*#__PURE__*/inherit(function Monad(map, of, ap, chain) {
+    if (!isInstanceOfU(Monad, this)) return freezeInDev(new Monad(map, of, ap, chain));
+    Applicative.call(this, map, of, ap);
+    this[CHAIN] = chain;
+  }, Applicative);
+
+  //
+
+  var Identity = /*#__PURE__*/Monad(applyU, id, applyU, applyU);
+
+  var IdentityOrU = function IdentityOr(isOther, other) {
+    var map = other[MAP];
+    var ap = other[AP];
+    var of = other[OF];
+    var chain = other[CHAIN];
+    var mapEither = function mapEither(xy, xM) {
+      return isOther(xM) ? map(xy, xM) : xy(xM);
+    };
+    var toOther = function toOther(x) {
+      return isOther(x) ? x : of(x);
+    };
+    return Monad(mapEither, id, function apEither(xyM, xM) {
+      return isOther(xyM) ? isOther(xM) ? ap(xyM, xM) : map(function (xy) {
+        return xy(xM);
+      }, xyM) : mapEither(xyM, xM);
+    }, function chainEither(xyM, xM) {
+      return isOther(xM) ? chain(function (x) {
+        return toOther(xyM(x));
+      }, xM) : xyM(xM);
+    });
+  };
+
+  //
+
+  var isThenable = function isThenable(xP) {
+    return null != xP && isFunction(xP.then);
+  };
+
+  var thenU = function then(xyP, xP) {
+    return xP.then(xyP);
+  };
+
+  var resolve = function resolve(x) {
+    return Promise.resolve(x);
+  };
+
+  var Async = /*#__PURE__*/Monad(thenU, resolve, function apAsync(xyP, xP) {
+    return thenU(function (xy) {
+      return thenU(xy, xP);
+    }, xyP);
+  }, thenU);
+
+  var IdentityAsync = /*#__PURE__*/IdentityOrU(isThenable, Async);
+
+  //
+
+  var fantasyBop = function fantasyBop(m) {
+    return setName(function (f, x) {
+      return x[m](f);
+    }, m);
+  };
+  var fantasyMap = /*#__PURE__*/fantasyBop(FANTASY_LAND_SLASH_MAP);
+  var fantasyAp = /*#__PURE__*/fantasyBop(FANTASY_LAND_SLASH_AP);
+  var fantasyChain = /*#__PURE__*/fantasyBop(FANTASY_LAND_SLASH_CHAIN);
+
+  var FantasyFunctor = /*#__PURE__*/Functor(fantasyMap);
+
+  var fromFantasyApplicative = function fromFantasyApplicative(Type) {
+    return Applicative(fantasyMap, Type[FANTASY_LAND_SLASH_OF], fantasyAp);
+  };
+  var fromFantasyMonad = function fromFantasyMonad(Type) {
+    return Monad(fantasyMap, Type[FANTASY_LAND_SLASH_OF], fantasyAp, fantasyChain);
+  };
+
+  var fromFantasy = function fromFantasy(Type) {
+    return Type.prototype[FANTASY_LAND_SLASH_CHAIN] ? fromFantasyMonad(Type) : Type[FANTASY_LAND_SLASH_OF] ? fromFantasyApplicative(Type) : FantasyFunctor;
   };
 
   exports.id = id;
@@ -440,6 +568,7 @@
   exports.curryN = curryN;
   exports.arityN = arityN;
   exports.curry = curry;
+  exports.create = create;
   exports.assign = assign;
   exports.toObject = toObject;
   exports.always = always;
@@ -457,6 +586,7 @@
   exports.isNumber = isNumber;
   exports.isArray = isArray;
   exports.isObject = isObject;
+  exports.isInstanceOfU = isInstanceOfU;
   exports.pipe2U = pipe2U;
   exports.compose2U = compose2U;
   exports.seq = seq;
@@ -472,6 +602,19 @@
   exports.assocPartialU = assocPartialU;
   exports.dissocPartialU = dissocPartialU;
   exports.inherit = inherit;
+  exports.Functor = Functor;
+  exports.Applicative = Applicative;
+  exports.Monad = Monad;
+  exports.Identity = Identity;
+  exports.IdentityOrU = IdentityOrU;
+  exports.isThenable = isThenable;
+  exports.resolve = resolve;
+  exports.Async = Async;
+  exports.IdentityAsync = IdentityAsync;
+  exports.FantasyFunctor = FantasyFunctor;
+  exports.fromFantasyApplicative = fromFantasyApplicative;
+  exports.fromFantasyMonad = fromFantasyMonad;
+  exports.fromFantasy = fromFantasy;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
