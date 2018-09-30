@@ -136,11 +136,9 @@ function toggleEnv() {
 const toExpr = f =>
   f
     .toString()
+    .replace(/^\(\) => /, '')
     .replace(/\s+/g, ' ')
-    .replace(/^\s*function\s*\(\s*\)\s*{\s*(return\s*)?/, '')
-    .replace(/\s*;?\s*}\s*$/, '')
-    .replace(/function\s*(\([a-zA-Z]*\))\s*/g, '$1 => ')
-    .replace(/{\s*return\s*([^{;]+)\s*;\s*}/g, '$1')
+    .replace(/;\s*}/g, ' }')
 
 function testEq(thunk, expect) {
   it(`${toExpr(thunk)} => ${show(expect)}`, async () => {
