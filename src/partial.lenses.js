@@ -6,10 +6,7 @@ import * as C from './contract'
 
 const id = x => x
 
-const setName =
-  process.env.NODE_ENV === 'production'
-    ? x => x
-    : (to, name) => I.defineNameU(to, name)
+const setName = process.env.NODE_ENV === 'production' ? x => x : I.defineNameU
 
 const copyName =
   process.env.NODE_ENV === 'production'
@@ -31,13 +28,6 @@ const tryCatch = fn =>
       return e
     }
   }, fn)
-
-//
-
-const returnAsync = x => Promise.resolve(x)
-
-const chainAsync = (xyP, xP) =>
-  null != xP && I.isFunction(xP.then) ? xP.then(xyP) : xyP(xP)
 
 //
 
@@ -153,53 +143,7 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-function Functor(map) {
-  if (!this) return freezeInDev(new Functor(map))
-  this.map = map
-}
-
-const Applicative = I.inherit(function Applicative(map, of, ap) {
-  if (!this) return freezeInDev(new Applicative(map, of, ap))
-  Functor.call(this, map)
-  this.of = of
-  this.ap = ap
-}, Functor)
-
-const Monad = I.inherit(function Monad(map, of, ap, chain) {
-  if (!this) return freezeInDev(new Monad(map, of, ap, chain))
-  Applicative.call(this, map, of, ap)
-  this.chain = chain
-}, Applicative)
-
-//
-
-const fantasyLand = 'fantasy-land/'
-const fantasyLandOf = fantasyLand + 'of'
-const fantasyLandMap = fantasyLand + 'map'
-const fantasyLandAp = fantasyLand + 'ap'
-const fantasyLandChain = fantasyLand + 'chain'
-const fantasyBop = m => setName((f, x) => x[m](f), m)
-const fantasyMap = fantasyBop(fantasyLandMap)
-const fantasyAp = fantasyBop(fantasyLandAp)
-const fantasyChain = fantasyBop(fantasyLandChain)
-
-const FantasyFunctor = Functor(fantasyMap)
-
-const fromFantasyApplicative = Type =>
-  Applicative(fantasyMap, Type[fantasyLandOf], fantasyAp)
-const fromFantasyMonad = Type =>
-  Monad(fantasyMap, Type[fantasyLandOf], fantasyAp, fantasyChain)
-
-const fromFantasy = Type =>
-  Type.prototype[fantasyLandChain]
-    ? fromFantasyMonad(Type)
-    : Type[fantasyLandOf]
-      ? fromFantasyApplicative(Type)
-      : FantasyFunctor
-
-//
-
-const ConstantWith = (ap, empty) => Applicative(I.sndU, I.always(empty), ap)
+const ConstantWith = (ap, empty) => I.Applicative(I.sndU, I.always(empty), ap)
 
 const ConstantOf = ({concat, empty}) => ConstantWith(concat, empty())
 
@@ -354,7 +298,7 @@ function traversePartialIndex(A, xi2yA, xs, skip) {
 
 //
 
-const SelectLog = Applicative(
+const SelectLog = I.Applicative(
   (f, {p, x, c}) => {
     x = f(x)
     if (!I.isFunction(x)) p = [x, p]
@@ -447,7 +391,7 @@ const setU = (process.env.NODE_ENV === 'production'
     case 'object':
       return modifyComposed(o, 0, s, x)
     default:
-      return o.length === 4 ? o(s, void 0, Identity, I.always(x)) : s
+      return o.length === 4 ? o(s, void 0, I.Identity, I.always(x)) : s
   }
 })
 
@@ -463,13 +407,13 @@ const modifyU = (process.env.NODE_ENV === 'production'
       return modifyComposed(o, xi2x, s)
     default:
       return o.length === 4
-        ? o(s, void 0, Identity, xi2x)
+        ? o(s, void 0, I.Identity, xi2x)
         : (xi2x(o(s, void 0), void 0), s)
   }
 })
 
 const modifyAsyncU = (o, f, s) =>
-  returnAsync(toFunction(o)(s, void 0, IdentityAsync, f))
+  I.resolve(toFunction(o)(s, void 0, I.IdentityAsync, f))
 
 const getAsU = (process.env.NODE_ENV === 'production'
   ? id
@@ -516,7 +460,7 @@ function modifyComposed(os, xi2y, x, y) {
         x = getIndex(o, x)
         break
       default:
-        x = composed(i, os)(x, os[i - 1], Identity, xi2y || I.always(y))
+        x = composed(i, os)(x, os[i - 1], I.Identity, xi2y || I.always(y))
         n = i
         break
     }
@@ -655,7 +599,7 @@ const branchOr1LevelIdentity = (process.env.NODE_ENV === 'production'
 const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
   const xO = x instanceof Object ? toObject(x) : I.object0
 
-  if (Identity === A) {
+  if (I.Identity === A) {
     return branchOr1LevelIdentity(otherwise, k2o, xO, x, A, xi2yA)
   } else if (Select === A) {
     for (const k in k2o) {
@@ -892,8 +836,8 @@ const orAlternativelyU = function orAlternatively(back, prim) {
   back = toFunction(back)
   const fwd = y => {
     y = I.always(y)
-    const yP = prim(void 0, void 0, Identity, y)
-    return void 0 === yP ? back(void 0, void 0, Identity, y) : yP
+    const yP = prim(void 0, void 0, I.Identity, y)
+    return void 0 === yP ? back(void 0, void 0, I.Identity, y) : yP
   }
   return function orAlternatively(x, i, F, xi2yF) {
     const xP = prim(x, i, Select, id)
@@ -916,7 +860,7 @@ const zero = (x, _i, C, _xi2yC) => C.of(x)
 //
 
 const elemsI = (xs, _i, A, xi2yA) =>
-  A === Identity
+  A === I.Identity
     ? mapPartialIndexU(xi2yA, xs, void 0)
     : A === Select
       ? selectInArrayLike(xi2yA, xs)
@@ -1206,14 +1150,7 @@ export const seemsArrayLike = x =>
 
 // Internals
 
-export const Identity = Monad(I.applyU, id, I.applyU, I.applyU)
-
-export const IdentityAsync = Monad(
-  chainAsync,
-  id,
-  (xyP, xP) => chainAsync(xP => chainAsync(xyP => xyP(xP), xyP), xP),
-  chainAsync
-)
+export {Identity, IdentityAsync} from './ext/infestines'
 
 export const Select = ConstantWith((l, r) => (void 0 !== l ? l : r))
 
@@ -1496,7 +1433,7 @@ export function elems(xs, i, A, xi2yA) {
 
 export const elemsTotal = (xs, i, A, xi2yA) =>
   seemsArrayLike(xs)
-    ? A === Identity
+    ? A === I.Identity
       ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU)
       : A === Select
         ? selectInArrayLike(xi2yA, xs)
@@ -2289,7 +2226,12 @@ export const subtract = c => numberIsoU(I.add(-c), I.add(c))
 
 // Interop
 
-export {FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad}
+export {
+  FantasyFunctor,
+  fromFantasy,
+  fromFantasyApplicative,
+  fromFantasyMonad
+} from './ext/infestines'
 
 export const pointer = s => {
   if (s[0] === '#') s = decodeURIComponent(s)
