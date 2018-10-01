@@ -11,6 +11,7 @@ function tryRequire(name) {
 const I = require('infestines')
 const L = require('../dist/partial.lenses.cjs')
 const P = tryRequire('ramda-lens')
+const M = tryRequire('immer')
 const R = require('ramda')
 const O = tryRequire('flunc-optics')
 const U = tryRequire('unchanged')
@@ -210,6 +211,7 @@ Benchmark.options.maxTime = Number(process.argv[2]) || Benchmark.options.maxTime
 const pattern = new RegExp(process.argv[3] || '')
 
 const dropped = [
+  M ? '' : 'M',
   P ? '' : 'P',
   O ? '' : 'O',
   K ? '' : 'K',
@@ -317,6 +319,7 @@ R.forEach(
       `K.traversed().over(xs, inc)`,
       `L.modify(L.elems, inc, xs)`,
       `L.traverse(Ident, inc, L.elems, xs)`,
+      `M.produce(xs, xs => { for (let i=0, n=xs.length; i<n; ++i) ++xs[i] })`,
       `O.Setter.over(O.Traversal.traversed, inc, xs)`,
       `P.over(P.traversed, inc, xs)`,
       `R.map(inc, xs)`,
@@ -326,6 +329,7 @@ R.forEach(
       `K.traversed().over(xs1000, inc)`,
       `L.modify(L.elems, inc, xs1000)`,
       `L.traverse(Ident, inc, L.elems, xs1000)`,
+      `M.produce(xs1000, xs1000 => { for (let i=0, n=xs1000.length; i<n; ++i) ++xs1000[i] })`,
       [`O.Setter.over(O.Traversal.traversed, inc, xs1000)`, 'QUADRATIC'],
       [`P.over(P.traversed, inc, xs1000)`, 'QUADRATIC'],
       `R.map(inc, xs1000)`,
@@ -338,6 +342,12 @@ R.forEach(
       `L.modify([L.elems, L.elems, L.elems], inc, xsss100)`,
       `L.traverse(Ident, inc, L_e_e_e, xsss100)`,
       `L.traverse(Ident, inc, [L.elems, L.elems, L.elems], xsss100)`,
+      `M.produce(xsss100, xsss100 => {
+         xsss100.forEach(xss => xss.forEach(xs => {
+           for (let i=0, n=xs.length; i<n; ++i)
+             xs[i]++
+         }))
+       })`,
       `O.Setter.over(R.compose(O.Traversal.traversed,
                                O.Traversal.traversed,
                                O.Traversal.traversed),
@@ -366,6 +376,7 @@ R.forEach(
     [
       `K.idx(1).set(xs, 0)`,
       `L.set(1, 0, xs)`,
+      `M.produce(xs, xs => { xs[1] = 0 })`,
       `R.set(l_1, 0, xs)`,
       `R.update(1, 0, xs)`,
       `U.set(1, 0, xs)`,
@@ -391,6 +402,7 @@ R.forEach(
     [
       `K.key('y').set(xyz, 0)`,
       `L.set('y', 0, xyz)`,
+      `M.produce(xyz, xyz => { xyz.y = 0 })`,
       `R.assoc('y', 0, xyz)`,
       `R.set(l_y, 0, xyz)`,
       `U.set('y', 0, xyz)`
@@ -408,6 +420,7 @@ R.forEach(
     [
       `K_0_x_0_y.set(axay, 0)`,
       `L.set([0, 'x', 0, 'y'], 0, axay)`,
+      `M.produce(axay, axay => { axay[0].x[0].y = 0 })`,
       `R.assocPath([0, 'x', 0, 'y'], 0, axay)`,
       `R.set(l_0_x_0_y, 0, axay)`,
       `R.set(l_0x0y, 0, axay)`,
@@ -416,11 +429,22 @@ R.forEach(
     [
       `K_0_x_0_y.over(axay, inc)`,
       `L.modify([0, 'x', 0, 'y'], inc, axay)`,
+      `M.produce(axay, axay => { axay[0].x[0].y++ })`,
       `R.over(l_0_x_0_y, inc, axay)`,
       `R.over(l_0x0y, inc, axay)`
     ],
-    [`L.remove(1, xs)`, `R.remove(1, 1, xs)`, `U.remove(1, xs)`],
-    [`L.remove('y', xyz)`, `R.dissoc('y', xyz)`, `U.remove('y', xyz)`],
+    [
+      `L.remove(1, xs)`,
+      `M.produce(xs, xs => { xs.splice(1, 1) })`,
+      `R.remove(1, 1, xs)`,
+      `U.remove(1, xs)`
+    ],
+    [
+      `L.remove('y', xyz)`,
+      `M.produce(xyz, xyz => { delete xyz.y })`,
+      `R.dissoc('y', xyz)`,
+      `U.remove('y', xyz)`
+    ],
     [
       `K_xyz.get(xyzn)`,
       `L.get(['x', 'y', 'z'], xyzn)`,
@@ -435,6 +459,7 @@ R.forEach(
     [
       `K_xyz.set(xyzn, 0)`,
       `L.set(['x', 'y', 'z'], 0, xyzn)`,
+      `M.produce(xyzn, xyzn => { xyzn.x.y.z = 0 })`,
       `O.Setter.set(o_x_y_z, 0, xyzn)`,
       `R.assocPath(['x', 'y', 'z'], 0, xyzn)`,
       `R.set(l_x_y_z, 0, xyzn)`,

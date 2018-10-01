@@ -7,7 +7,7 @@
   "sideEffects": false,
   "scripts": {
     "bench": "NODE_ENV=production node --expose-gc bench/bench.js",
-    "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get unchanged",
+    "bench-install-extra": "npm i --no-save ramda-lens flunc-optics optika lodash.get unchanged immer",
     "dist": "rollup -c && cp dist/partial.lenses.js docs/",
     "docs": "klipse-github-docs-generator && cp node_modules/infestines/dist/infestines.js docs/",
     "lint": "eslint src test",
