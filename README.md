@@ -2292,14 +2292,14 @@ L.modify(L.values, R.negate, {a: 1, b: 2, c: 3})
 When manipulating objects with a non-`Object` constructor
 
 ```js
-function XYZ(x, y, z) {
-  this.x = x
-  this.y = y
-  this.z = z
-}
-
-XYZ.prototype.norm = function () {
-  return this.x * this.x + this.y * this.y + this.z * this.z
+const XYZ = class {
+  constructor(x, y, z) {
+    Object.assign(this, {x, y, z})
+  }
+  norm() {
+    const {x, y, z} = this
+    return x * x + y * y + z * z
+  }
 }
 ```
 
