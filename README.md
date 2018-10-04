@@ -1306,7 +1306,7 @@ depend on the number of arguments being passed nor on any arguments beyond the
 first two.
 
 Note that [`R.compose`](http://ramdajs.com/docs/#compose) is not the same as
-`L.compose`.
+`L.compose` as described in the [implementation document](IMPLEMENTATION.md).
 
 ##### <a id="L-flat"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-flat) [`L.flat(...optics) ~> optic`](#L-flat "L.flat: (POptic s [...s1...], ...POptic sN [...a...]) -> POptic [...s...] a") <small><sup>v13.6.0</sup></small>
 
