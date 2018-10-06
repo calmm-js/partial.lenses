@@ -1015,6 +1015,18 @@ var disjointFwd = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res
 
 //
 
+var subseqU = function subseq(begin, end, t) {
+  t = toFunction(t);
+  return copyName(function (x, i, F, xi2yF) {
+    var n = -1;
+    return t(x, i, F, function (x, i) {
+      return begin <= ++n && !(end <= n) ? xi2yF(x, i) : F.of(x);
+    });
+  }, t);
+};
+
+//
+
 var isDefinedAtU = function isDefinedAtU(o, x, i) {
   return void 0 !== o(x, i, Select, id);
 };
@@ -1587,6 +1599,16 @@ var joinIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(function (j, i) {
   return void 0 !== i ? void 0 !== j ? [i, j] : i : j;
 }), 'joinIx');
 
+var reIx = function reIx(o) {
+  o = toFunction(o);
+  return copyName(function (x, i, F, xi2yF) {
+    var j = 0;
+    return o(x, i, F, function (x) {
+      return xi2yF(x, j++);
+    });
+  }, o);
+};
+
 var skipIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(I.sndU), 'skipIx');
 
 // Debugging
@@ -1693,6 +1715,14 @@ var elemsTotal = function elemsTotal(xs, i, A, xi2yA) {
 var entries = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems]), 'entries');
 
 var keys = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems, 0]), 'keys');
+
+var subseq = /*#__PURE__*/I.curry(subseqU);
+
+var limit = /*#__PURE__*/subseq(0);
+
+var offset = /*#__PURE__*/I.curry(function offset(begin, t) {
+  return subseqU(begin, void 0, t);
+});
 
 function matches(re) {
   return function matches(x, _i, C, xi2yC) {
@@ -2436,6 +2466,7 @@ exports.mapIx = mapIx;
 exports.setIx = setIx;
 exports.tieIx = tieIx;
 exports.joinIx = joinIx;
+exports.reIx = reIx;
 exports.skipIx = skipIx;
 exports.getLog = getLog;
 exports.log = log;
@@ -2453,6 +2484,9 @@ exports.elems = elems;
 exports.elemsTotal = elemsTotal;
 exports.entries = entries;
 exports.keys = keys;
+exports.subseq = subseq;
+exports.limit = limit;
+exports.offset = offset;
 exports.matches = matches;
 exports.values = values;
 exports.children = children;

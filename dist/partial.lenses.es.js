@@ -1012,6 +1012,18 @@ var disjointFwd = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : r
 
 //
 
+var subseqU = function subseq(begin, end, t) {
+  t = toFunction(t);
+  return copyName(function (x, i, F, xi2yF) {
+    var n = -1;
+    return t(x, i, F, function (x, i) {
+      return begin <= ++n && !(end <= n) ? xi2yF(x, i) : F.of(x);
+    });
+  }, t);
+};
+
+//
+
 var isDefinedAtU = function isDefinedAtU(o, x, i) {
   return void 0 !== o(x, i, Select, id$1);
 };
@@ -1584,6 +1596,16 @@ var joinIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(function (j, i) {
   return void 0 !== i ? void 0 !== j ? [i, j] : i : j;
 }), 'joinIx');
 
+var reIx = function reIx(o) {
+  o = toFunction(o);
+  return copyName(function (x, i, F, xi2yF) {
+    var j = 0;
+    return o(x, i, F, function (x) {
+      return xi2yF(x, j++);
+    });
+  }, o);
+};
+
 var skipIx = /*#__PURE__*/setName( /*#__PURE__*/tieIx(sndU), 'skipIx');
 
 // Debugging
@@ -1690,6 +1712,14 @@ var elemsTotal = function elemsTotal(xs, i, A, xi2yA) {
 var entries = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems]), 'entries');
 
 var keys$1 = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems, 0]), 'keys');
+
+var subseq = /*#__PURE__*/curry(subseqU);
+
+var limit = /*#__PURE__*/subseq(0);
+
+var offset = /*#__PURE__*/curry(function offset(begin, t) {
+  return subseqU(begin, void 0, t);
+});
 
 function matches(re) {
   return function matches(x, _i, C, xi2yC) {
@@ -2398,4 +2428,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, alternatives, applyAt, conjugate, inverse, iterate, orAlternatively, complement, identity, is, subset, array, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, reIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, subseq, limit, offset, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, alternatives, applyAt, conjugate, inverse, iterate, orAlternatively, complement, identity, is, subset, array, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
