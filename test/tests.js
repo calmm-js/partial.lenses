@@ -309,6 +309,7 @@ describe('arities', () => {
     lazy: 1,
     leafs: 4,
     lens: 2,
+    limit: 2,
     log: 0,
     mapIx: 1,
     mapping: 1,
@@ -328,6 +329,7 @@ describe('arities', () => {
     negate: 4,
     none: 3,
     normalize: 1,
+    offset: 2,
     optional: 4,
     or: 2,
     orAlternatively: 2,
@@ -344,6 +346,7 @@ describe('arities', () => {
     propsOf: 1,
     query: 0,
     querystring: 4,
+    reIx: 1,
     removable: 0,
     remove: 2,
     removeOp: 4,
@@ -366,6 +369,7 @@ describe('arities', () => {
     skipIx: 1,
     slice: 2,
     split: 1,
+    subseq: 3,
     subset: 1,
     subtract: 1,
     suffix: 1,
@@ -1802,6 +1806,51 @@ describe('transforming', () => {
   )
   testEq(() => L.get(L.setOp(42), 101), undefined)
   testEq(() => L.set(L.setOp(42), 96, 101), 42)
+})
+
+describe('L.reIx', () => {
+  testEq(() => L.modify(L.reIx(L.flatten), R.pair, [[3], [[[1]], 4], [1], 5]), [
+    [[3, 0]],
+    [[[[1, 1]]], [4, 2]],
+    [[1, 3]],
+    [5, 4]
+  ])
+})
+
+describe('L.offset', () => {
+  testEq(
+    () =>
+      L.collect(L.offset(2, [L.flatten, L.when(R.lt(1))]), [
+        [3],
+        [[[1]], 4],
+        [1],
+        5
+      ]),
+    [5]
+  )
+  testEq(
+    () =>
+      L.modify(L.offset(2, [L.flatten, L.when(R.lt(1))]), R.negate, [
+        [3],
+        [[[1]], 4],
+        [1],
+        5
+      ]),
+    [[3], [[[1]], 4], [1], -5]
+  )
+})
+
+describe('L.subseq', () => {
+  testEq(
+    () =>
+      L.collect(L.subseq(1, 2, [L.flatten, L.when(R.lt(1))]), [
+        [3],
+        [[[1]], 4],
+        [1],
+        5
+      ]),
+    [4]
+  )
 })
 
 describe('L.cond', () => {
