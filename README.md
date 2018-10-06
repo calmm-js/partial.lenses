@@ -179,9 +179,9 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.first ~> lens`](#L-first "L.first: PLens [a] a") <small><sup>v13.1.0</sup></small>
       * [`L.index(elemIndex) ~> lens`](#L-index "L.index: Integer -> PLens [a] a") or `elemIndex` <small><sup>v1.0.0</sup></small>
       * [`L.last ~> lens`](#L-last "L.last: PLens [a] a") <small><sup>v9.8.0</sup></small>
-      * [`L.prefix(maybeBegin) ~> lens`](#L-prefix "L.prefix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
+      * [`L.prefix(maybeEnd) ~> lens`](#L-prefix "L.prefix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
       * [`L.slice(maybeBegin, maybeEnd) ~> lens`](#L-slice "L.slice: Maybe Number -> Maybe Number -> PLens [a] [a]") <small><sup>v8.1.0</sup></small>
-      * [`L.suffix(maybeEnd) ~> lens`](#L-suffix "L.suffix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
+      * [`L.suffix(maybeBegin) ~> lens`](#L-suffix "L.suffix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
     * [Lensing objects](#lensing-objects)
       * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}") <small><sup>v11.11.0</sup></small>
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName` <small><sup>v1.0.0</sup></small>
@@ -3476,7 +3476,7 @@ L.set(L.last, 1, [])
 // [1]
 ```
 
-##### <a id="L-prefix"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-prefix) [`L.prefix(maybeBegin) ~> lens`](#L-prefix "L.prefix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
+##### <a id="L-prefix"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-prefix) [`L.prefix(maybeEnd) ~> lens`](#L-prefix "L.prefix: Maybe Number -> PLens [a] [a]") <small><sup>v11.12.0</sup></small>
 
 `L.prefix` focuses on a range of elements of an [array-like](#array-like) object
 starting from the beginning of the object.  `L.prefix` is a special case of

@@ -255,9 +255,9 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#L-first" title="L.first: PLens [a] a"><code>L.first ~&gt; lens</code></a> <small><sup>v13.1.0</sup></small></li>
 <li><a href="#L-index" title="L.index: Integer -&gt; PLens [a] a"><code>L.index(elemIndex) ~&gt; lens</code></a> or <code>elemIndex</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-last" title="L.last: PLens [a] a"><code>L.last ~&gt; lens</code></a> <small><sup>v9.8.0</sup></small></li>
-<li><a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
+<li><a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
 <li><a href="#L-slice" title="L.slice: Maybe Number -&gt; Maybe Number -&gt; PLens [a] [a]"><code>L.slice(maybeBegin, maybeEnd) ~&gt; lens</code></a> <small><sup>v8.1.0</sup></small></li>
-<li><a href="#L-suffix" title="L.suffix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
+<li><a href="#L-suffix" title="L.suffix: Maybe Number -&gt; PLens [a] [a]"><code>L.suffix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#lensing-objects">Lensing objects</a><ul>
@@ -2513,7 +2513,7 @@ value if the focused object is empty or <code>undefined</code>.  For example:</p
 </code></pre>
 <pre><code class="hljs lang-js">L.set(L.last, 1, [])
 </code></pre>
-<h5><a id="L-prefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-prefix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeBegin) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
+<h5><a id="L-prefix"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-prefix">■</a> <a href="#L-prefix" title="L.prefix: Maybe Number -&gt; PLens [a] [a]"><code>L.prefix(maybeEnd) ~&gt; lens</code></a> <small><sup>v11.12.0</sup></small></h5>
 <p><code>L.prefix</code> focuses on a range of elements of an <a href="#array-like">array-like</a> object
 starting from the beginning of the object.  <code>L.prefix</code> is a special case of
 <a href="#L-slice"><code>L.slice</code></a>.</p>
