@@ -137,6 +137,7 @@ export const zero = T_optic
 
 export const joinIx = T.fn([T_optic], T_optic)
 export const mapIx = T.fn([T.fn([T_index, T_maybeDataI], T_index)], T_optic)
+export const reIx = T.fn([T_optic], T_optic)
 export const setIx = T.fn([T_index], T_optic)
 export const skipIx = T.fn([T_optic], T_optic)
 export const tieIx = T.fn([T.fn([T_index, T_index], T_index), T_optic], T_optic)
@@ -180,10 +181,16 @@ export const entries = T_traversal
 export const flatten = T_traversal
 export const keys = T_traversal
 export const leafs = T_traversal
+export const limit = T.fn([T.nonNegative, T_traversal], T_traversal)
 export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
+export const offset = T.fn([T.nonNegative, T_traversal], T_traversal)
 export const query = T.fnVarN(0, T_optic, T_optic)
 export const satisfying = T.fn(
   [T.fn([T_maybeDataI, T_index], T.any)],
+  T_traversal
+)
+export const subseq = T.fn(
+  [T.nonNegative, T.nonNegative, T_traversal],
   T_traversal
 )
 export const values = T_traversal

@@ -70,6 +70,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Indices](#indices)
       * [`L.joinIx(optic) ~> optic`](#L-joinIx "L.joinIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
       * [`L.mapIx((index, maybeValue) => index) ~> optic`](#L-mapIx "L.mapIx: ((Index, Maybe a) -> Index) -> POptic a a") <small><sup>v13.15.0</sup></small>
+      * [`L.reIx(optic) ~> optic`](#L-reIx "L.reIx: POptic s a -> POptic s a") <small><sup>v14.10.0</sup></small>
       * [`L.setIx(index) ~> optic`](#L-setIx "L.setIx: Index -> POptic a a") <small><sup>v13.15.0</sup></small>
       * [`L.skipIx(optic) ~> optic`](#L-skipIx "L.skipIx: POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
       * [`L.tieIx((innerIndex, outerIndex) => index, optic) ~> optic`](#L-tieIx "L.tieIx: ((Index, Index) => Index) -> POptic s a -> POptic s a") <small><sup>v13.15.0</sup></small>
@@ -105,9 +106,12 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.flatten ~> traversal`](#L-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
       * [`L.keys ~> traversal`](#L-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
       * [`L.leafs ~> traversal`](#L-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
+      * [`L.limit(count, traversal) ~> traversal`](#L-limit "L.limit: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
+      * [`L.offset(count, traversal) ~> traversal`](#L-offset "L.offset: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.query(...traversals) ~> traversal`](#L-query "L.query: (PTraversal s1 s2, ...PTraversal sN a) ~> PTraversal JSON a") <small><sup>v13.6.0</sup></small>
       * [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#L-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
+      * [`L.subseq(begin, end, traversal) ~> traversal`](#L-subseq "L.subseq: Integer -> Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
     * [Querying](#querying)
       * [`L.chain((value, index) => optic, optic) ~> traversal`](#L-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> PTraversal s b") <small><sup>v3.1.0</sup></small>
@@ -1585,6 +1589,18 @@ L.get(
 // [ 'abc', [ 'a', 'b', 'c' ] ]
 ```
 
+##### <a id="L-reIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-reIx) [`L.reIx(optic) ~> optic`](#L-reIx "L.reIx: POptic s a -> POptic s a") <small><sup>v14.10.0</sup></small>
+
+`L.reIx` replaces the indices of the focuses produced by the given optic with
+consecutive integers starting with 0.
+
+For example:
+
+```js
+L.remove([L.reIx(L.values), L.when((_, i) => i % 2)], {t: 'f', h: 'i', i: 'n', s: 'e'})
+// {t: 'f', i: 'n'}
+```
+
 ##### <a id="L-setIx"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-setIx) [`L.setIx(index) ~> optic`](#L-setIx "L.setIx: Index -> POptic a a") <small><sup>v13.15.0</sup></small>
 
 `L.setIx` passes the given value as the index.  Note that `L.setIx(v)` is
@@ -2189,6 +2205,18 @@ L.modify(L.leafs, R.negate, [{x: 1, y: [2]}, 3])
 // [{x: -1, y: [-2]}, -3]
 ```
 
+##### <a id="L-limit"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-limit) [`L.limit(count, traversal) ~> traversal`](#L-limit "L.limit: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
+
+`L.limit` limits the number of focuses traversed via the given traversal.  See
+also [`L.offset`](#L-offset) and [`L.subseq`](#L-subseq).
+
+For example:
+
+```js
+L.modify(L.limit(2, L.elems), R.negate, [3, 1, 4])
+// [-3, -1, 4]
+```
+
 ##### <a id="L-matches-g"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-matches-g) [`L.matches(/.../g) ~> traversal`](#L-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
 
 `L.matches`, when given a regular expression with the
@@ -2213,6 +2241,18 @@ L.collect(
 Note that an empty match terminates the traversal.  It is possible to make use
 of that feature, but it is also possible that an empty match is due to an
 incorrect regular expression that can match the empty string.
+
+##### <a id="L-offset"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-offset) [`L.offset(count, traversal) ~> traversal`](#L-offset "L.offset: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
+
+`L.offset` offsets skips the given number of focuses from the beginning of the
+given traversal.  See also [`L.limit`](#L-limit) and [`L.subseq`](#L-subseq).
+
+For example:
+
+```js
+L.modify(L.offset(1, L.elems), R.negate, [3, 1, 4])
+// [3, -1, -4]
+```
 
 ##### <a id="L-query"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-query) [`L.query(...traversals) ~> traversal`](#L-query "L.query: (PTraversal s1 s2, ...PTraversal sN a) ~> PTraversal JSON a") <small><sup>v13.6.0</sup></small>
 
@@ -2275,6 +2315,22 @@ Note that `L.query(...ts)` is roughly equivalent to [`ts.map(t =>
 predicate within a nested data structure of ordinary arrays and plain objects.
 Children of objects whose constructor is neither `Array` nor `Object` are not
 traversed.  See also [`L.query`](#L-query).
+
+##### <a id="L-subseq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-subseq) [`L.subseq(begin, end, traversal) ~> traversal`](#L-subseq "L.subseq: Integer -> Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
+
+`L.subseq` only traverses the focuses between the `begin`:th (inclusive) and the
+`end`:th (exclusive) from the given traversal.  See also [`L.offset`](#L-offset)
+and [`L.limit`](#L-limit).
+
+For example:
+
+```js
+L.modify(L.subseq(1, 2, L.elems), R.negate, [3, 1, 4])
+// [3, -1, 4]
+```
+
+Note that `L.subseq` works in linear time with respect to the number of focuses
+produced by the traversal given to `L.subseq`.
 
 ##### <a id="L-values"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-values) [`L.values ~> traversal`](#L-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
 

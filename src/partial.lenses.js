@@ -812,6 +812,21 @@ const disjointFwd = (process.env.NODE_ENV === 'production'
 
 //
 
+const subseqU = function subseq(begin, end, t) {
+  t = toFunction(t)
+  return copyName((x, i, F, xi2yF) => {
+    let n = -1
+    return t(
+      x,
+      i,
+      F,
+      (x, i) => (begin <= ++n && !(end <= n) ? xi2yF(x, i) : F.of(x))
+    )
+  }, t)
+}
+
+//
+
 const isDefinedAtU = (o, x, i) => void 0 !== o(x, i, Select, id)
 
 const isDefinedAt = o => (x, i) => isDefinedAtU(o, x, i)
@@ -1337,6 +1352,14 @@ export const joinIx = setName(
   'joinIx'
 )
 
+export const reIx = o => {
+  o = toFunction(o)
+  return copyName((x, i, F, xi2yF) => {
+    let j = 0
+    return o(x, i, F, x => xi2yF(x, j++))
+  }, o)
+}
+
 export const skipIx = setName(tieIx(I.sndU), 'skipIx')
 
 // Debugging
@@ -1443,6 +1466,14 @@ export const elemsTotal = (xs, i, A, xi2yA) =>
 export const entries = setName(toFunction([keyed, elems]), 'entries')
 
 export const keys = setName(toFunction([keyed, elems, 0]), 'keys')
+
+export const subseq = I.curry(subseqU)
+
+export const limit = subseq(0)
+
+export const offset = I.curry(function offset(begin, t) {
+  return subseqU(begin, void 0, t)
+})
 
 export function matches(re) {
   return function matches(x, _i, C, xi2yC) {
