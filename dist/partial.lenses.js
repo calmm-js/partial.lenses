@@ -2120,6 +2120,15 @@
     }return pick(template);
   }
 
+  function propsExcept() {
+    var setish = I.create(null);
+    for (var i = 0, n = arguments.length; i < n; ++i) {
+      setish[arguments[i]] = 'd';
+    }return [disjoint(function (k) {
+      return setish[k] || 't';
+    }), 't'];
+  }
+
   var propsOf = function propsOf(o) {
     return props.apply(null, I.keys(o));
   };
@@ -2554,6 +2563,7 @@
   exports.pickIn = pickIn;
   exports.prop = prop;
   exports.props = props;
+  exports.propsExcept = propsExcept;
   exports.propsOf = propsOf;
   exports.removable = removable;
   exports.valueOr = valueOr;

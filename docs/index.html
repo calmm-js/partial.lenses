@@ -268,6 +268,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#L-pickIn" title="L.pickIn: {p1: PLens s1 a1, ...pls} -&gt; PLens {p1: s1, ...pls} {p1: a1, ...pls}"><code>L.pickIn({prop: lens, ...props}) ~&gt; lens</code></a> <small><sup>v11.11.0</sup></small></li>
 <li><a href="#L-prop" title="L.prop: (p: a) -&gt; PLens {p: a, ...ps} a"><code>L.prop(propName) ~&gt; lens</code></a> or <code>propName</code> <small><sup>v1.0.0</sup></small></li>
 <li><a href="#L-props" title="L.props: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.props(...propNames) ~&gt; lens</code></a> <small><sup>v1.4.0</sup></small></li>
+<li><a href="#L-propsExcept" title="L.propsExcept: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {...o}"><code>L.propsExcept(...propNames) ~&gt; lens</code></a> <small><sup>v14.11.0</sup></small></li>
 <li><a href="#L-propsOf" title="L.propsOf: {p1: a1, ...ps} -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.propsOf(object) ~&gt; lens</code></a> <small><sup>v11.13.0</sup></small></li>
 <li><a href="#L-removable" title="L.removable: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}"><code>L.removable(...propNames) ~&gt; lens</code></a> <small><sup>v9.2.0</sup></small></li>
 </ul>
@@ -2659,11 +2660,21 @@ none of the properties is defined.  This allows <code>L.props</code> to be used 
 e.g. <a href="#L-choices"><code>L.choices</code></a>.  Otherwise the view is an object containing a
 subset of the properties.  Setting through <code>L.props</code> updates the whole subset of
 properties, which means that any missing properties are removed if they did
-exists previously.  When set, any extra properties are ignored.</p>
+exists previously.  When set, any extra properties are ignored.  See also
+<a href="#L-propsExcept"><code>L.propsExcept</code></a>.</p>
 <pre><code class="hljs lang-js">L.set(L.props(&#39;x&#39;, &#39;y&#39;), {x: 4}, {x: 1, y: 2, z: 3})
 </code></pre>
 <p>Note that <code>L.props(k1, ..., kN)</code> is equivalent to <a href="#L-pick"><code>L.pick({[k1]: k1, ..., [kN]:
 kN})</code></a> and <a href="#L-pickIn"><code>L.pickIn({[k1]: [], ..., [kN]: []})</code></a>.</p>
+<h5><a id="L-propsExcept"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-propsExcept">■</a> <a href="#L-propsExcept" title="L.propsExcept: (p1: a1, ...ps) -&gt; PLens {p1: a1, ...ps, ...o} {...o}"><code>L.propsExcept(...propNames) ~&gt; lens</code></a> <small><sup>v14.11.0</sup></small></h5>
+<p><code>L.propsExcept</code> focuses on all the properties of an object except the specified
+properties.  See also <a href="#L-props"><code>L.props</code></a>.</p>
+<pre><code class="hljs lang-js">L.modify(
+  L.partsOf(L.flat(L.propsExcept(&#39;id&#39;))),
+  R.reverse,
+  [{id: 1, x: 1, y: 2}, {id: 2, x: 2}, {id: 3, x: 3, z: 4}]
+)
+</code></pre>
 <h5><a id="L-propsOf"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-propsOf">■</a> <a href="#L-propsOf" title="L.propsOf: {p1: a1, ...ps} -&gt; PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}"><code>L.propsOf(object) ~&gt; lens</code></a> <small><sup>v11.13.0</sup></small></h5>
 <p><code>L.propsOf(o)</code> is shorthand for <a href="#L-props"><code>L.props(...Object.keys(o))</code></a>
 allowing one to focus on the properties specified via the given sample object.</p>
