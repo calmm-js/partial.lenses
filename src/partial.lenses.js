@@ -1953,6 +1953,12 @@ export function props() {
   return pick(template)
 }
 
+export function propsExcept() {
+  const setish = I.create(null)
+  for (let i = 0, n = arguments.length; i < n; ++i) setish[arguments[i]] = 'd'
+  return [disjoint(k => setish[k] || 't'), 't']
+}
+
 export const propsOf = o => props.apply(null, I.keys(o))
 
 export function removable(...ps) {

@@ -190,6 +190,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.pickIn({prop: lens, ...props}) ~> lens`](#L-pickIn "L.pickIn: {p1: PLens s1 a1, ...pls} -> PLens {p1: s1, ...pls} {p1: a1, ...pls}") <small><sup>v11.11.0</sup></small>
       * [`L.prop(propName) ~> lens`](#L-prop "L.prop: (p: a) -> PLens {p: a, ...ps} a") or `propName` <small><sup>v1.0.0</sup></small>
       * [`L.props(...propNames) ~> lens`](#L-props "L.props: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v1.4.0</sup></small>
+      * [`L.propsExcept(...propNames) ~> lens`](#L-propsExcept "L.propsExcept: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {...o}") <small><sup>v14.11.0</sup></small>
       * [`L.propsOf(object) ~> lens`](#L-propsOf "L.propsOf: {p1: a1, ...ps} -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v11.13.0</sup></small>
       * [`L.removable(...propNames) ~> lens`](#L-removable "L.removable: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps, ...o}") <small><sup>v9.2.0</sup></small>
     * [Lensing strings](#lensing-strings)
@@ -3704,7 +3705,8 @@ none of the properties is defined.  This allows `L.props` to be used with
 e.g. [`L.choices`](#L-choices).  Otherwise the view is an object containing a
 subset of the properties.  Setting through `L.props` updates the whole subset of
 properties, which means that any missing properties are removed if they did
-exists previously.  When set, any extra properties are ignored.
+exists previously.  When set, any extra properties are ignored.  See also
+[`L.propsExcept`](#L-propsExcept).
 
 ```js
 L.set(L.props('x', 'y'), {x: 4}, {x: 1, y: 2, z: 3})
@@ -3713,6 +3715,20 @@ L.set(L.props('x', 'y'), {x: 4}, {x: 1, y: 2, z: 3})
 
 Note that `L.props(k1, ..., kN)` is equivalent to [`L.pick({[k1]: k1, ..., [kN]:
 kN})`](#L-pick) and [`L.pickIn({[k1]: [], ..., [kN]: []})`](#L-pickIn).
+
+##### <a id="L-propsExcept"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-propsExcept) [`L.propsExcept(...propNames) ~> lens`](#L-propsExcept "L.propsExcept: (p1: a1, ...ps) -> PLens {p1: a1, ...ps, ...o} {...o}") <small><sup>v14.11.0</sup></small>
+
+`L.propsExcept` focuses on all the properties of an object except the specified
+properties.  See also [`L.props`](#L-props).
+
+```js
+L.modify(
+  L.partsOf(L.flat(L.propsExcept('id'))),
+  R.reverse,
+  [{id: 1, x: 1, y: 2}, {id: 2, x: 2}, {id: 3, x: 3, z: 4}]
+)
+// [{id: 1, x: 3, z: 4}, {id: 2, x: 2}, {id: 3, x: 1, y: 2}]
+```
 
 ##### <a id="L-propsOf"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-propsOf) [`L.propsOf(object) ~> lens`](#L-propsOf "L.propsOf: {p1: a1, ...ps} -> PLens {p1: a1, ...ps, ...o} {p1: a1, ...ps}") <small><sup>v11.13.0</sup></small>
 
