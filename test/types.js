@@ -379,6 +379,7 @@ export const suffix = T.fn([T_sliceIndex], T_lens)
 export const pickIn = T.fn([template(T_lens)], T_lens)
 export const prop = T.fn([T.string], T_lens)
 export const props = T.fnVarN(0, T.string, T_lens)
+export const propsExcept = T.fnVarN(0, T.string, T_lens)
 export const propsOf = T.fn([T.instanceOf(Object)], T_lens)
 export const removable = T.fnVarN(0, T.string, T_lens)
 

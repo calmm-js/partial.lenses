@@ -343,6 +343,7 @@ describe('arities', () => {
     productAs: 3,
     prop: 1,
     props: 0,
+    propsExcept: 0,
     propsOf: 1,
     query: 0,
     querystring: 4,
@@ -1210,6 +1211,13 @@ describe('L.props', () => {
     'b',
     'y'
   ])
+})
+
+describe('L.propsExcept', () => {
+  testEq(() => L.get(L.propsExcept('x', 'y'), {x: 1, y: 2}), undefined)
+  testEq(() => L.get(L.propsExcept('x', 'y'), {x: 1, z: 2}), {z: 2})
+  testEq(() => L.set(L.propsExcept('x'), {z: 3}, {x: 1, y: 2}), {x: 1, z: 3})
+  testEq(() => L.remove(L.propsExcept('x'), {x: 1, y: 2}), {x: 1})
 })
 
 describe('L.assign', () => {
