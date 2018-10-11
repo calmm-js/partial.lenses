@@ -76,10 +76,10 @@
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",
     "ramda": "^0.25.0",
-    "rollup": "^0.66.4",
+    "rollup": "^0.66.6",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-uglify": "^6.0.0",
     "sprintf-js": "^1.1.1",
     "watch-run": "^1.2.5"
