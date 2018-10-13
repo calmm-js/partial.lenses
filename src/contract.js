@@ -1,14 +1,14 @@
-import * as I from 'infestines'
+import * as I from './ext/infestines'
 
 export const dep = xs2xsyC => xsy =>
   I.arityN(
-    xsy.length,
+    xsy[I.LENGTH],
     I.defineNameU((...xs) => xs2xsyC(...xs)(xsy)(...xs), xsy.name)
   )
 
 export const fn = (xsC, yC) => xsy =>
   I.arityN(
-    xsy.length,
+    xsy[I.LENGTH],
     I.defineNameU((...xs) => yC(xsy.apply(null, xsC(xs))), xsy.name)
   )
 
@@ -25,13 +25,13 @@ export const nth = (i, xC) => xs => {
 export const par = (i, xC) => args(nth(i, xC))
 
 export const and = (...xCs) => x => {
-  for (let i = 0, n = xCs.length; i < n; ++i) x = xCs[i](x)
+  for (let i = 0, n = xCs[I.LENGTH]; i < n; ++i) x = xCs[i](x)
   return x
 }
 
 export const or = (...xCs) => x => {
   let es = null
-  for (let i = 0, n = xCs.length; i < n; ++i) {
+  for (let i = 0, n = xCs[I.LENGTH]; i < n; ++i) {
     try {
       return xCs[i](x)
     } catch (e) {
@@ -48,9 +48,9 @@ export const ef = xE =>
   }, xE.name)
 
 export const tup = (...xCs) => xs => {
-  if (xs.length !== xCs.length)
+  if (xs[I.LENGTH] !== xCs[I.LENGTH])
     throw Error(
-      `Expected array of ${xCs.length} elements, but got ${xs.length}`
+      `Expected array of ${xCs[I.LENGTH]} elements, but got ${xs[I.LENGTH]}`
     )
   return and.apply(null, xCs.map((xC, i) => nth(i, xC)))(xs)
 }

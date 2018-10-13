@@ -78,7 +78,7 @@ const isArrayOrPrimitive = x => !(x instanceof Object) || I.isArray(x)
 const rev = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
   function reverse(xs) {
     if (seemsArrayLike(xs)) {
-      let n = xs.length
+      let n = xs[I.LENGTH]
       const ys = Array(n)
       let i = 0
       while (n) ys[i++] = xs[--n]
@@ -96,7 +96,7 @@ const mapPartialIndexU = (process.env.NODE_ENV === 'production'
       if (xs !== ys) I.freeze(ys)
       return ys
     })((xi2y, xs, skip) => {
-  const n = xs.length
+  const n = xs[I.LENGTH]
   const ys = Array(n)
   let j = 0
   let same = true
@@ -110,7 +110,7 @@ const mapPartialIndexU = (process.env.NODE_ENV === 'production'
     }
   }
   if (j !== n) {
-    ys.length = j
+    ys[I.LENGTH] = j
     return ys
   } else if (same) {
     return xs
@@ -125,7 +125,7 @@ const mapIfArrayLike = (xi2y, xs) =>
 const copyToFrom = (process.env.NODE_ENV === 'production'
   ? id
   : fn => (ys, k, xs, i, j) =>
-      ys.length === k + j - i
+      ys[I.LENGTH] === k + j - i
         ? I.freeze(fn(ys, k, xs, i, j))
         : fn(ys, k, xs, i, j))((ys, k, xs, i, j) => {
   while (i < j) ys[k++] = xs[i++]
@@ -135,7 +135,7 @@ const copyToFrom = (process.env.NODE_ENV === 'production'
 //
 
 function selectInArrayLike(xi2v, xs) {
-  for (let i = 0, n = xs.length; i < n; ++i) {
+  for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) {
     const v = xi2v(xs[i], i)
     if (void 0 !== v) return v
   }
@@ -205,7 +205,7 @@ const reqIndex = function index(x) {
 }
 
 function reqFunction(o) {
-  if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2)))
+  if (!(I.isFunction(o) && (o[I.LENGTH] === 4 || o[I.LENGTH] <= 2)))
     errorGiven(expectedOptic, o, opticIsEither)
 }
 
@@ -226,7 +226,7 @@ function reqOptic(o) {
       break
     case 'object':
       reqArray(o)
-      for (let i = 0, n = o.length; i < n; ++i) reqOptic(o[i])
+      for (let i = 0, n = o[I.LENGTH]; i < n; ++i) reqOptic(o[i])
       break
     default:
       reqFunction(o)
@@ -285,7 +285,7 @@ const consTo = (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(
 function traversePartialIndex(A, xi2yA, xs, skip) {
   const {map, ap} = A
   let xsA = A.of(consExcept)
-  const n = xs.length
+  const n = xs[I.LENGTH]
   if (map === I.sndU) {
     for (let i = 0; i < n; ++i) xsA = ap(xsA, xi2yA(xs[i], i))
     return xsA
@@ -337,7 +337,7 @@ const setIndex = (process.env.NODE_ENV === 'production'
   ? id
   : C.fn(C.nth(0, C.ef(reqIndex)), I.freeze))((i, x, xs) => {
   if (!seemsArrayLike(xs)) xs = ''
-  const n = xs.length
+  const n = xs[I.LENGTH]
   if (void 0 !== x) {
     const m = Math.max(i + 1, n)
     const ys = Array(m)
@@ -362,7 +362,7 @@ const composedMiddle = (o, r) => (F, xi2yF) => (
 )
 
 function composed(oi0, os) {
-  let n = os.length - oi0
+  let n = os[I.LENGTH] - oi0
   if (n < 2) {
     return n ? toFunction(os[oi0]) : identity
   } else {
@@ -391,7 +391,7 @@ const setU = (process.env.NODE_ENV === 'production'
     case 'object':
       return modifyComposed(o, 0, s, x)
     default:
-      return o.length === 4 ? o(s, void 0, I.Identity, I.always(x)) : s
+      return o[I.LENGTH] === 4 ? o(s, void 0, I.Identity, I.always(x)) : s
   }
 })
 
@@ -406,7 +406,7 @@ const modifyU = (process.env.NODE_ENV === 'production'
     case 'object':
       return modifyComposed(o, xi2x, s)
     default:
-      return o.length === 4
+      return o[I.LENGTH] === 4
         ? o(s, void 0, I.Identity, xi2x)
         : (xi2x(o(s, void 0), void 0), s)
   }
@@ -424,7 +424,7 @@ const getAsU = (process.env.NODE_ENV === 'production'
     case 'number':
       return xi2y(getIndex(l, s), l)
     case 'object': {
-      const n = l.length
+      const n = l[I.LENGTH]
       for (let i = 0, o; i < n; ++i)
         switch (typeof (o = l[i])) {
           case 'string':
@@ -439,7 +439,7 @@ const getAsU = (process.env.NODE_ENV === 'production'
       return xi2y(s, l[n - 1])
     }
     default:
-      return xi2y !== id && l.length !== 4
+      return xi2y !== id && l[I.LENGTH] !== 4
         ? xi2y(l(s, void 0), void 0)
         : l(s, void 0, Select, xi2y)
   }
@@ -448,7 +448,7 @@ const getAsU = (process.env.NODE_ENV === 'production'
 const getU = (l, s) => getAsU(id, l, s)
 
 function modifyComposed(os, xi2y, x, y) {
-  let n = os.length
+  let n = os[I.LENGTH]
   const xs = Array(n)
   for (let i = 0, o; i < n; ++i) {
     xs[i] = x
@@ -465,7 +465,7 @@ function modifyComposed(os, xi2y, x, y) {
         break
     }
   }
-  if (n === os.length) x = xi2y ? xi2y(x, os[n - 1]) : y
+  if (n === os[I.LENGTH]) x = xi2y ? xi2y(x, os[n - 1]) : y
   for (let o; 0 <= --n; )
     x = I.isString((o = os[n])) ? setProp(o, x, xs[n]) : setIndex(o, x, xs[n])
   return x
@@ -544,7 +544,7 @@ const branchAssemble = (process.env.NODE_ENV === 'production'
   ? id
   : C.res(C.res(I.freeze)))(ks => xs => {
   const r = {}
-  let i = ks.length
+  let i = ks[I.LENGTH]
   while (i--) {
     const v = xs[0]
     if (void 0 !== v) {
@@ -620,14 +620,14 @@ const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
       ks.push(k)
       xsA = ap(map(cpair, xsA), k2o[k](xO[k], k, A, xi2yA))
     }
-    const t = ks.length ? true : void 0
+    const t = ks[I.LENGTH] ? true : void 0
     for (const k in xO) {
       if (void 0 === (t && k2o[k])) {
         ks.push(k)
         xsA = ap(map(cpair, xsA), otherwise(xO[k], k, A, xi2yA))
       }
     }
-    return ks.length ? map(branchAssemble(ks), xsA) : of(x)
+    return ks[I.LENGTH] ? map(branchAssemble(ks), xsA) : of(x)
   }
 }
 
@@ -644,7 +644,7 @@ const replaced = (inn, out, x) => (I.acyclicEqualsU(x, inn) ? out : x)
 
 function findIndexHint(hint, xi2b, xs) {
   let u = hint.hint
-  const n = xs.length
+  const n = xs[I.LENGTH]
   if (n <= u) u = n - 1
   if (u < 0) u = 0
   let d = u - 1
@@ -667,7 +667,7 @@ const partitionIntoIndex = (process.env.NODE_ENV === 'production'
         })
       )
     ))((xi2b, xs, ts, fs) => {
-  for (let i = 0, n = xs.length, x; i < n; ++i)
+  for (let i = 0, n = xs[I.LENGTH], x; i < n; ++i)
     (xi2b((x = xs[i]), i) ? ts : fs).push(x)
 })
 
@@ -676,9 +676,11 @@ const fromReader = wi2x =>
 
 //
 
-const reValue = m => m[0]
-const reIndex = m => m.index
-const reLastIndex = m => reIndex(m) + m[0].length
+const LAST_INDEX = 'lastIndex'
+const INDEX = 'index'
+const RE_VALUE = 0
+
+const reLastIndex = m => m[INDEX] + m[0][I.LENGTH]
 
 const reNext = (process.env.NODE_ENV === 'production'
   ? id
@@ -691,10 +693,10 @@ const reNext = (process.env.NODE_ENV === 'production'
         )
       return res
     })((m, re) => {
-  const lastIndex = re.lastIndex
-  re.lastIndex = reLastIndex(m)
+  const lastIndex = re[LAST_INDEX]
+  re[LAST_INDEX] = reLastIndex(m)
   const n = re.exec(m.input)
-  re.lastIndex = lastIndex
+  re[LAST_INDEX] = lastIndex
   return n && n[0] && n
 })
 
@@ -713,7 +715,7 @@ const iterToArray = xs => {
 
 function iterSelect(xi2y, t, s) {
   while ((s = reNext(s, t))) {
-    const y = xi2y(reValue(s), reIndex(s))
+    const y = xi2y(s[RE_VALUE], s[INDEX])
     if (void 0 !== y) return y
   }
 }
@@ -721,7 +723,7 @@ function iterSelect(xi2y, t, s) {
 function iterEager(map, ap, of, xi2yA, t, s) {
   let r = of(iterCollect)
   while ((s = reNext(s, t)))
-    r = ap(ap(map(iterCollect, of(s)), r), xi2yA(reValue(s), reIndex(s)))
+    r = ap(ap(map(iterCollect, of(s)), r), xi2yA(s[RE_VALUE], s[INDEX]))
   return r
 }
 
@@ -743,9 +745,9 @@ const keyed = isoU(
     I.isArray,
     (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(es => {
       const o = {}
-      for (let i = 0, n = es.length; i < n; ++i) {
+      for (let i = 0, n = es[I.LENGTH]; i < n; ++i) {
         const entry = es[i]
-        if (entry.length === 2) o[entry[0]] = entry[1]
+        if (entry[I.LENGTH] === 2) o[entry[0]] = entry[1]
       }
       return o
     })
@@ -758,10 +760,10 @@ const matchesJoin = input => matchesIn => {
   let result = ''
   let lastIndex = 0
   const matches = iterToArray(matchesIn)
-  const n = matches.length
+  const n = matches[I.LENGTH]
   for (let j = n - 2; j !== -2; j += -2) {
     const m = matches[j]
-    result += input.slice(lastIndex, reIndex(m))
+    result += input.slice(lastIndex, m[INDEX])
     const s = matches[j + 1]
     if (void 0 !== s) result += s
     lastIndex = reLastIndex(m)
@@ -862,7 +864,7 @@ const orAlternativelyU = function orAlternatively(back, prim) {
 
 const makeSemi = op =>
   copyName(function(_) {
-    let n = arguments.length
+    let n = arguments[I.LENGTH]
     let r = arguments[--n]
     while (n) {
       r = op(r, arguments[--n])
@@ -905,10 +907,10 @@ const iteratePartial = aa =>
 //
 
 const crossPartial = (op, ls, or) => (xs, ss) => {
-  const n = ls.length
+  const n = ls[I.LENGTH]
   if (!seemsArrayLike(xs)) return
   if (!seemsArrayLike(ss)) ss = ''
-  const m = Math.max(n, xs.length, ss.length)
+  const m = Math.max(n, xs[I.LENGTH], ss[I.LENGTH])
   const ys = Array(m)
   for (let i = 0; i < m; ++i)
     if (void 0 === (ys[i] = op(i < n ? ls[i] : or, xs[i], ss[i]))) return
@@ -956,7 +958,7 @@ const isVariable = I.isInstanceOf(Variable)
 
 const vars = []
 function nVars(n) {
-  while (I.length(vars) < n) vars.push(new Variable(I.length(vars)))
+  while (vars[I.LENGTH] < n) vars.push(new Variable(vars[I.LENGTH]))
   return vars
 }
 
@@ -992,7 +994,7 @@ function checkPattern(kinds, p) {
     throw Error('Spread patterns must be inside objects or arrays.')
   } else if (I.isArray(p)) {
     let nSpread = 0
-    for (let i = 0, n = I.length(p); i < n; ++i) {
+    for (let i = 0, n = p[I.LENGTH]; i < n; ++i) {
       const pi = p[i]
       if (isSpread(pi)) {
         if (nSpread++)
@@ -1050,7 +1052,7 @@ function toMatch(kinds, p) {
     const init = []
     const rest = []
     let spread = void 0
-    const n = I.length(p)
+    const n = p[I.LENGTH]
     for (let i = 0; i < n; ++i) {
       const x = p[i]
       if (isSpread(x)) {
@@ -1063,11 +1065,11 @@ function toMatch(kinds, p) {
     }
     return (e, x) => {
       if (!seemsArrayLike(x)) return
-      let l = x.length
+      let l = x[I.LENGTH]
       if (void 0 !== spread ? l < n - 1 : l !== n) return
-      const j = init.length
+      const j = init[I.LENGTH]
       for (let i = 0; i < j; ++i) if (!init[i](e, x[i])) return
-      const k = rest.length
+      const k = rest[I.LENGTH]
       l -= k
       for (let i = 0; i < k; ++i) if (!rest[i](e, x[l + i])) return
       return (
@@ -1116,7 +1118,7 @@ function toSubst(p, k) {
     const init = []
     const rest = []
     let spread = void 0
-    const n = I.length(p)
+    const n = p[I.LENGTH]
     for (let i = 0; i < n; ++i) {
       const x = p[i]
       if (isSpread(x)) {
@@ -1128,12 +1130,13 @@ function toSubst(p, k) {
     }
     return freezeResultInDev(e => {
       const r = []
-      for (let i = 0, n = init.length; i < n; ++i) pushDefined(r, init[i](e))
+      for (let i = 0, n = init[I.LENGTH]; i < n; ++i) pushDefined(r, init[i](e))
       if (0 <= spread) {
         const xs = e[spread]
-        if (xs) for (let i = 0, n = xs.length; i < n; ++i) pushDefined(r, xs[i])
+        if (xs)
+          for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) pushDefined(r, xs[i])
       }
-      for (let i = 0, n = rest.length; i < n; ++i) pushDefined(r, rest[i](e))
+      for (let i = 0, n = rest[I.LENGTH]; i < n; ++i) pushDefined(r, rest[i](e))
       return r
     })
   } else {
@@ -1160,7 +1163,7 @@ const oneway = (n, m, s) => x => {
 // Auxiliary
 
 export const seemsArrayLike = x =>
-  (x instanceof Object && ((x = x.length), x === x >> 0 && 0 <= x)) ||
+  (x instanceof Object && ((x = x[I.LENGTH]), x === x >> 0 && 0 <= x)) ||
   I.isString(x)
 
 // Internals
@@ -1180,7 +1183,7 @@ export const toFunction = (process.env.NODE_ENV === 'production'
     case 'object':
       return composed(0, o)
     default:
-      return o.length === 4 ? o : fromReader(o)
+      return o[I.LENGTH] === 4 ? o : fromReader(o)
   }
 })
 
@@ -1207,7 +1210,7 @@ export const traverse = I.curry(traverseU)
 // Nesting
 
 export function compose() {
-  let n = arguments.length
+  let n = arguments[I.LENGTH]
   if (n < 2) {
     return n ? arguments[0] : identity
   } else {
@@ -1219,7 +1222,7 @@ export function compose() {
 
 export function flat() {
   const r = [flatten]
-  for (let i = 0, n = arguments.length; i < n; ++i)
+  for (let i = 0, n = arguments[I.LENGTH]; i < n; ++i)
     r.push(arguments[i], flatten)
   return r
 }
@@ -1250,11 +1253,11 @@ export const cond = (process.env.NODE_ENV === 'production'
         C.arr(C.or(C.tup(C.ef(reqOptic)), pair))(cs.slice(-1))
         return fn(...cs)
       })(function cond() {
-  let n = arguments.length
+  let n = arguments[I.LENGTH]
   let r = zero
   while (n--) {
     const c = arguments[n]
-    r = c.length < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0])
+    r = c[I.LENGTH] < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0])
   }
   return r
 })
@@ -1270,11 +1273,11 @@ export const condOf = (process.env.NODE_ENV === 'production'
       })(function condOf(of) {
   of = toFunction(of)
 
-  let n = arguments.length - 1
+  let n = arguments[I.LENGTH] - 1
   if (!n) return zero
 
   let def = arguments[n]
-  if (def.length === 1) {
+  if (def[I.LENGTH] === 1) {
     --n
     def = toFunction(def[0])
   } else {
@@ -1367,7 +1370,7 @@ export const skipIx = setName(tieIx(I.sndU), 'skipIx')
 export function getLog(l, s) {
   let {p, c} = traverseU(SelectLog, x => ({p: [x, consExcept], x, c: x}), l, s)
   p = pushTo(p, ['%O'])
-  for (let i = 2; i < p.length; ++i) p[0] += ' <= %O'
+  for (let i = 2; i < p[I.LENGTH]; ++i) p[0] += ' <= %O'
   console.log.apply(console, p)
   return c
 }
@@ -1376,7 +1379,7 @@ export function log() {
   const show = I.curry(function log(dir, x) {
     console.log.apply(
       console,
-      copyToFrom([], 0, arguments, 0, arguments.length).concat([dir, x])
+      copyToFrom([], 0, arguments, 0, arguments[I.LENGTH]).concat([dir, x])
     )
     return x
   })
@@ -1401,7 +1404,7 @@ export const seq = (process.env.NODE_ENV === 'production'
       function seq(...xMs) {
         return C.par(2, C.ef(reqMonad('seq')))(fn(...xMs))
       })(function seq() {
-  let n = arguments.length
+  let n = arguments[I.LENGTH]
   let r = zero
   if (n) {
     r = toFunction(arguments[--n])
@@ -1442,7 +1445,7 @@ export const branchOr = (process.env.NODE_ENV === 'production'
 export const branch = branchOr(zero)
 
 export function branches() {
-  const n = arguments.length
+  const n = arguments[I.LENGTH]
   const template = {}
   for (let i = 0; i < n; ++i) template[arguments[i]] = identity
   return branch(template)
@@ -1482,7 +1485,7 @@ export function matches(re) {
       if (re.global) {
         const m0 = ['']
         m0.input = x
-        m0.index = 0
+        m0[INDEX] = 0
         if (Select === C) {
           return iterSelect(xi2yC, re, m0)
         } else {
@@ -1494,7 +1497,7 @@ export function matches(re) {
         if (m)
           return map(
             y => x.replace(re, void 0 !== y ? y : ''),
-            xi2yC(m[0], reIndex(m))
+            xi2yC(m[0], m[INDEX])
           )
       }
     }
@@ -1520,7 +1523,7 @@ export function flatten(x, i, C, xi2yC) {
 
 export function query() {
   const r = []
-  for (let i = 0, n = arguments.length; i < n; ++i) {
+  for (let i = 0, n = arguments[I.LENGTH]; i < n; ++i) {
     const o = toFunction(arguments[i])
     r.push(satisfying(isDefinedAt(o)), o)
   }
@@ -1657,7 +1660,7 @@ export const foldr = I.curry(function foldr(f, r, t, s) {
     t,
     s
   )
-  for (let i = xs.length - 1; 0 <= i; --i) r = f(r, xs[i], is[i])
+  for (let i = xs[I.LENGTH] - 1; 0 <= i; --i) r = f(r, xs[i], is[i])
   return r
 })
 
@@ -1684,7 +1687,7 @@ export const forEachWith = I.curry(function forEachWith(newC, ef, t, s) {
 })
 
 export function get(l, s) {
-  return 1 < arguments.length ? getAsU(id, l, s) : s => getAsU(id, l, s)
+  return 1 < arguments[I.LENGTH] ? getAsU(id, l, s) : s => getAsU(id, l, s)
 }
 
 export const getAs = I.curry(getAsU)
@@ -1833,7 +1836,7 @@ export const rewrite = yi2y => (x, i, F, xi2yF) =>
 // Lensing arrays
 
 export function append(xs, _, F, xi2yF) {
-  const i = seemsArrayLike(xs) ? xs.length : 0
+  const i = seemsArrayLike(xs) ? xs[I.LENGTH] : 0
   return F.map(x => setIndex(i, x, xs), xi2yF(void 0, i))
 }
 
@@ -1859,8 +1862,8 @@ export const filter = (process.env.NODE_ENV === 'production'
     let fs = I.array0
     if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, (ts = []), (fs = []))
     return F.map(ts => {
-      const tsN = ts ? ts.length : 0
-      const fsN = fs.length
+      const tsN = ts ? ts[I.LENGTH] : 0
+      const fsN = fs[I.LENGTH]
       const n = tsN + fsN
       return n === fsN
         ? fs
@@ -1870,7 +1873,7 @@ export const filter = (process.env.NODE_ENV === 'production'
 })
 
 export function find(xih2b) {
-  const hint = arguments.length > 1 ? arguments[1] : {hint: 0}
+  const hint = arguments[I.LENGTH] > 1 ? arguments[1] : {hint: 0}
   return function find(xs, _i, F, xi2yF) {
     const ys = seemsArrayLike(xs) ? xs : ''
     const i = (hint.hint = findIndexHint(hint, xih2b, ys))
@@ -1881,7 +1884,7 @@ export function find(xih2b) {
 export function findWith(o) {
   const oo = toFunction(o)
   const p = isDefinedAt(oo)
-  return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo]
+  return [arguments[I.LENGTH] > 1 ? find(p, arguments[1]) : find(p), oo]
 }
 
 export const first = 0
@@ -1889,8 +1892,8 @@ export const first = 0
 export const index = process.env.NODE_ENV !== 'production' ? C.ef(reqIndex) : id
 
 export const last = choose(function last(maybeArray) {
-  return seemsArrayLike(maybeArray) && maybeArray.length
-    ? maybeArray.length - 1
+  return seemsArrayLike(maybeArray) && maybeArray[I.LENGTH]
+    ? maybeArray[I.LENGTH] - 1
     : 0
 })
 
@@ -1913,11 +1916,11 @@ export const slice = (process.env.NODE_ENV === 'production'
     ))(function slice(begin, end) {
   return function slice(xs, i, F, xsi2yF) {
     const seems = seemsArrayLike(xs)
-    const xsN = seems && xs.length
+    const xsN = seems && xs[I.LENGTH]
     const b = sliceIndex(0, xsN, 0, begin)
     const e = sliceIndex(b, xsN, xsN, end)
     return F.map(zs => {
-      const zsN = zs ? zs.length : 0
+      const zsN = zs ? zs[I.LENGTH] : 0
       const bPzsN = b + zsN
       const n = xsN - e + bPzsN
       return copyToFrom(
@@ -1947,7 +1950,7 @@ export const prop =
       }
 
 export function props() {
-  const n = arguments.length
+  const n = arguments[I.LENGTH]
   const template = {}
   for (let i = 0, k; i < n; ++i) template[(k = arguments[i])] = k
   return pick(template)
@@ -1955,7 +1958,8 @@ export function props() {
 
 export function propsExcept() {
   const setish = I.create(null)
-  for (let i = 0, n = arguments.length; i < n; ++i) setish[arguments[i]] = 'd'
+  for (let i = 0, n = arguments[I.LENGTH]; i < n; ++i)
+    setish[arguments[i]] = 'd'
   return [disjoint(k => setish[k] || 't'), 't']
 }
 
@@ -1964,7 +1968,7 @@ export const propsOf = o => props.apply(null, I.keys(o))
 export function removable(...ps) {
   function drop(y) {
     if (!(y instanceof Object)) return y
-    for (let i = 0, n = ps.length; i < n; ++i) if (I.hasU(ps[i], y)) return y
+    for (let i = 0, n = ps[I.LENGTH]; i < n; ++i) if (I.hasU(ps[i], y)) return y
   }
   return (x, i, F, xi2yF) => F.map(drop, xi2yF(x, i))
 }
@@ -1994,7 +1998,7 @@ export const replace = I.curry(function replace(inn, out) {
 // Operations on isomorphisms
 
 export function getInverse(o, s) {
-  return 1 < arguments.length ? setU(o, s, void 0) : s => setU(o, s, void 0)
+  return 1 < arguments[I.LENGTH] ? setU(o, s, void 0) : s => setU(o, s, void 0)
 }
 
 // Creating new isomorphisms
@@ -2005,7 +2009,7 @@ export const _ = new Variable(-1)
 
 export function mapping(ps) {
   let n = 0
-  if (I.isFunction(ps)) ps = ps.apply(null, nVars((n = ps.length)))
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars((n = ps[I.LENGTH])))
   checkPatternPairInDev(ps)
   const kinds = Array(n)
   const ms = ps.map(p => toMatch(kinds, p))
@@ -2014,7 +2018,7 @@ export function mapping(ps) {
 }
 
 export function mappings(ps) {
-  if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps.length))
+  if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps[I.LENGTH]))
   return alternatives.apply(null, ps.map(mapping))
 }
 
@@ -2074,7 +2078,7 @@ export const indexed = isoU(
     seemsArrayLike,
     (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
       function indexed(xs) {
-        const n = xs.length
+        const n = xs[I.LENGTH]
         const xis = Array(n)
         for (let i = 0; i < n; ++i) xis[i] = [i, xs[i]]
         return xis
@@ -2084,13 +2088,13 @@ export const indexed = isoU(
   expect(
     I.isArray,
     (process.env.NODE_ENV === 'production' ? id : C.res(I.freeze))(xis => {
-      let n = xis.length
+      let n = xis[I.LENGTH]
       let xs = Array(n)
       for (let i = 0; i < n; ++i) {
         const xi = xis[i]
-        if (xi.length === 2) xs[xi[0]] = xi[1]
+        if (xi[I.LENGTH] === 2) xs[xi[0]] = xi[1]
       }
-      n = xs.length
+      n = xs[I.LENGTH]
       let j = 0
       for (let i = 0; i < n; ++i) {
         const x = xs[i]
@@ -2099,7 +2103,7 @@ export const indexed = isoU(
           ++j
         }
       }
-      xs.length = j
+      xs[I.LENGTH] = j
       return xs
     })
   )
@@ -2129,7 +2133,7 @@ export const multikeyed = isoU(
         for (const k in o) {
           const v = o[k]
           if (I.isArray(v))
-            for (let i = 0, n = v.length; i < n; ++i) ps.push([k, v[i]])
+            for (let i = 0, n = v[I.LENGTH]; i < n; ++i) ps.push([k, v[i]])
           else ps.push([k, v])
         }
         return ps
@@ -2141,9 +2145,9 @@ export const multikeyed = isoU(
     (process.env.NODE_ENV === 'production' ? id : C.res(freezeObjectOfObjects))(
       ps => {
         const o = I.create(null)
-        for (let i = 0, n = ps.length; i < n; ++i) {
+        for (let i = 0, n = ps[I.LENGTH]; i < n; ++i) {
           const entry = ps[i]
-          if (entry.length === 2) {
+          if (entry[I.LENGTH] === 2) {
             const k = entry[0]
             const v = entry[1]
             const was = o[k]
@@ -2189,7 +2193,7 @@ export const uriComponent = isoU(
 export const dropPrefix = pfx =>
   stringIsoU(
     function dropPrefix(x) {
-      return x.startsWith(pfx) ? x.slice(pfx.length) : undefined
+      return x.startsWith(pfx) ? x.slice(pfx[I.LENGTH]) : undefined
     },
     x => pfx + x
   )
@@ -2197,7 +2201,9 @@ export const dropPrefix = pfx =>
 export const dropSuffix = sfx =>
   stringIsoU(
     function dropSuffix(x) {
-      return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined
+      return x.endsWith(sfx)
+        ? x.slice(0, x[I.LENGTH] - sfx[I.LENGTH])
+        : undefined
     },
     x => x + sfx
   )
@@ -2215,7 +2221,7 @@ export const split = (process.env.NODE_ENV === 'production'
       function split(_sep) {
         return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)])
       })(function split(sep) {
-  const re = arguments.length > 1 ? arguments[1] : sep
+  const re = arguments[I.LENGTH] > 1 ? arguments[1] : sep
   return isoU(
     expect(I.isString, x => x.split(re)),
     expect(I.isArray, xs => xs.join(sep))
@@ -2228,14 +2234,14 @@ export const uncouple = (process.env.NODE_ENV === 'production'
       function uncouple(_sep) {
         return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)])
       })(function uncouple(sep) {
-  const re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '')
+  const re = toRegExpU(arguments[I.LENGTH] > 1 ? arguments[1] : sep, '')
   return isoU(
     expect(I.isString, x => {
       const m = re.exec(x)
-      return m ? [x.slice(0, reIndex(m)), x.slice(reLastIndex(m))] : [x, '']
+      return m ? [x.slice(0, m[INDEX]), x.slice(reLastIndex(m))] : [x, '']
     }),
     kv => {
-      if (I.isArray(kv) && kv.length === 2) {
+      if (I.isArray(kv) && kv[I.LENGTH] === 2) {
         const k = kv[0]
         const v = kv[1]
         return v ? k + sep + v : k
@@ -2273,7 +2279,7 @@ export {
 export const pointer = s => {
   if (s[0] === '#') s = decodeURIComponent(s)
   const ts = s.split('/')
-  const n = ts.length
+  const n = ts[I.LENGTH]
   for (let i = 1; i < n; ++i) {
     const t = ts[i]
     ts[i - 1] = /^(0|[1-9]\d*)$/.test(t)
@@ -2282,6 +2288,6 @@ export const pointer = s => {
         ? ifElse(isArrayOrPrimitive, append, t)
         : t.replace('~1', '/').replace('~0', '~')
   }
-  ts.length = n - 1
+  ts[I.LENGTH] = n - 1
   return ts
 }

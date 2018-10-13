@@ -2,6 +2,8 @@ import * as I from 'infestines'
 
 export * from 'infestines'
 
+export const LENGTH = 'length'
+
 export const addU = (x, y) => x + y
 export const multiplyU = (x, y) => x * y
 
@@ -34,5 +36,3 @@ export function isPrimitiveData(x) {
 }
 
 export const iterator = Symbol.iterator
-
-export const length = x => x.length
