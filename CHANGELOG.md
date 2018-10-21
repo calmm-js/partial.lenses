@@ -1,5 +1,10 @@
 # Partial Lenses Changelog
 
+## 14.11.1
+
+Fixed `L.subset` not to call the predicate in case the focus is already
+`undefined`.
+
 ## 14.2.1
 
 Fixed `L.query`, `L.findWith`, and `L.orElse` (and other optics using `L.orElse`

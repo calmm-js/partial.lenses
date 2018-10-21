@@ -928,7 +928,7 @@ const crossOr = (process.env.NODE_ENV === 'production'
 
 const subsetPartial = p =>
   function subset(x) {
-    return p(x) ? x : undefined
+    return void 0 !== x && p(x) ? x : void 0
   }
 
 //
