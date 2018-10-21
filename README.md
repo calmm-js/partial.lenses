@@ -4185,7 +4185,8 @@ L.modify(L.identity, f, x) = f(x)
 ##### <a id="L-subset"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#L-subset) [`L.subset(maybeValue => testable) ~> isomorphism`](#L-subset "L.subset: (Maybe a -> Boolean) -> PIso a a") <small><sup>v14.3.0</sup></small>
 
 `L.subset` returns an isomorphism that acts like the identity when the data
-passes the given predicate and otherwise maps the data to `undefined`.
+passes the given predicate and otherwise maps the data to `undefined`.  The
+predicate is not called unnecessarily in case the focus is `undefined`.
 
 #### <a id="array-isomorphisms"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#array-isomorphisms) [Array isomorphisms](#array-isomorphisms)
 

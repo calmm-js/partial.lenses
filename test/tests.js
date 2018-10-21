@@ -2085,6 +2085,14 @@ describe('L.cross', () => {
 
 describe('L.subset', () => {
   testEq(() => L.get(L.array(L.subset(R.lt(0))), [1, -2, 3, -4]), [1, 3])
+  testEq(
+    () =>
+      L.collect([L.branches('foo', 'bar'), L.subset(R.has('x'))], {
+        foo: {x: 1},
+        baz: {x: 2}
+      }),
+    [{x: 1}]
+  )
 })
 
 describe('L.iterate', () => {
