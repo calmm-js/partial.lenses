@@ -4,6 +4,8 @@
   (factory((global.L = {}),global.I));
 }(this, (function (exports,I) { 'use strict';
 
+  var LENGTH = 'length';
+
   var addU = function addU(x, y) {
     return x + y;
   };
@@ -53,13 +55,9 @@
 
   var iterator = Symbol.iterator;
 
-  var length = function length(x) {
-    return x.length;
-  };
-
   var dep = function dep(xs2xsyC) {
     return function (xsy) {
-      return I.arityN(xsy.length, I.defineNameU(function () {
+      return I.arityN(xsy[LENGTH], I.defineNameU(function () {
         return xs2xsyC.apply(undefined, arguments)(xsy).apply(undefined, arguments);
       }, xsy.name));
     };
@@ -67,7 +65,7 @@
 
   var fn = function fn(xsC, yC) {
     return function (xsy) {
-      return I.arityN(xsy.length, I.defineNameU(function () {
+      return I.arityN(xsy[LENGTH], I.defineNameU(function () {
         for (var _len = arguments.length, xs = Array(_len), _key = 0; _key < _len; _key++) {
           xs[_key] = arguments[_key];
         }
@@ -103,7 +101,7 @@
     }
 
     return function (x) {
-      for (var i = 0, n = xCs.length; i < n; ++i) {
+      for (var i = 0, n = xCs[LENGTH]; i < n; ++i) {
         x = xCs[i](x);
       }return x;
     };
@@ -116,7 +114,7 @@
 
     return function (x) {
       var es = null;
-      for (var i = 0, n = xCs.length; i < n; ++i) {
+      for (var i = 0, n = xCs[LENGTH]; i < n; ++i) {
         try {
           return xCs[i](x);
         } catch (e) {
@@ -140,7 +138,7 @@
     }
 
     return function (xs) {
-      if (xs.length !== xCs.length) throw Error('Expected array of ' + xCs.length + ' elements, but got ' + xs.length);
+      if (xs[LENGTH] !== xCs[LENGTH]) throw Error('Expected array of ' + xCs[LENGTH] + ' elements, but got ' + xs[LENGTH]);
       return and.apply(null, xCs.map(function (xC, i) {
         return nth(i, xC);
       }))(xs);
@@ -244,7 +242,7 @@
 
   var rev = /*#__PURE__*/(res(I.freeze))(function reverse(xs) {
     if (seemsArrayLike(xs)) {
-      var n = xs.length;
+      var n = xs[LENGTH];
       var ys = Array(n);
       var i = 0;
       while (n) {
@@ -262,7 +260,7 @@
       return ys;
     };
   })(function (xi2y, xs, skip) {
-    var n = xs.length;
+    var n = xs[LENGTH];
     var ys = Array(n);
     var j = 0;
     var same = true;
@@ -275,7 +273,7 @@
       }
     }
     if (j !== n) {
-      ys.length = j;
+      ys[LENGTH] = j;
       return ys;
     } else if (same) {
       return xs;
@@ -290,7 +288,7 @@
 
   var copyToFrom = /*#__PURE__*/(function (fn$$1) {
     return function (ys, k, xs, i, j) {
-      return ys.length === k + j - i ? I.freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
+      return ys[LENGTH] === k + j - i ? I.freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
     };
   })(function (ys, k, xs, i, j) {
     while (i < j) {
@@ -301,7 +299,7 @@
   //
 
   function selectInArrayLike(xi2v, xs) {
-    for (var i = 0, n = xs.length; i < n; ++i) {
+    for (var i = 0, n = xs[LENGTH]; i < n; ++i) {
       var v = xi2v(xs[i], i);
       if (void 0 !== v) return v;
     }
@@ -367,7 +365,7 @@
   };
 
   function reqFunction(o) {
-    if (!(I.isFunction(o) && (o.length === 4 || o.length <= 2))) errorGiven(expectedOptic, o, opticIsEither);
+    if (!(I.isFunction(o) && (o[LENGTH] === 4 || o[LENGTH] <= 2))) errorGiven(expectedOptic, o, opticIsEither);
   }
 
   function reqFn(x) {
@@ -387,7 +385,7 @@
         break;
       case 'object':
         reqArray(o);
-        for (var i = 0, n = o.length; i < n; ++i) {
+        for (var i = 0, n = o[LENGTH]; i < n; ++i) {
           reqOptic(o[i]);
         }break;
       default:
@@ -455,7 +453,7 @@
         ap = A.ap;
 
     var xsA = A.of(consExcept);
-    var n = xs.length;
+    var n = xs[LENGTH];
     if (map === I.sndU) {
       for (var i = 0; i < n; ++i) {
         xsA = ap(xsA, xi2yA(xs[i], i));
@@ -517,7 +515,7 @@
 
   var setIndex = /*#__PURE__*/(fn(nth(0, ef(reqIndex)), I.freeze))(function (i, x, xs) {
     if (!seemsArrayLike(xs)) xs = '';
-    var n = xs.length;
+    var n = xs[LENGTH];
     if (void 0 !== x) {
       var m = Math.max(i + 1, n);
       var ys = Array(m);
@@ -549,7 +547,7 @@
   };
 
   function composed(oi0, os) {
-    var n = os.length - oi0;
+    var n = os[LENGTH] - oi0;
     if (n < 2) {
       return n ? toFunction(os[oi0]) : identity;
     } else {
@@ -585,7 +583,7 @@
       case 'object':
         return modifyComposed(o, 0, s, x);
       default:
-        return o.length === 4 ? o(s, void 0, I.Identity, I.always(x)) : s;
+        return o[LENGTH] === 4 ? o(s, void 0, I.Identity, I.always(x)) : s;
     }
   });
 
@@ -598,7 +596,7 @@
       case 'object':
         return modifyComposed(o, xi2x, s);
       default:
-        return o.length === 4 ? o(s, void 0, I.Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
+        return o[LENGTH] === 4 ? o(s, void 0, I.Identity, xi2x) : (xi2x(o(s, void 0), void 0), s);
     }
   });
 
@@ -614,7 +612,7 @@
         return xi2y(getIndex(l, s), l);
       case 'object':
         {
-          var n = l.length;
+          var n = l[LENGTH];
           for (var i = 0, o; i < n; ++i) {
             switch (typeof (o = l[i])) {
               case 'string':
@@ -629,7 +627,7 @@
           }return xi2y(s, l[n - 1]);
         }
       default:
-        return xi2y !== id && l.length !== 4 ? xi2y(l(s, void 0), void 0) : l(s, void 0, Select, xi2y);
+        return xi2y !== id && l[LENGTH] !== 4 ? xi2y(l(s, void 0), void 0) : l(s, void 0, Select, xi2y);
     }
   });
 
@@ -638,7 +636,7 @@
   };
 
   function modifyComposed(os, xi2y, x, y) {
-    var n = os.length;
+    var n = os[LENGTH];
     var xs = Array(n);
     for (var i = 0, o; i < n; ++i) {
       xs[i] = x;
@@ -655,7 +653,7 @@
           break;
       }
     }
-    if (n === os.length) x = xi2y ? xi2y(x, os[n - 1]) : y;
+    if (n === os[LENGTH]) x = xi2y ? xi2y(x, os[n - 1]) : y;
     for (var _o; 0 <= --n;) {
       x = I.isString(_o = os[n]) ? setProp(_o, x, xs[n]) : setIndex(_o, x, xs[n]);
     }return x;
@@ -738,7 +736,7 @@
   var branchAssemble = /*#__PURE__*/(res(res(I.freeze)))(function (ks) {
     return function (xs) {
       var r = {};
-      var i = ks.length;
+      var i = ks[LENGTH];
       while (i--) {
         var v = xs[0];
         if (void 0 !== v) {
@@ -816,14 +814,14 @@
           ks.push(_k3);
           xsA = ap(map(cpair, xsA), k2o[_k3](xO[_k3], _k3, A, xi2yA));
         }
-        var t = ks.length ? true : void 0;
+        var t = ks[LENGTH] ? true : void 0;
         for (var _k4 in xO) {
           if (void 0 === (t && k2o[_k4])) {
             ks.push(_k4);
             xsA = ap(map(cpair, xsA), otherwise(xO[_k4], _k4, A, xi2yA));
           }
         }
-        return ks.length ? map(branchAssemble(ks), xsA) : of(x);
+        return ks[LENGTH] ? map(branchAssemble(ks), xsA) : of(x);
       }
     };
   };
@@ -843,7 +841,7 @@
 
   function findIndexHint(hint, xi2b, xs) {
     var u = hint.hint;
-    var n = xs.length;
+    var n = xs[LENGTH];
     if (n <= u) u = n - 1;
     if (u < 0) u = 0;
     var d = u - 1;
@@ -864,7 +862,7 @@
       I.freeze(fs);
     }));
   }))(function (xi2b, xs, ts, fs) {
-    for (var i = 0, n = xs.length, x; i < n; ++i) {
+    for (var i = 0, n = xs[LENGTH], x; i < n; ++i) {
       (xi2b(x = xs[i], i) ? ts : fs).push(x);
     }
   });
@@ -877,14 +875,12 @@
 
   //
 
-  var reValue = function reValue(m) {
-    return m[0];
-  };
-  var reIndex = function reIndex(m) {
-    return m.index;
-  };
+  var LAST_INDEX = 'lastIndex';
+  var INDEX = 'index';
+  var RE_VALUE = 0;
+
   var reLastIndex = function reLastIndex(m) {
-    return reIndex(m) + m[0].length;
+    return m[INDEX] + m[0][LENGTH];
   };
 
   var reNext = /*#__PURE__*/(function (fn$$1) {
@@ -894,10 +890,10 @@
       return res$$1;
     };
   })(function (m, re) {
-    var lastIndex = re.lastIndex;
-    re.lastIndex = reLastIndex(m);
+    var lastIndex = re[LAST_INDEX];
+    re[LAST_INDEX] = reLastIndex(m);
     var n = re.exec(m.input);
-    re.lastIndex = lastIndex;
+    re[LAST_INDEX] = lastIndex;
     return n && n[0] && n;
   });
 
@@ -922,7 +918,7 @@
 
   function iterSelect(xi2y, t, s) {
     while (s = reNext(s, t)) {
-      var y = xi2y(reValue(s), reIndex(s));
+      var y = xi2y(s[RE_VALUE], s[INDEX]);
       if (void 0 !== y) return y;
     }
   }
@@ -930,7 +926,7 @@
   function iterEager(map, ap, of, xi2yA, t, s) {
     var r = of(iterCollect);
     while (s = reNext(s, t)) {
-      r = ap(ap(map(iterCollect, of(s)), r), xi2yA(reValue(s), reIndex(s)));
+      r = ap(ap(map(iterCollect, of(s)), r), xi2yA(s[RE_VALUE], s[INDEX]));
     }return r;
   }
 
@@ -944,9 +940,9 @@
     }return es;
   })), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(res(I.freeze))(function (es) {
     var o = {};
-    for (var i = 0, n = es.length; i < n; ++i) {
+    for (var i = 0, n = es[LENGTH]; i < n; ++i) {
       var entry = es[i];
-      if (entry.length === 2) o[entry[0]] = entry[1];
+      if (entry[LENGTH] === 2) o[entry[0]] = entry[1];
     }
     return o;
   })));
@@ -958,10 +954,10 @@
       var result = '';
       var lastIndex = 0;
       var matches = iterToArray(matchesIn);
-      var n = matches.length;
+      var n = matches[LENGTH];
       for (var j = n - 2; j !== -2; j += -2) {
         var m = matches[j];
-        result += input.slice(lastIndex, reIndex(m));
+        result += input.slice(lastIndex, m[INDEX]);
         var s = matches[j + 1];
         if (void 0 !== s) result += s;
         lastIndex = reLastIndex(m);
@@ -1065,7 +1061,7 @@
 
   var makeSemi = function makeSemi(op) {
     return copyName(function (_) {
-      var n = arguments.length;
+      var n = arguments[LENGTH];
       var r = arguments[--n];
       while (n) {
         r = op(r, arguments[--n]);
@@ -1117,10 +1113,10 @@
 
   var crossPartial = function crossPartial(op, ls, or$$1) {
     return function (xs, ss) {
-      var n = ls.length;
+      var n = ls[LENGTH];
       if (!seemsArrayLike(xs)) return;
       if (!seemsArrayLike(ss)) ss = '';
-      var m = Math.max(n, xs.length, ss.length);
+      var m = Math.max(n, xs[LENGTH], ss[LENGTH]);
       var ys = Array(m);
       for (var i = 0; i < m; ++i) {
         if (void 0 === (ys[i] = op(i < n ? ls[i] : or$$1, xs[i], ss[i]))) return;
@@ -1138,7 +1134,7 @@
 
   var subsetPartial = function subsetPartial(p) {
     return function subset(x) {
-      return p(x) ? x : undefined;
+      return void 0 !== x && p(x) ? x : void 0;
     };
   };
 
@@ -1167,8 +1163,8 @@
 
   var vars = [];
   function nVars(n) {
-    while (length(vars) < n) {
-      vars.push(new Variable(length(vars)));
+    while (vars[LENGTH] < n) {
+      vars.push(new Variable(vars[LENGTH]));
     }return vars;
   }
 
@@ -1207,7 +1203,7 @@
       throw Error('Spread patterns must be inside objects or arrays.');
     } else if (I.isArray(p)) {
       var nSpread = 0;
-      for (var i = 0, n = length(p); i < n; ++i) {
+      for (var i = 0, n = p[LENGTH]; i < n; ++i) {
         var pi = p[i];
         if (isSpread(pi)) {
           if (nSpread++) throw Error('At most one spread is allowed in an array or object.');
@@ -1264,7 +1260,7 @@
       var init = [];
       var rest = [];
       var spread = void 0;
-      var n = length(p);
+      var n = p[LENGTH];
       for (var _i3 = 0; _i3 < n; ++_i3) {
         var x = p[_i3];
         if (isSpread(x)) {
@@ -1277,12 +1273,12 @@
       }
       return function (e, x) {
         if (!seemsArrayLike(x)) return;
-        var l = x.length;
+        var l = x[LENGTH];
         if (void 0 !== spread ? l < n - 1 : l !== n) return;
-        var j = init.length;
+        var j = init[LENGTH];
         for (var _i4 = 0; _i4 < j; ++_i4) {
           if (!init[_i4](e, x[_i4])) return;
-        }var k = rest.length;
+        }var k = rest[LENGTH];
         l -= k;
         for (var _i5 = 0; _i5 < k; ++_i5) {
           if (!rest[_i5](e, x[l + _i5])) return;
@@ -1333,7 +1329,7 @@
       var init = [];
       var rest = [];
       var spread = void 0;
-      var n = length(p);
+      var n = p[LENGTH];
       for (var _i6 = 0; _i6 < n; ++_i6) {
         var x = p[_i6];
         if (isSpread(x)) {
@@ -1345,15 +1341,15 @@
       }
       return freezeResultInDev(function (e) {
         var r = [];
-        for (var _i7 = 0, _n3 = init.length; _i7 < _n3; ++_i7) {
+        for (var _i7 = 0, _n3 = init[LENGTH]; _i7 < _n3; ++_i7) {
           pushDefined(r, init[_i7](e));
         }if (0 <= spread) {
           var xs = e[spread];
-          if (xs) for (var _i8 = 0, _n4 = xs.length; _i8 < _n4; ++_i8) {
+          if (xs) for (var _i8 = 0, _n4 = xs[LENGTH]; _i8 < _n4; ++_i8) {
             pushDefined(r, xs[_i8]);
           }
         }
-        for (var _i9 = 0, _n5 = rest.length; _i9 < _n5; ++_i9) {
+        for (var _i9 = 0, _n5 = rest[LENGTH]; _i9 < _n5; ++_i9) {
           pushDefined(r, rest[_i9](e));
         }return r;
       });
@@ -1386,7 +1382,7 @@
   // Auxiliary
 
   var seemsArrayLike = function seemsArrayLike(x) {
-    return x instanceof Object && (x = x.length, x === x >> 0 && 0 <= x) || I.isString(x);
+    return x instanceof Object && (x = x[LENGTH], x === x >> 0 && 0 <= x) || I.isString(x);
   };
 
   var Select = /*#__PURE__*/ConstantWith(function (l, r) {
@@ -1402,7 +1398,7 @@
       case 'object':
         return composed(0, o);
       default:
-        return o.length === 4 ? o : fromReader(o);
+        return o[LENGTH] === 4 ? o : fromReader(o);
     }
   });
 
@@ -1429,7 +1425,7 @@
   // Nesting
 
   function compose() {
-    var n = arguments.length;
+    var n = arguments[LENGTH];
     if (n < 2) {
       return n ? arguments[0] : identity;
     } else {
@@ -1442,7 +1438,7 @@
 
   function flat() {
     var r = [flatten];
-    for (var i = 0, n = arguments.length; i < n; ++i) {
+    for (var i = 0, n = arguments[LENGTH]; i < n; ++i) {
       r.push(arguments[i], flatten);
     }return r;
   }
@@ -1482,11 +1478,11 @@
       return fn$$1.apply(undefined, cs);
     };
   })(function cond() {
-    var n = arguments.length;
+    var n = arguments[LENGTH];
     var r = zero;
     while (n--) {
       var c = arguments[n];
-      r = c.length < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0]);
+      r = c[LENGTH] < 2 ? toFunction(c[0]) : eitherU(toFunction(c[1]), r)(c[0]);
     }
     return r;
   });
@@ -1506,11 +1502,11 @@
   })(function condOf(of) {
     of = toFunction(of);
 
-    var n = arguments.length - 1;
+    var n = arguments[LENGTH] - 1;
     if (!n) return zero;
 
     var def = arguments[n];
-    if (def.length === 1) {
+    if (def[LENGTH] === 1) {
       --n;
       def = toFunction(def[0]);
     } else {
@@ -1617,7 +1613,7 @@
         c = _traverseU.c;
 
     p = pushTo(p, ['%O']);
-    for (var i = 2; i < p.length; ++i) {
+    for (var i = 2; i < p[LENGTH]; ++i) {
       p[0] += ' <= %O';
     }console.log.apply(console, p);
     return c;
@@ -1625,7 +1621,7 @@
 
   function log() {
     var show = I.curry(function log(dir, x) {
-      console.log.apply(console, copyToFrom([], 0, arguments, 0, arguments.length).concat([dir, x]));
+      console.log.apply(console, copyToFrom([], 0, arguments, 0, arguments[LENGTH]).concat([dir, x]));
       return x;
     });
     return isoU(show('get'), show('set'));
@@ -1648,7 +1644,7 @@
       return par(2, ef(reqMonad('seq')))(fn$$1.apply(undefined, arguments));
     };
   })(function seq() {
-    var n = arguments.length;
+    var n = arguments[LENGTH];
     var r = zero;
     if (n) {
       r = toFunction(arguments[--n]);
@@ -1691,7 +1687,7 @@
   var branch = /*#__PURE__*/branchOr(zero);
 
   function branches() {
-    var n = arguments.length;
+    var n = arguments[LENGTH];
     var template = {};
     for (var i = 0; i < n; ++i) {
       template[arguments[i]] = identity;
@@ -1728,7 +1724,7 @@
         if (re.global) {
           var m0 = [''];
           m0.input = x;
-          m0.index = 0;
+          m0[INDEX] = 0;
           if (Select === C) {
             return iterSelect(xi2yC, re, m0);
           } else {
@@ -1741,7 +1737,7 @@
           var m = x.match(re);
           if (m) return map(function (y) {
             return x.replace(re, void 0 !== y ? y : '');
-          }, xi2yC(m[0], reIndex(m)));
+          }, xi2yC(m[0], m[INDEX]));
         }
       }
       return C.of(x);
@@ -1763,7 +1759,7 @@
 
   function query() {
     var r = [];
-    for (var i = 0, n = arguments.length; i < n; ++i) {
+    for (var i = 0, n = arguments[LENGTH]; i < n; ++i) {
       var o = toFunction(arguments[i]);
       r.push(satisfying(isDefinedAt(o)), o);
     }
@@ -1868,7 +1864,7 @@
       xs.push(x);
       is.push(i);
     }, t, s);
-    for (var i = xs.length - 1; 0 <= i; --i) {
+    for (var i = xs[LENGTH] - 1; 0 <= i; --i) {
       r = f(r, xs[i], is[i]);
     }return r;
   });
@@ -1888,7 +1884,7 @@
   });
 
   function get(l, s) {
-    return 1 < arguments.length ? getAsU(id, l, s) : function (s) {
+    return 1 < arguments[LENGTH] ? getAsU(id, l, s) : function (s) {
       return getAsU(id, l, s);
     };
   }
@@ -2027,7 +2023,7 @@
   // Lensing arrays
 
   function append(xs, _, F, xi2yF) {
-    var i = seemsArrayLike(xs) ? xs.length : 0;
+    var i = seemsArrayLike(xs) ? xs[LENGTH] : 0;
     return F.map(function (x) {
       return setIndex(i, x, xs);
     }, xi2yF(void 0, i));
@@ -2043,8 +2039,8 @@
       var fs = I.array0;
       if (seemsArrayLike(xs)) partitionIntoIndex(xi2b, xs, ts = [], fs = []);
       return F.map(function (ts) {
-        var tsN = ts ? ts.length : 0;
-        var fsN = fs.length;
+        var tsN = ts ? ts[LENGTH] : 0;
+        var fsN = fs[LENGTH];
         var n = tsN + fsN;
         return n === fsN ? fs : copyToFrom(copyToFrom(Array(n), 0, ts, 0, tsN), tsN, fs, 0, fsN);
       }, xi2yF(ts, i));
@@ -2052,7 +2048,7 @@
   });
 
   function find(xih2b) {
-    var hint = arguments.length > 1 ? arguments[1] : { hint: 0 };
+    var hint = arguments[LENGTH] > 1 ? arguments[1] : { hint: 0 };
     return function find(xs, _i, F, xi2yF) {
       var ys = seemsArrayLike(xs) ? xs : '';
       var i = hint.hint = findIndexHint(hint, xih2b, ys);
@@ -2065,7 +2061,7 @@
   function findWith(o) {
     var oo = toFunction(o);
     var p = isDefinedAt(oo);
-    return [arguments.length > 1 ? find(p, arguments[1]) : find(p), oo];
+    return [arguments[LENGTH] > 1 ? find(p, arguments[1]) : find(p), oo];
   }
 
   var first = 0;
@@ -2073,7 +2069,7 @@
   var index = ef(reqIndex);
 
   var last = /*#__PURE__*/choose(function last(maybeArray) {
-    return seemsArrayLike(maybeArray) && maybeArray.length ? maybeArray.length - 1 : 0;
+    return seemsArrayLike(maybeArray) && maybeArray[LENGTH] ? maybeArray[LENGTH] - 1 : 0;
   });
 
   var prefix = function prefix(n) {
@@ -2085,11 +2081,11 @@
   }))(function slice(begin, end) {
     return function slice(xs, i, F, xsi2yF) {
       var seems = seemsArrayLike(xs);
-      var xsN = seems && xs.length;
+      var xsN = seems && xs[LENGTH];
       var b = sliceIndex(0, xsN, 0, begin);
       var e = sliceIndex(b, xsN, xsN, end);
       return F.map(function (zs) {
-        var zsN = zs ? zs.length : 0;
+        var zsN = zs ? zs[LENGTH] : 0;
         var bPzsN = b + zsN;
         var n = xsN - e + bPzsN;
         return copyToFrom(copyToFrom(copyToFrom(Array(n), 0, xs, 0, b), b, zs, 0, zsN), bPzsN, xs, e, xsN);
@@ -2113,7 +2109,7 @@
   };
 
   function props() {
-    var n = arguments.length;
+    var n = arguments[LENGTH];
     var template = {};
     for (var i = 0, k; i < n; ++i) {
       template[k = arguments[i]] = k;
@@ -2122,7 +2118,7 @@
 
   function propsExcept() {
     var setish = I.create(null);
-    for (var i = 0, n = arguments.length; i < n; ++i) {
+    for (var i = 0, n = arguments[LENGTH]; i < n; ++i) {
       setish[arguments[i]] = 'd';
     }return [disjoint(function (k) {
       return setish[k] || 't';
@@ -2140,7 +2136,7 @@
 
     function drop(y) {
       if (!(y instanceof Object)) return y;
-      for (var i = 0, n = ps.length; i < n; ++i) {
+      for (var i = 0, n = ps[LENGTH]; i < n; ++i) {
         if (I.hasU(ps[i], y)) return y;
       }
     }
@@ -2179,7 +2175,7 @@
   // Operations on isomorphisms
 
   function getInverse(o, s) {
-    return 1 < arguments.length ? setU(o, s, void 0) : function (s) {
+    return 1 < arguments[LENGTH] ? setU(o, s, void 0) : function (s) {
       return setU(o, s, void 0);
     };
   }
@@ -2192,7 +2188,7 @@
 
   function mapping(ps) {
     var n = 0;
-    if (I.isFunction(ps)) ps = ps.apply(null, nVars(n = ps.length));
+    if (I.isFunction(ps)) ps = ps.apply(null, nVars(n = ps[LENGTH]));
     checkPatternPairInDev(ps);
     var kinds = Array(n);
     var ms = ps.map(function (p) {
@@ -2203,7 +2199,7 @@
   }
 
   function mappings(ps) {
-    if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps.length));
+    if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps[LENGTH]));
     return alternatives.apply(null, ps.map(mapping));
   }
 
@@ -2264,19 +2260,19 @@
   };
 
   var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeObjectOfObjects))(function indexed(xs) {
-    var n = xs.length;
+    var n = xs[LENGTH];
     var xis = Array(n);
     for (var i = 0; i < n; ++i) {
       xis[i] = [i, xs[i]];
     }return xis;
   })), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(res(I.freeze))(function (xis) {
-    var n = xis.length;
+    var n = xis[LENGTH];
     var xs = Array(n);
     for (var i = 0; i < n; ++i) {
       var xi = xis[i];
-      if (xi.length === 2) xs[xi[0]] = xi[1];
+      if (xi[LENGTH] === 2) xs[xi[0]] = xi[1];
     }
-    n = xs.length;
+    n = xs[LENGTH];
     var j = 0;
     for (var _i11 = 0; _i11 < n; ++_i11) {
       var x = xs[_i11];
@@ -2285,7 +2281,7 @@
         ++j;
       }
     }
-    xs.length = j;
+    xs[LENGTH] = j;
     return xs;
   })));
 
@@ -2309,16 +2305,16 @@
     var ps = [];
     for (var k in o) {
       var v = o[k];
-      if (I.isArray(v)) for (var i = 0, n = v.length; i < n; ++i) {
+      if (I.isArray(v)) for (var i = 0, n = v[LENGTH]; i < n; ++i) {
         ps.push([k, v[i]]);
       } else ps.push([k, v]);
     }
     return ps;
   })), /*#__PURE__*/expect(I.isArray, /*#__PURE__*/(res(freezeObjectOfObjects))(function (ps) {
     var o = I.create(null);
-    for (var i = 0, n = ps.length; i < n; ++i) {
+    for (var i = 0, n = ps[LENGTH]; i < n; ++i) {
       var entry = ps[i];
-      if (entry.length === 2) {
+      if (entry[LENGTH] === 2) {
         var k = entry[0];
         var v = entry[1];
         var was = o[k];
@@ -2353,7 +2349,7 @@
 
   var dropPrefix = function dropPrefix(pfx) {
     return stringIsoU(function dropPrefix(x) {
-      return x.startsWith(pfx) ? x.slice(pfx.length) : undefined;
+      return x.startsWith(pfx) ? x.slice(pfx[LENGTH]) : undefined;
     }, function (x) {
       return pfx + x;
     });
@@ -2361,7 +2357,7 @@
 
   var dropSuffix = function dropSuffix(sfx) {
     return stringIsoU(function dropSuffix(x) {
-      return x.endsWith(sfx) ? x.slice(0, x.length - sfx.length) : undefined;
+      return x.endsWith(sfx) ? x.slice(0, x[LENGTH] - sfx[LENGTH]) : undefined;
     }, function (x) {
       return x + sfx;
     });
@@ -2376,7 +2372,7 @@
       return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
     };
   })(function split(sep) {
-    var re = arguments.length > 1 ? arguments[1] : sep;
+    var re = arguments[LENGTH] > 1 ? arguments[1] : sep;
     return isoU(expect(I.isString, function (x) {
       return x.split(re);
     }), expect(I.isArray, function (xs) {
@@ -2389,12 +2385,12 @@
       return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
     };
   })(function uncouple(sep) {
-    var re = toRegExpU(arguments.length > 1 ? arguments[1] : sep, '');
+    var re = toRegExpU(arguments[LENGTH] > 1 ? arguments[1] : sep, '');
     return isoU(expect(I.isString, function (x) {
       var m = re.exec(x);
-      return m ? [x.slice(0, reIndex(m)), x.slice(reLastIndex(m))] : [x, ''];
+      return m ? [x.slice(0, m[INDEX]), x.slice(reLastIndex(m))] : [x, ''];
     }), function (kv) {
-      if (I.isArray(kv) && kv.length === 2) {
+      if (I.isArray(kv) && kv[LENGTH] === 2) {
         var k = kv[0];
         var v = kv[1];
         return v ? k + sep + v : k;
@@ -2427,12 +2423,12 @@
   var pointer = function pointer(s) {
     if (s[0] === '#') s = decodeURIComponent(s);
     var ts = s.split('/');
-    var n = ts.length;
+    var n = ts[LENGTH];
     for (var i = 1; i < n; ++i) {
       var t = ts[i];
       ts[i - 1] = /^(0|[1-9]\d*)$/.test(t) ? ifElse(isArrayOrPrimitive, Number(t), t) : '-' === t ? ifElse(isArrayOrPrimitive, append, t) : t.replace('~1', '/').replace('~0', '~');
     }
-    ts.length = n - 1;
+    ts[LENGTH] = n - 1;
     return ts;
   };
 

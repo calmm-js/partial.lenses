@@ -2963,7 +2963,8 @@ L.modify(L.identity, f, x) = f(x)
 <a href="#an-array-of-ids-as-boolean-flags">here</a> for an example.</p>
 <h5><a id="L-subset"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-subset">■</a> <a href="#L-subset" title="L.subset: (Maybe a -&gt; Boolean) -&gt; PIso a a"><code>L.subset(maybeValue =&gt; testable) ~&gt; isomorphism</code></a> <small><sup>v14.3.0</sup></small></h5>
 <p><code>L.subset</code> returns an isomorphism that acts like the identity when the data
-passes the given predicate and otherwise maps the data to <code>undefined</code>.</p>
+passes the given predicate and otherwise maps the data to <code>undefined</code>.  The
+predicate is not called unnecessarily in case the focus is <code>undefined</code>.</p>
 <h4><a id="array-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#array-isomorphisms">■</a> <a href="#array-isomorphisms">Array isomorphisms</a></h4>
 <h5><a id="L-array"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#L-array">■</a> <a href="#L-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></h5>
 <p><code>L.array</code> lifts an isomorphism between elements, <code>a ≅ b</code>, to an isomorphism
