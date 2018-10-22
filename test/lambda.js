@@ -43,7 +43,7 @@ const compoundExpression = L.lazy(() =>
 
 export const ppp = P.trim(compoundExpression)
 
-// Meta-circular evaluator for λ-calculus --------------------------------------
+// Evaluator for λ-calculus ----------------------------------------------------
 
 export const interpret = (env, expr) => {
   switch (expr.type) {
