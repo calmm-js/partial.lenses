@@ -21,7 +21,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
 [![](https://david-dm.org/calmm-js/partial.lenses.svg)](https://david-dm.org/calmm-js/partial.lenses)
 [![](https://david-dm.org/calmm-js/partial.lenses/dev-status.svg)](https://david-dm.org/calmm-js/partial.lenses?type=dev)
 
-## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#contents) Contents
+## <a id="contents"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#contents) [Contents](#contents)
 
 * [Tutorial](#tutorial)
   * [Getting started](#getting-started)
