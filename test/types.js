@@ -180,6 +180,7 @@ export const elemsTotal = T_traversal
 export const entries = T_traversal
 export const flatten = T_traversal
 export const keys = T_traversal
+export const keysEverywhere = T_traversal
 export const leafs = T_traversal
 export const limit = T.fn([T.nonNegative, T_traversal], T_traversal)
 export const matches = T.fn([T.instanceOf(RegExp)], T_optic)
