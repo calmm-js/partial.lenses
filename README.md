@@ -105,6 +105,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.entries ~> traversal`](#l-entries "L.entries: PTraversal {p: a, ...ps} [String, a]") <small><sup>v11.21.0</sup></small>
       * [`L.flatten ~> traversal`](#l-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
       * [`L.keys ~> traversal`](#l-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
+      * [`L.keysEverywhere ~> traversal`](#l-keyseverywhere "L.keysEverywhere: PTraversal JSON String") <small><sup>v14.12.0</sup></small>
       * [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
       * [`L.limit(count, traversal) ~> traversal`](#l-limit "L.limit: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#l-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
@@ -2184,7 +2185,8 @@ L.join(' ', L.flatten, [[[1]], ['2'], 3])
 
 ##### <a id="l-keys"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-keys) [`L.keys ~> traversal`](#l-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
 
-`L.keys` is a traversal over the keys of an object.
+`L.keys` is a traversal over the keys of an object.  See also
+[`L.keysEverywhere`](#l-keyseverywhere).
 
 For example:
 
@@ -2192,6 +2194,34 @@ For example:
 L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 // { X: 1, Y: 2 }
 ```
+
+##### <a id="l-keyseverywhere"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-keyseverywhere) [`L.keysEverywhere ~> traversal`](#l-keyseverywhere "L.keysEverywhere: PTraversal JSON String") <small><sup>v14.12.0</sup></small>
+
+`L.keysEverywhere` is a traversal over the keys of objects inside arbitrarily
+nested ordinary arrays and plain objects.  See also [`L.keys`](#l-keys).
+
+One use case for `L.keysEverywhere` is to use it with [`L.applyAt`](#l-applyat)
+to convert keys of objects.  For example:
+
+```js
+const kebabIcamel = L.iso(_.camelCase, _.kebabCase)
+const kebabsIcamels = L.applyAt(L.keysEverywhere, kebabIcamel)
+
+L.get(kebabsIcamels, [{'kebab-case': 'is'}, {'translated-to': 'camel case'}])
+// [{kebabCase': 'is'}, {translatedTo: 'camel case'}]
+```
+
+Note that `L.keysEverywhere` is roughly equivalent to:
+
+```js
+const keysEverywhere = L.lazy(rec => L.cond(
+  [R.is(Array), [L.elems, rec]],
+  [R.is(Object), [L.entries, L.elems, L.ifElse((_, i) => i === 0, [], rec)]]
+))
+```
+
+The difference is that `L.keysEverywhere` does not traverse objects that have an
+interesting prototype.
 
 ##### <a id="l-leafs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-leafs) [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
 

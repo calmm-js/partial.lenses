@@ -38,6 +38,8 @@ const sliceIndex = (m, l, d, i) =>
 
 const cpair = xs => x => [x, xs]
 
+const pairPartial = k => v => (void 0 !== k && void 0 !== v ? [k, v] : void 0)
+
 const unto = c => x => (void 0 !== x ? x : c)
 const unto0 = unto(0)
 
@@ -1469,6 +1471,18 @@ export const elemsTotal = (xs, i, A, xi2yA) =>
 export const entries = setName(toFunction([keyed, elems]), 'entries')
 
 export const keys = setName(toFunction([keyed, elems, 0]), 'keys')
+
+export const keysEverywhere = (x, i, A, xi2yA) => {
+  const recEntry = (kv, i) =>
+    A.ap(A.map(pairPartial, xi2yA(kv[0], i)), recAny(kv[1], i))
+  const recAny = (x, i) =>
+    I.isArray(x)
+      ? elemsI(x, i, A, recAny)
+      : I.isObject(x)
+        ? entries(x, i, A, recEntry)
+        : A.of(x)
+  return recAny(x, i)
+}
 
 export const subseq = I.curry(subseqU)
 

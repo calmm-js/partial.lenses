@@ -11,6 +11,7 @@
       'https://unpkg.com/ramda/dist/ramda.min.js',
       'https://unpkg.com/immutable/dist/immutable.min.js',
       'https://unpkg.com/moment/min/moment.min.js',
+      'https://unpkg.com/lodash',
       'setup.js'
     ]
   }

@@ -305,6 +305,7 @@ describe('arities', () => {
     json: 1,
     keyed: 4,
     keys: 4,
+    keysEverywhere: 4,
     last: 4,
     lazy: 1,
     leafs: 4,
@@ -2419,6 +2420,23 @@ describe('L.keys', () => {
     a: 1,
     b: 2
   })
+})
+
+describe('L.keysEverywhere', () => {
+  testEq(() => L.collect(L.keysEverywhere, {x1: [{y: [{z: 1}]}], x2: 2}), [
+    'x1',
+    'y',
+    'z',
+    'x2'
+  ])
+  testEq(() => L.modify(L.keysEverywhere, R.toUpper, {x: [{y: [{z: 1}]}]}), {
+    X: [{Y: [{Z: 1}]}]
+  })
+  testEq(
+    () =>
+      L.remove([L.keysEverywhere, L.when(R.equals('y'))], {x: [{y: [{z: 1}]}]}),
+    {x: [{}]}
+  )
 })
 
 describe('L.reverse', () => {
