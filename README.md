@@ -2207,8 +2207,8 @@ to convert keys of objects.  For example:
 const kebabIcamel = L.iso(_.camelCase, _.kebabCase)
 const kebabsIcamels = L.applyAt(L.keysEverywhere, kebabIcamel)
 
-L.get(kebabsIcamels, [{'kebab-case': 'is'}, {'translated-to': 'camel case'}])
-// [{kebabCase': 'is'}, {translatedTo: 'camel case'}]
+L.get(kebabsIcamels, [{'kebab-case': 'is'}, {'translated-to': 'camelCase'}])
+// [{kebabCase': 'is'}, {translatedTo: 'camelCase'}]
 ```
 
 Note that `L.keysEverywhere` is roughly equivalent to:

@@ -169,6 +169,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#l-entries" title="L.entries: PTraversal {p: a, ...ps} [String, a]"><code>L.entries ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#l-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></li>
 <li><a href="#l-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
+<li><a href="#l-keyseverywhere" title="L.keysEverywhere: PTraversal JSON String"><code>L.keysEverywhere ~&gt; traversal</code></a> <small><sup>v14.12.0</sup></small></li>
 <li><a href="#l-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#l-limit" title="L.limit: Integer -&gt; PTraversal s a -&gt; PTraversal s a"><code>L.limit(count, traversal) ~&gt; traversal</code></a> <small><sup>v14.10.0</sup></small></li>
 <li><a href="#l-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></li>
@@ -1756,10 +1757,28 @@ it is traversed.</p>
 <pre><code class="hljs lang-js">L.join(&#39; &#39;, L.flatten, [[[1]], [&#39;2&#39;], 3])
 </code></pre>
 <h5><a id="l-keys"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-keys">■</a> <a href="#l-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></h5>
-<p><code>L.keys</code> is a traversal over the keys of an object.</p>
+<p><code>L.keys</code> is a traversal over the keys of an object.  See also
+<a href="#l-keyseverywhere"><code>L.keysEverywhere</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.modify(L.keys, R.toUpper, {x: 1, y: 2})
 </code></pre>
+<h5><a id="l-keyseverywhere"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-keyseverywhere">■</a> <a href="#l-keyseverywhere" title="L.keysEverywhere: PTraversal JSON String"><code>L.keysEverywhere ~&gt; traversal</code></a> <small><sup>v14.12.0</sup></small></h5>
+<p><code>L.keysEverywhere</code> is a traversal over the keys of objects inside arbitrarily
+nested ordinary arrays and plain objects.  See also <a href="#l-keys"><code>L.keys</code></a>.</p>
+<p>One use case for <code>L.keysEverywhere</code> is to use it with <a href="#l-applyat"><code>L.applyAt</code></a>
+to convert keys of objects.  For example:</p>
+<pre><code class="hljs lang-js">var kebabIcamel = L.iso(_.camelCase, _.kebabCase)
+var kebabsIcamels = L.applyAt(L.keysEverywhere, kebabIcamel)
+
+L.get(kebabsIcamels, [{&#39;kebab-case&#39;: &#39;is&#39;}, {&#39;translated-to&#39;: &#39;camelCase&#39;}])
+</code></pre>
+<p>Note that <code>L.keysEverywhere</code> is roughly equivalent to:</p>
+<pre><code class="hljs lang-js">var keysEverywhere = L.lazy(rec =&gt; L.cond(
+  [R.is(Array), [L.elems, rec]],
+  [R.is(Object), [L.entries, L.elems, L.ifElse((_, i) =&gt; i === 0, [], rec)]]
+))</code></pre>
+<p>The difference is that <code>L.keysEverywhere</code> does not traverse objects that have an
+interesting prototype.</p>
 <h5><a id="l-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-leafs">■</a> <a href="#l-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.leafs</code> is a traversal that descends into ordinary arrays and plain objects
 and focuses on non-<code>undefined</code> elements whose constructor is neither <code>Array</code> nor
@@ -4275,6 +4294,7 @@ will refresh automatically after changes.</p>
     <script type="text/javascript" src="https://unpkg.com/ramda/dist/ramda.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/immutable/dist/immutable.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/moment/min/moment.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/lodash"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="fw/klipse-settings.js"></script>
     <script type="text/javascript" src="https://storage.googleapis.com/app.klipse.tech/plugin_prod/js/klipse_plugin.min.js"></script>

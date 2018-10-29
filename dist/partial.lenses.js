@@ -195,6 +195,12 @@
     };
   };
 
+  var pairPartial = function pairPartial(k) {
+    return function (v) {
+      return void 0 !== k && void 0 !== v ? [k, v] : void 0;
+    };
+  };
+
   var unto = function unto(c) {
     return function (x) {
       return void 0 !== x ? x : c;
@@ -1708,6 +1714,16 @@
 
   var keys = /*#__PURE__*/setName( /*#__PURE__*/toFunction([keyed, elems, 0]), 'keys');
 
+  var keysEverywhere = function keysEverywhere(x, i, A, xi2yA) {
+    var recEntry = function recEntry(kv, i) {
+      return A.ap(A.map(pairPartial, xi2yA(kv[0], i)), recAny(kv[1], i));
+    };
+    var recAny = function recAny(x, i) {
+      return I.isArray(x) ? elemsI(x, i, A, recAny) : I.isObject(x) ? entries(x, i, A, recEntry) : A.of(x);
+    };
+    return recAny(x, i);
+  };
+
   var subseq = /*#__PURE__*/I.curry(subseqU);
 
   var limit = /*#__PURE__*/subseq(0);
@@ -2485,6 +2501,7 @@
   exports.elemsTotal = elemsTotal;
   exports.entries = entries;
   exports.keys = keys;
+  exports.keysEverywhere = keysEverywhere;
   exports.subseq = subseq;
   exports.limit = limit;
   exports.offset = offset;
