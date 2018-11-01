@@ -169,6 +169,12 @@
 
   //
 
+  var isPair = function isPair(x) {
+    return I.isArray(x) && x[LENGTH] === 2;
+  };
+
+  //
+
   var tryCatch = function tryCatch(fn$$1) {
     return copyName(function (x) {
       try {
@@ -291,6 +297,19 @@
   var mapIfArrayLike = function mapIfArrayLike(xi2y, xs) {
     return seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs, void 0) : void 0;
   };
+
+  var mapsIfArray = /*#__PURE__*/(res(I.freeze))(function (x2y, xs) {
+    if (I.isArray(xs)) {
+      var n = xs[LENGTH];
+      var ys = Array();
+      for (var i = 0; i < n; ++i) {
+        if (void 0 === (ys[i] = x2y(xs[i]))) {
+          return void 0;
+        }
+      }
+      return ys;
+    }
+  });
 
   var copyToFrom = /*#__PURE__*/(function (fn$$1) {
     return function (ys, k, xs, i, j) {
@@ -592,6 +611,10 @@
         return o[LENGTH] === 4 ? o(s, void 0, I.Identity, I.always(x)) : s;
     }
   });
+
+  var getInverseU = function getInverse(o, x) {
+    return setU(o, x, void 0);
+  };
 
   var modifyU = /*#__PURE__*/(par(0, ef(reqOptic)))(function modify(o, xi2x, s) {
     switch (typeof o) {
@@ -1025,6 +1048,44 @@
 
   //
 
+  var attemptU = function attemptU(fn$$1, x) {
+    if (void 0 !== x) {
+      var y = fn$$1(x);
+      if (void 0 !== y) return y;
+    }
+    return x;
+  };
+
+  var rewriteAttempt = function rewriteAttempt(fn$$1) {
+    return function (x, i, F, xi2yF) {
+      return F.map(function (x) {
+        return attemptU(fn$$1, x);
+      }, xi2yF(x, i));
+    };
+  };
+
+  var rereadAttempt = function rereadAttempt(fn$$1) {
+    return function (x, i, F, xi2yF) {
+      return xi2yF(attemptU(fn$$1, x), i);
+    };
+  };
+
+  //
+
+  var transformEvery = function transformEvery(optic) {
+    return transform(lazy(function (rec) {
+      return [optic, children, rec];
+    }));
+  };
+
+  var transformSome = function transformSome(fn$$1) {
+    return transform(lazy(function (rec) {
+      return choices(getter(fn$$1), [children, rec]);
+    }));
+  };
+
+  //
+
   var isDefinedAtU = function isDefinedAtU(o, x, i) {
     return void 0 !== o(x, i, Select, id);
   };
@@ -1146,6 +1207,39 @@
 
   //
 
+  var unfoldPartial = /*#__PURE__*/(res(res(function (r) {
+    I.freeze(r);
+    I.freeze(r[1]);
+    return r;
+  })))(function (s2sa) {
+    return function unfold(s) {
+      var xs = [];
+      for (;;) {
+        var sa = s2sa(s);
+        if (!isPair(sa)) return [s, xs];
+        s = sa[0];
+        xs.push(sa[1]);
+      }
+    };
+  });
+
+  var foldPartial = function foldPartial(sa2s) {
+    return function (sxs) {
+      if (isPair(sxs)) {
+        var xs = sxs[1];
+        if (I.isArray(xs)) {
+          var s = sxs[0];
+          var n = xs[LENGTH];
+          while (n--) {
+            s = sa2s(freezeInDev([s, xs[n]]));
+          }return s;
+        }
+      }
+    };
+  };
+
+  //
+
   var PAYLOAD = '珳襱댎纚䤤鬖罺좴';
 
   var isPayload = function isPayload(k) {
@@ -1237,6 +1331,12 @@
     }
   }
 
+  var checkPatternInDev = function (p) {
+    var kinds = [];
+    checkPattern(kinds, p);
+    return deepFreezeInDev(p);
+  };
+
   var checkPatternPairInDev = function (ps) {
     var kinds = [];
     checkPattern(kinds, ps[0]);
@@ -1253,7 +1353,7 @@
   };
 
   function toMatch(kinds, p) {
-    if (all1(isPrimitive, leafs, p)) {
+    if (void 0 === p || all1(isPrimitive, leafs, p)) {
       return function (e, x) {
         return I.acyclicEqualsU(p, x);
       };
@@ -1324,7 +1424,7 @@
   function toSubst(p, k) {
     if (isPayload(k)) {
       return void 0;
-    } else if (all1(isPrimitive, leafs, p)) {
+    } else if (void 0 === p || all1(isPrimitive, leafs, p)) {
       return I.always(p);
     } else if (isVariable(p)) {
       var i = p[PAYLOAD][0][PAYLOAD];
@@ -1384,6 +1484,94 @@
       if (m(e, x)) return s(e);
     };
   };
+
+  //
+
+  var ungroupByFn = /*#__PURE__*/(res(res(I.freeze)))(function (keyOf) {
+    return function ungroupBy(xxs) {
+      if (I.isArray(xxs)) {
+        var ys = [];
+        for (var i = 0, n = xxs.length; i < n; ++i) {
+          var xs = xxs[i];
+          if (!I.isArray(xs)) return;
+          var m = xs.length;
+          if (!m) return;
+          var k = keyOf(xs[0]);
+          if (void 0 === k) return;
+          for (var j = 0, _m = xs.length; j < _m; ++j) {
+            var x = xs[j];
+            if (!I.identicalU(k, keyOf(x))) return;
+            ys.push(x);
+          }
+        }
+        return ys;
+      }
+    };
+  });
+
+  var groupByFn = /*#__PURE__*/(res(res(freezeObjectOfObjects)))(function (keyOf) {
+    return function groupBy(ys) {
+      if (I.isArray(ys)) {
+        var groups = new Map();
+        for (var i = 0, n = ys.length; i < n; ++i) {
+          var y = ys[i];
+          var k = keyOf(y);
+          if (void 0 === k) return;
+          var xs = groups.get(k);
+          if (void 0 !== xs) {
+            xs.push(y);
+          } else {
+            groups.set(k, [y]);
+          }
+        }
+        var xxs = [];
+        groups.forEach(function (xs) {
+          return xxs.push(xs);
+        });
+        return xxs;
+      }
+    };
+  });
+
+  //
+
+  var zW1Fn = /*#__PURE__*/(res(res(I.freeze)))(function (fn$$1) {
+    return function zipWith1(xys) {
+      if (isPair(xys)) {
+        var ys = xys[1];
+        var n = ys[LENGTH];
+        if (n) {
+          var x = xys[0];
+          var zs = Array(n);
+          for (var i = 0; i < n; ++i) {
+            if (void 0 === (zs[i] = fn$$1([x, ys[i]]))) return;
+          }return zs;
+        }
+      }
+    };
+  });
+
+  var unzW1Fn = /*#__PURE__*/(res(res(freezeObjectOfObjects)))(function (fn$$1) {
+    return function unzipWith1(zs) {
+      if (I.isArray(zs)) {
+        var n = zs[LENGTH];
+        if (n) {
+          var xy0 = fn$$1(zs[0]);
+          if (isPair(xy0)) {
+            var ys = Array(n);
+            var x = xy0[0];
+            ys[0] = xy0[1];
+            for (var i = 1; i < n; ++i) {
+              var xy = fn$$1(zs[i]);
+              if (!isPair(xy) || !I.acyclicEqualsU(x, xy[0])) return;
+              ys[i] = xy[1];
+            }
+            return [x, ys];
+          }
+        }
+      }
+    };
+  });
 
   // Auxiliary
 
@@ -2191,8 +2379,8 @@
   // Operations on isomorphisms
 
   function getInverse(o, s) {
-    return 1 < arguments[LENGTH] ? setU(o, s, void 0) : function (s) {
-      return setU(o, s, void 0);
+    return 1 < arguments[LENGTH] ? getInverseU(o, s) : function (s) {
+      return getInverseU(o, s);
     };
   }
 
@@ -2219,6 +2407,22 @@
     return alternatives.apply(null, ps.map(mapping));
   }
 
+  function pattern(p) {
+    var n = 0;
+    if (I.isFunction(p)) p = p.apply(null, nVars(n = p[LENGTH]));
+    checkPatternInDev(p);
+    var kinds = Array(n);
+    var m = toMatch(kinds, p);
+    return subset(function (x) {
+      return m(Array(n), x);
+    });
+  }
+
+  function patterns(ps) {
+    if (I.isFunction(ps)) ps = ps.apply(null, nVars(ps[LENGTH]));
+    return alternatives.apply(null, ps.map(pattern));
+  }
+
   // Isomorphism combinators
 
   var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
@@ -2226,6 +2430,18 @@
   var applyAt = /*#__PURE__*/I.curry(function applyAt(elements, transform) {
     return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
   });
+
+  var attemptEveryDown = function attemptEveryDown(iso) {
+    return isoU(transformEvery(rereadAttempt(get(iso))), transformEvery(rewriteAttempt(getInverse(iso))));
+  };
+
+  var attemptEveryUp = function attemptEveryUp(iso) {
+    return isoU(transformEvery(rewriteAttempt(get(iso))), transformEvery(rereadAttempt(getInverse(iso))));
+  };
+
+  var attemptSomeDown = function attemptSomeDown(iso) {
+    return isoU(transformSome(get(iso)), transformSome(getInverse(iso)));
+  };
 
   var conjugate = /*#__PURE__*/I.curry(function conjugate(outer, inner) {
     return [outer, inner, inverse(outer)];
@@ -2244,6 +2460,14 @@
   };
 
   var orAlternatively = /*#__PURE__*/I.curry(orAlternativelyU);
+
+  var fold = function fold(saIs) {
+    return isoU(foldPartial(get(saIs)), unfoldPartial(getInverse(saIs)));
+  };
+
+  var unfold = function unfold(sIsa) {
+    return isoU(unfoldPartial(get(sIsa)), foldPartial(getInverse(sIsa)));
+  };
 
   // Basic isomorphisms
 
@@ -2275,6 +2499,17 @@
     };
   };
 
+  var arrays = function arrays(elem) {
+    var fwd = getInverse(elem);
+    var bwd = get(elem);
+    var mapFwd = function mapFwd(x) {
+      return mapsIfArray(fwd, x);
+    };
+    return function (x, i, F, xi2yF) {
+      return F.map(mapFwd, xi2yF(mapsIfArray(bwd, x), i));
+    };
+  };
+
   var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(res(freezeObjectOfObjects))(function indexed(xs) {
     var n = xs[LENGTH];
     var xis = Array(n);
@@ -2303,9 +2538,25 @@
 
   var reverse = /*#__PURE__*/isoU(rev, rev);
 
-  var singleton = /*#__PURE__*/mapping(function (x) {
+  var singleton = /*#__PURE__*/setName( /*#__PURE__*/mapping(function (x) {
     return [[x], x];
-  });
+  }), 'singleton');
+
+  var groupBy = function groupBy(keyOf) {
+    return isoU(groupByFn(keyOf), ungroupByFn(keyOf));
+  };
+
+  var ungroupBy = function ungroupBy(keyOf) {
+    return isoU(ungroupByFn(keyOf), groupByFn(keyOf));
+  };
+
+  var zipWith1 = function zipWith1(iso) {
+    return isoU(zW1Fn(get(iso)), unzW1Fn(getInverse(iso)));
+  };
+
+  var unzipWith1 = function unzipWith1(iso) {
+    return isoU(unzW1Fn(get(iso)), zW1Fn(getInverse(iso)));
+  };
 
   // Object isomorphisms
 
@@ -2406,7 +2657,7 @@
       var m = re.exec(x);
       return m ? [x.slice(0, m[INDEX]), x.slice(reLastIndex(m))] : [x, ''];
     }), function (kv) {
-      if (I.isArray(kv) && kv[LENGTH] === 2) {
+      if (isPair(kv)) {
         var k = kv[0];
         var v = kv[1];
         return v ? k + sep + v : k;
@@ -2416,9 +2667,9 @@
 
   // Standardish isomorphisms
 
-  var querystring = /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
+  var querystring = /*#__PURE__*/setName( /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
     return I.isString(s) ? s.replace(/\+/g, '%20') : s;
-  }), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]);
+  }), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]), 'querystring');
 
   // Arithmetic isomorphisms
 
@@ -2587,20 +2838,32 @@
   exports._ = _;
   exports.mapping = mapping;
   exports.mappings = mappings;
+  exports.pattern = pattern;
+  exports.patterns = patterns;
   exports.alternatives = alternatives;
   exports.applyAt = applyAt;
+  exports.attemptEveryDown = attemptEveryDown;
+  exports.attemptEveryUp = attemptEveryUp;
+  exports.attemptSomeDown = attemptSomeDown;
   exports.conjugate = conjugate;
   exports.inverse = inverse;
   exports.iterate = iterate;
   exports.orAlternatively = orAlternatively;
+  exports.fold = fold;
+  exports.unfold = unfold;
   exports.complement = complement;
   exports.identity = identity;
   exports.is = is;
   exports.subset = subset;
   exports.array = array;
+  exports.arrays = arrays;
   exports.indexed = indexed;
   exports.reverse = reverse;
   exports.singleton = singleton;
+  exports.groupBy = groupBy;
+  exports.ungroupBy = ungroupBy;
+  exports.zipWith1 = zipWith1;
+  exports.unzipWith1 = unzipWith1;
   exports.disjoint = disjoint;
   exports.keyed = keyed;
   exports.multikeyed = multikeyed;

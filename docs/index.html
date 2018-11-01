@@ -301,15 +301,22 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </ul>
 </li>
 <li><a href="#l-mappings" title="L.mappings: ([[Pattern s, Pattern a]] | (...Variable) -&gt; [[Pattern s, Pattern a]]) -&gt; PIso s a"><code>L.mappings([...[patternFwd, patternBwd]] | (...variables) =&gt; [...[patternFwd, patternBwd]]) ~&gt; isomorphism</code></a> <small><sup>v14.8.0</sup></small></li>
+<li><a href="#l-pattern" title="L.pattern: (Pattern s | (...Variable) -&gt; Pattern s) -&gt; PIso s s"><code>L.pattern(pattern | (...variables) =&gt; pattern) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-patterns" title="L.patterns: ([Pattern s] | (...Variable) -&gt; [Pattern s]) -&gt; PIso s s"><code>L.patterns([...patterns] | (...variables) =&gt; [...patterns]) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#isomorphism-combinators">Isomorphism combinators</a><ul>
 <li><a href="#l-alternatives" title="L.alternatives: (PIso s a, ...PIso s a) -&gt; PIso s a"><code>L.alternatives(isomorphism, ...isomorphisms) ~&gt; isomorphism</code></a> <small><sup>v14.7.0</sup></small></li>
 <li><a href="#l-applyat" title="L.applyAt: (POptic s a, PIso a a) -&gt; PIso s s"><code>L.applyAt(elementsOptic, isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.9.0</sup></small></li>
+<li><a href="#l-attempteverydown" title="L.attemptEveryDown: (POptic a b) -&gt; PIso s t"><code>L.attemptEveryDown(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-attempteveryup" title="L.attemptEveryUp: (POptic a b) -&gt; PIso s t"><code>L.attemptEveryUp(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-attemptsomedown" title="L.attemptSomeDoen: (POptic a b) -&gt; PIso s t"><code>L.attemptSomeDown(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 <li><a href="#l-conjugate" title="L.conjugate: PIso s a -&gt; PIso a a -&gt; PIso s s"><code>L.conjugate(contextIsomorphism, isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.9.0</sup></small></li>
+<li><a href="#l-fold" title="L.fold: PIso [s, x] s -&gt; PIso [s, xs] s"><code>L.fold(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 <li><a href="#l-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v4.1.0</sup></small></li>
 <li><a href="#l-iterate" title="L.iterate: PIso a a -&gt; PIso a a"><code>L.iterate(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.3.0</sup></small></li>
 <li><a href="#l-oralternatively" title="L.orAlternatively: (PIso s a, PIso s a) -&gt; PIso s a"><code>L.orAlternatively(backupIsomorphism, primaryIsomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.7.0</sup></small></li>
+<li><a href="#l-unfold" title="L.fold: PIso s [s, x] -&gt; PIso s [s, xs]"><code>L.unfold(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#basic-isomorphisms">Basic isomorphisms</a><ul>
@@ -321,9 +328,14 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 </li>
 <li><a href="#array-isomorphisms">Array isomorphisms</a><ul>
 <li><a href="#l-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></li>
+<li><a href="#l-arrays" title="L.arrays: PIso a b -&gt; PIso [a] [b]"><code>L.arrays(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-groupby" title="L.groupBy: (a -&gt; k) -&gt; PIso [a] [[a]]"><code>L.groupBy(value =&gt; key) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 <li><a href="#l-indexed" title="L.indexed: PIso [a] [[Integer, a]]"><code>L.indexed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#l-reverse" title="L.reverse: PIso [a] [a]"><code>L.reverse ~&gt; isomorphism</code></a> <small><sup>v11.22.0</sup></small></li>
 <li><a href="#l-singleton" title="L.singleton: PIso [a] a"><code>L.singleton ~&gt; isomorphism</code></a> <small><sup>v11.18.0</sup></small></li>
+<li><a href="#l-ungroupby" title="L.ungroupBy: (a -&gt; k) -&gt; PIso [[a]] [a]"><code>L.ungroupBy(value =&gt; key) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-unzipwith1" title="L.unzipWith1: PIso c [a, b] -&gt; PIso [c] [a, [b]]"><code>L.unzipWith1(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
+<li><a href="#l-zipwith1" title="L.zipWith1: PIso [a, b] c -&gt; PIso [a, [b]] [c]"><code>L.zipWith1(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#object-isomorphisms">Object isomorphisms</a><ul>
@@ -2908,6 +2920,14 @@ arrays by <a href="#l-mapping"><code>L.mapping</code></a>.</p>
   [[&#39;a&#39;, &#39;b&#39;], {x: 1, y: 2}]
 )
 </code></pre>
+<h5><a id="l-pattern"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-pattern">■</a> <a href="#l-pattern" title="L.pattern: (Pattern s | (...Variable) -&gt; Pattern s) -&gt; PIso s s"><code>L.pattern(pattern | (...variables) =&gt; pattern) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.pattern</code> tries to match the value in focus to the pattern.  If the pattern
+matches, the focus is not modified.  Otherwise the focus is mapped to
+<code>undefined</code>.  See also <a href="#l-subset"><code>L.subset</code></a> and <a href="#l-patterns"><code>L.patterns</code></a>.</p>
+<h5><a id="l-patterns"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-patterns">■</a> <a href="#l-patterns" title="L.patterns: ([Pattern s] | (...Variable) -&gt; [Pattern s]) -&gt; PIso s s"><code>L.patterns([...patterns] | (...variables) =&gt; [...patterns]) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.patterns</code> tries to match the value in focus to any of the pattern.  If any
+pattern matches, the focus is not modified.  Otherwise the focus is mapped to
+<code>undefined</code>.  See also <a href="#l-pattern"><code>L.pattern</code></a>.</p>
 <h4><a id="isomorphism-combinators"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#isomorphism-combinators">■</a> <a href="#isomorphism-combinators">Isomorphism combinators</a></h4>
 <h5><a id="l-alternatives"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-alternatives">■</a> <a href="#l-alternatives" title="L.alternatives: (PIso s a, ...PIso s a) -&gt; PIso s a"><code>L.alternatives(isomorphism, ...isomorphisms) ~&gt; isomorphism</code></a> <small><sup>v14.7.0</sup></small></h5>
 <p><code>L.alternatives</code> returns a partial isomorphism that, in both read and write
@@ -2930,6 +2950,39 @@ focus of the given optic.  See also <a href="#l-conjugate"><code>L.conjugate</co
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.get(L.applyAt(L.entries, L.reverse), {bar: &#39;foo&#39;, value: &#39;key&#39;})
 </code></pre>
+<h5><a id="l-attempteverydown"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-attempteverydown">■</a> <a href="#l-attempteverydown" title="L.attemptEveryDown: (POptic a b) -&gt; PIso s t"><code>L.attemptEveryDown(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.attemptEveryDown</code> descends into plain arrays and objects down towards the
+leafs and tries to apply the given isomorphism to every position in the data
+structure.  In case the isomorphism produces a non-<code>undefined</code> result for any
+focus, the focus is replaced with the result.  Otherwise the focus is kept as
+is.  See also <a href="#l-attempteveryup"><code>L.attemptEveryUp</code></a>.</p>
+<h5><a id="l-attempteveryup"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-attempteveryup">■</a> <a href="#l-attempteveryup" title="L.attemptEveryUp: (POptic a b) -&gt; PIso s t"><code>L.attemptEveryUp(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.attemptEveryUp</code> descends into plain arrays and objects and starting from the
+leafs up towards the root tries to apply the given isomorphism to every position
+in the data structure.  In case the isomorphism produces a non-<code>undefined</code>
+result for any focus, the focus is replaced with the result.  Otherwise the
+focus is kept as is.  See also <a href="#l-attempteverydown"><code>L.attemptEveryDown</code></a>.</p>
+<h5><a id="l-attemptsomedown"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-attemptsomedown">■</a> <a href="#l-attemptsomedown" title="L.attemptSomeDoen: (POptic a b) -&gt; PIso s t"><code>L.attemptSomeDown(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.attemptSomeDown</code> descends into plain arrays and objects down towards the
+leafs and tries to apply the given isomorphism to every position.  In case the
+isomorphism produces a non-<code>undefined</code> result, the focus is replaced with the
+result and the result will not be traversed further.  Otherwise the focus is
+kept as is and the downward traversal is continued.  See also
+<a href="#l-attempteverydown"><code>L.attemptEveryDown</code></a>.</p>
+<h5><a id="l-conjugate"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-conjugate">■</a> <a href="#l-conjugate" title="L.conjugate: PIso s a -&gt; PIso a a -&gt; PIso s s"><code>L.conjugate(contextIsomorphism, isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.9.0</sup></small></h5>
+<p><code>L.conjugate(context, iso)</code> is shorthand for <code>[context, iso,
+L.inverse(context)]</code> and allows one to apply an isomorphism, or transform data
+with an isomorphism, within the codomain of another isomorphism.  <code>L.conjugate</code>
+can be seen as an optimized version of <a href="#l-applyat"><code>L.applyAt</code></a> for cases where
+the elements optic is an isomorphism.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(L.conjugate(L.uncouple(&#39;=&#39;), L.reverse), &#39;key=value&#39;)
+</code></pre>
+<h5><a id="l-fold"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-fold">■</a> <a href="#l-fold" title="L.fold: PIso [s, x] s -&gt; PIso [s, xs] s"><code>L.fold(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.fold</code> folds a pair <code>[s, xs]</code> of an initial state and an array using the given
+isomorphism, that will be passed pairs <code>[s, x]</code> with current state and an
+element of the array and must produce the next state, into the final state
+produced by the isomorphism.  See also <a href="#l-unfold"><code>L.unfold</code></a>.</p>
 <h5><a id="l-inverse"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-inverse">■</a> <a href="#l-inverse" title="L.inverse: PIso a b -&gt; PIso b a"><code>L.inverse(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v4.1.0</sup></small></h5>
 <p><code>L.inverse</code> returns the inverse of the given isomorphism.  Note that this
 operation only makes sense on isomorphisms.</p>
@@ -2956,6 +3009,12 @@ write direction, acts like <code>primaryIsomorphism</code> when its view is not 
 and otherwise like <code>backupIsomorphism</code>.  See also <a href="#l-orelse"><code>L.orElse</code></a>.</p>
 <p>Note that <a href="#l-alternatives"><code>L.alternatives(...isomorphisms)</code></a> is equivalent to
 <code>isomorphisms.reduceRight(L.orAlternatively)</code>.</p>
+<h5><a id="l-unfold"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-unfold">■</a> <a href="#l-unfold" title="L.fold: PIso s [s, x] -&gt; PIso s [s, xs]"><code>L.unfold(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.unfold</code> unfolds from a given initial state a pair <code>[s, xs]</code> of the final
+state and an array of elements produced by the given isomorphism which will be
+passed a state and must produce a pair <code>[s, x]</code> of the next state and an element
+or <code>undefined</code> to indicate that the state was the final state.  See also
+<a href="#l-fold"><code>L.fold</code></a>.</p>
 <h4><a id="basic-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#basic-isomorphisms">■</a> <a href="#basic-isomorphisms">Basic isomorphisms</a></h4>
 <h5><a id="l-complement"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-complement">■</a> <a href="#l-complement" title="L.complement: PIso Boolean Boolean"><code>L.complement ~&gt; isomorphism</code></a> <small><sup>v9.7.0</sup></small></h5>
 <p><code>L.complement</code> is an isomorphism that performs logical negation of any
@@ -2983,7 +3042,8 @@ L.modify(L.identity, f, x) = f(x)
 <h5><a id="l-subset"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-subset">■</a> <a href="#l-subset" title="L.subset: (Maybe a -&gt; Boolean) -&gt; PIso a a"><code>L.subset(maybeValue =&gt; testable) ~&gt; isomorphism</code></a> <small><sup>v14.3.0</sup></small></h5>
 <p><code>L.subset</code> returns an isomorphism that acts like the identity when the data
 passes the given predicate and otherwise maps the data to <code>undefined</code>.  The
-predicate is not called unnecessarily in case the focus is <code>undefined</code>.</p>
+predicate is not called unnecessarily in case the focus is <code>undefined</code>.  See
+also <a href="#l-pattern"><code>L.pattern</code></a>.</p>
 <h4><a id="array-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#array-isomorphisms">■</a> <a href="#array-isomorphisms">Array isomorphisms</a></h4>
 <h5><a id="l-array"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-array">■</a> <a href="#l-array" title="L.array: PIso a b -&gt; PIso [a] [b]"><code>L.array(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v11.19.0</sup></small></h5>
 <p><code>L.array</code> lifts an isomorphism between elements, <code>a ≅ b</code>, to an isomorphism
@@ -2994,15 +3054,13 @@ between an <a href="#array-like">array-like</a> object and an array of elements,
 </code></pre>
 <p>Elements mapped to <code>undefined</code> by the isomorphism on elements are removed from
 the resulting array in both directions.</p>
-<h5><a id="l-conjugate"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-conjugate">■</a> <a href="#l-conjugate" title="L.conjugate: PIso s a -&gt; PIso a a -&gt; PIso s s"><code>L.conjugate(contextIsomorphism, isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.9.0</sup></small></h5>
-<p><code>L.conjugate(context, iso)</code> is shorthand for <code>[context, iso,
-L.inverse(context)]</code> and allows one to apply an isomorphism, or transform data
-with an isomorphism, within the codomain of another isomorphism.  <code>L.conjugate</code>
-can be seen as an optimized version of <a href="#l-applyat"><code>L.applyAt</code></a> for cases where
-the elements optic is an isomorphism.</p>
-<p>For example:</p>
-<pre><code class="hljs lang-js">L.get(L.conjugate(L.uncouple(&#39;=&#39;), L.reverse), &#39;key=value&#39;)
-</code></pre>
+<h5><a id="l-arrays"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-arrays">■</a> <a href="#l-arrays" title="L.arrays: PIso a b -&gt; PIso [a] [b]"><code>L.arrays(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.arrays</code> is a strict version of <a href="#l-array"><code>L.array</code></a> such that if any element
+is mapped to <code>undefined</code> then so will the whole result.</p>
+<h5><a id="l-groupby"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-groupby">■</a> <a href="#l-groupby" title="L.groupBy: (a -&gt; k) -&gt; PIso [a] [[a]]"><code>L.groupBy(value =&gt; key) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.groupBy</code> groups elements in an array into arrays such that each array has the
+same key as returned by the given function.  See also
+<a href="#l-ungroupby"><code>L.ungroupBy</code></a>.</p>
 <h5><a id="l-indexed"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-indexed">■</a> <a href="#l-indexed" title="L.indexed: PIso [a] [[Integer, a]]"><code>L.indexed ~&gt; isomorphism</code></a> <small><sup>v11.21.0</sup></small></h5>
 <p><code>L.indexed</code> is an isomorphism between an <a href="#array-like">array-like</a> object and an
 array of <code>[index, value]</code> pairs.</p>
@@ -3037,6 +3095,21 @@ not contain exactly one element, then the view will be <code>undefined</code>.  
 for this behaviour is that it allows <code>L.singleton</code> to not only be used to access
 the first element of an array-like object, but to also check that the object is
 of the expected form.</p>
+<h5><a id="l-ungroupby"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-ungroupby">■</a> <a href="#l-ungroupby" title="L.ungroupBy: (a -&gt; k) -&gt; PIso [[a]] [a]"><code>L.ungroupBy(value =&gt; key) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.ungroupBy</code> unnests arrays of elements that have the same key as returned by
+the given function to an array of the elements from all the arrays.  See also
+<a href="#l-groupby"><code>L.groupBy</code></a>.</p>
+<h5><a id="l-unzipwith1"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-unzipwith1">■</a> <a href="#l-unzipwith1" title="L.unzipWith1: PIso c [a, b] -&gt; PIso [c] [a, [b]]"><code>L.unzipWith1(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.unzipWith1</code> unzips elements from a non-empty array (hence the <code>1</code>) into a
+pair of a constant value and an array of elements, as extracted from the pairs
+produced by the given isomorphism from the elements of the source array such
+that the first element of each pair is the same for all elements of the original
+array.  See also <a href="#l-zipwith1"><code>L.zipWith1</code></a>.</p>
+<h5><a id="l-zipwith1"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-zipwith1">■</a> <a href="#l-zipwith1" title="L.zipWith1: PIso [a, b] c -&gt; PIso [a, [b]] [c]"><code>L.zipWith1(isomorphism) ~&gt; isomorphism</code></a> <small><sup>v14.13.0</sup></small></h5>
+<p><code>L.zipWith1</code> zips elements from a pair of a constant value and a non-empty array
+(hence the <code>1</code>) into an array of elements as produced by the given isomorphism
+that will be given pairs of the constant value and an element from the array.
+See also <a href="#l-unzipwith1"><code>L.unzipWith1</code></a>.</p>
 <h4><a id="object-isomorphisms"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#object-isomorphisms">■</a> <a href="#object-isomorphisms">Object isomorphisms</a></h4>
 <h5><a id="l-disjoint"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-disjoint">■</a> <a href="#l-disjoint" title="L.disjoint: (String k -&gt; String g) -&gt; PIso {[k]: a} {[g]: {[k]: a}}"><code>L.disjoint(propName =&gt; propName) ~&gt; isomorphism</code></a> <small><sup>v13.13.0</sup></small></h5>
 <p><code>L.disjoint</code> divides an object into disjoint subsets based on the given function

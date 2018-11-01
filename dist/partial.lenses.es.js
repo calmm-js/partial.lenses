@@ -1,4 +1,4 @@
-import { defineNameU, isString, always, freeze, isArray, isObject, Applicative, sndU, curry, isFunction, curryN, assocPartialU, dissocPartialU, object0, Identity, resolve, IdentityAsync, isNumber, constructorOf, toObject, create, acyclicEqualsU, inherit, isDefined, array0, keys, hasU, assign, arityN, id, isInstanceOfU } from 'infestines';
+import { defineNameU, isString, isArray, always, freeze, isObject, Applicative, sndU, curry, isFunction, curryN, assocPartialU, dissocPartialU, object0, Identity, resolve, IdentityAsync, isNumber, constructorOf, toObject, create, acyclicEqualsU, id, inherit, identicalU, isDefined, array0, keys, hasU, assign, arityN, isInstanceOfU } from 'infestines';
 export { Identity, IdentityAsync, FantasyFunctor, fromFantasy, fromFantasyApplicative, fromFantasyMonad } from 'infestines';
 
 var LENGTH = 'length';
@@ -170,6 +170,12 @@ var toRegExpU = function toRegExpU(str, flags) {
 
 //
 
+var isPair = function isPair(x) {
+  return isArray(x) && x[LENGTH] === 2;
+};
+
+//
+
 var tryCatch = function tryCatch(fn$$1) {
   return copyName(function (x) {
     try {
@@ -292,6 +298,19 @@ var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$
 var mapIfArrayLike = function mapIfArrayLike(xi2y, xs) {
   return seemsArrayLike(xs) ? mapPartialIndexU(xi2y, xs, void 0) : void 0;
 };
+
+var mapsIfArray = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freeze))(function (x2y, xs) {
+  if (isArray(xs)) {
+    var n = xs[LENGTH];
+    var ys = Array();
+    for (var i = 0; i < n; ++i) {
+      if (void 0 === (ys[i] = x2y(xs[i]))) {
+        return void 0;
+      }
+    }
+    return ys;
+  }
+});
 
 var copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : function (fn$$1) {
   return function (ys, k, xs, i, j) {
@@ -593,6 +612,10 @@ var setU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : par(0, e
       return o[LENGTH] === 4 ? o(s, void 0, Identity, always(x)) : s;
   }
 });
+
+var getInverseU = function getInverse(o, x) {
+  return setU(o, x, void 0);
+};
 
 var modifyU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : par(0, ef(reqOptic)))(function modify(o, xi2x, s) {
   switch (typeof o) {
@@ -1026,6 +1049,44 @@ var subseqU = function subseq(begin, end, t) {
 
 //
 
+var attemptU = function attemptU(fn$$1, x) {
+  if (void 0 !== x) {
+    var y = fn$$1(x);
+    if (void 0 !== y) return y;
+  }
+  return x;
+};
+
+var rewriteAttempt = function rewriteAttempt(fn$$1) {
+  return function (x, i, F, xi2yF) {
+    return F.map(function (x) {
+      return attemptU(fn$$1, x);
+    }, xi2yF(x, i));
+  };
+};
+
+var rereadAttempt = function rereadAttempt(fn$$1) {
+  return function (x, i, F, xi2yF) {
+    return xi2yF(attemptU(fn$$1, x), i);
+  };
+};
+
+//
+
+var transformEvery = function transformEvery(optic) {
+  return transform(lazy(function (rec) {
+    return [optic, children, rec];
+  }));
+};
+
+var transformSome = function transformSome(fn$$1) {
+  return transform(lazy(function (rec) {
+    return choices(getter(fn$$1), [children, rec]);
+  }));
+};
+
+//
+
 var isDefinedAtU = function isDefinedAtU(o, x, i) {
   return void 0 !== o(x, i, Select, id$1);
 };
@@ -1147,6 +1208,39 @@ var subsetPartial = function subsetPartial(p) {
 
 //
 
+var unfoldPartial = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(function (r) {
+  freeze(r);
+  freeze(r[1]);
+  return r;
+})))(function (s2sa) {
+  return function unfold(s) {
+    var xs = [];
+    for (;;) {
+      var sa = s2sa(s);
+      if (!isPair(sa)) return [s, xs];
+      s = sa[0];
+      xs.push(sa[1]);
+    }
+  };
+});
+
+var foldPartial = function foldPartial(sa2s) {
+  return function (sxs) {
+    if (isPair(sxs)) {
+      var xs = sxs[1];
+      if (isArray(xs)) {
+        var s = sxs[0];
+        var n = xs[LENGTH];
+        while (n--) {
+          s = sa2s(freezeInDev([s, xs[n]]));
+        }return s;
+      }
+    }
+  };
+};
+
+//
+
 var PAYLOAD = '珳襱댎纚䤤鬖罺좴';
 
 var isPayload = function isPayload(k) {
@@ -1238,6 +1332,12 @@ function checkPattern(kinds, p) {
   }
 }
 
+var checkPatternInDev = process.env.NODE_ENV === 'production' ? id$1 : function (p) {
+  var kinds = [];
+  checkPattern(kinds, p);
+  return deepFreezeInDev(p);
+};
+
 var checkPatternPairInDev = process.env.NODE_ENV === 'production' ? id$1 : function (ps) {
   var kinds = [];
   checkPattern(kinds, ps[0]);
@@ -1254,7 +1354,7 @@ var pushDefined = function pushDefined(xs, x) {
 };
 
 function toMatch(kinds, p) {
-  if (all1(isPrimitive, leafs, p)) {
+  if (void 0 === p || all1(isPrimitive, leafs, p)) {
     return function (e, x) {
       return acyclicEqualsU(p, x);
     };
@@ -1325,7 +1425,7 @@ function toMatch(kinds, p) {
 function toSubst(p, k) {
   if (isPayload(k)) {
     return void 0;
-  } else if (all1(isPrimitive, leafs, p)) {
+  } else if (void 0 === p || all1(isPrimitive, leafs, p)) {
     return always(p);
   } else if (isVariable(p)) {
     var i = p[PAYLOAD][0][PAYLOAD];
@@ -1385,6 +1485,94 @@ var oneway = function oneway(n, m, s) {
     if (m(e, x)) return s(e);
   };
 };
+
+//
+
+var ungroupByFn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(res(freeze)))(function (keyOf) {
+  return function ungroupBy(xxs) {
+    if (isArray(xxs)) {
+      var ys = [];
+      for (var i = 0, n = xxs.length; i < n; ++i) {
+        var xs = xxs[i];
+        if (!isArray(xs)) return;
+        var m = xs.length;
+        if (!m) return;
+        var k = keyOf(xs[0]);
+        if (void 0 === k) return;
+        for (var j = 0, _m = xs.length; j < _m; ++j) {
+          var x = xs[j];
+          if (!identicalU(k, keyOf(x))) return;
+          ys.push(x);
+        }
+      }
+      return ys;
+    }
+  };
+});
+
+var groupByFn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(res(freezeObjectOfObjects)))(function (keyOf) {
+  return function groupBy(ys) {
+    if (isArray(ys)) {
+      var groups = new Map();
+      for (var i = 0, n = ys.length; i < n; ++i) {
+        var y = ys[i];
+        var k = keyOf(y);
+        if (void 0 === k) return;
+        var xs = groups.get(k);
+        if (void 0 !== xs) {
+          xs.push(y);
+        } else {
+          groups.set(k, [y]);
+        }
+      }
+      var xxs = [];
+      groups.forEach(function (xs) {
+        return xxs.push(xs);
+      });
+      return xxs;
+    }
+  };
+});
+
+//
+
+var zW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(res(freeze)))(function (fn$$1) {
+  return function zipWith1(xys) {
+    if (isPair(xys)) {
+      var ys = xys[1];
+      var n = ys[LENGTH];
+      if (n) {
+        var x = xys[0];
+        var zs = Array(n);
+        for (var i = 0; i < n; ++i) {
+          if (void 0 === (zs[i] = fn$$1([x, ys[i]]))) return;
+        }return zs;
+      }
+    }
+  };
+});
+
+var unzW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(res(freezeObjectOfObjects)))(function (fn$$1) {
+  return function unzipWith1(zs) {
+    if (isArray(zs)) {
+      var n = zs[LENGTH];
+      if (n) {
+        var xy0 = fn$$1(zs[0]);
+        if (isPair(xy0)) {
+          var ys = Array(n);
+          var x = xy0[0];
+          ys[0] = xy0[1];
+          for (var i = 1; i < n; ++i) {
+            var xy = fn$$1(zs[i]);
+            if (!isPair(xy) || !acyclicEqualsU(x, xy[0])) return;
+            ys[i] = xy[1];
+          }
+          return [x, ys];
+        }
+      }
+    }
+  };
+});
 
 // Auxiliary
 
@@ -2192,8 +2380,8 @@ var replace$1 = /*#__PURE__*/curry(function replace$$1(inn, out) {
 // Operations on isomorphisms
 
 function getInverse(o, s) {
-  return 1 < arguments[LENGTH] ? setU(o, s, void 0) : function (s) {
-    return setU(o, s, void 0);
+  return 1 < arguments[LENGTH] ? getInverseU(o, s) : function (s) {
+    return getInverseU(o, s);
   };
 }
 
@@ -2220,6 +2408,22 @@ function mappings(ps) {
   return alternatives.apply(null, ps.map(mapping));
 }
 
+function pattern(p) {
+  var n = 0;
+  if (isFunction(p)) p = p.apply(null, nVars(n = p[LENGTH]));
+  checkPatternInDev(p);
+  var kinds = Array(n);
+  var m = toMatch(kinds, p);
+  return subset(function (x) {
+    return m(Array(n), x);
+  });
+}
+
+function patterns(ps) {
+  if (isFunction(ps)) ps = ps.apply(null, nVars(ps[LENGTH]));
+  return alternatives.apply(null, ps.map(pattern));
+}
+
 // Isomorphism combinators
 
 var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
@@ -2227,6 +2431,18 @@ var alternatives = /*#__PURE__*/makeSemi(orAlternativelyU);
 var applyAt = /*#__PURE__*/curry(function applyAt(elements, transform) {
   return isoU(modify(elements, get(transform)), modify(elements, getInverse(transform)));
 });
+
+var attemptEveryDown = function attemptEveryDown(iso) {
+  return isoU(transformEvery(rereadAttempt(get(iso))), transformEvery(rewriteAttempt(getInverse(iso))));
+};
+
+var attemptEveryUp = function attemptEveryUp(iso) {
+  return isoU(transformEvery(rewriteAttempt(get(iso))), transformEvery(rereadAttempt(getInverse(iso))));
+};
+
+var attemptSomeDown = function attemptSomeDown(iso) {
+  return isoU(transformSome(get(iso)), transformSome(getInverse(iso)));
+};
 
 var conjugate = /*#__PURE__*/curry(function conjugate(outer, inner) {
   return [outer, inner, inverse(outer)];
@@ -2245,6 +2461,14 @@ var iterate = function iterate(aIa) {
 };
 
 var orAlternatively = /*#__PURE__*/curry(orAlternativelyU);
+
+var fold = function fold(saIs) {
+  return isoU(foldPartial(get(saIs)), unfoldPartial(getInverse(saIs)));
+};
+
+var unfold = function unfold(sIsa) {
+  return isoU(unfoldPartial(get(sIsa)), foldPartial(getInverse(sIsa)));
+};
 
 // Basic isomorphisms
 
@@ -2276,6 +2500,17 @@ var array = function array(elem) {
   };
 };
 
+var arrays = function arrays(elem) {
+  var fwd = getInverse(elem);
+  var bwd = get(elem);
+  var mapFwd = function mapFwd(x) {
+    return mapsIfArray(fwd, x);
+  };
+  return function (x, i, F, xi2yF) {
+    return F.map(mapFwd, xi2yF(mapsIfArray(bwd, x), i));
+  };
+};
+
 var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : res(freezeObjectOfObjects))(function indexed(xs) {
   var n = xs[LENGTH];
   var xis = Array(n);
@@ -2304,9 +2539,25 @@ var indexed = /*#__PURE__*/isoU( /*#__PURE__*/expect(seemsArrayLike, /*#__PURE__
 
 var reverse = /*#__PURE__*/isoU(rev, rev);
 
-var singleton = /*#__PURE__*/mapping(function (x) {
+var singleton = /*#__PURE__*/setName( /*#__PURE__*/mapping(function (x) {
   return [[x], x];
-});
+}), 'singleton');
+
+var groupBy = function groupBy(keyOf) {
+  return isoU(groupByFn(keyOf), ungroupByFn(keyOf));
+};
+
+var ungroupBy = function ungroupBy(keyOf) {
+  return isoU(ungroupByFn(keyOf), groupByFn(keyOf));
+};
+
+var zipWith1 = function zipWith1(iso) {
+  return isoU(zW1Fn(get(iso)), unzW1Fn(getInverse(iso)));
+};
+
+var unzipWith1 = function unzipWith1(iso) {
+  return isoU(unzW1Fn(get(iso)), zW1Fn(getInverse(iso)));
+};
 
 // Object isomorphisms
 
@@ -2407,7 +2658,7 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : func
     var m = re.exec(x);
     return m ? [x.slice(0, m[INDEX]), x.slice(reLastIndex(m))] : [x, ''];
   }), function (kv) {
-    if (isArray(kv) && kv[LENGTH] === 2) {
+    if (isPair(kv)) {
       var k = kv[0];
       var v = kv[1];
       return v ? k + sep + v : k;
@@ -2417,9 +2668,9 @@ var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id$1 : func
 
 // Standardish isomorphisms
 
-var querystring = /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
+var querystring = /*#__PURE__*/setName( /*#__PURE__*/toFunction([/*#__PURE__*/reread(function (s) {
   return isString(s) ? s.replace(/\+/g, '%20') : s;
-}), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]);
+}), /*#__PURE__*/split('&'), /*#__PURE__*/array([/*#__PURE__*/uncouple('='), /*#__PURE__*/array(uriComponent)]), /*#__PURE__*/inverse(multikeyed)]), 'querystring');
 
 // Arithmetic isomorphisms
 
@@ -2449,4 +2700,4 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-export { seemsArrayLike, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, reIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, keysEverywhere, subseq, limit, offset, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsExcept, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, alternatives, applyAt, conjugate, inverse, iterate, orAlternatively, complement, identity, is, subset, array, indexed, reverse, singleton, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
+export { seemsArrayLike, Select, toFunction, assign$1 as assign, disperse, modify, modifyAsync, remove, set, traverse, compose, flat, lazy, choices, choose, cond, condOf, ifElse, orElse, chain, choice, unless, when, optional, zero, mapIx, setIx, tieIx, joinIx, reIx, skipIx, getLog, log, transform, transformAsync, seq, assignOp, modifyOp, setOp, removeOp, branchOr, branch, branches, elems, elemsTotal, entries, keys$1 as keys, keysEverywhere, subseq, limit, offset, matches, values, children, flatten, query, satisfying, leafs, all, and$1 as and, all1, and1, any, collectAs, collect, collectTotalAs, collectTotal, concatAs, concat, countIf, count, countsAs, counts, foldl, foldr, forEach, forEachWith, get, getAs, isDefined$1 as isDefined, isEmpty, joinAs, join, maximumBy, maximum, meanAs, mean, minimumBy, minimum, none, or$1 as or, productAs, product, select, selectAs, sumAs, sum, foldTraversalLens, getter, lens, partsOf, setter, defaults, define, normalize, required, reread, rewrite, append, cross, filter, find, findWith, first, index, last, prefix, slice, suffix, pickIn, prop, props, propsExcept, propsOf, removable, valueOr, pick, replace$1 as replace, getInverse, iso, _, mapping, mappings, pattern, patterns, alternatives, applyAt, attemptEveryDown, attemptEveryUp, attemptSomeDown, conjugate, inverse, iterate, orAlternatively, fold, unfold, complement, identity, is, subset, array, arrays, indexed, reverse, singleton, groupBy, ungroupBy, zipWith1, unzipWith1, disjoint, keyed, multikeyed, json, uri, uriComponent, dropPrefix, dropSuffix, replaces, split, uncouple, querystring, add$1 as add, divide, multiply$1 as multiply, negate$1 as negate, subtract, pointer };
