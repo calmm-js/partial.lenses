@@ -62,6 +62,7 @@ const T_monoid = T.object({
   concat: T.fn([T.any, T.any], T.any)
 })
 
+const T_pattern = T_maybeDataI
 const T_patternPair = T.and(T.array(T_maybeDataI), T.arity(2))
 
 const template = c => T.lazy(rec => T.props(T.or(c, rec)))
@@ -416,17 +417,32 @@ export const mappings = T.fn(
   T_isomorphism
 )
 
+export const pattern = T.fn(
+  [T.or(T.fnVarN(0, T.any, T_pattern), T_pattern)],
+  T_isomorphism
+)
+
+export const patterns = T.fn(
+  [T.or(T.fnVarN(0, T.any, T.array(T_pattern)), T.array(T_pattern))],
+  T_isomorphism
+)
+
 // Isomorphism combinators
 
 export const alternatives = T.fnVarN(1, T_isomorphism, T_isomorphism)
 export const applyAt = T.fn([T_optic, T_isomorphism], T_isomorphism)
+export const attemptEveryDown = T.fn([T_isomorphism], T_isomorphism)
+export const attemptEveryUp = T.fn([T_isomorphism], T_isomorphism)
+export const attemptSomeDown = T.fn([T_isomorphism], T_isomorphism)
 export const conjugate = T.fn([T_isomorphism, T_isomorphism], T_isomorphism)
+export const fold = T.fn([T_isomorphism], T_isomorphism)
 export const inverse = T.fn([T_isomorphism], T_isomorphism)
 export const iterate = T.fn([T_isomorphism], T_isomorphism)
 export const orAlternatively = T.fn(
   [T_isomorphism, T_isomorphism],
   T_isomorphism
 )
+export const unfold = T.fn([T_isomorphism], T_isomorphism)
 
 // Basic isomorphisms
 
@@ -438,9 +454,14 @@ export const subset = T.fn([T.fn([T_maybeDataI], T.any)], T_isomorphism)
 // Array isomorphisms
 
 export const array = T.fn([T_isomorphism], T_isomorphism)
+export const arrays = T.fn([T_isomorphism], T_isomorphism)
+export const groupBy = T.fn([T.fn([T_dataI], T.any)], T_isomorphism)
 export const indexed = T_isomorphism
 export const reverse = T_isomorphism
 export const singleton = T_isomorphism
+export const ungroupBy = T.fn([T.fn([T_dataI], T.any)], T_isomorphism)
+export const unzipWith1 = T.fn([T_isomorphism], T_isomorphism)
+export const zipWith1 = T.fn([T_isomorphism], T_isomorphism)
 
 // Object isomorphisms
 

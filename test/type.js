@@ -29,7 +29,7 @@ export const or = (...ps) => x => {
 
 export const fromPredicate = p => x => {
   if (p(x)) return x
-  throw Error(`fromPredicate(${p}): ${x}`)
+  throw Error(`fromPredicate(${p}): ${JSON.stringify(x)}`)
 }
 
 const type = t => fromPredicate(x => typeof x === t)

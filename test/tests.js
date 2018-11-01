@@ -234,8 +234,12 @@ describe('arities', () => {
     append: 4,
     applyAt: 2,
     array: 1,
+    arrays: 1,
     assign: 3,
     assignOp: 1,
+    attemptEveryDown: 1,
+    attemptEveryUp: 1,
+    attemptSomeDown: 1,
     branch: 1,
     branchOr: 2,
     branches: 0,
@@ -255,6 +259,7 @@ describe('arities', () => {
     cond: 0,
     condOf: 1,
     conjugate: 2,
+    cons: 4,
     count: 2,
     countIf: 3,
     counts: 2,
@@ -276,6 +281,7 @@ describe('arities', () => {
     first: undefined,
     flat: 0,
     flatten: 4,
+    fold: 1,
     foldTraversalLens: 2,
     foldl: 4,
     foldr: 4,
@@ -289,6 +295,7 @@ describe('arities', () => {
     getInverse: 2,
     getLog: 2,
     getter: 1,
+    groupBy: 1,
     identity: 4,
     ifElse: 3,
     index: 1,
@@ -336,6 +343,8 @@ describe('arities', () => {
     orAlternatively: 2,
     orElse: 2,
     partsOf: 1,
+    pattern: 1,
+    patterns: 1,
     pick: 1,
     pickIn: 1,
     pointer: 1,
@@ -383,13 +392,17 @@ describe('arities', () => {
     transformAsync: 2,
     traverse: 4,
     uncouple: 1,
+    unfold: 1,
+    ungroupBy: 1,
     unless: 1,
+    unzipWith1: 1,
     uri: 4,
     uriComponent: 4,
     valueOr: 1,
     values: 4,
     when: 1,
-    zero: 4
+    zero: 4,
+    zipWith1: 1
   }
 
   for (const f in L) testEq(() => L[f].length, arities[f])
@@ -1391,6 +1404,194 @@ describe('L.toFunction', () => {
   testEq(() => typeof L.toFunction(L.find(I.id)), 'function')
 })
 
+describe('L.ungroupBy', () => {
+  testEq(() => L.get(L.ungroupBy(I.id), [[]]), undefined)
+  testEq(() => L.get(L.ungroupBy(L.get('x')), [[{y: 1}]]), undefined)
+  testEq(() => L.get(L.ungroupBy(L.get('x')), [[{x: 1}, {x: 2}]]), undefined)
+  testEq(() => L.getInverse(L.ungroupBy(L.get('x')), [{y: 1}]), undefined)
+})
+
+describe('L.groupBy', () => {
+  testEq(() => L.getInverse(L.groupBy(I.id), [[]]), undefined)
+  testEq(() => L.getInverse(L.groupBy(L.get('x')), [[{y: 1}]]), undefined)
+  testEq(
+    () => L.getInverse(L.groupBy(L.get('x')), [[{x: 1}, {x: 2}]]),
+    undefined
+  )
+  testEq(() => L.get(L.groupBy(L.get('x')), [{y: 1}]), undefined)
+})
+
+describe('L.zipWith1', () => {
+  testEq(() => L.get(L.zipWith1(L.identity), [42, []]), undefined)
+  testEq(() => L.getInverse(L.zipWith1(L.identity), ['not a pair']), undefined)
+  testEq(
+    () =>
+      L.getInverse(L.zipWith1(L.identity), [['not', 'a'], ['equal', 'value']]),
+    undefined
+  )
+})
+
+describe('L.unzipWith1', () => {
+  testEq(() => L.getInverse(L.unzipWith1(L.identity), [42, []]), undefined)
+  testEq(() => L.get(L.unzipWith1(L.identity), ['not a pair']), undefined)
+  testEq(
+    () => L.get(L.unzipWith1(L.identity), [['not', 'a'], ['equal', 'value']]),
+    undefined
+  )
+})
+
+const flatteningRules = L.alternatives(
+  L.mapping(o => [{...o, children: []}, [{...o, ps: []}]]),
+  [
+    L.mapping((cs, o) => [{...o, children: cs}, [o, cs]]),
+    L.zipWith1(
+      L.mapping((p, c, ps) => [
+        [p, {...c, parents: ps}],
+        {...c, ps: [p, ...ps]}
+      ])
+    )
+  ],
+  [
+    L.ungroupBy(L.get(['ps', L.choices([0, 'id'], [])])),
+    L.arrays(L.mapping((o, ps) => [{...o, ps}, {...o, parents: ps}]))
+  ]
+)
+
+describe('L.attemptSomeDown', () => {
+  testEq(
+    () =>
+      L.get(L.attemptSomeDown(flatteningRules), [
+        {
+          id: 1,
+          children: [
+            {id: 2, children: [{id: 3, children: []}]},
+            {id: 4, children: []}
+          ]
+        },
+        {
+          id: 5,
+          children: [
+            {id: 6, children: []},
+            {id: 7, children: [{id: 8, children: []}]},
+            {id: 9, children: []}
+          ]
+        }
+      ]),
+    [
+      {
+        id: 1,
+        children: [{id: 2, children: [[{ps: [], id: 3}]]}, [{ps: [], id: 4}]]
+      },
+      {
+        id: 5,
+        children: [
+          [{ps: [], id: 6}],
+          {id: 7, children: [[{ps: [], id: 8}]]},
+          [{ps: [], id: 9}]
+        ]
+      }
+    ]
+  )
+})
+
+describe('L.attemptEveryUp', () => {
+  testEq(() => L.get(L.attemptEveryUp([]), undefined), undefined)
+  testEq(
+    () =>
+      L.get(L.attemptEveryUp(flatteningRules), [
+        {
+          id: 1,
+          children: [
+            {id: 2, children: [{id: 3, children: []}]},
+            {id: 4, children: []}
+          ]
+        },
+        {
+          id: 5,
+          children: [
+            {id: 6, children: []},
+            {id: 7, children: [{id: 8, children: []}]},
+            {id: 9, children: []}
+          ]
+        }
+      ]),
+    [
+      {parents: [{id: 1}, {id: 2}], id: 3},
+      {parents: [{id: 1}], id: 4},
+      {parents: [{id: 5}], id: 6},
+      {parents: [{id: 5}, {id: 7}], id: 8},
+      {parents: [{id: 5}], id: 9}
+    ]
+  )
+  testEq(
+    () =>
+      L.set([L.attemptEveryUp(flatteningRules), L.elems, 'type'], 'leaf', [
+        {
+          id: 1,
+          children: [
+            {id: 2, children: [{id: 3, children: []}]},
+            {id: 4, children: []}
+          ]
+        },
+        {
+          id: 5,
+          children: [
+            {id: 6, children: []},
+            {id: 7, children: [{id: 8, children: []}]},
+            {id: 9, children: []}
+          ]
+        }
+      ]),
+    [
+      {
+        children: [
+          {children: [{children: [], id: 3, type: 'leaf'}], id: 2},
+          {children: [], id: 4, type: 'leaf'}
+        ],
+        id: 1
+      },
+      {
+        children: [
+          {children: [], id: 6, type: 'leaf'},
+          {children: [{children: [], id: 8, type: 'leaf'}], id: 7},
+          {children: [], id: 9, type: 'leaf'}
+        ],
+        id: 5
+      }
+    ]
+  )
+})
+
+describe('L.attemptEveryDown', () => {
+  testEq(
+    () =>
+      L.get(L.attemptEveryDown(L.inverse(flatteningRules)), [
+        {parents: [{id: 1}, {id: 2}], id: 3},
+        {parents: [{id: 1}], id: 4},
+        {parents: [{id: 5}], id: 6},
+        {parents: [{id: 5}, {id: 7}], id: 8},
+        {parents: [{id: 5}], id: 9}
+      ]),
+    [
+      {
+        id: 1,
+        children: [
+          {id: 2, children: [{id: 3, children: []}]},
+          {id: 4, children: []}
+        ]
+      },
+      {
+        id: 5,
+        children: [
+          {id: 6, children: []},
+          {id: 7, children: [{id: 8, children: []}]},
+          {id: 9, children: []}
+        ]
+      }
+    ]
+  )
+})
+
 describe('BST', () => {
   const randomInt = (min, max) => Math.floor(Math.random() * (max - min)) + min
   const randomPick = (...choices) => choices[randomInt(0, choices.length)]
@@ -2066,6 +2267,37 @@ describe('L.array', () => {
   ])
 })
 
+describe('L.arrays', () => {
+  testEq(
+    () =>
+      L.get(L.arrays(L.pick({x: 'y', z: 'x'})), [{x: 1, y: 2}, {x: 3, y: 4}]),
+    [{x: 2, z: 1}, {x: 4, z: 3}]
+  )
+  testEq(
+    () =>
+      L.getInverse(L.arrays(L.pick({x: 'y', z: 'x'})), [
+        {x: 2, z: 1},
+        {x: 4, z: 3}
+      ]),
+    [{x: 1, y: 2}, {x: 3, y: 4}]
+  )
+  testEq(() => L.get(L.arrays(L.pick({x: 'y', z: 'x'})), []), [])
+  testEq(() => L.get(L.arrays(L.pick({x: 'y', z: 'x'})), {}), undefined)
+  testEq(
+    () => L.set(L.arrays(L.pick({x: 'y', z: 'x'})), [], [{x: 1, y: 2}]),
+    []
+  )
+  testEq(() => L.get(L.arrays(L.split('')), [{not: 'string'}]), undefined)
+  testEq(
+    () => L.remove([L.arrays(L.iso(R.toUpper, R.toLower))], ['it']),
+    undefined
+  )
+  testEq(
+    () => L.get(L.arrays(L.iso(R.toUpper, R.toLower)), 'string'),
+    undefined
+  )
+})
+
 describe('L.cross', () => {
   testEq(() => L.get(L.cross([]), []), [])
   testEq(() => L.get(L.cross([]), {arrayLike: false}), undefined)
@@ -2096,6 +2328,27 @@ describe('L.subset', () => {
   )
 })
 
+describe('L.unfold', () => {
+  testEq(
+    () => L.get(L.unfold(L.subset(I.isArray)), [[[null, 'c'], 'b'], 'a']),
+    [null, ['a', 'b', 'c']]
+  )
+  testEq(
+    () => L.getInverse(L.unfold(L.subset(I.isArray)), [null, ['a', 'b', 'c']]),
+    [[[null, 'c'], 'b'], 'a']
+  )
+  testEq(() => L.getInverse(L.unfold([]), 'not a pair'), undefined)
+  testEq(() => L.getInverse(L.unfold([]), ['not an array', 0]), undefined)
+})
+
+describe('L.fold', () => {
+  testEq(
+    () =>
+      L.get(L.fold(L.mapping((t, h) => [[t, h], [h, t]])), [null, [1, 2, 3]]),
+    [1, [2, [3, null]]]
+  )
+})
+
 describe('L.iterate', () => {
   const step = abIa => [
     L.mapping((a, b, bs) => [[a, [b, ...bs]], [[a, b], bs]]),
@@ -2110,6 +2363,19 @@ describe('L.iterate', () => {
       ]),
     [3, 2, 1, 0]
   )
+})
+
+describe('L.pattern', () => {
+  testEq(() => L.get(L.pattern((x, y) => ({x, y})), {x: 1, z: 2}), undefined)
+})
+
+describe('L.patterns', () => {
+  testEq(() => L.get(L.patterns((x, y) => [{x, y}]), {x: 1, y: 2}), {
+    x: 1,
+    y: 2
+  })
+  testEq(() => L.get(L.patterns((x, y) => [{x, y}]), {x: 1, z: 2}), undefined)
+  testEq(() => L.get(L.patterns(['foo', 'bar']), 'bar'), 'bar')
 })
 
 describe('L.mapping', () => {
