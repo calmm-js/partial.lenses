@@ -1,5 +1,20 @@
 # Partial Lenses Changelog
 
+## 14.14.0
+
+Renamed `L.append` to `L.appendTo`.  This means that `L.append` is deprecated.
+Code using it should be switched to use `L.appendTo`.  This change was made due
+to introducing new `L.prependTo` and `L.assignTo` lenses for similar partial
+updates.
+
+```diff
+-L.append
++L.appendTo
+```
+
+Deprecated `L.propsOf`.  `L.propsOf` was introduced to implement `L.assign`.
+Now `L.assignTo` allows for a simpler implementation of `L.assign` and more.
+
 ## 14.11.1
 
 Fixed `L.subset` not to call the predicate in case the focus is already

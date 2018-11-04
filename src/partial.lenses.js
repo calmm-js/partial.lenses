@@ -24,6 +24,10 @@ const isPair = x => I.isArray(x) && x[I.LENGTH] === 2
 
 //
 
+const inserterOp = I.curry((inserter, value) => [inserter, setOp(value)])
+
+//
+
 const tryCatch = fn =>
   copyName(x => {
     try {
@@ -1379,7 +1383,7 @@ export const toFunction = (process.env.NODE_ENV === 'production'
 // Operations on optics
 
 export const assign = I.curry(function assign(o, x, s) {
-  return setU([o, propsOf(x)], x, s)
+  return setU([o, assignTo], x, s)
 })
 
 export const disperse = I.curry(disperseU)
@@ -1601,22 +1605,6 @@ export const seq = (process.env.NODE_ENV === 'production'
   }
   return r
 })
-
-// Transforming
-
-export const assignOp = x => [propsOf(x), setOp(x)]
-
-export const modifyOp = xi2y =>
-  function modifyOp(x, i, C, _xi2yC) {
-    return C.of(xi2y(x, i))
-  }
-
-export const setOp = y =>
-  function setOp(_x, _i, C, _xi2yC) {
-    return C.of(y)
-  }
-
-export const removeOp = setOp()
 
 // Creating new traversals
 
@@ -2036,13 +2024,6 @@ export const rewrite = yi2y => (x, i, F, xi2yF) =>
 
 // Lensing arrays
 
-export function append(xs, _, F, xi2yF) {
-  const i = seemsArrayLike(xs) ? xs[I.LENGTH] : 0
-  return F.map(x => setIndex(i, x, xs), xi2yF(void 0, i))
-}
-
-export const cross = setName(crossOr(removeOp), 'cross')
-
 export const filter = (process.env.NODE_ENV === 'production'
   ? id
   : C.res(lens =>
@@ -2164,7 +2145,13 @@ export function propsExcept() {
   return [disjoint(k => setish[k] || 't'), 't']
 }
 
-export const propsOf = o => props.apply(null, I.keys(o))
+export const propsOf = o => {
+  warn(
+    propsOf,
+    '`propsOf` has been deprecated and there is no replacement.  See CHANGELOG for details.'
+  )
+  return props.apply(null, I.keys(o))
+}
 
 export function removable(...ps) {
   function drop(y) {
@@ -2195,6 +2182,59 @@ export const replace = I.curry(function replace(inn, out) {
     return F.map(o2i, xi2yF(replaced(inn, out, x), i))
   }
 })
+
+// Inserters
+
+export function appendTo(xs, _, F, xi2yF) {
+  const i = seemsArrayLike(xs) ? xs[I.LENGTH] : 0
+  return F.map(x => setIndex(i, x, xs), xi2yF(void 0, i))
+}
+
+export const append =
+  process.env.NODE_ENV === 'production'
+    ? appendTo
+    : function append(x, i, F, xi2yF) {
+        warn(
+          append,
+          '`append` has been renamed to `appendTo`.  See CHANGELOG for details.'
+        )
+        return appendTo(x, i, F, xi2yF)
+      }
+
+export const assignTo = (process.env.NODE_ENV === 'production'
+  ? id
+  : iso => copyName(toFunction([isoU(id, I.freeze), iso]), iso))(
+  function assignTo(x, i, F, xi2yF) {
+    return F.map(
+      y => I.assign({}, x instanceof Object ? x : null, y),
+      xi2yF(void 0, i)
+    )
+  }
+)
+
+export const prependTo = setName(toFunction([prefix(0), 0]), 'prependTo')
+
+// Transforming
+
+export const appendOp = inserterOp(appendTo)
+
+export const assignOp = inserterOp(assignTo)
+
+export const modifyOp = xi2y =>
+  function modifyOp(x, i, C, _xi2yC) {
+    return C.of(xi2y(x, i))
+  }
+
+export const prependOp = inserterOp(prependTo)
+
+export const setOp = y =>
+  function setOp(_x, _i, C, _xi2yC) {
+    return C.of(y)
+  }
+
+export const removeOp = setOp()
+
+export const cross = setName(crossOr(removeOp), 'cross')
 
 // Operations on isomorphisms
 

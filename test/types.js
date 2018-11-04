@@ -159,11 +159,13 @@ export const seq = T.fnVarN(0, T_optic, T_transform)
 
 // Transforming
 
+export const appendOp = T.fn([T_maybeDataI], T_optic)
 export const assignOp = T.fn([T.instanceOf(Object)], T_optic)
 export const modifyOp = T.fn(
   [T.fn([T_maybeDataO, T_index], T_maybeDataI)],
   T_optic
 )
+export const prependOp = T.fn([T_maybeDataI], T_optic)
 export const removeOp = T_optic
 export const setOp = T.fn([T_maybeDataI], T_optic)
 
@@ -393,6 +395,12 @@ export const valueOr = T.fn([T.any], T_lens)
 
 export const pick = T.fn([template(T_lens)], T_lens)
 export const replace = T.fn([T_maybeDataI, T_maybeDataI], T_lens)
+
+// Inserters
+
+export const appendTo = T_lens
+export const assignTo = T_lens
+export const prependTo = T_lens
 
 // Operations on isomorphisms
 

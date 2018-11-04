@@ -232,11 +232,14 @@ describe('arities', () => {
     and: 2,
     any: 3,
     append: 4,
+    appendOp: 1,
+    appendTo: 4,
     applyAt: 2,
     array: 1,
     arrays: 1,
     assign: 3,
     assignOp: 1,
+    assignTo: 4,
     attemptEveryDown: 1,
     attemptEveryUp: 1,
     attemptSomeDown: 1,
@@ -349,6 +352,8 @@ describe('arities', () => {
     pickIn: 1,
     pointer: 1,
     prefix: 1,
+    prependOp: 1,
+    prependTo: 4,
     product: 2,
     productAs: 3,
     prop: 1,
@@ -822,19 +827,34 @@ describe('L.suffix', () => {
   testEq(() => L.set(L.suffix(), [1, 2], [3, 4, 5]), [1, 2])
 })
 
-describe('L.append', () => {
-  testEq(() => L.get([L.append, (_, i) => i], 56), 0)
-  testEq(() => L.get([L.append, (_, i) => i], [11]), 1)
-  testEq(() => L.get([L.append, (_, i) => i], 'Hello'), 5)
-  testEq(() => L.remove(L.append, 45), [])
+describe('L.appendTo', () => {
+  testEq(() => L.get([L.appendTo, (_, i) => i], 56), 0)
+  testEq(() => L.get([L.appendTo, (_, i) => i], [11]), 1)
+  testEq(() => L.get([L.appendTo, (_, i) => i], 'Hello'), 5)
+  testEq(() => L.remove(L.appendTo, 45), [])
   testEq(
-    () => L.remove([L.rewrite(R.join('')), L.append], 'anything'),
+    () => L.remove([L.rewrite(R.join('')), L.appendTo], 'anything'),
     'anything'
   )
   empties.forEach(invalid => {
-    testEq(() => L.set(L.append, 'a', invalid), ['a'])
+    testEq(() => L.set(L.appendTo, 'a', invalid), ['a'])
   })
-  testEq(() => L.set(L.append, 1, Int8Array.of(3, 1, 4)), [3, 1, 4, 1])
+  testEq(() => L.set(L.appendTo, 1, Int8Array.of(3, 1, 4)), [3, 1, 4, 1])
+})
+
+describe('L.prependTo', () => {
+  testEq(() => L.get([L.prependTo, (_, i) => i], 56), 0)
+  testEq(() => L.get([L.prependTo, (_, i) => i], [11]), 0)
+  testEq(() => L.get([L.prependTo, (_, i) => i], 'Hello'), 0)
+  testEq(() => L.remove(L.prependTo, 45), [])
+  testEq(
+    () => L.remove([L.rewrite(R.join('')), L.prependTo], 'anything'),
+    'anything'
+  )
+  empties.forEach(invalid => {
+    testEq(() => L.set(L.prependTo, 'a', invalid), ['a'])
+  })
+  testEq(() => L.set(L.prependTo, 3, Int8Array.of(1, 4, 1)), [3, 1, 4, 1])
 })
 
 describe('L.elemsTotal', () => {
@@ -2309,7 +2329,7 @@ describe('L.cross', () => {
   testEq(() => L.getInverse(L.cross([[], []]), [1]), undefined)
   testEq(() => L.getInverse(L.cross([[], []]), [1, 2, 3]), undefined)
 
-  testEq(() => L.set(L.cross([L.append, 'x']), [1, 2], [[0], {y: 1}]), [
+  testEq(() => L.set(L.cross([L.appendTo, 'x']), [1, 2], [[0], {y: 1}]), [
     [0, 1],
     {y: 1, x: 2}
   ])
@@ -3061,4 +3081,6 @@ describe('obsoleted', () => {
     () => L.selectAs(x => x + 1, [L.elems, 'x', L.optional], [{}, {x: 100}]),
     101
   )
+  testEq(() => L.set(L.append, 1, []), [1])
+  testEq(() => L.remove(L.propsOf({x: 1}), {x: 2, y: 3}), {y: 3})
 })
