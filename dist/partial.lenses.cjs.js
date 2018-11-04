@@ -179,6 +179,12 @@ var isPair = function isPair(x) {
 
 //
 
+var inserterOp = /*#__PURE__*/I.curry(function (inserter, value) {
+  return [inserter, setOp(value)];
+});
+
+//
+
 var tryCatch = function tryCatch(fn$$1) {
   return copyName(function (x) {
     try {
@@ -1603,7 +1609,7 @@ var toFunction = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(
 // Operations on optics
 
 var assign = /*#__PURE__*/I.curry(function assign(o, x, s) {
-  return setU([o, propsOf(x)], x, s);
+  return setU([o, assignTo], x, s);
 });
 
 var disperse = /*#__PURE__*/I.curry(disperseU);
@@ -1852,26 +1858,6 @@ var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (f
   }
   return r;
 });
-
-// Transforming
-
-var assignOp = function assignOp(x) {
-  return [propsOf(x), setOp(x)];
-};
-
-var modifyOp = function modifyOp(xi2y) {
-  return function modifyOp(x, i, C, _xi2yC) {
-    return C.of(xi2y(x, i));
-  };
-};
-
-var setOp = function setOp(y) {
-  return function setOp(_x, _i, C, _xi2yC) {
-    return C.of(y);
-  };
-};
-
-var removeOp = /*#__PURE__*/setOp();
 
 // Creating new traversals
 
@@ -2230,15 +2216,6 @@ var rewrite = function rewrite(yi2y) {
 
 // Lensing arrays
 
-function append(xs, _, F, xi2yF) {
-  var i = seemsArrayLike(xs) ? xs[LENGTH] : 0;
-  return F.map(function (x) {
-    return setIndex(i, x, xs);
-  }, xi2yF(void 0, i));
-}
-
-var cross = /*#__PURE__*/setName( /*#__PURE__*/crossOr(removeOp), 'cross');
-
 var filter = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(function (lens) {
   return toFunction([lens, isoU(id, ef(reqMaybeArray('`filter` must be set with undefined or an array-like object')))]);
 }))(function filter(xi2b) {
@@ -2334,6 +2311,7 @@ function propsExcept() {
 }
 
 var propsOf = function propsOf(o) {
+  warn(propsOf, '`propsOf` has been deprecated and there is no replacement.  See CHANGELOG for details.');
   return props.apply(null, I.keys(o));
 };
 
@@ -2379,6 +2357,54 @@ var replace$1 = /*#__PURE__*/I.curry(function replace$$1(inn, out) {
     return F.map(o2i, xi2yF(replaced(inn, out, x), i));
   };
 });
+
+// Inserters
+
+function appendTo(xs, _, F, xi2yF) {
+  var i = seemsArrayLike(xs) ? xs[LENGTH] : 0;
+  return F.map(function (x) {
+    return setIndex(i, x, xs);
+  }, xi2yF(void 0, i));
+}
+
+var append = process.env.NODE_ENV === 'production' ? appendTo : function append(x, i, F, xi2yF) {
+  warn(append, '`append` has been renamed to `appendTo`.  See CHANGELOG for details.');
+  return appendTo(x, i, F, xi2yF);
+};
+
+var assignTo = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (iso) {
+  return copyName(toFunction([isoU(id, I.freeze), iso]), iso);
+})(function assignTo(x, i, F, xi2yF) {
+  return F.map(function (y) {
+    return I.assign({}, x instanceof Object ? x : null, y);
+  }, xi2yF(void 0, i));
+});
+
+var prependTo = /*#__PURE__*/setName( /*#__PURE__*/toFunction([/*#__PURE__*/prefix(0), 0]), 'prependTo');
+
+// Transforming
+
+var appendOp = /*#__PURE__*/setName( /*#__PURE__*/inserterOp(appendTo), 'appendOp');
+
+var assignOp = /*#__PURE__*/setName( /*#__PURE__*/inserterOp(assignTo), 'assignOp');
+
+var modifyOp = function modifyOp(xi2y) {
+  return function modifyOp(x, i, C, _xi2yC) {
+    return C.of(xi2y(x, i));
+  };
+};
+
+var prependOp = /*#__PURE__*/setName( /*#__PURE__*/inserterOp(prependTo), 'prependOp');
+
+var setOp = function setOp(y) {
+  return function setOp(_x, _i, C, _xi2yC) {
+    return C.of(y);
+  };
+};
+
+var removeOp = /*#__PURE__*/setOp();
+
+var cross = /*#__PURE__*/setName( /*#__PURE__*/crossOr(removeOp), 'cross');
 
 // Operations on isomorphisms
 
@@ -2745,10 +2771,6 @@ exports.log = log;
 exports.transform = transform;
 exports.transformAsync = transformAsync;
 exports.seq = seq;
-exports.assignOp = assignOp;
-exports.modifyOp = modifyOp;
-exports.setOp = setOp;
-exports.removeOp = removeOp;
 exports.branchOr = branchOr;
 exports.branch = branch;
 exports.branches = branches;
@@ -2817,8 +2839,6 @@ exports.normalize = normalize;
 exports.required = required;
 exports.reread = reread;
 exports.rewrite = rewrite;
-exports.append = append;
-exports.cross = cross;
 exports.filter = filter;
 exports.find = find;
 exports.findWith = findWith;
@@ -2837,6 +2857,17 @@ exports.removable = removable;
 exports.valueOr = valueOr;
 exports.pick = pick;
 exports.replace = replace$1;
+exports.appendTo = appendTo;
+exports.append = append;
+exports.assignTo = assignTo;
+exports.prependTo = prependTo;
+exports.appendOp = appendOp;
+exports.assignOp = assignOp;
+exports.modifyOp = modifyOp;
+exports.prependOp = prependOp;
+exports.setOp = setOp;
+exports.removeOp = removeOp;
+exports.cross = cross;
 exports.getInverse = getInverse;
 exports.iso = iso;
 exports._ = _;

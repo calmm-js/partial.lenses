@@ -2216,16 +2216,16 @@ export const prependTo = setName(toFunction([prefix(0), 0]), 'prependTo')
 
 // Transforming
 
-export const appendOp = inserterOp(appendTo)
+export const appendOp = setName(inserterOp(appendTo), 'appendOp')
 
-export const assignOp = inserterOp(assignTo)
+export const assignOp = setName(inserterOp(assignTo), 'assignOp')
 
 export const modifyOp = xi2y =>
   function modifyOp(x, i, C, _xi2yC) {
     return C.of(xi2y(x, i))
   }
 
-export const prependOp = inserterOp(prependTo)
+export const prependOp = setName(inserterOp(prependTo), 'prependOp')
 
 export const setOp = y =>
   function setOp(_x, _i, C, _xi2yC) {
