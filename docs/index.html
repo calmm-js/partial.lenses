@@ -180,6 +180,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#l-satisfying" title="L.satisfying: ((Maybe s, Index) -&gt; Boolean) -&gt; PTraversal JSON a"><code>L.satisfying((maybeValue, index) =&gt; testable) ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#l-subseq" title="L.subseq: Integer -&gt; Integer -&gt; PTraversal s a -&gt; PTraversal s a"><code>L.subseq(begin, end, traversal) ~&gt; traversal</code></a> <small><sup>v14.10.0</sup></small></li>
 <li><a href="#l-values" title="L.values: PTraversal {p: a, ...ps} a"><code>L.values ~&gt; traversal</code></a> <small><sup>v7.3.0</sup></small></li>
+<li><a href="#l-whereeq" title="L.whereEq: {p1: p1, ...ps} -&gt; PTraversal JSON {p1: p1, ...ps}"><code>L.whereEq({prop: value, ...props}) ~&gt; traversal</code></a> <small><sup>v14.16.0</sup></small></li>
 </ul>
 </li>
 <li><a href="#querying">Querying</a><ul>
@@ -1876,7 +1877,7 @@ that matches precisely the desired elements can be difficult.</p>
 <p><code>L.satisfying</code> is a traversal that focuses on elements that satisfy the given
 predicate within a nested data structure of ordinary arrays and plain objects.
 Children of objects whose constructor is neither <code>Array</code> nor <code>Object</code> are not
-traversed.  See also <a href="#l-query"><code>L.query</code></a>.</p>
+traversed.  See also <a href="#l-query"><code>L.query</code></a> and <a href="#l-whereeq"><code>L.whereEq</code></a>.</p>
 <h5><a id="l-subseq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-subseq">■</a> <a href="#l-subseq" title="L.subseq: Integer -&gt; Integer -&gt; PTraversal s a -&gt; PTraversal s a"><code>L.subseq(begin, end, traversal) ~&gt; traversal</code></a> <small><sup>v14.10.0</sup></small></h5>
 <p><code>L.subseq</code> only traverses the focuses between the <code>begin</code>:th (inclusive) and the
 <code>end</code>:th (exclusive) from the given traversal.  See also <a href="#l-offset"><code>L.offset</code></a>
@@ -1910,6 +1911,19 @@ if necessary:</p>
 L.modify([L.rewrite(objectTo(XYZ)), L.values], R.negate, new XYZ(1, 2, 3))
 </code></pre>
 <p>Note that <code>L.values</code> is equivalent to <a href="#l-branchor"><code>L.branchOr([], {})</code></a>.</p>
+<h5><a id="l-whereeq"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-whereeq">■</a> <a href="#l-whereeq" title="L.whereEq: {p1: p1, ...ps} -&gt; PTraversal JSON {p1: p1, ...ps}"><code>L.whereEq({prop: value, ...props}) ~&gt; traversal</code></a> <small><sup>v14.16.0</sup></small></h5>
+<p><code>L.whereEq</code> looks for objects that match the given possibly nested object
+template of values within an arbitrarily nested data structure of plain arrays
+and objects.  See also <a href="#l-satisfying"><code>L.satisfying</code></a>.</p>
+<p>For example:</p>
+<pre><code class="hljs lang-js">L.get(
+  L.whereEq({key: 2}),
+  {key: 3, value: &#39;a&#39;, lhs: {key: 1, value: &#39;r&#39;}, rhs: {key: 2, value: &#39;d&#39;}}
+)
+</code></pre>
+<p>Note that <code>L.whereEq</code> can be implemented as follows:</p>
+<pre><code class="hljs lang-js">var whereEq = template =&gt;
+  L.satisfying(L.and(L.branch(L.modify(L.leafs, L.is, template))))</code></pre>
 <h4><a id="querying"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#querying">■</a> <a href="#querying">Querying</a></h4>
 <p>Querying combinators allow one to use optics to query data structures.  Querying
 is distinguished from <a href="#adapting">adapting</a> in that querying defaults to an

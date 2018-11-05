@@ -2374,7 +2374,7 @@ Note that `L.query(...ts)` is roughly equivalent to [`ts.map(t =>
 `L.satisfying` is a traversal that focuses on elements that satisfy the given
 predicate within a nested data structure of ordinary arrays and plain objects.
 Children of objects whose constructor is neither `Array` nor `Object` are not
-traversed.  See also [`L.query`](#l-query).
+traversed.  See also [`L.query`](#l-query) and [`L.whereEq`](#l-whereeq).
 
 ##### <a id="l-subseq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-subseq) [`L.subseq(begin, end, traversal) ~> traversal`](#l-subseq "L.subseq: Integer -> Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
 

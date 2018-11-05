@@ -1973,6 +1973,10 @@ var leafs = /*#__PURE__*/satisfying(function (x) {
   return void 0 !== x && !I.isArray(x) && !I.isObject(x);
 });
 
+var whereEq = function whereEq(template) {
+  return satisfying(and$1(branch(modify(leafs, is, template))));
+};
+
 // Folds over traversals
 
 var all = /*#__PURE__*/I.curry(function all(xi2b, t, s) {
@@ -2790,6 +2794,7 @@ exports.flatten = flatten;
 exports.query = query;
 exports.satisfying = satisfying;
 exports.leafs = leafs;
+exports.whereEq = whereEq;
 exports.all = all;
 exports.and = and$1;
 exports.all1 = all1;
