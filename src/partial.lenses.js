@@ -1987,8 +1987,12 @@ export const getter = get => (x, i, F, xi2yF) => xi2yF(get(x, i), i)
 
 export const lens = I.curry(lensU)
 
-export const partsOf = t => (x, i, F, xi2yF) =>
-  F.map(y => disperseU(t, y, x), xi2yF(collectTotal(t, x), i))
+export function partsOf(t) {
+  if (arguments[I.LENGTH] !== 1) t = toFunction(compose.apply(null, arguments))
+  return function partsOf(x, i, F, xi2yF) {
+    return F.map(y => disperseU(t, y, x), xi2yF(collectTotal(t, x), i))
+  }
+}
 
 export const setter = lens(id)
 
