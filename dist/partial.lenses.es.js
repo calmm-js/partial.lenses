@@ -2161,13 +2161,14 @@ var getter = function getter(get) {
 
 var lens = /*#__PURE__*/curry(lensU);
 
-var partsOf = function partsOf(t) {
-  return function (x, i, F, xi2yF) {
+function partsOf(t) {
+  if (arguments[LENGTH] !== 1) t = toFunction(compose.apply(null, arguments));
+  return function partsOf(x, i, F, xi2yF) {
     return F.map(function (y) {
       return disperseU(t, y, x);
     }, xi2yF(collectTotal(t, x), i));
   };
-};
+}
 
 var setter = /*#__PURE__*/lens(id$1);
 

@@ -240,7 +240,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#l-foldtraversallens" title="L.foldTraversalLens: (PTraversal s a -&gt; Maybe s -&gt; Maybe a) -&gt; PTraversal s a -&gt; PLens s a"><code>L.foldTraversalLens((traversal, maybeData) =&gt; maybeValue, traversal) ~&gt; lens</code></a> <small><sup>v11.5.0</sup></small></li>
 <li><a href="#l-getter" title="L.getter: ((Maybe s, Index) -&gt; Maybe a) -&gt; PLens s a"><code>L.getter((maybeData, index) =&gt; maybeValue) ~&gt; lens</code></a> <small><sup>v13.16.0</sup></small></li>
 <li><a href="#l-lens" title="L.lens: ((Maybe s, Index) -&gt; Maybe a) -&gt; ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.lens((maybeData, index) =&gt; maybeValue, (maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v1.0.0</sup></small></li>
-<li><a href="#l-partsof" title="L.partsOf: (PTraversal s a -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></li>
+<li><a href="#l-partsof" title="L.partsOf: ((PTraversal s s1, ...PTraversal sN a) -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal, ...traversals) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></li>
 <li><a href="#l-setter" title="L.setter: ((Maybe a, Maybe s, Index) -&gt; Maybe s) -&gt; PLens s a"><code>L.setter((maybeValue, maybeData, index) =&gt; maybeData) ~&gt; lens</code></a> <small><sup>v10.3.0</sup></small></li>
 </ul>
 </li>
@@ -2372,16 +2372,17 @@ the above lens will never be added to this library, because it would require
 adding dependency to <a href="http://momentjs.com/">Moment.js</a>.</p>
 <p>See the <a href="#interfacing">Interfacing with Immutable.js</a> section for another
 example of using <code>L.lens</code>.</p>
-<h5><a id="l-partsof"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-partsof">■</a> <a href="#l-partsof" title="L.partsOf: (PTraversal s a -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></h5>
-<p><code>L.partsOf</code> creates a lens from a given traversal.  When read through, the
-result is always an array of elements targeted by the traversal as if produced
-by <a href="#l-collecttotal"><code>L.collectTotal</code></a>.  When written through, the elements of
-the written <a href="#l-seemsarraylike">array-like</a> object are used to replace the
-focuses of the traversal as if done by <a href="#l-disperse"><code>L.disperse</code></a>.  See also
+<h5><a id="l-partsof"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-partsof">■</a> <a href="#l-partsof" title="L.partsOf: ((PTraversal s s1, ...PTraversal sN a) -&gt; PLens s [Maybe a]"><code>L.partsOf(traversal, ...traversals) ~&gt; lens</code></a> <small><sup>v14.6.0</sup></small></h5>
+<p><code>L.partsOf</code> creates a lens from a given traversal <a href="#l-compose">composed</a> from
+the arguments.  When read through, the result is always an array of elements
+targeted by the traversal as if produced by <a href="#l-collecttotal"><code>L.collectTotal</code></a>.
+When written through, the elements of the written
+<a href="#l-seemsarraylike">array-like</a> object are used to replace the focuses of the
+traversal as if done by <a href="#l-disperse"><code>L.disperse</code></a>.  See also
 <a href="#l-foldtraversallens"><code>L.foldTraversalLens</code></a>.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">L.set(
-  L.partsOf([L.elems, &#39;x&#39;]),
+  L.partsOf(L.elems, &#39;x&#39;),
   [3, 4],
   [{x: 1}, {y: 2}]
 )
