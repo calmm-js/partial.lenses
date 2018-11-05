@@ -406,6 +406,7 @@ describe('arities', () => {
     valueOr: 1,
     values: 4,
     when: 1,
+    whereEq: 1,
     zero: 4,
     zipWith1: 1
   }
@@ -2253,6 +2254,17 @@ describe('L.satisfying', () => {
     4,
     1
   ])
+})
+
+describe('L.whereEq', () => {
+  testEq(
+    () =>
+      L.collect(L.whereEq({type: 'foo'}), [
+        {type: 'foo', children: [{type: 'foo'}]},
+        {type: 'bar', children: [{type: 'foo', value: 'bar'}]}
+      ]),
+    [{type: 'foo', children: [{type: 'foo'}]}, {type: 'foo', value: 'bar'}]
+  )
 })
 
 describe('L.array', () => {

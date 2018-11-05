@@ -116,6 +116,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.satisfying((maybeValue, index) => testable) ~> traversal`](#l-satisfying "L.satisfying: ((Maybe s, Index) -> Boolean) -> PTraversal JSON a") <small><sup>v13.3.0</sup></small>
       * [`L.subseq(begin, end, traversal) ~> traversal`](#l-subseq "L.subseq: Integer -> Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.values ~> traversal`](#l-values "L.values: PTraversal {p: a, ...ps} a") <small><sup>v7.3.0</sup></small>
+      * [`L.whereEq({prop: value, ...props}) ~> traversal`](#l-whereeq "L.whereEq: {p1: p1, ...ps} -> PTraversal JSON {p1: p1, ...ps}") <small><sup>v14.16.0</sup></small>
     * [Querying](#querying)
       * [`L.chain((value, index) => optic, optic) ~> traversal`](#l-chain "L.chain: ((a, Index) -> POptic s b) -> POptic s a -> PTraversal s b") <small><sup>v3.1.0</sup></small>
       * [`L.choice(...optics) ~> traversal`](#l-choice "L.choice: (...POptic s a) -> PTraversal s a") <small><sup>v2.1.0</sup></small>
@@ -2429,6 +2430,29 @@ L.modify([L.rewrite(objectTo(XYZ)), L.values], R.negate, new XYZ(1, 2, 3))
 ```
 
 Note that `L.values` is equivalent to [`L.branchOr([], {})`](#l-branchor).
+
+##### <a id="l-whereeq"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-whereeq) [`L.whereEq({prop: value, ...props}) ~> traversal`](#l-whereeq "L.whereEq: {p1: p1, ...ps} -> PTraversal JSON {p1: p1, ...ps}") <small><sup>v14.16.0</sup></small>
+
+`L.whereEq` looks for objects that match the given possibly nested object
+template of values within an arbitrarily nested data structure of plain arrays
+and objects.  See also [`L.satisfying`](#l-satisfying).
+
+For example:
+
+```js
+L.get(
+  L.whereEq({key: 2}),
+  {key: 3, value: 'a', lhs: {key: 1, value: 'r'}, rhs: {key: 2, value: 'd'}}
+)
+// { key: 2, value: 'd' }
+```
+
+Note that `L.whereEq` can be implemented as follows:
+
+```js
+const whereEq = template =>
+  L.satisfying(L.and(L.branch(L.modify(L.leafs, L.is, template))))
+```
 
 #### <a id="querying"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#querying) [Querying](#querying)
 
