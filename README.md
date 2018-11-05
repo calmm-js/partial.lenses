@@ -108,7 +108,7 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.flatten ~> traversal`](#l-flatten "L.flatten: PTraversal [...[a]...] a") <small><sup>v11.16.0</sup></small>
       * [`L.keys ~> traversal`](#l-keys "L.keys: PTraversal {p: a, ...ps} String") <small><sup>v11.21.0</sup></small>
       * [`L.keysEverywhere ~> traversal`](#l-keyseverywhere "L.keysEverywhere: PTraversal JSON String") <small><sup>v14.12.0</sup></small>
-      * [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
+      * [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal JSON (String|Number|Boolean|null|~JSON)") <small><sup>v13.3.0</sup></small>
       * [`L.limit(count, traversal) ~> traversal`](#l-limit "L.limit: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
       * [`L.matches(/.../g) ~> traversal`](#l-matches-g "L.matches: RegExp -> PTraversal String String") <small><sup>v10.4.0</sup></small>
       * [`L.offset(count, traversal) ~> traversal`](#l-offset "L.offset: Integer -> PTraversal s a -> PTraversal s a") <small><sup>v14.10.0</sup></small>
@@ -2251,7 +2251,7 @@ const keysEverywhere = L.lazy(rec => L.cond(
 The difference is that `L.keysEverywhere` does not traverse objects that have an
 interesting prototype.
 
-##### <a id="l-leafs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-leafs) [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal (JSON a) a") <small><sup>v13.3.0</sup></small>
+##### <a id="l-leafs"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-leafs) [`L.leafs ~> traversal`](#l-leafs "L.leafs: PTraversal JSON (String|Number|Boolean|null|~JSON)") <small><sup>v13.3.0</sup></small>
 
 `L.leafs` is a traversal that descends into ordinary arrays and plain objects
 and focuses on non-`undefined` elements whose constructor is neither `Array` nor

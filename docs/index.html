@@ -172,7 +172,7 @@ parts.  <a href="https://calmm-js.github.io/partial.lenses/playground.html">Try 
 <li><a href="#l-flatten" title="L.flatten: PTraversal [...[a]...] a"><code>L.flatten ~&gt; traversal</code></a> <small><sup>v11.16.0</sup></small></li>
 <li><a href="#l-keys" title="L.keys: PTraversal {p: a, ...ps} String"><code>L.keys ~&gt; traversal</code></a> <small><sup>v11.21.0</sup></small></li>
 <li><a href="#l-keyseverywhere" title="L.keysEverywhere: PTraversal JSON String"><code>L.keysEverywhere ~&gt; traversal</code></a> <small><sup>v14.12.0</sup></small></li>
-<li><a href="#l-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
+<li><a href="#l-leafs" title="L.leafs: PTraversal JSON (String|Number|Boolean|null|~JSON)"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></li>
 <li><a href="#l-limit" title="L.limit: Integer -&gt; PTraversal s a -&gt; PTraversal s a"><code>L.limit(count, traversal) ~&gt; traversal</code></a> <small><sup>v14.10.0</sup></small></li>
 <li><a href="#l-matches-g" title="L.matches: RegExp -&gt; PTraversal String String"><code>L.matches(/.../g) ~&gt; traversal</code></a> <small><sup>v10.4.0</sup></small></li>
 <li><a href="#l-offset" title="L.offset: Integer -&gt; PTraversal s a -&gt; PTraversal s a"><code>L.offset(count, traversal) ~&gt; traversal</code></a> <small><sup>v14.10.0</sup></small></li>
@@ -1805,7 +1805,7 @@ L.get(kebabsIcamels, [{&#39;kebab-case&#39;: &#39;is&#39;}, {&#39;translated-to&
 ))</code></pre>
 <p>The difference is that <code>L.keysEverywhere</code> does not traverse objects that have an
 interesting prototype.</p>
-<h5><a id="l-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-leafs">■</a> <a href="#l-leafs" title="L.leafs: PTraversal (JSON a) a"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
+<h5><a id="l-leafs"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-leafs">■</a> <a href="#l-leafs" title="L.leafs: PTraversal JSON (String|Number|Boolean|null|~JSON)"><code>L.leafs ~&gt; traversal</code></a> <small><sup>v13.3.0</sup></small></h5>
 <p><code>L.leafs</code> is a traversal that descends into ordinary arrays and plain objects
 and focuses on non-<code>undefined</code> elements whose constructor is neither <code>Array</code> nor
 <code>Object</code>.  See also <a href="#l-children"><code>L.children</code></a>.</p>
