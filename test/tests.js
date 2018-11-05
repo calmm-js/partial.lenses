@@ -1936,7 +1936,7 @@ describe('L.partsOf', () => {
   })
   testEq(
     () =>
-      L.get(L.partsOf([L.values, 1]), {
+      L.get(L.partsOf(L.values, 1), {
         foo: [false, 'oldUser1'],
         bar: [true, 'oldUser2'],
         quux: [false, 'oldUser3']
@@ -1945,7 +1945,7 @@ describe('L.partsOf', () => {
   )
   testEq(
     () =>
-      L.set(L.partsOf([L.values, 1]), ['user1', 'user2', 'user3'], {
+      L.set(L.partsOf(L.values, 1), ['user1', 'user2', 'user3'], {
         foo: [false, 'oldUser1'],
         bar: [true, 'oldUser2'],
         quux: [false, 'oldUser3']
@@ -1954,7 +1954,7 @@ describe('L.partsOf', () => {
   )
   testEq(
     () =>
-      L.remove(L.partsOf([L.values, 1]), {
+      L.remove(L.partsOf(L.values, 1), {
         foo: [false, 'oldUser1'],
         bar: [true, 'oldUser2'],
         quux: [false, 'oldUser3']
