@@ -1729,6 +1729,9 @@ export const leafs = satisfying(
   x => void 0 !== x && !I.isArray(x) && !I.isObject(x)
 )
 
+export const whereEq = template =>
+  satisfying(and(branch(modify(leafs, is, template))))
+
 // Folds over traversals
 
 export const all = I.curry(function all(xi2b, t, s) {

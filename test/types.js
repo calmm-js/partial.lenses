@@ -198,6 +198,7 @@ export const subseq = T.fn(
   T_traversal
 )
 export const values = T_traversal
+export const whereEq = T.fn([template(T.any)], T_traversal)
 
 // Folds over traversals
 
