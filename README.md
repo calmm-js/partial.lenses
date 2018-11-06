@@ -151,11 +151,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
       * [`L.join(string, traversal, maybeData) ~> string`](#l-join "L.join: String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
       * [`L.joinAs((maybeValue, index) => maybeString, string, traversal, maybeData) ~> string`](#l-joinas "L.joinAs: ((Maybe a, Index) -> Maybe String) -> String -> PTraversal s a -> Maybe s -> String") <small><sup>v11.2.0</sup></small>
       * [`L.maximum(traversal, maybeData) ~> maybeValue`](#l-maximum "L.maximum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
-      * [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#l-maximumby "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
+      * [`L.maximumBy(keyLens, traversal, maybeData) ~> maybeValue`](#l-maximumby "L.maximumBy: Ord k => (PLens a k -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
       * [`L.mean(traversal, maybeData) ~> number`](#l-mean "L.mean: PTraversal s Number -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
       * [`L.meanAs((maybeValue, index) => maybeNumber, traversal, maybeData) ~> number`](#l-meanas "L.meanAs: ((Maybe a, Index) -> Maybe Number) -> PTraversal s a -> Maybe s -> Number") <small><sup>v11.17.0</sup></small>
       * [`L.minimum(traversal, maybeData) ~> maybeValue`](#l-minimum "L.minimum: Ord a => PTraversal s a -> Maybe s -> Maybe a") <small><sup>v7.2.0</sup></small>
-      * [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#l-minimumby "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
+      * [`L.minimumBy(keyLens, traversal, maybeData) ~> maybeValue`](#l-minimumby "L.minimumBy: Ord k => (PLens a k -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
       * [`L.none((maybeValue, index) => testable, traversal, maybeData) ~> boolean`](#l-none "L.none: ((Maybe a, Index) -> Boolean) -> PTraversal s a -> Boolean") <small><sup>v11.6.0</sup></small>
       * [`L.or(traversal, maybeData) ~> boolean`](#l-or "L.or: PTraversal s Boolean -> Boolean") <small><sup>v9.6.0</sup></small>
       * [`L.product(traversal, maybeData) ~> number`](#l-product "L.product: PTraversal s Number -> Maybe s -> Number") <small><sup>v7.2.0</sup></small>
@@ -238,11 +238,11 @@ parts.  [Try Lenses!](https://calmm-js.github.io/partial.lenses/playground.html)
     * [Array isomorphisms](#array-isomorphisms)
       * [`L.array(isomorphism) ~> isomorphism`](#l-array "L.array: PIso a b -> PIso [a] [b]") <small><sup>v11.19.0</sup></small>
       * [`L.arrays(isomorphism) ~> isomorphism`](#l-arrays "L.arrays: PIso a b -> PIso [a] [b]") <small><sup>v14.13.0</sup></small>
-      * [`L.groupBy(value => key) ~> isomorphism`](#l-groupby "L.groupBy: (a -> k) -> PIso [a] [[a]]") <small><sup>v14.13.0</sup></small>
+      * [`L.groupBy(keyLens) ~> isomorphism`](#l-groupby "L.groupBy: PLens a k -> PIso [a] [[a]]") <small><sup>v14.13.0</sup></small>
       * [`L.indexed ~> isomorphism`](#l-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
       * [`L.reverse ~> isomorphism`](#l-reverse "L.reverse: PIso [a] [a]") <small><sup>v11.22.0</sup></small>
       * [`L.singleton ~> isomorphism`](#l-singleton "L.singleton: PIso [a] a") <small><sup>v11.18.0</sup></small>
-      * [`L.ungroupBy(value => key) ~> isomorphism`](#l-ungroupby "L.ungroupBy: (a -> k) -> PIso [[a]] [a]") <small><sup>v14.13.0</sup></small>
+      * [`L.ungroupBy(keyLens) ~> isomorphism`](#l-ungroupby "L.ungroupBy: PLens a k -> PIso [[a]] [a]") <small><sup>v14.13.0</sup></small>
       * [`L.unzipWith1(isomorphism) ~> isomorphism`](#l-unzipwith1 "L.unzipWith1: PIso c [a, b] -> PIso [c] [a, [b]]") <small><sup>v14.13.0</sup></small>
       * [`L.zipWith1(isomorphism) ~> isomorphism`](#l-zipwith1 "L.zipWith1: PIso [a, b] c -> PIso [a, [b]] [c]") <small><sup>v14.13.0</sup></small>
     * [Object isomorphisms](#object-isomorphisms)
@@ -2962,11 +2962,11 @@ L.maximum(L.elems, [1, 2, 3])
 
 Note that elements are ordered according to the `>` operator.
 
-##### <a id="l-maximumby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-maximumby) [`L.maximumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#l-maximumby "L.maximumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
+##### <a id="l-maximumby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-maximumby) [`L.maximumBy(keyLens, traversal, maybeData) ~> maybeValue`](#l-maximumby "L.maximumBy: Ord k => (PLens a k -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
 
 `L.maximumBy` computes a maximum of the elements targeted by the traversal based
-on the optional keys returned by the given function.  Elements for which the
-returned key is `undefined` are skipped.
+on the optional keys returned by the given lens or function.  Elements for which
+the returned key is `undefined` are skipped.
 
 For example:
 
@@ -3015,11 +3015,11 @@ L.minimum(L.elems, [1, 2, 3])
 
 Note that elements are ordered according to the `<` operator.
 
-##### <a id="l-minimumby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-minimumby) [`L.minimumBy((maybeValue, index) => maybeKey, traversal, maybeData) ~> maybeValue`](#l-minimumby "L.minimumBy: Ord k => ((Maybe a, Index) -> Maybe k) -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
+##### <a id="l-minimumby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-minimumby) [`L.minimumBy(keyLens, traversal, maybeData) ~> maybeValue`](#l-minimumby "L.minimumBy: Ord k => (PLens a k -> PTraversal s a -> Maybe s -> Maybe a") <small><sup>v11.2.0</sup></small>
 
 `L.minimumBy` computes a minimum of the elements targeted by the traversal based
-on the optional keys returned by the given function.  Elements for which the
-returned key is `undefined` are skipped.
+on the optional keys returned by the given lens or function.  Elements for which
+the returned key is `undefined` are skipped.
 
 For example:
 
@@ -4430,10 +4430,10 @@ the resulting array in both directions.
 `L.arrays` is a strict version of [`L.array`](#l-array) such that if any element
 is mapped to `undefined` then so will the whole result.
 
-##### <a id="l-groupby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-groupby) [`L.groupBy(value => key) ~> isomorphism`](#l-groupby "L.groupBy: (a -> k) -> PIso [a] [[a]]") <small><sup>v14.13.0</sup></small>
+##### <a id="l-groupby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-groupby) [`L.groupBy(keyLens) ~> isomorphism`](#l-groupby "L.groupBy: PLens a k -> PIso [a] [[a]]") <small><sup>v14.13.0</sup></small>
 
 `L.groupBy` groups elements in an array into arrays such that each array has the
-same key as returned by the given function.  See also
+same key as returned by the given lens or function.  See also
 [`L.ungroupBy`](#l-ungroupby).
 
 ##### <a id="l-indexed"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-indexed) [`L.indexed ~> isomorphism`](#l-indexed "L.indexed: PIso [a] [[Integer, a]]") <small><sup>v11.21.0</sup></small>
@@ -4489,11 +4489,11 @@ for this behaviour is that it allows `L.singleton` to not only be used to access
 the first element of an array-like object, but to also check that the object is
 of the expected form.
 
-##### <a id="l-ungroupby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-ungroupby) [`L.ungroupBy(value => key) ~> isomorphism`](#l-ungroupby "L.ungroupBy: (a -> k) -> PIso [[a]] [a]") <small><sup>v14.13.0</sup></small>
+##### <a id="l-ungroupby"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-ungroupby) [`L.ungroupBy(keyLens) ~> isomorphism`](#l-ungroupby "L.ungroupBy: PLens a k -> PIso [[a]] [a]") <small><sup>v14.13.0</sup></small>
 
 `L.ungroupBy` unnests arrays of elements that have the same key as returned by
-the given function to an array of the elements from all the arrays.  See also
-[`L.groupBy`](#l-groupby).
+the given lens or function to an array of the elements from all the arrays.  See
+also [`L.groupBy`](#l-groupby).
 
 ##### <a id="l-unzipwith1"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-unzipwith1) [`L.unzipWith1(isomorphism) ~> isomorphism`](#l-unzipwith1 "L.unzipWith1: PIso c [a, b] -> PIso [c] [a, [b]]") <small><sup>v14.13.0</sup></small>
 

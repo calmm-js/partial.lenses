@@ -28,6 +28,14 @@ const inserterOp = I.curry((inserter, value) => [inserter, setOp(value)])
 
 //
 
+const toGetter = getter => {
+  if (typeof getter === 'function' && getter[I.LENGTH] < 4) return getter
+  getter = toFunction(getter)
+  return (x, i) => getter(x, i, Select, id)
+}
+
+//
+
 const tryCatch = fn =>
   copyName(x => {
     try {
@@ -176,6 +184,7 @@ const Sum = ConstantWith(I.addU, 0)
 
 const mumBy = ord =>
   I.curry(function mumBy(xi2y, t, s) {
+    xi2y = toGetter(xi2y)
     let minX = void 0
     let minY = void 0
     getAsU(
@@ -985,7 +994,7 @@ const subsetPartial = p =>
 //
 
 const unfoldPartial = (process.env.NODE_ENV === 'production'
-  ? I.id
+  ? id
   : C.res(
       C.res(r => {
         I.freeze(r)
@@ -2403,9 +2412,15 @@ export const reverse = isoU(rev, rev)
 
 export const singleton = setName(mapping(x => [[x], x]), 'singleton')
 
-export const groupBy = keyOf => isoU(groupByFn(keyOf), ungroupByFn(keyOf))
+export const groupBy = keyOf => {
+  keyOf = toGetter(keyOf)
+  return isoU(groupByFn(keyOf), ungroupByFn(keyOf))
+}
 
-export const ungroupBy = keyOf => isoU(ungroupByFn(keyOf), groupByFn(keyOf))
+export const ungroupBy = keyOf => {
+  keyOf = toGetter(keyOf)
+  return isoU(ungroupByFn(keyOf), groupByFn(keyOf))
+}
 
 export const zipWith1 = iso => isoU(zW1Fn(get(iso)), unzW1Fn(getInverse(iso)))
 

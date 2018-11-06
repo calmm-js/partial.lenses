@@ -291,10 +291,7 @@ export const joinAs = T.fn(
 
 export const join = T.fn([T.string, T_traversal, T_maybeDataI], T.string)
 
-export const maximumBy = T.fn(
-  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
-  T.any
-)
+export const maximumBy = T.fn([T_lens, T_traversal, T_maybeDataI], T.any)
 export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
 
 export const mean = T.fn([T_traversal, T_maybeDataI], T.number)
@@ -464,11 +461,11 @@ export const subset = T.fn([T.fn([T_maybeDataI], T.any)], T_isomorphism)
 
 export const array = T.fn([T_isomorphism], T_isomorphism)
 export const arrays = T.fn([T_isomorphism], T_isomorphism)
-export const groupBy = T.fn([T.fn([T_dataI], T.any)], T_isomorphism)
+export const groupBy = T.fn([T_lens], T_isomorphism)
 export const indexed = T_isomorphism
 export const reverse = T_isomorphism
 export const singleton = T_isomorphism
-export const ungroupBy = T.fn([T.fn([T_dataI], T.any)], T_isomorphism)
+export const ungroupBy = T.fn([T_lens], T_isomorphism)
 export const unzipWith1 = T.fn([T_isomorphism], T_isomorphism)
 export const zipWith1 = T.fn([T_isomorphism], T_isomorphism)
 
