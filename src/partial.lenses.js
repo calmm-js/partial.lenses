@@ -1073,6 +1073,22 @@ const isAp = I.isInstanceOf(Ap)
 
 //
 
+const TO = 't'
+const FROM = 'f'
+const BODY = 'b'
+
+function Let(to, from, body) {
+  const self = this
+  self[TO] = to
+  self[FROM] = from
+  self[BODY] = body
+  I.freeze(self)
+}
+
+const isLet = I.isInstanceOf(Let)
+
+//
+
 const isPrimitive = x => {
   if (x == null) return true
   const t = typeof x
@@ -1115,6 +1131,10 @@ function checkPattern(kinds, p) {
   } else if (isAp(p)) {
     reqOptic(p[ISO])
     checkPattern(kinds, p[PATTERN])
+  } else if (isLet(p)) {
+    checkPattern(kinds, p[TO])
+    checkPattern(kinds, p[FROM])
+    checkPattern(kinds, p[BODY])
   } else if (I.isArray(p)) {
     let nSpread = 0
     for (let i = 0, n = p[I.LENGTH]; i < n; ++i) {
@@ -1172,6 +1192,17 @@ function toMatch(kinds, p) {
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
     return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
+  } else if (isLet(p)) {
+    const b = toMatch(kinds, p[BODY])
+    const t = toSubst(kinds, p[TO])
+    const f = toMatch(kinds, p[FROM])
+    return (e, x) => {
+      e = b(e, x)
+      if (void 0 === e) return
+      const tv = t(e)
+      if (void 0 === e) return
+      return f(e, tv)
+    }
   } else if (isAp(p)) {
     const m = toMatch(kinds, p[PATTERN])
     const i = p[ISO]
@@ -1242,6 +1273,17 @@ function toSubst(kinds, p) {
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
     return e => e[i]
+  } else if (isLet(p)) {
+    const f = toSubst(kinds, p[FROM])
+    const t = toMatch(kinds, p[TO])
+    const b = toSubst(kinds, p[BODY])
+    return e => {
+      const fv = f(e)
+      if (void 0 === fv) return
+      e = t(e, fv)
+      if (void 0 === e) return
+      return b(e)
+    }
   } else if (isAp(p)) {
     const s = toSubst(kinds, p[PATTERN])
     const i = p[ISO]
@@ -2325,6 +2367,16 @@ export const _ = new Variable(-1)
 export const apP = I.curry(function apP(iso, pattern) {
   return new Ap(iso, pattern)
 })
+
+export const letP = function letP(_binder, _pattern) {
+  let n = arguments[I.LENGTH] - 1
+  let p = arguments[n]
+  while (n--) {
+    const b = arguments[n]
+    p = new Let(b[0], b[1], p)
+  }
+  return p
+}
 
 export function mapping(ps) {
   let n = 0

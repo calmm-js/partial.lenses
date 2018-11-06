@@ -321,6 +321,7 @@ describe('arities', () => {
     lazy: 1,
     leafs: 4,
     lens: 2,
+    letP: 2,
     limit: 2,
     log: 0,
     mapIx: 1,
@@ -2438,6 +2439,10 @@ describe('L.mapping', () => {
         3
       ]),
     [3, 1]
+  )
+  testEq(
+    () => L.get(L.mapping((x, y) => [x, L.letP([[y], x], y)]), 1),
+    undefined
   )
   testEq(() => L.get(L.mapping(xs => [xs, [[...xs], [...xs]]]), [1, 2]), [
     [1, 2],
