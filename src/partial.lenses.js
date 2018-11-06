@@ -1059,6 +1059,20 @@ function nVars(n) {
 
 //
 
+const ISO = 'i'
+const PATTERN = 'p'
+
+function Ap(iso, pattern) {
+  const self = this
+  self[ISO] = iso
+  self[PATTERN] = pattern
+  I.freeze(self)
+}
+
+const isAp = I.isInstanceOf(Ap)
+
+//
+
 const isPrimitive = x => {
   if (x == null) return true
   const t = typeof x
@@ -1098,6 +1112,9 @@ const objectKind = x => void 0 === x || I.isInstanceOf(Object)
 function checkPattern(kinds, p) {
   if (isSpread(p)) {
     throw Error('Spread patterns must be inside objects or arrays.')
+  } else if (isAp(p)) {
+    reqOptic(p[ISO])
+    checkPattern(kinds, p[PATTERN])
   } else if (I.isArray(p)) {
     let nSpread = 0
     for (let i = 0, n = p[I.LENGTH]; i < n; ++i) {
@@ -1155,6 +1172,13 @@ function toMatch(kinds, p) {
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
     return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
+  } else if (isAp(p)) {
+    const m = toMatch(kinds, p[PATTERN])
+    const i = p[ISO]
+    return (e, x) => {
+      const y = getInverseU(i, x)
+      return m(e, y)
+    }
   } else if (I.isArray(p)) {
     const init = []
     const rest = []
@@ -1218,6 +1242,13 @@ function toSubst(kinds, p) {
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
     return e => e[i]
+  } else if (isAp(p)) {
+    const s = toSubst(kinds, p[PATTERN])
+    const i = p[ISO]
+    return e => {
+      const x = s(e)
+      return getU(i, x)
+    }
   } else if (I.isArray(p)) {
     const init = []
     const rest = []
@@ -2290,6 +2321,10 @@ export function getInverse(o, s) {
 export const iso = I.curry(isoU)
 
 export const _ = new Variable(-1)
+
+export const apP = I.curry(function apP(iso, pattern) {
+  return new Ap(iso, pattern)
+})
 
 export function mapping(ps) {
   let n = 0

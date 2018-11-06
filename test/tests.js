@@ -231,6 +231,7 @@ describe('arities', () => {
     and1: 2,
     and: 2,
     any: 3,
+    apP: 2,
     append: 4,
     appendOp: 1,
     appendTo: 4,
@@ -2388,10 +2389,8 @@ describe('L.fold', () => {
 })
 
 describe('L.iterate', () => {
-  const step = abIa => [
-    L.mapping((a, b, bs) => [[a, [b, ...bs]], [[a, b], bs]]),
-    L.cross([abIa, L.identity])
-  ]
+  const step = abIa =>
+    L.mapping((a, b, bs) => [[a, [b, ...bs]], [L.apP(abIa, [a, b]), bs]])
   const foldl = abIa => [L.iterate(step(abIa)), L.mapping(a => [[a, []], a])]
   testEq(
     () =>
@@ -2417,6 +2416,20 @@ describe('L.patterns', () => {
 })
 
 describe('L.mapping', () => {
+  testEq(
+    () =>
+      L.get(
+        L.applyAt(
+          L.values,
+          L.mapping((x, y) => [
+            [x, L.apP(L.mapping(x => [x, [x, x]]), y)],
+            [x, y]
+          ])
+        ),
+        {a: [1, 2], b: [3, [4, 4]]}
+      ),
+    {b: [3, 4]}
+  )
   testEq(
     () =>
       L.get(L.mapping((x, y) => [[x, L._, ...L._, y], [y, ...L._, x]]), [
