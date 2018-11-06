@@ -1095,8 +1095,14 @@ describe('folds', () => {
   testEq(() => L.maximumBy(R.length, L.elems, ['x', 'xx', 'y', 'yy']), 'xx')
   testEq(() => L.minimumBy(R.length, L.elems, ['x', 'xx', 'y', 'yy']), 'x')
   testEq(() => L.maximumBy(I.id, flatten, [[1, 2], [], [2]]), 2)
+  testEq(() => L.maximumBy('x', L.elems, [{x: 3}, {x: 1}, {x: 4}, {x: 1}]), {
+    x: 4
+  })
   testEq(() => L.maximum(L.elems, [1, 2, 3]), 3)
   testEq(() => L.minimumBy(R.negate, L.elems, [1, 2, 3]), 3)
+  testEq(() => L.minimumBy('x', L.elems, [{x: 3}, {x: 1}, {x: 4}, {x: 1}]), {
+    x: 1
+  })
   testEq(() => L.minimum(L.elems, [1, 2, 3]), 1)
   testEq(() => L.mean(L.elems, [3, 4, 2]), 3)
   testEq(() => L.mean([L.elems, 'x'], [{x: 3}, {y: 4}, {x: 2}]), 2.5)
@@ -1427,19 +1433,19 @@ describe('L.toFunction', () => {
 
 describe('L.ungroupBy', () => {
   testEq(() => L.get(L.ungroupBy(I.id), [[]]), undefined)
-  testEq(() => L.get(L.ungroupBy(L.get('x')), [[{y: 1}]]), undefined)
+  testEq(() => L.get(L.ungroupBy('x'), [[{y: 1}]]), undefined)
   testEq(() => L.get(L.ungroupBy(L.get('x')), [[{x: 1}, {x: 2}]]), undefined)
-  testEq(() => L.getInverse(L.ungroupBy(L.get('x')), [{y: 1}]), undefined)
+  testEq(() => L.getInverse(L.ungroupBy('x'), [{y: 1}]), undefined)
 })
 
 describe('L.groupBy', () => {
   testEq(() => L.getInverse(L.groupBy(I.id), [[]]), undefined)
-  testEq(() => L.getInverse(L.groupBy(L.get('x')), [[{y: 1}]]), undefined)
+  testEq(() => L.getInverse(L.groupBy('x'), [[{y: 1}]]), undefined)
   testEq(
     () => L.getInverse(L.groupBy(L.get('x')), [[{x: 1}, {x: 2}]]),
     undefined
   )
-  testEq(() => L.get(L.groupBy(L.get('x')), [{y: 1}]), undefined)
+  testEq(() => L.get(L.groupBy('x'), [{y: 1}]), undefined)
 })
 
 describe('L.zipWith1', () => {
@@ -1473,7 +1479,7 @@ const flatteningRules = L.alternatives(
     )
   ],
   [
-    L.ungroupBy(L.get(['ps', L.choices([0, 'id'], [])])),
+    L.ungroupBy(['ps', L.choices([0, 'id'], [])]),
     L.arrays(L.mapping((o, ps) => [{...o, ps}, {...o, parents: ps}]))
   ]
 )
