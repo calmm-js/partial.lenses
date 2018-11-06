@@ -646,7 +646,10 @@ R.forEach(
       `L.get(abcM, {x: 1})`,
       `L.get(abcS, {x: 1})`
     ],
-    [`L.set(L.props('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`],
+    [
+      `L.set(L.props('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`,
+      `L.set(L.attrsNamed('x', 'y'), {x: 2, y: 3}, {x: 1, y: 2, z: 4})`
+    ],
     [
       `L.transform(
         L.lazy(rec =>
