@@ -1057,14 +1057,25 @@ function nVars(n) {
   return vars
 }
 
-const isPrimitive = x => x == null || typeof x !== 'object'
+//
+
+const isPrimitive = x => {
+  if (x == null) return true
+  const t = typeof x
+  return t !== 'object' && t !== 'function'
+}
 
 function match1(kinds, i, e, x) {
   if (void 0 !== x) {
-    if (i in e) return I.acyclicEqualsU(e[i], x)
-    e[i] = x
-    const k = kinds[i]
-    return !k || k(x)
+    const previous = e[i]
+    if (undefined !== previous) {
+      if (I.acyclicEqualsU(e[i], x)) return e
+    } else {
+      const k = kinds[i]
+      if (!k || k(x)) {
+        return setIndex(i, x, e)
+      }
+    }
   }
 }
 
@@ -1138,17 +1149,9 @@ const checkPatternPairInDev =
         return deepFreezeInDev(ps)
       }
 
-const setDefined = (o, k, x) => {
-  if (void 0 !== x) o[k] = x
-}
-
-const pushDefined = (xs, x) => {
-  if (void 0 !== x) xs.push(x)
-}
-
 function toMatch(kinds, p) {
   if (void 0 === p || all1(isPrimitive, leafs, p)) {
-    return (e, x) => I.acyclicEqualsU(p, x)
+    return (e, x) => I.acyclicEqualsU(p, x) && e
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
     return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
@@ -1172,14 +1175,13 @@ function toMatch(kinds, p) {
       let l = x[I.LENGTH]
       if (void 0 !== spread ? l < n - 1 : l !== n) return
       const j = init[I.LENGTH]
-      for (let i = 0; i < j; ++i) if (!init[i](e, x[i])) return
+      for (let i = 0; i < j; ++i) if (!(e = init[i](e, x[i]))) return
       const k = rest[I.LENGTH]
       l -= k
-      for (let i = 0; i < k; ++i) if (!rest[i](e, x[l + i])) return
-      return (
-        !(0 <= spread) ||
-        match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l))
-      )
+      for (let i = 0; i < k; ++i) if (!(e = rest[i](e, x[l + i]))) return
+      return 0 <= spread
+        ? match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l))
+        : e
     }
   } else {
     let spread = p[PAYLOAD]
@@ -1197,7 +1199,7 @@ function toMatch(kinds, p) {
       for (const k in x) {
         const m = p[k]
         if (m) {
-          if (!m(e, x[k])) return
+          if (!(e = m(e, x[k]))) return
           i++
         } else if (void 0 !== spread) {
           if (rest) rest[k] = x[k]
@@ -1205,15 +1207,13 @@ function toMatch(kinds, p) {
           return
         }
       }
-      return i === n && (!rest || match1(kinds, spread, e, freezeInDev(rest)))
+      return i === n && (rest ? match1(kinds, spread, e, freezeInDev(rest)) : e)
     }
   }
 }
 
-function toSubst(p, k) {
-  if (isPayload(k)) {
-    return void 0
-  } else if (void 0 === p || all1(isPrimitive, leafs, p)) {
+function toSubst(kinds, p) {
+  if (void 0 === p || all1(isPrimitive, leafs, p)) {
     return I.always(p)
   } else if (isVariable(p)) {
     const i = p[PAYLOAD][0][PAYLOAD]
@@ -1227,42 +1227,69 @@ function toSubst(p, k) {
       const x = p[i]
       if (isSpread(x)) {
         spread = x[PAYLOAD]
-      } else {
+      } else if (x !== _) {
         const side = void 0 !== spread ? rest : init
-        side.push(toSubst(x))
+        side.push(toSubst(kinds, x))
       }
     }
     return freezeResultInDev(e => {
       const r = []
-      for (let i = 0, n = init[I.LENGTH]; i < n; ++i) pushDefined(r, init[i](e))
+      for (let i = 0, n = init[I.LENGTH]; i < n; ++i) {
+        const v = init[i](e)
+        if (void 0 === v) return
+        r.push(v)
+      }
       if (0 <= spread) {
         const xs = e[spread]
-        if (xs)
-          for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) pushDefined(r, xs[i])
+        if (xs) {
+          for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) {
+            r.push(xs[i])
+          }
+        }
       }
-      for (let i = 0, n = rest[I.LENGTH]; i < n; ++i) pushDefined(r, rest[i](e))
+      for (let i = 0, n = rest[I.LENGTH]; i < n; ++i) {
+        const v = rest[i](e)
+        if (void 0 === v) return
+        r.push(v)
+      }
       return r
     })
   } else {
     let spread = p[PAYLOAD]
     if (spread) spread = spread[0][PAYLOAD]
-    p = modify(values, toSubst, p)
+    p = modify(
+      values,
+      (p, k) => {
+        if (isPayload(k) || _ === p) return
+        return toSubst(kinds, p)
+      },
+      p
+    )
     return freezeResultInDev(e => {
       const r = {}
-      for (const k in p) setDefined(r, k, p[k](e))
+      for (const k in p) {
+        const v = p[k](e)
+        if (void 0 === v) return
+        r[k] = v
+      }
       if (0 <= spread) {
         const x = e[spread]
-        if (x) for (const k in x) setDefined(r, k, x[k])
+        if (x) {
+          for (const k in x) {
+            r[k] = x[k]
+          }
+        }
       }
       return r
     })
   }
 }
 
-const oneway = (n, m, s) => x => {
-  const e = Array(n)
-  if (m(e, x)) return s(e)
-}
+const oneway = (n, m, s) =>
+  function mapping(x) {
+    const e = m(Array(n), x)
+    if (e) return s(e)
+  }
 
 //
 
@@ -2270,7 +2297,7 @@ export function mapping(ps) {
   checkPatternPairInDev(ps)
   const kinds = Array(n)
   const ms = ps.map(p => toMatch(kinds, p))
-  const ss = ps.map(toSubst)
+  const ss = ps.map(p => toSubst(kinds, p))
   return isoU(oneway(n, ms[0], ss[1]), oneway(n, ms[1], ss[0]))
 }
 

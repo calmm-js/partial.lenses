@@ -1479,7 +1479,7 @@ const flatteningRules = L.alternatives(
     )
   ],
   [
-    L.ungroupBy(['ps', L.choices([0, 'id'], [])]),
+    L.ungroupBy(L.choices(['ps', 0, 'id'], 'id')),
     L.arrays(L.mapping((o, ps) => [{...o, ps}, {...o, parents: ps}]))
   ]
 )
@@ -2539,6 +2539,7 @@ describe('L.mapping', () => {
       ),
     {x: 2, y: 1}
   )
+  testEq(() => L.get(L.array(L.mapping(xs => [xs, [...xs]])), [[], {}]), [[]])
 })
 
 describe('L.mappings', () => {
