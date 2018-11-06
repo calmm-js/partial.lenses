@@ -181,6 +181,16 @@
 
   //
 
+  var toGetter = function toGetter(getter) {
+    if (typeof getter === 'function' && getter[LENGTH] < 4) return getter;
+    getter = toFunction(getter);
+    return function (x, i) {
+      return getter(x, i, Select, id);
+    };
+  };
+
+  //
+
   var tryCatch = function tryCatch(fn$$1) {
     return copyName(function (x) {
       try {
@@ -352,6 +362,7 @@
 
   var mumBy = function mumBy(ord) {
     return I.curry(function mumBy(xi2y, t, s) {
+      xi2y = toGetter(xi2y);
       var minX = void 0;
       var minY = void 0;
       getAsU(function (x, i) {
@@ -2574,10 +2585,12 @@
   }), 'singleton');
 
   var groupBy = function groupBy(keyOf) {
+    keyOf = toGetter(keyOf);
     return isoU(groupByFn(keyOf), ungroupByFn(keyOf));
   };
 
   var ungroupBy = function ungroupBy(keyOf) {
+    keyOf = toGetter(keyOf);
     return isoU(ungroupByFn(keyOf), groupByFn(keyOf));
   };
 

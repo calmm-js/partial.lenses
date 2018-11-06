@@ -185,6 +185,16 @@ var inserterOp = /*#__PURE__*/I.curry(function (inserter, value) {
 
 //
 
+var toGetter = function toGetter(getter) {
+  if (typeof getter === 'function' && getter[LENGTH] < 4) return getter;
+  getter = toFunction(getter);
+  return function (x, i) {
+    return getter(x, i, Select, id);
+  };
+};
+
+//
+
 var tryCatch = function tryCatch(fn$$1) {
   return copyName(function (x) {
     try {
@@ -356,6 +366,7 @@ var Sum = /*#__PURE__*/ConstantWith(addU, 0);
 
 var mumBy = function mumBy(ord) {
   return I.curry(function mumBy(xi2y, t, s) {
+    xi2y = toGetter(xi2y);
     var minX = void 0;
     var minY = void 0;
     getAsU(function (x, i) {
@@ -1217,7 +1228,7 @@ var subsetPartial = function subsetPartial(p) {
 
 //
 
-var unfoldPartial = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.id : res(res(function (r) {
+var unfoldPartial = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(function (r) {
   I.freeze(r);
   I.freeze(r[1]);
   return r;
@@ -2578,10 +2589,12 @@ var singleton = /*#__PURE__*/setName( /*#__PURE__*/mapping(function (x) {
 }), 'singleton');
 
 var groupBy = function groupBy(keyOf) {
+  keyOf = toGetter(keyOf);
   return isoU(groupByFn(keyOf), ungroupByFn(keyOf));
 };
 
 var ungroupBy = function ungroupBy(keyOf) {
+  keyOf = toGetter(keyOf);
   return isoU(ungroupByFn(keyOf), groupByFn(keyOf));
 };
 
