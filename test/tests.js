@@ -2422,6 +2422,14 @@ describe('L.patterns', () => {
 describe('L.mapping', () => {
   testEq(
     () =>
+      L.get(
+        L.array(L.mapping((x, xs) => [L.andP(I.isArray, [x, ...xs]), [x, xs]])),
+        [[1, 2, 3], 'abc']
+      ),
+    [[1, [2, 3]]]
+  )
+  testEq(
+    () =>
       L.get(L.array(L.mapping(x => [L.andP(L.notP([]), x), x])), [{}, 1, []]),
     [{}, 1]
   )
@@ -3127,6 +3135,7 @@ if (process.env.NODE_ENV !== 'production') {
     testThrows(() => L.mapping(x => [...x, []]))
     testThrows(() => L.mapping(() => [new XYZ(), []]))
     testThrows(() => L.mapping((x, y) => [{...x, ...y}, []]))
+    testThrows(() => L.mapping([(x, y) => x === y, 0]))
   })
 }
 

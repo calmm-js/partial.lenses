@@ -1208,6 +1208,15 @@ const sNot = I.always(ignore)
 
 //
 
+const tPr = I.isFunction
+const cPr = p => {
+  if (p[I.LENGTH] !== 1) throw Error(`Predicates should be unary`)
+}
+const mPr = p => (e, x) => p(x) && e
+const sPr = I.always(ignore)
+
+//
+
 const ISO = 'i'
 const PATTERN = 'p'
 
@@ -1446,10 +1455,10 @@ const sObj = (p, kinds, subst) => {
 
 //
 
-const tsts = [tVal, tAnd, tOr, tNot, tVar, tAp, tLet, tArr, tObj]
-const chks = [cVal, cAnd, cOr, cNot, cVar, cAp, cLet, cArr, cObj]
-const mchs = [mVal, mAnd, mOr, mNot, mVar, mAp, mLet, mArr, mObj]
-const subs = [sVal, sAnd, sOr, sNot, sVar, sAp, sLet, sArr, sObj]
+const tsts = [tVal, tAnd, tOr, tNot, tPr, tVar, tAp, tLet, tArr, tObj]
+const chks = [cVal, cAnd, cOr, cNot, cPr, cVar, cAp, cLet, cArr, cObj]
+const mchs = [mVal, mAnd, mOr, mNot, mPr, mVar, mAp, mLet, mArr, mObj]
+const subs = [sVal, sAnd, sOr, sNot, sPr, sVar, sAp, sLet, sArr, sObj]
 
 const idxOf = p => {
   for (let i = 0, n = tsts[I.LENGTH]; i < n; ++i) {
