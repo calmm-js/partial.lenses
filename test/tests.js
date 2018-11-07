@@ -2421,6 +2421,10 @@ describe('L.patterns', () => {
 
 describe('L.mapping', () => {
   testEq(
+    () => L.get(L.mapping((x, y) => [x, L.orP([y], [...L._, y], {y})]), 'any'),
+    undefined
+  )
+  testEq(
     () =>
       L.get(
         L.array(L.mapping((x, xs) => [L.andP(I.isArray, [x, ...xs]), [x, xs]])),
