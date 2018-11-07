@@ -1187,6 +1187,27 @@ const sOr = (p, kinds, subst) => {
 
 //
 
+const PAT = 'p'
+
+function Not(pat) {
+  this[PAT] = pat
+  I.freeze(this)
+}
+
+const tNot = I.isInstanceOf(Not)
+const cNot = (p, kinds, check) => {
+  check(p[PAT])
+}
+const mNot = (p, kinds, match) => {
+  const m = match(p[PAT], kinds)
+  return (e, x) => {
+    if (!m(e, x)) return e
+  }
+}
+const sNot = I.always(ignore)
+
+//
+
 const ISO = 'i'
 const PATTERN = 'p'
 
@@ -1425,10 +1446,10 @@ const sObj = (p, kinds, subst) => {
 
 //
 
-const tsts = [tVal, tAnd, tOr, tVar, tAp, tLet, tArr, tObj]
-const chks = [cVal, cAnd, cOr, cVar, cAp, cLet, cArr, cObj]
-const mchs = [mVal, mAnd, mOr, mVar, mAp, mLet, mArr, mObj]
-const subs = [sVal, sAnd, sOr, sVar, sAp, sLet, sArr, sObj]
+const tsts = [tVal, tAnd, tOr, tNot, tVar, tAp, tLet, tArr, tObj]
+const chks = [cVal, cAnd, cOr, cNot, cVar, cAp, cLet, cArr, cObj]
+const mchs = [mVal, mAnd, mOr, mNot, mVar, mAp, mLet, mArr, mObj]
+const subs = [sVal, sAnd, sOr, sNot, sVar, sAp, sLet, sArr, sObj]
 
 const idxOf = p => {
   for (let i = 0, n = tsts[I.LENGTH]; i < n; ++i) {
@@ -2497,6 +2518,10 @@ export const letP = function letP(_binder, _pattern) {
     p = new Let(b[0], b[1], p)
   }
   return p
+}
+
+export const notP = function notP(p) {
+  return new Not(p)
 }
 
 export const orP = function orP() {

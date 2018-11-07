@@ -343,6 +343,7 @@ describe('arities', () => {
     negate: 4,
     none: 3,
     normalize: 1,
+    notP: 1,
     offset: 2,
     optional: 4,
     or: 2,
@@ -2419,6 +2420,11 @@ describe('L.patterns', () => {
 })
 
 describe('L.mapping', () => {
+  testEq(
+    () =>
+      L.get(L.array(L.mapping(x => [L.andP(L.notP([]), x), x])), [{}, 1, []]),
+    [{}, 1]
+  )
   testEq(
     () =>
       L.get(L.array(L.mapping(x => [L.orP(L.andP(x, []), L.andP(x, {})), x])), [
