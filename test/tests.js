@@ -230,6 +230,7 @@ describe('arities', () => {
     alternatives: 1,
     and1: 2,
     and: 2,
+    andP: 0,
     any: 3,
     apP: 2,
     append: 4,
@@ -2417,6 +2418,18 @@ describe('L.patterns', () => {
 })
 
 describe('L.mapping', () => {
+  testEq(
+    () => L.get(L.array(L.mapping(x => [L.andP({...L._}, x), x])), [{}, []]),
+    [{}]
+  )
+  testEq(
+    () =>
+      L.getInverse(L.array(L.mapping((x, y) => [L.andP(x, {...L._}, y), y])), [
+        {},
+        []
+      ]),
+    [{}]
+  )
   testEq(
     () =>
       L.get(

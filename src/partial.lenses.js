@@ -1118,6 +1118,45 @@ const sVar = p => {
 
 //
 
+const LHS = 'l'
+const RHS = 'r'
+
+function And(lhs, rhs) {
+  const self = this
+  self[LHS] = lhs
+  self[RHS] = rhs
+  I.freeze(self)
+}
+
+const tAnd = I.isInstanceOf(And)
+const cAnd = (p, kinds, check) => {
+  check(p[LHS], kinds)
+  check(p[RHS], kinds)
+}
+const mAnd = (p, kinds, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  return (e, x) => {
+    e = lM(e, x)
+    if (e) e = rM(e, x)
+    return e
+  }
+}
+const sAnd = (p, kinds, subst, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  const lS = subst(p[LHS], kinds)
+  const rS = subst(p[RHS], kinds)
+  return e => {
+    const l = lS(e)
+    if (rM(e, l)) return l
+    const r = rS(e)
+    if (lM(e, r)) return r
+  }
+}
+
+//
+
 const ISO = 'i'
 const PATTERN = 'p'
 
@@ -1356,10 +1395,10 @@ const sObj = (p, kinds, subst) => {
 
 //
 
-const tsts = [tVal, tVar, tAp, tLet, tArr, tObj]
-const chks = [cVal, cVar, cAp, cLet, cArr, cObj]
-const mchs = [mVal, mVar, mAp, mLet, mArr, mObj]
-const subs = [sVal, sVar, sAp, sLet, sArr, sObj]
+const tsts = [tVal, tAnd, tVar, tAp, tLet, tArr, tObj]
+const chks = [cVal, cAnd, cVar, cAp, cLet, cArr, cObj]
+const mchs = [mVal, mAnd, mVar, mAp, mLet, mArr, mObj]
+const subs = [sVal, sAnd, sVar, sAp, sLet, sArr, sObj]
 
 const idxOf = p => {
   for (let i = 0, n = tsts[I.LENGTH]; i < n; ++i) {
@@ -2405,6 +2444,16 @@ export function getInverse(o, s) {
 export const iso = I.curry(isoU)
 
 export const _ = new Variable(-1)
+
+export const andP = function andP() {
+  let p = toTrue
+  let n = arguments[I.LENGTH]
+  if (n) {
+    p = arguments[--n]
+    while (n--) p = new And(arguments[n], p)
+  }
+  return p
+}
 
 export const apP = I.curry(function apP(iso, pattern) {
   return new Ap(iso, pattern)
