@@ -1157,6 +1157,36 @@ const sAnd = (p, kinds, subst, match) => {
 
 //
 
+function Or(lhs, rhs) {
+  const self = this
+  self[LHS] = lhs
+  self[RHS] = rhs
+  I.freeze(self)
+}
+
+const tOr = I.isInstanceOf(Or)
+const cOr = (p, kinds, check) => {
+  check(p[LHS], kinds)
+  check(p[RHS], kinds)
+}
+const mOr = (p, kinds, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  return (e, x) => lM(e, x) || rM(e, x)
+}
+const sOr = (p, kinds, subst) => {
+  const lS = subst(p[LHS], kinds)
+  const rS = subst(p[RHS], kinds)
+  return e => {
+    const l = lS(e)
+    if (void 0 !== l) return l
+    const r = rS(e)
+    if (void 0 !== r) return r
+  }
+}
+
+//
+
 const ISO = 'i'
 const PATTERN = 'p'
 
@@ -1395,10 +1425,10 @@ const sObj = (p, kinds, subst) => {
 
 //
 
-const tsts = [tVal, tAnd, tVar, tAp, tLet, tArr, tObj]
-const chks = [cVal, cAnd, cVar, cAp, cLet, cArr, cObj]
-const mchs = [mVal, mAnd, mVar, mAp, mLet, mArr, mObj]
-const subs = [sVal, sAnd, sVar, sAp, sLet, sArr, sObj]
+const tsts = [tVal, tAnd, tOr, tVar, tAp, tLet, tArr, tObj]
+const chks = [cVal, cAnd, cOr, cVar, cAp, cLet, cArr, cObj]
+const mchs = [mVal, mAnd, mOr, mVar, mAp, mLet, mArr, mObj]
+const subs = [sVal, sAnd, sOr, sVar, sAp, sLet, sArr, sObj]
 
 const idxOf = p => {
   for (let i = 0, n = tsts[I.LENGTH]; i < n; ++i) {
@@ -2465,6 +2495,16 @@ export const letP = function letP(_binder, _pattern) {
   while (n--) {
     const b = arguments[n]
     p = new Let(b[0], b[1], p)
+  }
+  return p
+}
+
+export const orP = function orP() {
+  let p = ignore
+  let n = arguments[I.LENGTH]
+  if (n) {
+    p = arguments[--n]
+    while (n--) p = new Or(arguments[n], p)
   }
   return p
 }

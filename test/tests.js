@@ -348,6 +348,7 @@ describe('arities', () => {
     or: 2,
     orAlternatively: 2,
     orElse: 2,
+    orP: 0,
     partsOf: 1,
     pattern: 1,
     patterns: 1,
@@ -2418,6 +2419,23 @@ describe('L.patterns', () => {
 })
 
 describe('L.mapping', () => {
+  testEq(
+    () =>
+      L.get(L.array(L.mapping(x => [L.orP(L.andP(x, []), L.andP(x, {})), x])), [
+        {},
+        1,
+        []
+      ]),
+    [{}, []]
+  )
+  testEq(
+    () =>
+      L.getInverse(
+        L.array(L.mapping(x => [L.orP(L.andP(x, []), L.andP(x, {})), x])),
+        [{}, 1, []]
+      ),
+    [{}, []]
+  )
   testEq(
     () => L.get(L.array(L.mapping(x => [L.andP({...L._}, x), x])), [{}, []]),
     [{}]
