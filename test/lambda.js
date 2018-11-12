@@ -28,6 +28,7 @@ const compoundExpression = L.lazy(() =>
     P.isomap(
       [
         L.mapping((expr, exprs) => [[expr, ...exprs], [expr, exprs]]),
+        L.cross([[], L.reverse]),
         L.fold(L.mapping((fun, arg) => [[fun, arg], {type: 'app', fun, arg}]))
       ],
       P.many(atomicExpression)
