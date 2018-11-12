@@ -2479,6 +2479,27 @@ describe('L.mapping', () => {
       arg: {type: 'ref', name: 'x'}
     }
   })
+  testEq(() => L.get(Lambda.ppp, 'λf → λx → λy → f x y'), {
+    type: 'lam',
+    param: 'f',
+    body: {
+      type: 'lam',
+      param: 'x',
+      body: {
+        type: 'lam',
+        param: 'y',
+        body: {
+          type: 'app',
+          fun: {
+            type: 'app',
+            fun: {type: 'ref', name: 'f'},
+            arg: {type: 'ref', name: 'x'}
+          },
+          arg: {type: 'ref', name: 'y'}
+        }
+      }
+    }
+  })
   testEq(
     () =>
       L.getInverse(
