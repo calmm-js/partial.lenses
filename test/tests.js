@@ -226,10 +226,13 @@ describe('arities', () => {
     add: 1,
     all1: 3,
     all: 3,
+    allAsync: 3,
     alternatives: 1,
     and1: 2,
     and: 2,
+    andAsync: 2,
     any: 3,
+    anyAsync: 3,
     append: 4,
     appendOp: 1,
     appendTo: 4,
@@ -237,11 +240,13 @@ describe('arities', () => {
     array: 1,
     arrays: 1,
     assign: 3,
+    assignAsync: 3,
     assignOp: 1,
     assignTo: 4,
     attemptEveryDown: 1,
     attemptEveryUp: 1,
     attemptSomeDown: 1,
+    awaitIt: 4,
     branch: 1,
     branchOr: 2,
     branches: 0,
@@ -252,12 +257,16 @@ describe('arities', () => {
     choose: 1,
     collect: 2,
     collectAs: 3,
+    collectAsAsync: 3,
+    collectAsync: 2,
     collectTotal: 2,
     collectTotalAs: 3,
     complement: 4,
     compose: 0,
     concat: 3,
     concatAs: 4,
+    concatAsAsync: 4,
+    concatAsync: 3,
     cond: 0,
     condOf: 1,
     conjugate: 2,
@@ -271,6 +280,7 @@ describe('arities', () => {
     define: 1,
     disjoint: 1,
     disperse: 3,
+    disperseAsync: 3,
     divide: 1,
     dropPrefix: 1,
     dropSuffix: 1,
@@ -288,12 +298,15 @@ describe('arities', () => {
     foldl: 4,
     foldr: 4,
     forEach: 3,
+    forEachAsync: 3,
     forEachWith: 4,
     fromFantasy: 1,
     fromFantasyApplicative: 1,
     fromFantasyMonad: 1,
     get: 2,
     getAs: 3,
+    getAsAsync: 3,
+    getAsync: 2,
     getInverse: 2,
     getLog: 2,
     getter: 1,
@@ -310,6 +323,8 @@ describe('arities', () => {
     iterate: 1,
     join: 3,
     joinAs: 4,
+    joinAsAsync: 4,
+    joinAsync: 3,
     joinIx: 1,
     json: 1,
     keyed: 4,
@@ -329,6 +344,8 @@ describe('arities', () => {
     maximumBy: 3,
     mean: 2,
     meanAs: 3,
+    meanAsAsync: 3,
+    meanAsync: 2,
     minimum: 2,
     minimumBy: 3,
     modify: 3,
@@ -343,6 +360,7 @@ describe('arities', () => {
     optional: 4,
     or: 2,
     orAlternatively: 2,
+    orAsync: 2,
     orElse: 2,
     partsOf: 1,
     pattern: 1,
@@ -355,6 +373,8 @@ describe('arities', () => {
     prependTo: 4,
     product: 2,
     productAs: 3,
+    productAsAsync: 3,
+    productAsync: 2,
     prop: 1,
     props: 0,
     propsExcept: 0,
@@ -364,6 +384,7 @@ describe('arities', () => {
     reIx: 1,
     removable: 0,
     remove: 2,
+    removeAsync: 2,
     removeOp: 4,
     replace: 2,
     replaces: 2,
@@ -377,6 +398,7 @@ describe('arities', () => {
     selectAs: 3,
     seq: 0,
     set: 3,
+    setAsync: 3,
     setIx: 1,
     setOp: 1,
     setter: 1,
@@ -390,6 +412,8 @@ describe('arities', () => {
     suffix: 1,
     sum: 2,
     sumAs: 3,
+    sumAsAsync: 3,
+    sumAsync: 2,
     tieIx: 2,
     toFunction: 1,
     transform: 2,
@@ -1788,17 +1812,23 @@ describe('lazy folds', () => {
   )
   testEq(() => L.any((x, i) => x > i, L.elems, [0, 1, 3]), true)
   testEq(() => L.any((x, i) => x > i, L.elems, [0, 1, 2]), false)
+  testEq(() => L.anyAsync((x, i) => x > i, L.elems, [0, 1, 3]), true)
+  testEq(() => L.anyAsync((x, i) => x > i, L.elems, [0, 1, 2]), false)
   testEq(() => L.all((x, i) => x > i, L.elems, [1, 2, 3]), true)
   testEq(() => L.all((x, i) => x > i, L.elems, [1, 2, 2]), false)
+  testEq(() => L.allAsync((x, i) => x > i, L.elems, [1, 2, 3]), true)
+  testEq(() => L.allAsync((x, i) => x > i, L.elems, [1, 2, 2]), false)
   testEq(() => L.all1((x, i) => x > i, L.elems, [1, 2, 3]), true)
   testEq(() => L.all1((x, i) => x > i, L.elems, []), false)
   testEq(() => L.none((x, i) => x > i, L.elems, [0, 1, 3]), false)
   testEq(() => L.none((x, i) => x > i, L.elems, [0, 1, 2]), true)
   testEq(() => L.and(L.elems, []), true)
+  testEq(() => L.andAsync(L.elems, []), true)
   testEq(() => L.and1(L.elems, [1]), true)
   testEq(() => L.and1(L.elems, [1, 0]), false)
   testEq(() => L.and1(L.elems, []), false)
   testEq(() => L.or(L.elems, []), false)
+  testEq(() => L.orAsync(L.elems, []), false)
 })
 
 describe('L.first', () => {
@@ -3016,6 +3046,141 @@ describe('ix', () => {
 })
 
 describe('async', () => {
+  testEq(
+    () =>
+      L.anyAsync((x, i) => (x !== 1 ? I.resolve : I.id)(x > i), L.elems, [
+        0,
+        1,
+        3
+      ]),
+    true
+  )
+  testEq(
+    () =>
+      L.anyAsync((x, i) => (x !== 1 ? I.resolve : I.id)(x > i), L.elems, [
+        0,
+        1,
+        2
+      ]),
+    false
+  )
+  testEq(() => L.orAsync(L.elems, [false, I.resolve(false)]), false)
+
+  testEq(
+    () =>
+      L.allAsync((x, i) => (x !== 2 ? I.resolve : I.id)(x > i), L.elems, [
+        1,
+        2,
+        3
+      ]),
+    true
+  )
+  testEq(
+    () =>
+      L.allAsync((x, i) => (x !== 2 ? I.resolve : I.id)(x > i), L.elems, [
+        1,
+        2,
+        2
+      ]),
+    false
+  )
+  testEq(() => L.andAsync(L.elems, [true, I.resolve(true)]), true)
+
+  testEq(
+    () =>
+      L.productAsAsync(x => (x < 3 ? later(0, x) : x), L.elems, [3, 1, 4, 1]),
+    12
+  )
+
+  testEq(
+    () => L.sumAsAsync(x => (x < 3 ? later(0, x) : x), L.elems, [3, 1, 4, 1]),
+    9
+  )
+
+  testEq(
+    () =>
+      L.meanAsAsync(x => (x < 3 ? later(0, x) : x), L.elems, [
+        3,
+        1,
+        undefined,
+        4,
+        1
+      ]),
+    2.25
+  )
+
+  testEq(
+    async () => {
+      const rs = []
+      await L.forEachAsync(
+        (x, i) => (x < 3 ? I.resolve : I.id)(rs.push([x, i])),
+        L.elems,
+        [3, 1, 4]
+      )
+      return rs
+    },
+    [[3, 0], [1, 1], [4, 2]]
+  )
+
+  testEq(() => L.assignAsync(L.awaitIt, {x: 1}, {y: 2}), {x: 1, y: 2})
+
+  testEq(
+    () => L.removeAsync([L.awaitIt, L.elems, 'x'], I.resolve([{x: 1, y: 2}])),
+    [{y: 2}]
+  )
+
+  testEq(
+    () => L.setAsync([L.awaitIt, L.elems, 'x'], 3, I.resolve([{x: 1, y: 2}])),
+    [{x: 3, y: 2}]
+  )
+
+  testEq(() => L.joinAsAsync(later(0), '-', L.elems, ['3', '1', '4']), '3-1-4')
+
+  testEq(
+    () =>
+      L.concatAsAsync(x => (x < 3 ? later(0, x) : x), Sum, L.elems, [3, 1, 4]),
+    8
+  )
+
+  testEq(
+    () => L.collectAsync(L.branches('x', 'a', 'y', 'z'), {x: 3, y: 1, z: 4}),
+    [3, 1, 4]
+  )
+
+  testEq(
+    () =>
+      X.collectAsAsync(
+        x => (x < 3 ? later(0, x) : x),
+        X.branches('x', 'a', 'y', 'z'),
+        {
+          x: 3,
+          y: 1,
+          z: 4
+        }
+      ),
+    [3, 1, 4]
+  )
+
+  testEq(
+    () =>
+      L.getAsync(
+        [
+          L.elems,
+          L.branchOr([], {x: [], y: []}),
+          later(2),
+          L.awaitIt,
+          L.when(x => 4 < x)
+        ],
+        [
+          {x: 3, y: 1, z: 4},
+          {x: 1, y: 5, z: 9, w: 2},
+          {x: 6, y: 5},
+          {x: 3, y: 5}
+        ]
+      ),
+    5
+  )
+
   testEq(() => L.modifyAsync(L.elems, x => later(5, -x), [3, 1, 4]), [
     -3,
     -1,
