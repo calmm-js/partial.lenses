@@ -856,11 +856,8 @@ const subseqU = function subseq(begin, end, t) {
   t = toFunction(t)
   return copyName((x, i, F, xi2yF) => {
     let n = -1
-    return t(
-      x,
-      i,
-      F,
-      (x, i) => (begin <= ++n && !(end <= n) ? xi2yF(x, i) : F.of(x))
+    return t(x, i, F, (x, i) =>
+      begin <= ++n && !(end <= n) ? xi2yF(x, i) : F.of(x)
     )
   }, t)
 }
@@ -940,8 +937,8 @@ const elemsI = (xs, _i, A, xi2yA) =>
   A === I.Identity
     ? mapPartialIndexU(xi2yA, xs, void 0)
     : A === Select
-      ? selectInArrayLike(xi2yA, xs)
-      : traversePartialIndex(A, xi2yA, xs, void 0)
+    ? selectInArrayLike(xi2yA, xs)
+    : traversePartialIndex(A, xi2yA, xs, void 0)
 
 //
 
@@ -1648,8 +1645,8 @@ export const elemsTotal = (xs, i, A, xi2yA) =>
     ? A === I.Identity
       ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU)
       : A === Select
-        ? selectInArrayLike(xi2yA, xs)
-        : traversePartialIndex(A, xi2yA, xs, traversePartialIndex)
+      ? selectInArrayLike(xi2yA, xs)
+      : traversePartialIndex(A, xi2yA, xs, traversePartialIndex)
     : A.of(xs)
 
 export const entries = setName(toFunction([keyed, elems]), 'entries')
@@ -1663,8 +1660,8 @@ export const keysEverywhere = (x, i, A, xi2yA) => {
     I.isArray(x)
       ? elemsI(x, i, A, recAny)
       : I.isObject(x)
-        ? entries(x, i, A, recEntry)
-        : A.of(x)
+      ? entries(x, i, A, recEntry)
+      : A.of(x)
   return recAny(x, i)
 }
 
@@ -1709,8 +1706,8 @@ export function children(x, i, C, xi2yC) {
   return I.isArray(x)
     ? elemsI(x, i, C, xi2yC)
     : I.isObject(x)
-      ? values(x, i, C, xi2yC)
-      : C.of(x)
+    ? values(x, i, C, xi2yC)
+    : C.of(x)
 }
 
 export function flatten(x, i, C, xi2yC) {
@@ -1909,8 +1906,8 @@ export const joinAs = mkTraverse(
         0,
         C.ef(reqString('`join` and `joinAs` expect a string delimiter'))
       ))(function joinAs(d) {
-    return ConstantWith(
-      (x, y) => (void 0 !== x ? (void 0 !== y ? x + d + y : x) : y)
+    return ConstantWith((x, y) =>
+      void 0 !== x ? (void 0 !== y ? x + d + y : x) : y
     )
   })
 )
@@ -2601,8 +2598,8 @@ export const pointer = s => {
     ts[i - 1] = /^(0|[1-9]\d*)$/.test(t)
       ? ifElse(isArrayOrPrimitive, Number(t), t)
       : '-' === t
-        ? ifElse(isArrayOrPrimitive, append, t)
-        : t.replace('~1', '/').replace('~0', '~')
+      ? ifElse(isArrayOrPrimitive, append, t)
+      : t.replace('~1', '/').replace('~0', '~')
   }
   ts[I.LENGTH] = n - 1
   return ts

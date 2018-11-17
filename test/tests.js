@@ -58,9 +58,8 @@ const everywhere = [
   L.lazy(rec => {
     const elems = L.seq([L.elems, rec], L.identity)
     const values = L.seq([L.values, rec], L.identity)
-    return L.choose(
-      x =>
-        x instanceof Array ? elems : x instanceof Object ? values : L.identity
+    return L.choose(x =>
+      x instanceof Array ? elems : x instanceof Object ? values : L.identity
     )
   })
 ]
@@ -765,14 +764,16 @@ describe('L.filter', () => {
   testEq(() => L.set(L.filter(R.lt(0)), [], [3, 1, 4, 1, 5, 9, 2]), [])
   testEq(() => L.remove(L.filter(R.lt(0)), [3, 1, 4, 1, 5, 9, 2]), [])
   testEq(() => L.remove(L.filter(R.lt(2)), [3, 1, 4, 1, 5, 9, 2]), [1, 1, 2])
-  empties.filter(x => !I.isArray(x) && !I.isString(x)).forEach(invalid => {
-    testEq(() => L.get(L.filter(I.always(true)), invalid), undefined)
-    testEq(() => L.set(L.filter(I.always(true)), [1, '2', 3], invalid), [
-      1,
-      '2',
-      3
-    ])
-  })
+  empties
+    .filter(x => !I.isArray(x) && !I.isString(x))
+    .forEach(invalid => {
+      testEq(() => L.get(L.filter(I.always(true)), invalid), undefined)
+      testEq(() => L.set(L.filter(I.always(true)), [1, '2', 3], invalid), [
+        1,
+        '2',
+        3
+      ])
+    })
   testEq(() => L.remove(L.filter(c => 'a' <= c), 'JavaScript'), ['J', 'S'])
 })
 
