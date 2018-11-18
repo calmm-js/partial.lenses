@@ -1935,6 +1935,15 @@ describe('L.disperse', () => {
       L.disperse([L.elems, 'x'], [-3, undefined, -4], [{x: 3}, {x: 1}, {x: 4}]),
     [{x: -3}, {}, {x: -4}]
   )
+  testEq(
+    () =>
+      L.disperse(
+        [L.elems, L.assignTo],
+        [{x: 1}, {z: 0}, {y: 2}],
+        [{y: 3}, null, {x: 1}]
+      ),
+    [{y: 3, x: 1}, {z: 0}, {x: 1, y: 2}]
+  )
 })
 
 describe('L.partsOf', () => {
@@ -2724,6 +2733,7 @@ describe('L.entries', () => {
 })
 
 describe('L.querystring', () => {
+  testEq(() => L.get(L.querystring, {not: 'a string'}), undefined)
   testEq(() => L.get(L.querystring, 'foo=bar+baz&abc=xyz&abc=123&corge'), {
     foo: 'bar baz',
     abc: ['xyz', '123'],
@@ -2955,6 +2965,16 @@ describe('ix', () => {
         }
       ]
     }
+  )
+
+  testEq(
+    () =>
+      L.getAs(
+        R.nthArg(1),
+        [L.skipIx('x'), L.joinIx('y'), L.joinIx(L.setIx())],
+        undefined
+      ),
+    'y'
   )
 
   const leavesWithContexts = [
