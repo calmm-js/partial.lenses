@@ -1741,7 +1741,7 @@ monad](https://buzzdecafe.github.io/2018/04/10/no-promises-are-not-monads),
 which explains the "monadish".  Fortunately one usually does not want nested
 promises in which case the approximation can be close enough.
 
-##### <a id="l-select-applicative"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-Constant) [`L.Select ~> Applicative`](#l-select-applicative "L.Select: Applicative") <small><sup>v14.0.0</sup></small>
+##### <a id="l-select-applicative"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#l-select-applicative) [`L.Select ~> Applicative`](#l-select-applicative "L.Select: Applicative") <small><sup>v14.0.0</sup></small>
 
 `L.Select` is the [Static
 Land](https://github.com/rpominov/static-land/blob/master/docs/spec.md)
@@ -1766,7 +1766,7 @@ It is a monoid, because it satisfies the Monoid laws:
 ```js
 const MonoidLaws = (M, x, y, z) => ({
   associativity: test(M.concat(M.concat(x, y), z), M.concat(x, M.concat(y, z))),
-  leftIdentity: test(M.concat(M.empty(), x), x) ,
+  leftIdentity: test(M.concat(M.empty(), x), x),
   rightIdentity: test(M.concat(x, M.empty()), x)
 })
 
@@ -5561,7 +5561,7 @@ collections and back).
 * `undefined` is not a valid JSON value and does not get mixed up with valid
   JSON values.
 * We can form a [monoid over JavaScript values by treating `undefined` as
-  zero](#l-select).
+  zero](#l-select-applicative).
 
 Some libraries use `null`, but that is arguably a poor choice, because `null` is
 a valid JSON value, which means that when accessing JSON data a result of `null`
@@ -5586,7 +5586,8 @@ because applicatives do not have a join operation and are not nested like
 monads.
 
 Not having an explicit `Just` object means that dealing with values such as
-`Just Nothing` requires special consideration.
+`Just Nothing` requires special consideration (but like mentioned above, such
+constructs are not needed internally by optics).
 
 #### <a id="allowing-strings-and-integers-as-optics"></a> [≡](#contents) [▶](https://calmm-js.github.io/partial.lenses/index.html#allowing-strings-and-integers-as-optics) [Allowing strings and integers as optics](#allowing-strings-and-integers-as-optics)
 

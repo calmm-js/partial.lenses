@@ -1475,7 +1475,7 @@ definition used by Partial Lenses.</p>
 monad</a>,
 which explains the &quot;monadish&quot;.  Fortunately one usually does not want nested
 promises in which case the approximation can be close enough.</p>
-<h5><a id="l-select-applicative"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-Constant">■</a> <a href="#l-select-applicative" title="L.Select: Applicative"><code>L.Select ~&gt; Applicative</code></a> <small><sup>v14.0.0</sup></small></h5>
+<h5><a id="l-select-applicative"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#l-select-applicative">■</a> <a href="#l-select-applicative" title="L.Select: Applicative"><code>L.Select ~&gt; Applicative</code></a> <small><sup>v14.0.0</sup></small></h5>
 <p><code>L.Select</code> is the <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
 Land</a>
 compatible
@@ -1492,7 +1492,7 @@ over JavaScript values:</p>
 <p>It is a monoid, because it satisfies the Monoid laws:</p>
 <pre><code class="hljs lang-js">var MonoidLaws = (M, x, y, z) =&gt; ({
   associativity: test(M.concat(M.concat(x, y), z), M.concat(x, M.concat(y, z))),
-  leftIdentity: test(M.concat(M.empty(), x), x) ,
+  leftIdentity: test(M.concat(M.empty(), x), x),
   rightIdentity: test(M.concat(x, M.empty()), x)
 })
 
@@ -3867,7 +3867,7 @@ objects.</li>
 value.</li>
 <li><code>undefined</code> is not a valid JSON value and does not get mixed up with valid
 JSON values.</li>
-<li>We can form a <a href="#l-select">monoid over JavaScript values by treating <code>undefined</code> as
+<li>We can form a <a href="#l-select-applicative">monoid over JavaScript values by treating <code>undefined</code> as
 zero</a>.</li>
 </ul>
 <p>Some libraries use <code>null</code>, but that is arguably a poor choice, because <code>null</code> is
@@ -3890,7 +3890,8 @@ is sufficient for optics based on
 because applicatives do not have a join operation and are not nested like
 monads.</p>
 <p>Not having an explicit <code>Just</code> object means that dealing with values such as
-<code>Just Nothing</code> requires special consideration.</p>
+<code>Just Nothing</code> requires special consideration (but like mentioned above, such
+constructs are not needed internally by optics).</p>
 <h4><a id="allowing-strings-and-integers-as-optics"></a> <a href="#contents">≡</a> <a href="https://github.com/calmm-js/partial.lenses/blob/master/README.md#allowing-strings-and-integers-as-optics">■</a> <a href="#allowing-strings-and-integers-as-optics">Allowing strings and integers as optics</a></h4>
 <p>Aside from the brevity, allowing <a href="#l-prop">strings</a> and non-negative
 <a href="#l-index">integers</a> to be directly used as optics allows one to avoid
