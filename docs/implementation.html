@@ -33,33 +33,33 @@
     <hr>
     <h1 id="■-partial-lenses-implementation--gitter-github-stars-npm"><a href="https://github.com/calmm-js/partial.lenses/blob/master/IMPLEMENTATION.md#">■</a> Partial Lenses Implementation &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/partial.lenses"><img src="https://img.shields.io/npm/dm/partial.lenses.svg" alt="npm"></a></h1>
 <p>This document describes a simplified implementation of lenses and traversals
-using a similar approach as <a href="index.html">Partial Lenses</a>.  The implementation of
-Partial Lenses is far from simplified.  It lifts strings, numbers, and arrays to
+using a similar approach as <a href="index.html">Partial Lenses</a>. The implementation of
+Partial Lenses is far from simplified. It lifts strings, numbers, and arrays to
 optics for notational convenience, it has been manually tweaked for size,
 optimized for performance, and it also tries to handle a lot of corner cases
-induced by JavaScript.  All of this makes the implementation difficult to
-understand on its own.  The intention behind this document is to describe a
+induced by JavaScript. All of this makes the implementation difficult to
+understand on its own. The intention behind this document is to describe a
 simple implementation based on which it should be easier to look at the Partial
 Lenses source code and understand what is going on.</p>
-<p>There are many approaches to optics.  Partial Lenses is based on the ideas
-described by Twan van Laarhoven in <a href="https://www.twanvl.nl/blog/haskell/cps-functional-references">CPS based functional
-references</a> and
-further by Russell O&#39;Connor in <a href="http://r6.ca/blog/20120623T104901Z.html">Polymorphic Update with van Laarhoven
-Lenses</a>.</p>
+<p>There are many approaches to optics. Partial Lenses is based on the ideas
+described by Twan van Laarhoven in
+<a href="https://www.twanvl.nl/blog/haskell/cps-functional-references">CPS based functional references</a>
+and further by Russell O&#39;Connor in
+<a href="http://r6.ca/blog/20120623T104901Z.html">Polymorphic Update with van Laarhoven Lenses</a>.</p>
 <p>One way to think of lenses and traversals is as being an application of a single
-generalized <code>traverse</code> function.  The
+generalized <code>traverse</code> function. The
 <a href="http://hackage.haskell.org/package/base-4.10.1.0/docs/Data-Traversable.html#v:traverse"><code>traverse</code></a>
 function of the <code>Traversable</code> constructor class</p>
 <pre><code class="hljs lang-haskell">traverse :: (Traversable t, Applicative f) =&gt; (x -&gt; f y) -&gt; t x -&gt; f (t y)</code></pre>
-<p>is a kind of mapping function.  Indeed, if you specialize the <code>t</code> type
+<p>is a kind of mapping function. Indeed, if you specialize the <code>t</code> type
 constructor to list, <code>[]</code>, and <code>f</code> to identity, you get list map:</p>
 <pre><code class="hljs lang-haskell">traverse :: {-  t = []  and  f = identity  -} (x -&gt;   y) -&gt; [x] -&gt;    [y]</code></pre>
 <p><code>traverse</code> takes some kind of traversable data structure of type <code>t x</code>
-containing values type <code>x</code>.  It maps those values to operations of type <code>f y</code> in
-some <a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors">applicative
-functor</a> using the
-given mapping function of type <code>x -&gt; f y</code>.  Finally it returns an operation of
-type <code>f (t y)</code> that constructs a new data structure of type <code>t y</code>.</p>
+containing values type <code>x</code>. It maps those values to operations of type <code>f y</code> in
+some
+<a href="https://en.wikibooks.org/wiki/Haskell/Applicative_functors">applicative functor</a>
+using the given mapping function of type <code>x -&gt; f y</code>. Finally it returns an
+operation of type <code>f (t y)</code> that constructs a new data structure of type <code>t y</code>.</p>
 <p>The optical version of <code>traverse</code> replaces the second class <code>Traversable</code>
 constructor class with a first class traversal function</p>
 <pre><code class="hljs lang-haskell">type Traversal s t x y = forall f. Applicative f =&gt; (x -&gt; f y) -&gt; s -&gt; f t</code></pre>
@@ -69,38 +69,39 @@ traverse x2yF traversal = traversal x2yF</code></pre>
 <p>A traversal function of type <code>Traversal s t x y</code> is simply a function that knows
 how to locate elements of type <code>x</code> within a data structure of type <code>s</code> and then
 knows how to build a new data structure of type <code>t</code> where values of type <code>x</code>
-have been replaced with values of type <code>y</code>.  In other words, the traversal
+have been replaced with values of type <code>y</code>. In other words, the traversal
 function knows how to both take apart a data structure in a particular way to
 extract some values out of it and also how to put the data structure back
-together substituting some new values for the extracted values.  Of course, it
-is often the case that the type <code>y</code> is the same type <code>x</code> and type <code>t</code> is the
-same as <code>s</code>.</p>
-<p>We can translate the above <code>traverse</code> function to JavaScript in <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static
-Land</a> style by
-passing the method dictionary corresponding to the <code>Applicative</code> constraint as
-an explicit argument <code>F</code>:</p>
+together substituting some new values for the extracted values. Of course, it is
+often the case that the type <code>y</code> is the same type <code>x</code> and type <code>t</code> is the same
+as <code>s</code>.</p>
+<p>We can translate the above <code>traverse</code> function to JavaScript in
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md">Static Land</a>
+style by passing the method dictionary corresponding to the <code>Applicative</code>
+constraint as an explicit argument <code>F</code>:</p>
 <pre><code class="hljs lang-js">var traverse = F =&gt; x2yF =&gt; traversal =&gt; traversal(F)(x2yF)</code></pre>
 <p>Innocent as it may seem, <em>every</em> operation in Partial Lenses is basically an
-application of a traversal function like that.  The Partial Lenses version of
+application of a traversal function like that. The Partial Lenses version of
 <a href="index.html#L-traverse"><code>traverse</code></a> is only slightly different due to features
 such as currying, built-in indexing, and the lifting of strings, numbers, and
 arrays to optics.</p>
 <p>Here is an example of an <code>elems</code> traversal over the elements of an array:</p>
-<pre><code class="hljs lang-js">var elems = F =&gt; x2yF =&gt; xs =&gt; xs.reduce(
-  (ysF, x) =&gt; F.ap(F.map(ys =&gt; y =&gt; [...ys, y], ysF), x2yF(x)),
-  F.of([])
-)</code></pre>
-<p>Above, <code>F</code> is a Static Land <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative">applicative
-functor</a>,
+<pre><code class="hljs lang-js">var elems = F =&gt; x2yF =&gt; xs =&gt;
+  xs.reduce(
+    (ysF, x) =&gt; F.ap(F.map(ys =&gt; y =&gt; [...ys, y], ysF), x2yF(x)),
+    F.of([])
+  )</code></pre>
+<p>Above, <code>F</code> is a Static Land
+<a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#applicative">applicative functor</a>,
 <code>x2yF</code> is the function mapping array elements to applicative operations, and
-<code>xs</code> is an array.  <code>elems</code> maps each element of the array <code>xs</code> to an applicative
+<code>xs</code> is an array. <code>elems</code> maps each element of the array <code>xs</code> to an applicative
 operation using the mapping function <code>x2yF</code> and then combines those operations
 using the applicative combinators <code>F.of</code>, <code>F.ap</code> and <code>F.map</code> into a computation
 that builds an array of the results.</p>
-<p>To actually use <code>elems</code> with <code>traverse</code> we need an applicative functor.  Perhaps
+<p>To actually use <code>elems</code> with <code>traverse</code> we need an applicative functor. Perhaps
 the most straightforward example is using the identity applicative:</p>
 <pre><code class="hljs lang-js">var Identity = {map: (x2y, x) =&gt; x2y(x), ap: (x2y, x) =&gt; x2y(x), of: x =&gt; x}</code></pre>
-<p>The identity applicative performs no interesting computation by itself.  Any
+<p>The identity applicative performs no interesting computation by itself. Any
 value is taken as such by <code>of</code> and both <code>map</code> and <code>ap</code> simply apply their first
 argument to their second argument.</p>
 <p>By supplying the <code>Identity</code> applicative to <code>traverse</code> we get a mapping function
@@ -112,14 +113,14 @@ and it takes its arguments in a different order, but otherwise it is the same.</
 <pre><code class="hljs lang-js">map(x =&gt; x + 1)(elems)([3, 1, 4])
 </code></pre>
 <p>At this point we basically have a horribly complex version of the map function
-for arrays.  Notice, however, that <code>map</code> takes the optic, <code>elems</code> in the above
-case, as an argument.  We can compose optics and get different behavior.</p>
+for arrays. Notice, however, that <code>map</code> takes the optic, <code>elems</code> in the above
+case, as an argument. We can compose optics and get different behavior.</p>
 <p>The following <code>o</code> function composes two optics <code>outer</code> and <code>inner</code>:</p>
 <pre><code class="hljs lang-js">var o = (outer, inner) =&gt; F =&gt; x2yF =&gt; outer(F)(inner(F)(x2yF))</code></pre>
 <p>If you look closely, you&#39;ll notice that the above function really is just a
-variation of ordinary function composition.  Consider what we get if we drop the
+variation of ordinary function composition. Consider what we get if we drop the
 <code>F</code> argument:</p>
-<pre><code class="hljs lang-jsx">var o = (outer, inner) =&gt;      x2yF =&gt; outer   (inner   (x2yF))</code></pre>
+<pre><code class="hljs lang-jsx">var o = (outer, inner) =&gt; x2yF =&gt; outer(inner(x2yF))</code></pre>
 <p>That is exactly the same as ordinary single argument function composition.</p>
 <p>We can also define an identity optic function:</p>
 <pre><code class="hljs lang-js">var identity = F =&gt; x2yF =&gt; x =&gt; x2yF(x)</code></pre>
@@ -128,13 +129,13 @@ variation of ordinary function composition.  Consider what we get if we drop the
 <p>Using <code>compose</code> we can now conveniently map over nested arrays:</p>
 <pre><code class="hljs lang-js">map(x =&gt; x + 1)(compose([elems, elems, elems]))([[[1]], [[2, 3], [4]]])
 </code></pre>
-<p>Let&#39;s then divert our attention to lenses for a moment.  One could say that
-lenses are just traversals that focus on exactly one element.  Let&#39;s build
-lenses for accessing array elements and object properties.  We can do so in a
+<p>Let&#39;s then divert our attention to lenses for a moment. One could say that
+lenses are just traversals that focus on exactly one element. Let&#39;s build lenses
+for accessing array elements and object properties. We can do so in a
 generalized manner by introducing <code>Ix</code> modules with <code>get</code> and <code>set</code> functions
 for both arrays and objects:</p>
 <pre><code class="hljs lang-js">var ArrayIx = {
-  set: (i, v, a) =&gt; [...a.slice(0, i), v, ...a.slice(i+1)],
+  set: (i, v, a) =&gt; [...a.slice(0, i), v, ...a.slice(i + 1)],
   get: (i, a) =&gt; a[i]
 }
 
@@ -143,37 +144,35 @@ var ObjectIx = {
   get: (n, o) =&gt; o[n]
 }</code></pre>
 <p>The <code>atOf</code> function then takes an <code>Ix</code> module and a key and returns a lens:</p>
-<pre><code class="hljs lang-js">var atOf = Ix =&gt; k =&gt; F =&gt; x2yF =&gt; x =&gt; F.map(
-  y =&gt; Ix.set(k, y, x),
-  x2yF(Ix.get(k, x))
-)</code></pre>
-<p>Notice that we only use the <code>map</code> function from the functor argument <code>F</code>.  In
-other words, lenses do not require an applicative functor.  Lenses only require
-a functor.  Otherwise lens functions are just like traversal functions.</p>
+<pre><code class="hljs lang-js">var atOf = Ix =&gt; k =&gt; F =&gt; x2yF =&gt; x =&gt;
+  F.map(y =&gt; Ix.set(k, y, x), x2yF(Ix.get(k, x)))</code></pre>
+<p>Notice that we only use the <code>map</code> function from the functor argument <code>F</code>. In
+other words, lenses do not require an applicative functor. Lenses only require a
+functor. Otherwise lens functions are just like traversal functions.</p>
 <p>As a convenience the <code>at</code> function dispatches to <code>atOf</code> so that when the key is
 a number it uses array indexing and otherwise object indexing:</p>
 <pre><code class="hljs lang-js">var at = k =&gt; atOf(typeof k === &#39;number&#39; ? ArrayIx : ObjectIx)(k)</code></pre>
 <p>We can now map over e.g. an object property:</p>
 <pre><code class="hljs lang-js">map(x =&gt; -x)(at(&#39;b&#39;))({a: 1, b: 2, c: 3})
 </code></pre>
-<p>We can also compose lens and traversal functions.  For example:</p>
+<p>We can also compose lens and traversal functions. For example:</p>
 <pre><code class="hljs lang-js">map(x =&gt; -x)(compose([elems, at(&#39;x&#39;)]))([{x: 1}, {x: 2}])
 </code></pre>
 <pre><code class="hljs lang-js">map(x =&gt; x.toUpperCase())(compose([at(&#39;xs&#39;), elems]))({xs: [&#39;a&#39;, &#39;b&#39;]})
 </code></pre>
-<p>Composing two lenses gives a lens.  Composing a lens and a traversal gives a
-traversal.  And composing two traversals gives a traversal.</p>
-<p>We have so far only used the identity applicative.  By using other algebras we
-get different operations.  One suitable algebra is the constant functor:</p>
+<p>Composing two lenses gives a lens. Composing a lens and a traversal gives a
+traversal. And composing two traversals gives a traversal.</p>
+<p>We have so far only used the identity applicative. By using other algebras we
+get different operations. One suitable algebra is the constant functor:</p>
 <pre><code class="hljs lang-js">var Constant = {map: (x2y, c) =&gt; c}</code></pre>
-<p>The constant functor is a somewhat strange beast.  The <code>map</code> function of the
+<p>The constant functor is a somewhat strange beast. The <code>map</code> function of the
 constant functor simply ignores the first argument and returns the second
-argument as is.  This basically means that after a value is injected into the
-constant functor it never changes.  We can use that to create a <code>get</code> function</p>
+argument as is. This basically means that after a value is injected into the
+constant functor it never changes. We can use that to create a <code>get</code> function</p>
 <pre><code class="hljs lang-js">var get = traverse(Constant)(x =&gt; x)</code></pre>
 <p>that extracts the element targeted by a lens without building a new data
-structure during the traversal.  Recall that the <code>map</code> function of the
-<code>Constant</code> functor actually does not use the given mapping function at all.</p>
+structure during the traversal. Recall that the <code>map</code> function of the <code>Constant</code>
+functor actually does not use the given mapping function at all.</p>
 <p>For example:</p>
 <pre><code class="hljs lang-js">get(compose([at(1), at(&#39;x&#39;)]))([{x: 1}, {x: 2}, {x: 3}])
 </code></pre>
@@ -181,7 +180,7 @@ structure during the traversal.  Recall that the <code>map</code> function of th
 and <code>map</code> over the targeted element.</p>
 <p>The constant functor cannot be used with traversal functions, because traversal
 functions like <code>elems</code> require an applicative functor with not just the <code>map</code>
-function, but also the <code>ap</code> and <code>of</code> functions.  We can build applicatives
+function, but also the <code>ap</code> and <code>of</code> functions. We can build applicatives
 similar to the constant functor from
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoids</a>
 and use those to fold over the elements targeted by a traversal:</p>
@@ -190,20 +189,22 @@ and use those to fold over the elements targeted by a traversal:</p>
 <a href="https://github.com/rpominov/static-land/blob/master/docs/spec.md#monoid">monoid</a>
 and creates an applicative whose <code>ap</code> and <code>of</code> methods essentially ignore their
 arguments and use the monoid.</p>
-<p>Using different monoids we get different operations.  For example, we can define
+<p>Using different monoids we get different operations. For example, we can define
 an operation to collect all the elements targeted by a traversal:</p>
-<pre><code class="hljs lang-js">var collect = foldWith({empty: () =&gt; [], concat: (l, r) =&gt; [...l, ...r]})(x =&gt; [x])</code></pre>
+<pre><code class="hljs lang-js">var collect = foldWith({empty: () =&gt; [], concat: (l, r) =&gt; [...l, ...r]})(
+  x =&gt; [x]
+)</code></pre>
 <pre><code class="hljs lang-js">collect(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
 </code></pre>
 <p>And we can define an operation to sum all the elements targeted by a traversal:</p>
 <pre><code class="hljs lang-js">var sum = foldWith({empty: () =&gt; 0, concat: (x, y) =&gt; x + y})(x =&gt; x)</code></pre>
 <pre><code class="hljs lang-js">sum(compose([at(&#39;xs&#39;), elems, at(&#39;x&#39;)]))({xs: [{x: 3}, {x: 1}, {x: 4}]})
 </code></pre>
-<p>This pretty much covers the basics of lenses and traversals.  The Partial Lenses
+<p>This pretty much covers the basics of lenses and traversals. The Partial Lenses
 library simply provides you with a large number of predefined lens and traversal
 functions and operations, such as folds, over optics.</p>
-<p>Here is a <a href="https://calmm-js.github.io/partial.lenses/playground.html#MYewdgzgLgBFBOBDAbgU3hVMC8MBiOAfDIgEwBGB2xIRMIAFHgJQNmXMBQnoksqAG1QBbCDnx0AHqQCeVYpLHUYigHTxUAEwCuwVA04MZEPABoVzOnlWIADk1XC7RpcRl0A2qu-HzMgLp+Jszm0nIMkswhnNYgAGYMHv5cXDzg0DAAkpqoYFAAllDuuADeTrYAXDARsqGWymERISSV1WF1UrJN5vFVklIAvty8GeXiCCjomAzZuQVFqQIgAOYMMOURUjAA1DAAjKyCIhCsHgDM5nvmACzJMKkjsLS4DCDaUOjm+WBg6PXE8hUskBbw+8CYrG+v3BLBqciiw3SsHyOTyhWKEgawK2WPCkURfBgoGEthAmHEIFsBWArnoVPyNPUWl0+hAX1R8xkixWaw2-QaO32rGJpOmHiOonMEogUqEomSpw8Hj2-kCMCVpHMZzVHluqssDyRMAAgvAkDJMvyYCVOJgoFUGPlzMhzIh-urvDZVBABAz9AAGL7NF0wT2Ib2+vSO7YHQKcZaoe3VJ0kd2IDz5fycIZpQkAeXIACtUMAoJbxDa7Q6wM6eu6GCVPWz1WB-FVkANogmkwwa-R3SAPK3swSMogoHm4uJy8oANZWTpyHEAxzOTjFYiW72Jhizvx1UycMJ4GaSVTd3d1FKj2Dj8Tz5TjycMIq2VDxGAP7C4ADkYG0wjkOgP4wAA-CaZqIBa-RVAWxalparCztyqzrM4-LEAAtJEbBQAwP7kD+UQNogVRXDA5BVJqRJVGcnb3JwSyoXydDYcKIAkmS+jinKMokHhP6SERCqJCUkhkQM5hiVRAx3FwTG8uhUiqFAIAAKq2G+8AAMKINMxEilxiTjvhihEbKxwiWJEBVB4P6ID+5gET+-j0YahLaUiiB5BW5QOu0RLusAOaPDA3bjEgaAYPonl8N5UCsBhFjcApYU7oZYomQcroCUJzAiR40n7JJ1riTApAlUVdFyTeMBxCAAiaAA6oUAAW4gALJ0BMUXTI23ixdA8Wuq0HWqLwwDjj0cRVAA+nQY0iFSMgMMwna1aAAhCKW4j1Y1LVQK1DZLUUDrukk5gTeODoCOY8DnZ6t2ht48CuYlniSMkKU8kSDXbXhGXcSZgkQOZMDSjlpnCcR1m2VVlVlXsCNVNcslubVEAAbtDXNW1x0kqd1TuoGv1gJNPaSH47r9LsMidpsDQoWsmPCAwgPGbloPNBD-FQ-lMOKHDZV0VJiPIzAqNvfcQA">playground with all of the code from this
-document</a>.</p>
+<p>Here is a
+<a href="https://calmm-js.github.io/partial.lenses/playground.html#MYewdgzgLgBFBOBDAbgU3hVMC8MBiOAfDIgEwBGB2xIRMIAFHgJQNmXMBQnoksqAG1QBbCDnx0AHqQCeVYpLHUYigHTxUAEwCuwVA04MZEPABoVzOnlWIADk1XC7RpcRl0A2qu-HzMgLp+Jszm0nIMkswhnNYgAGYMHv5cXDzg0DAAkpqoYFAAllDuuADeTrYAXDARsqGWymERISSV1WF1UrJN5vFVklIAvty8GeXiCCjomAzZuQVFqQIgAOYMMOURUjAA1DAAjKyCIhCsHgDM5nvmACzJMKkjsLS4DCDaUOjm+WBg6PXE8hUskBbw+8CYrG+v3BLBqciiw3SsHyOTyhWKEgawK2WPCkURfBgoGEthAmHEIFsBWArnoVPyNPUWl0+hAX1R8xkixWaw2-QaO32rGJpOmHiOonMEogUqEomSpw8Hj2-kCMCVpHMZzVHluqssDyRMAAgvAkDJMvyYCVOJgoFUGPlzMhzIh-urvDZVBABAz9AAGL7NF0wT2Ib2+vSO7YHQKcZaoe3VJ0kd2IDz5fycIZpQkAeXIACtUMAoJbxDa7Q6wM6eu6GCVPWz1WB-FVkANogmkwwa-R3SAPK3swSMogoHm4uJy8oANZWTpyHEAxzOTjFYiW72Jhizvx1UycMJ4GaSVTd3d1FKj2Dj8Tz5TjycMIq2VDxGAP7C4ADkYG0wjkOgP4wAA-CaZqIBa-RVAWxalparCztyqzrM4-LEAAtJEbBQAwP7kD+UQNogVRXDA5BVJqRJVGcnb3JwSyoXydDYcKIAkmS+jinKMokHhP6SERCqJCUkhkQM5hiVRAx3FwTG8uhUiqFAIAAKq2G+8AAMKINMxEilxiTjvhihEbKxwiWJEBVB4P6ID+5gET+-j0YahLaUiiB5BW5QOu0RLusAOaPDA3bjEgaAYPonl8N5UCsBhFjcApYU7oZYomQcroCUJzAiR40n7JJ1riTApAlUVdFyTeMBxCAAiaAA6oUAAW4gALJ0BMUXTI23ixdA8Wuq0HWqLwwDjj0cRVAA+nQY0iFSMgMMwna1aAAhCKW4j1Y1LVQK1DZLUUDrukk5gTeODoCOY8DnZ6t2ht48CuYlniSMkKU8kSDXbXhGXcSZgkQOZMDSjlpnCcR1m2VVlVlXsCNVNcslubVEAAbtDXNW1x0kqd1TuoGv1gJNPaSH47r9LsMidpsDQoWsmPCAwgPGbloPNBD-FQ-lMOKHDZV0VJiPIzAqNvfcQA">playground with all of the code from this document</a>.</p>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">

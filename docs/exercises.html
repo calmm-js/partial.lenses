@@ -32,13 +32,13 @@
     </p>
     <hr>
     <h1 id="■-partial-lenses-exercises--gitter-github-stars-npm"><a href="https://github.com/calmm-js/partial.lenses/blob/master/EXERCISES.md#">■</a> Partial Lenses Exercises &middot; <a href="https://gitter.im/calmm-js/chat"><img src="https://img.shields.io/gitter/room/calmm-js/chat.js.svg" alt="Gitter"></a> <a href="https://github.com/calmm-js/partial.lenses"><img src="https://img.shields.io/github/stars/calmm-js/partial.lenses.svg?style=social" alt="GitHub stars"></a> <a href="https://www.npmjs.com/package/partial.lenses"><img src="https://img.shields.io/npm/dm/partial.lenses.svg" alt="npm"></a></h1>
-<p>This page contains exercises for the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#">Partial Lenses</a> library.  Each
-exercise asks you to implement an <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#optics">optic</a> or <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#transforms">transform</a>
-using Partial lenses.  An acceptable solution will then make all the <code>test(
-... )</code> cases to log <code>Ok</code>.  In case a <code>test( ... )</code> doesn&#39;t pass it logs <code>Error</code>
-and the (wrong) result.</p>
+<p>This page contains exercises for the <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#">Partial Lenses</a> library. Each exercise
+asks you to implement an <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#optics">optic</a> or <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#transforms">transform</a> using
+Partial lenses. An acceptable solution will then make all the <code>test( ... )</code>
+cases to log <code>Ok</code>. In case a <code>test( ... )</code> doesn&#39;t pass it logs <code>Error</code> and the
+(wrong) result.</p>
 <p>Most of the exercises include hints that you can reveal by placing the pointer
-over them.  The hints are written with a particular solution in mind, but it is
+over them. The hints are written with a particular solution in mind, but it is
 often possible to solve a particular exercise in more than one way.</p>
 <p>Suggestions for additional exercises are welcome!</p>
 <h2 id="contents">Contents</h2>
@@ -79,16 +79,16 @@ also supports <a target="_blank" href="https://github.com/calmm-js/partial.lense
 </li>
 </ul>
 <pre><code class="hljs lang-js">const lens = L.lens(
-  /* getter: */whole =&gt; &#39;???&#39;,
-  /* setter: */(part, whole) =&gt; &#39;???&#39;
+  /* getter: */ whole =&gt; &#39;???&#39;,
+  /* setter: */ (part, whole) =&gt; &#39;???&#39;
 )
 
 const whole = {
   part: 101
 }
 
-test(&#39;get&#39;,    L.get(lens,           whole), 101)
-test(&#39;set&#39;,    L.set(lens,       42, whole), {part: 42})
+test(&#39;get&#39;, L.get(lens, whole), 101)
+test(&#39;set&#39;, L.set(lens, 42, whole), {part: 42})
 test(&#39;mod&#39;, L.modify(lens, R.negate, whole), {part: -101})
 
 test(&#39;no-mutate&#39;, whole, {part: 101})</code></pre>
@@ -113,15 +113,17 @@ const nested = {
   }
 }
 
-test(&#39;get&#39;,    L.get(lens,           nested), 101)
-test(&#39;set&#39;,    L.set(lens,       42, nested), {inside: {part: 42, more: &#39;stuff&#39;}})
-test(&#39;mod&#39;, L.modify(lens, R.negate, nested), {inside: {part: -101, more: &#39;stuff&#39;}})
-test(&#39;rem&#39;, L.remove(lens,           nested), undefined)</code></pre>
+test(&#39;get&#39;, L.get(lens, nested), 101)
+test(&#39;set&#39;, L.set(lens, 42, nested), {inside: {part: 42, more: &#39;stuff&#39;}})
+test(&#39;mod&#39;, L.modify(lens, R.negate, nested), {
+  inside: {part: -101, more: &#39;stuff&#39;}
+})
+test(&#39;rem&#39;, L.remove(lens, nested), undefined)</code></pre>
 <h3 id="association-list">Association list</h3>
 <ul>
 <li>Write a function <code>valOf</code> to return a lens to access value with given key.<ul>
-<li><span class="hint">Compose a lens that uses <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-find"><code>L.find</code></a> to
-search for an object with the given key.</span></li>
+<li><span class="hint">Compose a lens that uses <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-find"><code>L.find</code></a> to search
+for an object with the given key.</span></li>
 </ul>
 </li>
 <li>Support removal.<ul>
@@ -129,31 +131,36 @@ search for an object with the given key.</span></li>
 </ul>
 </li>
 <li>Support insertion and make it so that keys remain ordered.<ul>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.valueOr</code></a> to add the <code>key</code>
-property in case there is no matching object.</span></li>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-rewrite"><code>L.rewrite</code></a> to sort by
-<code>key</code>.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-valueOr"><code>L.valueOr</code></a> to add the <code>key</code> property
+in case there is no matching object.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-rewrite"><code>L.rewrite</code></a> to sort by <code>key</code>.</span></li>
 </ul>
 </li>
 </ul>
 <pre><code class="hljs lang-js">const valOf = key =&gt; &#39;???&#39;
 
-const data = [{key: &#39;en&#39;, val: &#39;Title&#39;},
-              {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}]
+const data = [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}]
 
-test(&#39;get&#39;,    L.get(valOf(&#39;en&#39;),              data), &#39;Title&#39;)
-test(&#39;set&#39;,    L.set(valOf(&#39;en&#39;), &#39;The title&#39;, data), [{key: &#39;en&#39;, val: &#39;The title&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
-test(&#39;rem&#39;, L.remove(valOf(&#39;en&#39;),              data), [{key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
+test(&#39;get&#39;, L.get(valOf(&#39;en&#39;), data), &#39;Title&#39;)
+test(&#39;set&#39;, L.set(valOf(&#39;en&#39;), &#39;The title&#39;, data), [
+  {key: &#39;en&#39;, val: &#39;The title&#39;},
+  {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}
+])
+test(&#39;rem&#39;, L.remove(valOf(&#39;en&#39;), data), [{key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])
 
 test(&#39;emp&#39;, L.remove(valOf(&#39;sv&#39;), L.remove(valOf(&#39;en&#39;), data)), [])
 
-test(&#39;ins&#39;,    L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;,   data), [{key: &#39;en&#39;, val: &#39;Title&#39;}, {key: &#39;fi&#39;, val: &#39;Otsikko&#39;}, {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}])</code></pre>
+test(&#39;ins&#39;, L.set(valOf(&#39;fi&#39;), &#39;Otsikko&#39;, data), [
+  {key: &#39;en&#39;, val: &#39;Title&#39;},
+  {key: &#39;fi&#39;, val: &#39;Otsikko&#39;},
+  {key: &#39;sv&#39;, val: &#39;Rubrik&#39;}
+])</code></pre>
 <h3 id="dimorphic-ranges">Dimorphic ranges</h3>
 <ul>
 <li>Implement the <code>end</code> lens to access the end of range objects that may take one
 of two different forms.<ul>
-<li><span class="hint">Using <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.lens</code></a>, write a custom lens
-to access the end of <code>{start, num}</code> pair.</span></li>
+<li><span class="hint">Using <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-lens"><code>L.lens</code></a>, write a custom lens to access
+the end of <code>{start, num}</code> pair.</span></li>
 <li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-ifElse"><code>L.ifElse</code></a> or
 <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-choices"><code>L.choices</code></a> to select between <code>&#39;end&#39;</code> and the custom
 lens.</span></li>
@@ -174,7 +181,11 @@ test(&#39;get_end&#39;, L.get(end, {start: 1, end: 3}), 3)
 test(&#39;set_num&#39;, L.set(end, 4, {start: 1, num: 2}), {start: 1, num: 3})
 test(&#39;set_end&#39;, L.set(end, 4, {start: 1, end: 3}), {start: 1, end: 4})
 
-test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;}), {start: 1, num: 3, xtra: &#39;field&#39;})</code></pre>
+test(&#39;set_ext&#39;, L.set(end, 4, {start: 1, num: 2, xtra: &#39;field&#39;}), {
+  start: 1,
+  num: 3,
+  xtra: &#39;field&#39;
+})</code></pre>
 <!--
 * `L.lazy`
 * `L.pick`
@@ -208,10 +219,10 @@ const coords = [
 test(&#39;max&#39;, L.maximum(xs, coords), 5)
 
 test(&#39;neg&#39;, L.modify([xs, L.when(x =&gt; 3 &lt; x)], R.negate, coords), [
-  {x:  3, y: 9},
-  {x:  1, y: 2},
+  {x: 3, y: 9},
+  {x: 1, y: 2},
   {x: -4, y: 6},
-  {x:  1, y: 5},
+  {x: 1, y: 5},
   {x: -5, y: 3}
 ])
 
@@ -238,21 +249,30 @@ properties of an object.</span></li>
 <pre><code class="hljs lang-js">const nonObjects = &#39;???&#39;
 
 test(&#39;max&#39;, L.maximum(nonObjects, {a: 1, b: {c: 2, d: {e: 5}}, e: 3}), 5)
-test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {x: {y: {z: {w: [1]}}}})</code></pre>
+test(&#39;mod&#39;, L.modify(nonObjects, R.of, {x: {y: {z: {w: 1}}}}), {
+  x: {y: {z: {w: [1]}}}
+})</code></pre>
 <h2 id="isomorphisms">Isomorphisms</h2>
 <h3 id="inverse-puzzle">Inverse puzzle</h3>
 <ul>
 <li>Solve for <code>iso</code>.<ul>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-complement"><code>L.complement</code></a> on the booleans.</span></li>
-<li><span class="hint">Lift with <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-array"><code>L.array</code></a> to complement them.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-complement"><code>L.complement</code></a> on the
+booleans.</span></li>
+<li><span class="hint">Lift with <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-array"><code>L.array</code></a> to complement
+them.</span></li>
 <li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-pick"><code>L.pick</code></a> to convert object shapes.</span></li>
-<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-json"><code>L.json</code></a> to convert between JSON and objects.</span></li>
+<li><span class="hint">Use <a target="_blank" href="https://github.com/calmm-js/partial.lenses/#L-json"><code>L.json</code></a> to convert between JSON and
+objects.</span></li>
 </ul>
 </li>
 </ul>
 <pre><code class="hljs lang-js">const iso = &#39;???&#39;
 
-test(&#39;inv&#39;, L.getInverse(L.inverse(iso), &#39;{&quot;foo&quot;:[true,false,true]}&#39;), &#39;{&quot;bar&quot;:[false,true,false]}&#39;)
+test(
+  &#39;inv&#39;,
+  L.getInverse(L.inverse(iso), &#39;{&quot;foo&quot;:[true,false,true]}&#39;),
+  &#39;{&quot;bar&quot;:[false,true,false]}&#39;
+)
 test(&#39;get&#39;, L.get(L.inverse(iso), &#39;{&quot;bar&quot;:[true]}&#39;), &#39;{&quot;foo&quot;:[false]}&#39;)</code></pre>
 <h2 id="transforms">Transforms</h2>
 <h3 id="increment-and-decrement">Increment and Decrement</h3>
@@ -269,8 +289,11 @@ to get to the leafs.</span></li>
 </ul>
 <pre><code class="hljs lang-js">const trn = &#39;???&#39;
 
-test(&#39;sol&#39;, L.transform(trn, {xs: {a:3, b:1, c:4}, ys: [1, 5, 9]}),
-     /**/                    {xs: {a:4, b:2, c:5}, ys: [0, 4, 8]})</code></pre>
+test(
+  &#39;sol&#39;,
+  L.transform(trn, {xs: {a: 3, b: 1, c: 4}, ys: [1, 5, 9]}),
+  /**/ {xs: {a: 4, b: 2, c: 5}, ys: [0, 4, 8]}
+)</code></pre>
 
     <div class="loading-hidden">
       <pre><code class="hljs lang-js">
