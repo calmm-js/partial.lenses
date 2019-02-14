@@ -75,6 +75,8 @@ export const IdentityAsync = T_monad
 
 export const Select = T_applicative
 
+export const SelectAsync = T_applicative
+
 export const toFunction = T.fn(
   [T_optic],
   T_opticFnOf(T.or(T_monad, T_applicative, T_functor))
@@ -86,14 +88,38 @@ export const assign = T.fn(
   [T_optic, T.instanceOf(Object), T_maybeDataI],
   T_maybeDataO
 )
+export const assignAsync = T.fn(
+  [T_optic, T.instanceOf(Object), T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+
 export const disperse = T.fn([T_optic, T.any, T_maybeDataI], T_maybeDataO)
+export const disperseAsync = T.fn(
+  [T_optic, T.any, T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+
 export const modify = T.fn(
   [T_optic, T.fn([T_maybeDataO, T_index], T_maybeDataI), T_maybeDataI],
   T_maybeDataO
 )
-export const modifyAsync = modify
+export const modifyAsync = T.fn(
+  [T_optic, T.fn([T_maybeDataO, T_index], T_maybeDataI), T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+
 export const remove = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
+export const removeAsync = T.fn(
+  [T_optic, T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+
 export const set = T.fn([T_optic, T_maybeDataI, T_maybeDataI], T_maybeDataO)
+export const setAsync = T.fn(
+  [T_optic, T_maybeDataI, T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+
 export const traverse = T.fn(
   [
     T.or(T_monad, T_applicative, T_functor),
@@ -143,6 +169,10 @@ export const setIx = T.fn([T_index], T_optic)
 export const skipIx = T.fn([T_optic], T_optic)
 export const tieIx = T.fn([T.fn([T_index, T_index], T_index), T_optic], T_optic)
 
+// Async
+
+export const awaitIt = T_optic
+
 // Debugging
 
 export const getLog = T.fn([T_traversal, T_maybeDataI], T_maybeDataO)
@@ -151,7 +181,10 @@ export const log = T.fnVarN(0, T.string, T_optic)
 // Operations on transforms
 
 export const transform = T.fn([T_optic, T_maybeDataI], T_maybeDataO)
-export const transformAsync = transform
+export const transformAsync = T.fn(
+  [T_optic, T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
 
 // Sequencing
 
@@ -206,17 +239,38 @@ export const all = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.boolean
 )
+export const allAsync = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
+  T.thenable(T.boolean)
+)
+
 export const all1 = all
 
 export const and = T.fn([T_traversal, T_maybeDataI], T.boolean)
+export const andAsync = T.fn([T_traversal, T_maybeDataI], T.thenable(T.boolean))
+
 export const and1 = and
 
 export const any = all
+export const anyAsync = allAsync
 
 export const collect = T.fn([T_traversal, T_maybeDataI], T.array(T.def))
 export const collectAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.array(T.def)
+)
+
+export const collectAsync = T.fn(
+  [T_traversal, T_maybeDataI],
+  T.thenable(T.array(T.def))
+)
+export const collectAsAsync = T.fn(
+  [
+    T.fn([T_maybeDataO, T_index], T.or(T.thenable(T.any), T.any)),
+    T_traversal,
+    T_maybeDataI
+  ],
+  T.thenable(T.array(T.def))
 )
 
 export const collectTotal = T.fn([T_traversal, T_maybeDataI], T.array(T.any))
@@ -229,6 +283,15 @@ export const concat = T.fn([T_monoid, T_traversal, T_maybeDataI], T.any)
 export const concatAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_monoid, T_traversal, T_maybeDataI],
   T.any
+)
+
+export const concatAsync = T.fn(
+  [T_monoid, T_traversal, T_maybeDataI],
+  T.thenable(T.any)
+)
+export const concatAsAsync = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_monoid, T_traversal, T_maybeDataI],
+  T.thenable(T.any)
 )
 
 export const countIf = T.fn(
@@ -258,6 +321,10 @@ export const forEach = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.undef
 )
+export const forEachAsync = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
+  T.thenable(T.undef)
+)
 
 export const forEachWith = T.fn(
   [
@@ -270,15 +337,24 @@ export const forEachWith = T.fn(
 )
 
 export const get = T.fn([T_traversal, T_maybeDataI], T_maybeDataO)
-
 export const getAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
   T.any
 )
 
+export const getAsync = T.fn(
+  [T_traversal, T_maybeDataI],
+  T.thenable(T_maybeDataO)
+)
+export const getAsAsync = T.fn(
+  [T.fn([T_maybeDataO, T_index], T.any), T_traversal, T_maybeDataI],
+  T.thenable(T.any)
+)
+
 export const isDefined = T.fn([T_traversal, T_maybeDataI], T.boolean)
 export const isEmpty = T.fn([T_traversal, T_maybeDataI], T.boolean)
 
+export const join = T.fn([T.string, T_traversal, T_maybeDataI], T.string)
 export const joinAs = T.fn(
   [
     T.fn([T_maybeDataO, T_index], T.or(T.string, T.undef)),
@@ -289,7 +365,22 @@ export const joinAs = T.fn(
   T.string
 )
 
-export const join = T.fn([T.string, T_traversal, T_maybeDataI], T.string)
+export const joinAsync = T.fn(
+  [T.string, T_traversal, T_maybeDataI],
+  T.thenable(T.string)
+)
+export const joinAsAsync = T.fn(
+  [
+    T.fn(
+      [T_maybeDataO, T_index],
+      T.or(T.string, T.undef, T.thenable(T.or(T.string, T.undef)))
+    ),
+    T.string,
+    T_traversal,
+    T_maybeDataI
+  ],
+  T.thenable(T.string)
+)
 
 export const maximumBy = T.fn([T_lens, T_traversal, T_maybeDataI], T.any)
 export const maximum = T.fn([T_traversal, T_maybeDataI], T.any)
@@ -304,12 +395,26 @@ export const meanAs = T.fn(
   T.number
 )
 
+export const meanAsync = T.fn([T_traversal, T_maybeDataI], T.thenable(T.number))
+export const meanAsAsync = T.fn(
+  [
+    T.fn(
+      [T_maybeDataO, T_index],
+      T.or(T.number, T.undef, T.thenable(T.or(T.number, T.undef)))
+    ),
+    T_traversal,
+    T_maybeDataI
+  ],
+  T.thenable(T.number)
+)
+
 export const minimumBy = maximumBy
 export const minimum = maximum
 
 export const none = all
 
 export const or = and
+export const orAsync = andAsync
 
 export const productAs = T.fn(
   [T.fn([T_maybeDataO, T_index], T.number), T_traversal, T_maybeDataI],
@@ -317,8 +422,24 @@ export const productAs = T.fn(
 )
 export const product = count
 
+export const productAsAsync = T.fn(
+  [
+    T.fn([T_maybeDataO, T_index], T.or(T.number, T.thenable(T.number))),
+    T_traversal,
+    T_maybeDataI
+  ],
+  T.thenable(T.number)
+)
+export const productAsync = T.fn(
+  [T_traversal, T_maybeDataI],
+  T.thenable(T.number)
+)
+
 export const sumAs = productAs
 export const sum = product
+
+export const sumAsAsync = productAsAsync
+export const sumAsync = productAsync
 
 export const select = T.fn([T_traversal, T_maybeDataI], T.any)
 export const selectAs = T.fn(

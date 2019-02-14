@@ -37,11 +37,11 @@ export const instanceOf = c => fromPredicate(x => x instanceof c)
 
 const isFreezable = x =>
   I.isArray(x) ||
-  (x instanceof Object &&
-    !(x instanceof Promise || x instanceof Int8Array || x instanceof Error))
+  (x instanceof Object && !(x instanceof Int8Array || x instanceof Error))
 const isFrozen = x => !isFreezable(x) || Object.isFrozen(x)
 const isDeepFrozen = x =>
   !isFreezable(x) ||
+  isThenable(x) ||
   (Object.isFrozen(x) &&
     !Object.getOwnPropertyNames(x).find(k => !isDeepFrozen(x[k])))
 
@@ -52,6 +52,8 @@ export const deepFrozen = fromPredicate(isDeepFrozen)
 export const deepFreeze = x =>
   isFrozen(x)
     ? x
+    : isThenable(x)
+    ? x.then(deepFreeze)
     : (Object.getOwnPropertyNames(x).forEach(k => deepFreeze(x[k])),
       Object.freeze(x))
 

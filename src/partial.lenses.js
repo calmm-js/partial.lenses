@@ -5,6 +5,14 @@ import * as C from './contract'
 //
 
 const id = x => x
+const ignore = () => {}
+
+const allIt = x => (x ? void 0 : true)
+const anyIt = x => (x ? true : void 0)
+
+const toBoolean = x => !!x
+
+//
 
 const setName = process.env.NODE_ENV === 'production' ? x => x : I.defineNameU
 
@@ -57,6 +65,7 @@ const cpair = xs => x => [x, xs]
 const pairPartial = k => v => (void 0 !== k && void 0 !== v ? [k, v] : void 0)
 
 const unto = c => x => (void 0 !== x ? x : c)
+const unto1 = unto(1)
 const unto0 = unto(0)
 
 const toTrue = I.always(true)
@@ -167,6 +176,25 @@ const copyToFrom = (process.env.NODE_ENV === 'production'
 
 //
 
+const selectAsync = (step, at, s, x, y) => {
+  const cont = v => (void 0 !== v ? v : next())
+  const next = () => {
+    if (void 0 !== (s = step(s, x, y))) {
+      const vP = at(s, x, y)
+      return I.isThenable(vP) ? I.thenU(cont, vP) : cont(vP)
+    }
+  }
+  return next()
+}
+
+const arrayStep = (i, xs) => (++i < xs[I.LENGTH] ? i : void 0)
+const arrayAt = (i, xs, xi2v) => xi2v(xs[i], i)
+
+const selectInArrayLikeAsync = (xi2v, xs) =>
+  selectAsync(arrayStep, arrayAt, -1, xs, xi2v)
+
+//
+
 function selectInArrayLike(xi2v, xs) {
   for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) {
     const v = xi2v(xs[i], i)
@@ -176,11 +204,14 @@ function selectInArrayLike(xi2v, xs) {
 
 //
 
-const ConstantWith = (ap, empty) => I.Applicative(I.sndU, I.always(empty), ap)
+const JoinMonoid = d =>
+  I.MonoidWith((x, y) => (void 0 !== x ? (void 0 !== y ? x + d + y : x) : y))
 
-const ConstantOf = ({concat, empty}) => ConstantWith(concat, empty())
+const Product = I.ConstantOf(I.ProductMonoid)
+const ProductAsync = I.ConstantAsyncOf(I.ProductMonoid)
 
-const Sum = ConstantWith(I.addU, 0)
+const Sum = I.ConstantOf(I.SumMonoid)
+const SumAsync = I.ConstantAsyncOf(I.SumMonoid)
 
 const mumBy = ord =>
   I.curry(function mumBy(xi2y, t, s) {
@@ -408,12 +439,6 @@ function composed(oi0, os) {
   }
 }
 
-const disperseU = function disperse(traversal, values, data) {
-  if (!seemsArrayLike(values)) values = ''
-  let i = 0
-  return modifyU(traversal, () => values[i++], data)
-}
-
 const setU = (process.env.NODE_ENV === 'production'
   ? id
   : C.par(0, C.ef(reqOptic)))(function set(o, x, s) {
@@ -452,6 +477,16 @@ const modifyU = (process.env.NODE_ENV === 'production'
 
 const modifyAsyncU = (o, f, s) =>
   I.resolve(toFunction(o)(s, void 0, I.IdentityAsync, f))
+
+const disperseWith = modifyU =>
+  function disperse(traversal, values, data) {
+    if (!seemsArrayLike(values)) values = ''
+    let i = 0
+    return modifyU(traversal, () => values[i++], data)
+  }
+
+const disperseU = disperseWith(modifyU)
+const disperseAsyncU = disperseWith(modifyAsyncU)
 
 const getAsU = (process.env.NODE_ENV === 'production'
   ? id
@@ -634,7 +669,7 @@ const branchOr1LevelIdentity = (process.env.NODE_ENV === 'production'
   return written ? (same && xO === x ? x : r) : x
 })
 
-const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
+const branchOr1Level = (otherwise, k2o, ks) => (x, _i, A, xi2yA) => {
   const xO = x instanceof Object ? toObject(x) : I.object0
 
   if (I.Identity === A) {
@@ -650,6 +685,34 @@ const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
         if (void 0 !== y) return y
       }
     }
+  } else if (SelectAsync === A) {
+    return I.thenIdentityU(
+      v =>
+        void 0 !== v
+          ? v
+          : selectAsync(
+              arrayStep,
+              (i, xks, k2o) => {
+                const k = xks[i]
+                if (void 0 === k2o[k]) {
+                  return otherwise(xO[k], k, A, xi2yA)
+                }
+              },
+              -1,
+              I.keys(xO),
+              k2o
+            ),
+      selectAsync(
+        arrayStep,
+        (i, ks) => {
+          const k = ks[i]
+          return k2o[k](xO[k], k, A, xi2yA)
+        },
+        -1,
+        ks,
+        k2o
+      )
+    )
   } else {
     const {map, ap, of} = A
     let xsA = of(cpair)
@@ -671,11 +734,13 @@ const branchOr1Level = (otherwise, k2o) => (x, _i, A, xi2yA) => {
 
 function branchOrU(otherwise, template) {
   const k2o = I.create(null)
+  const ks = []
   for (const k in template) {
+    ks.push(k)
     const v = template[k]
     k2o[k] = I.isObject(v) ? branchOrU(otherwise, v) : toFunction(v)
   }
-  return branchOr1Level(otherwise, k2o)
+  return branchOr1Level(otherwise, k2o, ks)
 }
 
 const replaced = (inn, out, x) => (I.acyclicEqualsU(x, inn) ? out : x)
@@ -938,6 +1003,8 @@ const elemsI = (xs, _i, A, xi2yA) =>
     ? mapPartialIndexU(xi2yA, xs, void 0)
     : A === Select
     ? selectInArrayLike(xi2yA, xs)
+    : A === SelectAsync
+    ? selectInArrayLikeAsync(xi2yA, xs)
     : traversePartialIndex(A, xi2yA, xs, void 0)
 
 //
@@ -1369,7 +1436,13 @@ export const seemsArrayLike = x =>
 
 export {Identity, IdentityAsync} from './ext/infestines'
 
-export const Select = ConstantWith((l, r) => (void 0 !== l ? l : r))
+const apSelect = (l, r) => (void 0 !== l ? l : r)
+
+export const Select = I.ConstantWith(apSelect)
+
+export const SelectAsync = I.ConstantWith(function apSelectAsync(f, x) {
+  return I.isThenable(f) ? I.thenU(f => apSelect(f, x), f) : apSelect(f, x)
+})
 
 export const toFunction = (process.env.NODE_ENV === 'production'
   ? id
@@ -1392,7 +1465,13 @@ export const assign = I.curry(function assign(o, x, s) {
   return setU([o, assignTo], x, s)
 })
 
+export const assignAsync = I.curry(function assignAsync(o, x, s) {
+  return modifyAsyncU([o, assignTo], I.always(x), s)
+})
+
 export const disperse = I.curry(disperseU)
+
+export const disperseAsync = I.curry(disperseAsyncU)
 
 export const modify = I.curry(modifyU)
 
@@ -1402,7 +1481,15 @@ export const remove = I.curry(function remove(o, s) {
   return setU(o, void 0, s)
 })
 
+export const removeAsync = I.curry(function removeAsync(t, s) {
+  return modifyAsyncU(t, I.always(), s)
+})
+
 export const set = I.curry(setU)
+
+export const setAsync = I.curry(function setAsync(t, v, s) {
+  return modifyAsyncU(t, I.always(v), s)
+})
 
 export const traverse = I.curry(traverseU)
 
@@ -1564,6 +1651,11 @@ export const reIx = o => {
 
 export const skipIx = setName(tieIx(I.sndU), 'skipIx')
 
+// Async
+
+export const awaitIt = (x, i, F, xi2yF) =>
+  I.isThenable(x) ? I.thenU(x => xi2yF(x, i), x) : xi2yF(x, i)
+
 // Debugging
 
 export function getLog(l, s) {
@@ -1646,6 +1738,8 @@ export const elemsTotal = (xs, i, A, xi2yA) =>
       ? mapPartialIndexU(xi2yA, xs, mapPartialIndexU)
       : A === Select
       ? selectInArrayLike(xi2yA, xs)
+      : A === SelectAsync
+      ? selectInArrayLikeAsync(xi2yA, xs)
       : traversePartialIndex(A, xi2yA, xs, traversePartialIndex)
     : A.of(xs)
 
@@ -1700,7 +1794,10 @@ export function matches(re) {
   }
 }
 
-export const values = setName(branchOr1Level(identity, I.protoless0), 'values')
+export const values = setName(
+  branchOr1Level(identity, I.protoless0, I.array0),
+  'values'
+)
 
 export function children(x, i, C, xi2yC) {
   return I.isArray(x)
@@ -1752,6 +1849,17 @@ export const all = I.curry(function all(xi2b, t, s) {
 
 export const and = all(id)
 
+export const allAsync = I.curry(function allAsync(xi2b, t, s) {
+  return I.thenResolveU(
+    I.not,
+    toFunction(t)(s, void 0, SelectAsync, (x, i) =>
+      I.thenIdentityU(allIt, xi2b(x, i))
+    )
+  )
+})
+
+export const andAsync = allAsync(id)
+
 export const all1 = I.curry(function all1(xi2b, t, s) {
   let result = false
   getAsU(
@@ -1777,6 +1885,15 @@ export const any = I.curry(function any(xi2b, t, s) {
   )
 })
 
+export const anyAsync = I.curry(function anyAsync(xi2b, t, s) {
+  return I.thenResolveU(
+    toBoolean,
+    toFunction(t)(s, void 0, SelectAsync, (x, i) =>
+      I.thenIdentityU(anyIt, xi2b(x, i))
+    )
+  )
+})
+
 export const collectAs = (process.env.NODE_ENV === 'production'
   ? I.curry
   : C.res(I.freeze))(function collectAs(xi2y, t, s) {
@@ -1794,6 +1911,22 @@ export const collectAs = (process.env.NODE_ENV === 'production'
 
 export const collect = collectAs(id)
 
+export const collectAsAsync = I.curry((xi2y, t, s) => {
+  const results = []
+  const pushDefined = y => {
+    if (void 0 !== y) results.push(y)
+  }
+  const r = toFunction(t)(s, void 0, SelectAsync, (x, i) => {
+    const y = xi2y(x, i)
+    return I.isThenable(y) ? I.thenU(pushDefined, y) : pushDefined(y)
+  })
+  return I.isThenable(r)
+    ? I.thenU(() => freezeInDev(results), r)
+    : I.resolve(freezeInDev(results))
+})
+
+export const collectAsync = collectAsAsync(id)
+
 export const collectTotalAs = (process.env.NODE_ENV === 'production'
   ? I.curry
   : C.res(I.freeze))(function collectTotalAs(xi2y, t, s) {
@@ -1810,9 +1943,13 @@ export const collectTotalAs = (process.env.NODE_ENV === 'production'
 
 export const collectTotal = collectTotalAs(id)
 
-export const concatAs = mkTraverse(id, ConstantOf)
+export const concatAs = mkTraverse(id, I.ConstantOf)
 
 export const concat = concatAs(id)
+
+export const concatAsAsync = mkTraverse(I.resolve, I.ConstantAsyncOf)
+
+export const concatAsync = concatAsAsync(id)
 
 export const countIf = I.curry(function countIf(p, t, s) {
   return traverseU(Sum, (x, i) => (p(x, i) ? 1 : 0), t, s)
@@ -1872,6 +2009,15 @@ export const forEach = I.curry(function forEach(f, t, s) {
   )
 })
 
+export const forEachAsync = I.curry(function forEachAsync(f, t, s) {
+  return I.resolve(
+    toFunction(t)(s, void 0, SelectAsync, (x, i) => {
+      const r = f(x, i)
+      if (I.isThenable(r)) return I.thenU(ignore, r)
+    })
+  )
+})
+
 export const forEachWith = I.curry(function forEachWith(newC, ef, t, s) {
   const c = newC()
   getAsU(
@@ -1890,6 +2036,12 @@ export function get(l, s) {
 
 export const getAs = I.curry(getAsU)
 
+export const getAsAsync = I.curry(function getAsAsync(f, t, s) {
+  return I.resolve(toFunction(t)(s, void 0, SelectAsync, f))
+})
+
+export const getAsync = getAsAsync(id)
+
 export const isDefined = I.curry(function isDefined(t, s) {
   return void 0 !== getAsU(id, t, s)
 })
@@ -1905,14 +2057,17 @@ export const joinAs = mkTraverse(
     : C.par(
         0,
         C.ef(reqString('`join` and `joinAs` expect a string delimiter'))
-      ))(function joinAs(d) {
-    return ConstantWith((x, y) =>
-      void 0 !== x ? (void 0 !== y ? x + d + y : x) : y
-    )
-  })
+      ))(setName(I.pipe2U(JoinMonoid, I.ConstantOf), 'joinAs'))
 )
 
 export const join = joinAs(id)
+
+export const joinAsAsync = mkTraverse(
+  I.pipe2U(I.resolve, I.then(toStringPartial)),
+  setName(I.pipe2U(JoinMonoid, I.ConstantAsyncOf), 'joinAsAsync')
+)
+
+export const joinAsync = joinAsAsync(id)
 
 export const maximumBy = mumBy(I.gtU)
 
@@ -1937,6 +2092,28 @@ export const meanAs = I.curry(function meanAs(xi2y, t, s) {
 
 export const mean = meanAs(id)
 
+export const meanAsAsync = I.curry(function meanAsAsync(xi2y, t, s) {
+  let sum = 0
+  let num = 0
+  const accumDefined = y => {
+    if (void 0 !== y) {
+      num += 1
+      sum += y
+    }
+  }
+  return I.resolve(
+    I.thenU(
+      () => sum / num,
+      toFunction(t)(s, void 0, SelectAsync, (x, i) => {
+        const y = xi2y(x, i)
+        return I.isThenable(y) ? I.thenU(accumDefined, y) : accumDefined(y)
+      })
+    )
+  )
+})
+
+export const meanAsync = meanAsAsync(id)
+
 export const minimumBy = mumBy(I.ltU)
 
 export const minimum = minimumBy(id)
@@ -1953,9 +2130,15 @@ export const none = I.curry(function none(xi2b, t, s) {
 
 export const or = any(id)
 
-export const productAs = traverse(ConstantWith(I.multiplyU, 1))
+export const orAsync = anyAsync(id)
 
-export const product = productAs(unto(1))
+export const productAs = traverse(Product)
+
+export const product = productAs(unto1)
+
+export const productAsAsync = I.pipe2U(traverse(ProductAsync), I.resolve)
+
+export const productAsync = productAsAsync(unto1)
 
 export const select =
   process.env.NODE_ENV === 'production'
@@ -1982,6 +2165,10 @@ export const selectAs =
 export const sumAs = traverse(Sum)
 
 export const sum = sumAs(unto0)
+
+export const sumAsAsync = I.pipe2U(traverse(SumAsync), I.resolve)
+
+export const sumAsync = sumAsAsync(unto0)
 
 // Creating new lenses
 
