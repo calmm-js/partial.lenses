@@ -411,7 +411,17 @@ export const iso = T.fn(
   T_isomorphism
 )
 
-export const _ = T.any
+export const _ = T_pattern
+
+export const andP = T.fnVarN(0, T_pattern, T_pattern)
+
+export const apP = T.fn([T_isomorphism, T_pattern], T_pattern)
+
+export const letP = T.fnVarN(2, T.any, T_pattern)
+
+export const notP = T.fn([T_pattern], T_pattern)
+
+export const orP = T.fnVarN(0, T_pattern, T_pattern)
 
 export const mapping = T.fn(
   [T.or(T_patternPair, T.fnVarN(0, T.any, T_patternPair))],

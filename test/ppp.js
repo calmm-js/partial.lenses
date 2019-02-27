@@ -31,10 +31,11 @@ export const isomap = R.curry((iso, ppp) => [ppp, L.cross([[], iso])])
 
 const empty = of([])
 
-const append = piso => [
-  L.cross([piso, []]),
-  L.mapping((xs, y, s) => [[[s, y], xs], [s, [...xs, y]]])
-]
+const append = piso =>
+  L.mapping((xs, y, s1, s2) => [
+    [s1, xs],
+    L.letP([[s2, y], L.apP(piso, s1)], [s2, [...xs, y]])
+  ])
 
 export const sequence = (...pisos) => [empty, pisos.map(append)]
 

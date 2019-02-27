@@ -4,6 +4,8 @@ import * as C from './contract'
 
 //
 
+const ignore = _ => {}
+
 const id = x => x
 
 const setName = process.env.NODE_ENV === 'production' ? x => x : I.defineNameU
@@ -1025,43 +1027,17 @@ const foldPartial = sa2s => sxs => {
 
 //
 
-const PAYLOAD = '珳襱댎纚䤤鬖罺좴'
-
-const isPayload = k => I.isString(k) && k.indexOf(PAYLOAD) === 0
-
-function Spread(i) {
-  this[PAYLOAD] = i
-  I.freeze(this)
-}
-
-const isSpread = I.isInstanceOf(Spread)
-
-const Variable = I.inherit(
-  function Variable(i) {
-    this[PAYLOAD + i] = this[PAYLOAD] = I.freeze([new Spread(i)])
-    I.freeze(this)
-  },
-  Object,
-  I.assocPartialU(I.iterator, function() {
-    return this[PAYLOAD][I.iterator]()
-  })
-)
-const isVariable = I.isInstanceOf(Variable)
-
-const vars = []
-function nVars(n) {
-  while (vars[I.LENGTH] < n) vars.push(new Variable(vars[I.LENGTH]))
-  return vars
-}
-
-const isPrimitive = x => x == null || typeof x !== 'object'
-
 function match1(kinds, i, e, x) {
   if (void 0 !== x) {
-    if (i in e) return I.acyclicEqualsU(e[i], x)
-    e[i] = x
-    const k = kinds[i]
-    return !k || k(x)
+    const previous = e[i]
+    if (undefined !== previous) {
+      if (I.acyclicEqualsU(e[i], x)) return e
+    } else {
+      const k = kinds[i]
+      if (!k || k(x)) {
+        return setIndex(i, x, e)
+      }
+    }
   }
 }
 
@@ -1081,47 +1057,432 @@ function checkKind(kinds, i, kind) {
 const arrayKind = x => void 0 === x || I.isArray(x)
 const objectKind = x => void 0 === x || I.isInstanceOf(Object)
 
-function checkPattern(kinds, p) {
-  if (isSpread(p)) {
-    throw Error('Spread patterns must be inside objects or arrays.')
-  } else if (I.isArray(p)) {
-    let nSpread = 0
-    for (let i = 0, n = p[I.LENGTH]; i < n; ++i) {
-      const pi = p[i]
-      if (isSpread(pi)) {
-        if (nSpread++)
-          throw Error('At most one spread is allowed in an array or object.')
-        checkKind(kinds, pi[PAYLOAD], arrayKind)
-      } else {
-        checkPattern(kinds, pi)
-      }
-    }
-  } else if (I.isObject(p)) {
-    let spread = p[PAYLOAD]
-    if (spread) {
-      spread = spread[0][PAYLOAD]
-      checkKind(kinds, spread, objectKind)
-    }
-    let n = 0
-    for (const k in p) {
-      if (isPayload(k)) {
-        if (2 < ++n)
-          throw Error('At most one spread is allowed in an array or object.')
-      } else {
-        checkPattern(kinds, p[k])
-      }
-    }
-  } else if (!isPrimitive(p) && !isVariable(p)) {
-    throw Error('Only plain arrays and objects are allowed in patterns.')
+//
+
+const PAYLOAD = '珳襱댎纚䤤鬖罺좴'
+
+const isPayload = k => I.isString(k) && k.indexOf(PAYLOAD) === 0
+
+function Spread(i) {
+  this[PAYLOAD] = i
+  I.freeze(this)
+}
+
+const isSpread = I.isInstanceOf(Spread)
+
+//
+
+const isPrimitive = x => {
+  if (x == null) return true
+  const t = typeof x
+  return t !== 'object' && t !== 'function'
+}
+
+const tVal = p => void 0 === p || all1(isPrimitive, leafs, p)
+const cVal = ignore
+const mVal = p => (e, x) => I.acyclicEqualsU(p, x) && e
+const sVal = I.always
+
+//
+
+const Variable = I.inherit(
+  function Variable(i) {
+    this[PAYLOAD + i] = this[PAYLOAD] = I.freeze([new Spread(i)])
+    I.freeze(this)
+  },
+  Object,
+  I.assocPartialU(I.iterator, function() {
+    return this[PAYLOAD][I.iterator]()
+  })
+)
+
+const vars = []
+function nVars(n) {
+  while (vars[I.LENGTH] < n) vars.push(new Variable(vars[I.LENGTH]))
+  return vars
+}
+
+const tVar = I.isInstanceOf(Variable)
+const cVar = ignore
+const mVar = (p, kinds) => {
+  const i = p[PAYLOAD][0][PAYLOAD]
+  return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
+}
+const sVar = p => {
+  const i = p[PAYLOAD][0][PAYLOAD]
+  return e => e[i]
+}
+
+//
+
+const LHS = 'l'
+const RHS = 'r'
+
+function And(lhs, rhs) {
+  const self = this
+  self[LHS] = lhs
+  self[RHS] = rhs
+  I.freeze(self)
+}
+
+const tAnd = I.isInstanceOf(And)
+const cAnd = (p, kinds, check) => {
+  check(p[LHS], kinds)
+  check(p[RHS], kinds)
+}
+const mAnd = (p, kinds, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  return (e, x) => {
+    e = lM(e, x)
+    if (e) e = rM(e, x)
+    return e
   }
 }
+const sAnd = (p, kinds, subst, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  const lS = subst(p[LHS], kinds)
+  const rS = subst(p[RHS], kinds)
+  return e => {
+    const l = lS(e)
+    if (rM(e, l)) return l
+    const r = rS(e)
+    if (lM(e, r)) return r
+  }
+}
+
+//
+
+function Or(lhs, rhs) {
+  const self = this
+  self[LHS] = lhs
+  self[RHS] = rhs
+  I.freeze(self)
+}
+
+const tOr = I.isInstanceOf(Or)
+const cOr = (p, kinds, check) => {
+  check(p[LHS], kinds)
+  check(p[RHS], kinds)
+}
+const mOr = (p, kinds, match) => {
+  const lM = match(p[LHS], kinds)
+  const rM = match(p[RHS], kinds)
+  return (e, x) => lM(e, x) || rM(e, x)
+}
+const sOr = (p, kinds, subst) => {
+  const lS = subst(p[LHS], kinds)
+  const rS = subst(p[RHS], kinds)
+  return e => {
+    const l = lS(e)
+    if (void 0 !== l) return l
+    const r = rS(e)
+    if (void 0 !== r) return r
+  }
+}
+
+//
+
+const PAT = 'p'
+
+function Not(pat) {
+  this[PAT] = pat
+  I.freeze(this)
+}
+
+const tNot = I.isInstanceOf(Not)
+const cNot = (p, kinds, check) => {
+  check(p[PAT])
+}
+const mNot = (p, kinds, match) => {
+  const m = match(p[PAT], kinds)
+  return (e, x) => {
+    if (!m(e, x)) return e
+  }
+}
+const sNot = I.always(ignore)
+
+//
+
+const tPr = I.isFunction
+const cPr = p => {
+  if (p[I.LENGTH] !== 1) throw Error(`Predicates should be unary`)
+}
+const mPr = p => (e, x) => p(x) && e
+const sPr = I.always(ignore)
+
+//
+
+const ISO = 'i'
+const PATTERN = 'p'
+
+function Ap(iso, pattern) {
+  const self = this
+  self[ISO] = iso
+  self[PATTERN] = pattern
+  I.freeze(self)
+}
+
+const tAp = I.isInstanceOf(Ap)
+const cAp = (p, kinds, check) => {
+  reqOptic(p[ISO])
+  check(p[PATTERN], kinds)
+}
+const mAp = (p, kinds, match) => {
+  const m = match(p[PATTERN], kinds)
+  const i = p[ISO]
+  return (e, x) => {
+    const y = getInverseU(i, x)
+    return m(e, y)
+  }
+}
+const sAp = (p, kinds, subst) => {
+  const s = subst(p[PATTERN], kinds)
+  const i = p[ISO]
+  return e => {
+    const x = s(e)
+    return getU(i, x)
+  }
+}
+
+//
+
+const TO = 't'
+const FROM = 'f'
+const BODY = 'b'
+
+function Let(to, from, body) {
+  const self = this
+  self[TO] = to
+  self[FROM] = from
+  self[BODY] = body
+  I.freeze(self)
+}
+
+const tLet = I.isInstanceOf(Let)
+const cLet = (p, kinds, check) => {
+  check(p[TO], kinds)
+  check(p[FROM], kinds)
+  check(p[BODY], kinds)
+}
+const mLet = (p, kinds, match, subst) => {
+  const bM = match(p[BODY], kinds)
+  const tS = subst(p[TO], kinds)
+  const fM = match(p[FROM], kinds)
+  return (e, x) => {
+    e = bM(e, x)
+    if (e) {
+      const tv = tS(e)
+      return fM(e, tv)
+    }
+  }
+}
+const sLet = (p, kinds, subst, match) => {
+  const fS = subst(p[FROM], kinds)
+  const tM = match(p[TO], kinds)
+  const bS = subst(p[BODY], kinds)
+  return e => {
+    const fv = fS(e)
+    if (void 0 !== fv) {
+      e = tM(e, fv)
+      if (e) return bS(e)
+    }
+  }
+}
+
+//
+
+const tArr = I.isArray
+const cArr = (p, kinds, check) => {
+  let nSpread = 0
+  for (let i = 0, n = p[I.LENGTH]; i < n; ++i) {
+    const pi = p[i]
+    if (isSpread(pi)) {
+      if (nSpread++)
+        throw Error('At most one spread is allowed in an array or object.')
+      checkKind(kinds, pi[PAYLOAD], arrayKind)
+    } else {
+      check(pi, kinds)
+    }
+  }
+}
+const mArr = (p, kinds, match) => {
+  const init = []
+  const rest = []
+  let spread = void 0
+  const n = p[I.LENGTH]
+  for (let i = 0; i < n; ++i) {
+    const x = p[i]
+    if (isSpread(x)) {
+      spread = x[PAYLOAD]
+      kinds[spread] = arrayKind
+    } else {
+      const side = void 0 !== spread ? rest : init
+      side.push(match(x, kinds))
+    }
+  }
+  return (e, x) => {
+    if (!seemsArrayLike(x)) return
+    let l = x[I.LENGTH]
+    if (void 0 !== spread ? l < n - 1 : l !== n) return
+    const j = init[I.LENGTH]
+    for (let i = 0; i < j; ++i) if (!(e = init[i](e, x[i]))) return
+    const k = rest[I.LENGTH]
+    l -= k
+    for (let i = 0; i < k; ++i) if (!(e = rest[i](e, x[l + i]))) return
+    return 0 <= spread
+      ? match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l))
+      : e
+  }
+}
+const sArr = (p, kinds, subst) => {
+  const init = []
+  const rest = []
+  let spread = void 0
+  const n = p[I.LENGTH]
+  for (let i = 0; i < n; ++i) {
+    const x = p[i]
+    if (isSpread(x)) {
+      spread = x[PAYLOAD]
+    } else if (x !== _) {
+      const side = void 0 !== spread ? rest : init
+      side.push(subst(x, kinds))
+    }
+  }
+  return freezeResultInDev(e => {
+    const r = []
+    for (let i = 0, n = init[I.LENGTH]; i < n; ++i) {
+      const v = init[i](e)
+      if (void 0 === v) return
+      r.push(v)
+    }
+    if (0 <= spread) {
+      const xs = e[spread]
+      if (xs) {
+        for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) {
+          r.push(xs[i])
+        }
+      }
+    }
+    for (let i = 0, n = rest[I.LENGTH]; i < n; ++i) {
+      const v = rest[i](e)
+      if (void 0 === v) return
+      r.push(v)
+    }
+    return r
+  })
+}
+
+//
+
+const tObj = I.isObject
+const cObj = (p, kinds, check) => {
+  let spread = p[PAYLOAD]
+  if (spread) {
+    spread = spread[0][PAYLOAD]
+    checkKind(kinds, spread, objectKind)
+  }
+  let n = 0
+  for (const k in p) {
+    if (isPayload(k)) {
+      if (2 < ++n)
+        throw Error('At most one spread is allowed in an array or object.')
+    } else {
+      check(p[k], kinds)
+    }
+  }
+}
+const mObj = (p, kinds, match) => {
+  let spread = p[PAYLOAD]
+  if (spread) {
+    spread = spread[0][PAYLOAD]
+    kinds[spread] = objectKind
+  }
+  p = modify(values, (p, k) => (isPayload(k) ? void 0 : match(p, kinds)), p)
+  const n = count(values, p)
+  return (e, x) => {
+    if (isPrimitive(x) || I.isArray(x)) return
+    x = toObject(x)
+    const rest = 0 <= spread && {}
+    let i = 0
+    for (const k in x) {
+      const m = p[k]
+      if (m) {
+        if (!(e = m(e, x[k]))) return
+        i++
+      } else if (void 0 !== spread) {
+        if (rest) rest[k] = x[k]
+      } else {
+        return
+      }
+    }
+    return i === n && (rest ? match1(kinds, spread, e, freezeInDev(rest)) : e)
+  }
+}
+const sObj = (p, kinds, subst) => {
+  let spread = p[PAYLOAD]
+  if (spread) spread = spread[0][PAYLOAD]
+  p = modify(
+    values,
+    (p, k) => {
+      if (isPayload(k) || _ === p) return
+      return subst(p, kinds)
+    },
+    p
+  )
+  return freezeResultInDev(e => {
+    const r = {}
+    for (const k in p) {
+      const v = p[k](e)
+      if (void 0 === v) return
+      r[k] = v
+    }
+    if (0 <= spread) {
+      const x = e[spread]
+      if (x) {
+        for (const k in x) {
+          r[k] = x[k]
+        }
+      }
+    }
+    return r
+  })
+}
+
+//
+
+const tsts = [tVal, tAnd, tOr, tNot, tPr, tVar, tAp, tLet, tArr, tObj]
+const chks = [cVal, cAnd, cOr, cNot, cPr, cVar, cAp, cLet, cArr, cObj]
+const mchs = [mVal, mAnd, mOr, mNot, mPr, mVar, mAp, mLet, mArr, mObj]
+const subs = [sVal, sAnd, sOr, sNot, sPr, sVar, sAp, sLet, sArr, sObj]
+
+const idxOf = p => {
+  for (let i = 0, n = tsts[I.LENGTH]; i < n; ++i) {
+    const t = tsts[i]
+    if (t(p)) return i
+  }
+  throw Error(`Unrecognized pattern: ${p}`)
+}
+
+const chkPattern = (p, kinds) => {
+  chks[idxOf(p)](p, kinds, chkPattern)
+}
+
+const mchPattern = (p, kinds) =>
+  mchs[idxOf(p)](p, kinds, mchPattern, subPattern)
+
+const subPattern = (p, kinds) =>
+  subs[idxOf(p)](p, kinds, subPattern, mchPattern)
+
+//
 
 const checkPatternInDev =
   process.env.NODE_ENV === 'production'
     ? id
     : p => {
         const kinds = []
-        checkPattern(kinds, p)
+        chkPattern(p, kinds)
         return deepFreezeInDev(p)
       }
 
@@ -1130,136 +1491,16 @@ const checkPatternPairInDev =
     ? id
     : ps => {
         const kinds = []
-        checkPattern(kinds, ps[0])
-        checkPattern(kinds, ps[1])
+        chkPattern(ps[0], kinds)
+        chkPattern(ps[1], kinds)
         return deepFreezeInDev(ps)
       }
 
-const setDefined = (o, k, x) => {
-  if (void 0 !== x) o[k] = x
-}
-
-const pushDefined = (xs, x) => {
-  if (void 0 !== x) xs.push(x)
-}
-
-function toMatch(kinds, p) {
-  if (void 0 === p || all1(isPrimitive, leafs, p)) {
-    return (e, x) => I.acyclicEqualsU(p, x)
-  } else if (isVariable(p)) {
-    const i = p[PAYLOAD][0][PAYLOAD]
-    return i < 0 ? id : (e, x) => match1(kinds, i, e, x)
-  } else if (I.isArray(p)) {
-    const init = []
-    const rest = []
-    let spread = void 0
-    const n = p[I.LENGTH]
-    for (let i = 0; i < n; ++i) {
-      const x = p[i]
-      if (isSpread(x)) {
-        spread = x[PAYLOAD]
-        kinds[spread] = arrayKind
-      } else {
-        const side = void 0 !== spread ? rest : init
-        side.push(toMatch(kinds, x))
-      }
-    }
-    return (e, x) => {
-      if (!seemsArrayLike(x)) return
-      let l = x[I.LENGTH]
-      if (void 0 !== spread ? l < n - 1 : l !== n) return
-      const j = init[I.LENGTH]
-      for (let i = 0; i < j; ++i) if (!init[i](e, x[i])) return
-      const k = rest[I.LENGTH]
-      l -= k
-      for (let i = 0; i < k; ++i) if (!rest[i](e, x[l + i])) return
-      return (
-        !(0 <= spread) ||
-        match1(kinds, spread, e, copyToFrom(Array(l - j), 0, x, j, l))
-      )
-    }
-  } else {
-    let spread = p[PAYLOAD]
-    if (spread) {
-      spread = spread[0][PAYLOAD]
-      kinds[spread] = objectKind
-    }
-    p = modify(values, (p, k) => (isPayload(k) ? void 0 : toMatch(kinds, p)), p)
-    const n = count(values, p)
-    return (e, x) => {
-      if (isPrimitive(x) || I.isArray(x)) return
-      x = toObject(x)
-      const rest = 0 <= spread && {}
-      let i = 0
-      for (const k in x) {
-        const m = p[k]
-        if (m) {
-          if (!m(e, x[k])) return
-          i++
-        } else if (void 0 !== spread) {
-          if (rest) rest[k] = x[k]
-        } else {
-          return
-        }
-      }
-      return i === n && (!rest || match1(kinds, spread, e, freezeInDev(rest)))
-    }
+const oneway = (n, m, s) =>
+  function mapping(x) {
+    const e = m(Array(n), x)
+    if (e) return s(e)
   }
-}
-
-function toSubst(p, k) {
-  if (isPayload(k)) {
-    return void 0
-  } else if (void 0 === p || all1(isPrimitive, leafs, p)) {
-    return I.always(p)
-  } else if (isVariable(p)) {
-    const i = p[PAYLOAD][0][PAYLOAD]
-    return e => e[i]
-  } else if (I.isArray(p)) {
-    const init = []
-    const rest = []
-    let spread = void 0
-    const n = p[I.LENGTH]
-    for (let i = 0; i < n; ++i) {
-      const x = p[i]
-      if (isSpread(x)) {
-        spread = x[PAYLOAD]
-      } else {
-        const side = void 0 !== spread ? rest : init
-        side.push(toSubst(x))
-      }
-    }
-    return freezeResultInDev(e => {
-      const r = []
-      for (let i = 0, n = init[I.LENGTH]; i < n; ++i) pushDefined(r, init[i](e))
-      if (0 <= spread) {
-        const xs = e[spread]
-        if (xs)
-          for (let i = 0, n = xs[I.LENGTH]; i < n; ++i) pushDefined(r, xs[i])
-      }
-      for (let i = 0, n = rest[I.LENGTH]; i < n; ++i) pushDefined(r, rest[i](e))
-      return r
-    })
-  } else {
-    let spread = p[PAYLOAD]
-    if (spread) spread = spread[0][PAYLOAD]
-    p = modify(values, toSubst, p)
-    return freezeResultInDev(e => {
-      const r = {}
-      for (const k in p) setDefined(r, k, p[k](e))
-      if (0 <= spread) {
-        const x = e[spread]
-        if (x) for (const k in x) setDefined(r, k, x[k])
-      }
-      return r
-    })
-  }
-}
-
-const oneway = (n, m, s) => x => {
-  const e = Array(n)
-  if (m(e, x)) return s(e)
-}
 
 //
 
@@ -2261,13 +2502,51 @@ export const iso = I.curry(isoU)
 
 export const _ = new Variable(-1)
 
+export const andP = function andP() {
+  let p = toTrue
+  let n = arguments[I.LENGTH]
+  if (n) {
+    p = arguments[--n]
+    while (n--) p = new And(arguments[n], p)
+  }
+  return p
+}
+
+export const apP = I.curry(function apP(iso, pattern) {
+  return new Ap(iso, pattern)
+})
+
+export const letP = function letP(_binder, _pattern) {
+  let n = arguments[I.LENGTH] - 1
+  let p = arguments[n]
+  while (n--) {
+    const b = arguments[n]
+    p = new Let(b[0], b[1], p)
+  }
+  return p
+}
+
+export const notP = function notP(p) {
+  return new Not(p)
+}
+
+export const orP = function orP() {
+  let p = ignore
+  let n = arguments[I.LENGTH]
+  if (n) {
+    p = arguments[--n]
+    while (n--) p = new Or(arguments[n], p)
+  }
+  return p
+}
+
 export function mapping(ps) {
   let n = 0
   if (I.isFunction(ps)) ps = ps.apply(null, nVars((n = ps[I.LENGTH])))
   checkPatternPairInDev(ps)
   const kinds = Array(n)
-  const ms = ps.map(p => toMatch(kinds, p))
-  const ss = ps.map(toSubst)
+  const ms = ps.map(p => mchPattern(p, kinds))
+  const ss = ps.map(p => subPattern(p, kinds))
   return isoU(oneway(n, ms[0], ss[1]), oneway(n, ms[1], ss[0]))
 }
 
@@ -2281,7 +2560,7 @@ export function pattern(p) {
   if (I.isFunction(p)) p = p.apply(null, nVars((n = p[I.LENGTH])))
   checkPatternInDev(p)
   const kinds = Array(n)
-  const m = toMatch(kinds, p)
+  const m = mchPattern(p, kinds)
   return subset(x => m(Array(n), x))
 }
 

@@ -229,7 +229,9 @@ describe('arities', () => {
     alternatives: 1,
     and1: 2,
     and: 2,
+    andP: 0,
     any: 3,
+    apP: 2,
     append: 4,
     appendOp: 1,
     appendTo: 4,
@@ -319,6 +321,7 @@ describe('arities', () => {
     lazy: 1,
     leafs: 4,
     lens: 2,
+    letP: 2,
     limit: 2,
     log: 0,
     mapIx: 1,
@@ -339,11 +342,13 @@ describe('arities', () => {
     negate: 4,
     none: 3,
     normalize: 1,
+    notP: 1,
     offset: 2,
     optional: 4,
     or: 2,
     orAlternatively: 2,
     orElse: 2,
+    orP: 0,
     partsOf: 1,
     pattern: 1,
     patterns: 1,
@@ -1480,7 +1485,7 @@ const flatteningRules = L.alternatives(
     )
   ],
   [
-    L.ungroupBy(['ps', L.choices([0, 'id'], [])]),
+    L.ungroupBy(L.choices(['ps', 0, 'id'], 'id')),
     L.arrays(L.mapping((o, ps) => [{...o, ps}, {...o, parents: ps}]))
   ]
 )
@@ -2398,10 +2403,8 @@ describe('L.fold', () => {
 })
 
 describe('L.iterate', () => {
-  const step = abIa => [
-    L.mapping((a, b, bs) => [[a, [b, ...bs]], [[a, b], bs]]),
-    L.cross([abIa, L.identity])
-  ]
+  const step = abIa =>
+    L.mapping((a, b, bs) => [[a, [b, ...bs]], [L.apP(abIa, [a, b]), bs]])
   const foldl = abIa => [L.iterate(step(abIa)), L.mapping(a => [[a, []], a])]
   testEq(
     () =>
@@ -2428,6 +2431,66 @@ describe('L.patterns', () => {
 
 describe('L.mapping', () => {
   testEq(
+    () => L.get(L.mapping((x, y) => [x, L.orP([y], [...L._, y], {y})]), 'any'),
+    undefined
+  )
+  testEq(
+    () =>
+      L.get(
+        L.array(L.mapping((x, xs) => [L.andP(I.isArray, [x, ...xs]), [x, xs]])),
+        [[1, 2, 3], 'abc']
+      ),
+    [[1, [2, 3]]]
+  )
+  testEq(
+    () =>
+      L.get(L.array(L.mapping(x => [L.andP(L.notP([]), x), x])), [{}, 1, []]),
+    [{}, 1]
+  )
+  testEq(
+    () =>
+      L.get(L.array(L.mapping(x => [L.orP(L.andP(x, []), L.andP(x, {})), x])), [
+        {},
+        1,
+        []
+      ]),
+    [{}, []]
+  )
+  testEq(
+    () =>
+      L.getInverse(
+        L.array(L.mapping(x => [L.orP(L.andP(x, []), L.andP(x, {})), x])),
+        [{}, 1, []]
+      ),
+    [{}, []]
+  )
+  testEq(
+    () => L.get(L.array(L.mapping(x => [L.andP({...L._}, x), x])), [{}, []]),
+    [{}]
+  )
+  testEq(
+    () =>
+      L.getInverse(L.array(L.mapping((x, y) => [L.andP(x, {...L._}, y), y])), [
+        {},
+        []
+      ]),
+    [{}]
+  )
+  testEq(
+    () =>
+      L.get(
+        L.applyAt(
+          L.values,
+          L.mapping((x, y) => [
+            [x, L.apP(L.mapping(x => [x, [x, x]]), y)],
+            [x, y]
+          ])
+        ),
+        {a: [1, 2], b: [3, [4, 4]]}
+      ),
+    {b: [3, 4]}
+  )
+  testEq(
     () =>
       L.get(L.mapping((x, y) => [[x, L._, ...L._, y], [y, ...L._, x]]), [
         1,
@@ -2435,6 +2498,10 @@ describe('L.mapping', () => {
         3
       ]),
     [3, 1]
+  )
+  testEq(
+    () => L.get(L.mapping((x, y) => [x, L.letP([[y], x], y)]), 1),
+    undefined
   )
   testEq(() => L.get(L.mapping(xs => [xs, [[...xs], [...xs]]]), [1, 2]), [
     [1, 2],
@@ -2549,6 +2616,7 @@ describe('L.mapping', () => {
       ),
     {x: 2, y: 1}
   )
+  testEq(() => L.get(L.array(L.mapping(xs => [xs, [...xs]])), [[], {}]), [[]])
 })
 
 describe('L.mappings', () => {
@@ -3092,6 +3160,7 @@ if (process.env.NODE_ENV !== 'production') {
     testThrows(() => L.mapping(x => [...x, []]))
     testThrows(() => L.mapping(() => [new XYZ(), []]))
     testThrows(() => L.mapping((x, y) => [{...x, ...y}, []]))
+    testThrows(() => L.mapping([(x, y) => x === y, 0]))
   })
 }
 
