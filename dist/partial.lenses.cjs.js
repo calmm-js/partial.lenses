@@ -195,14 +195,14 @@ var toGetter = function toGetter(getter) {
 
 //
 
-var tryCatch = function tryCatch(fn$$1) {
+var tryCatch = function tryCatch(fn) {
   return copyName(function (x) {
     try {
-      return fn$$1(x);
+      return fn(x);
     } catch (e) {
       return e;
     }
-  }, fn$$1);
+  }, fn);
 };
 
 //
@@ -285,9 +285,9 @@ var rev = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(I.freez
 
 //
 
-var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var mapPartialIndexU = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function (xi2y, xs, skip) {
-    var ys = fn$$1(xi2y, xs, skip);
+    var ys = fn(xi2y, xs, skip);
     if (xs !== ys) I.freeze(ys);
     return ys;
   };
@@ -331,9 +331,9 @@ var mapsIfArray = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res
   }
 });
 
-var copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var copyToFrom = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function (ys, k, xs, i, j) {
-    return ys[LENGTH] === k + j - i ? I.freeze(fn$$1(ys, k, xs, i, j)) : fn$$1(ys, k, xs, i, j);
+    return ys[LENGTH] === k + j - i ? I.freeze(fn(ys, k, xs, i, j)) : fn(ys, k, xs, i, j);
   };
 })(function (ys, k, xs, i, j) {
   while (i < j) {
@@ -798,9 +798,9 @@ var branchAssemble = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : 
   };
 });
 
-var branchOr1LevelIdentity = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var branchOr1LevelIdentity = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function (otherwise, k2o, xO, x, A, xi2yA) {
-    var y = fn$$1(otherwise, k2o, xO, x, A, xi2yA);
+    var y = fn(otherwise, k2o, xO, x, A, xi2yA);
     if (x !== y) I.freeze(y);
     return y;
   };
@@ -933,11 +933,11 @@ var reLastIndex = function reLastIndex(m) {
   return m[INDEX] + m[0][LENGTH];
 };
 
-var reNext = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var reNext = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function (m, re) {
-    var res$$1 = fn$$1(m, re);
-    if ('' === res$$1) warn(reNext, '`matches(' + re + ')` traversal terminated due to empty match.  `matches` traversal shouldn\'t be used with regular expressions that can produce empty matches.');
-    return res$$1;
+    var res = fn(m, re);
+    if ('' === res) warn(reNext, '`matches(' + re + ')` traversal terminated due to empty match.  `matches` traversal shouldn\'t be used with regular expressions that can produce empty matches.');
+    return res;
   };
 })(function (m, re) {
   var lastIndex = re[LAST_INDEX];
@@ -1069,25 +1069,25 @@ var subseqU = function subseq(begin, end, t) {
 
 //
 
-var attemptU = function attemptU(fn$$1, x) {
+var attemptU = function attemptU(fn, x) {
   if (void 0 !== x) {
-    var y = fn$$1(x);
+    var y = fn(x);
     if (void 0 !== y) return y;
   }
   return x;
 };
 
-var rewriteAttempt = function rewriteAttempt(fn$$1) {
+var rewriteAttempt = function rewriteAttempt(fn) {
   return function (x, i, F, xi2yF) {
     return F.map(function (x) {
-      return attemptU(fn$$1, x);
+      return attemptU(fn, x);
     }, xi2yF(x, i));
   };
 };
 
-var rereadAttempt = function rereadAttempt(fn$$1) {
+var rereadAttempt = function rereadAttempt(fn) {
   return function (x, i, F, xi2yF) {
-    return xi2yF(attemptU(fn$$1, x), i);
+    return xi2yF(attemptU(fn, x), i);
   };
 };
 
@@ -1099,9 +1099,9 @@ var transformEvery = function transformEvery(optic) {
   }));
 };
 
-var transformSome = function transformSome(fn$$1) {
+var transformSome = function transformSome(fn) {
   return transform(lazy(function (rec) {
-    return choices(getter(fn$$1), [children, rec]);
+    return choices(getter(fn), [children, rec]);
   }));
 };
 
@@ -1199,7 +1199,7 @@ var iteratePartial = function iteratePartial(aa) {
 
 //
 
-var crossPartial = function crossPartial(op, ls, or$$1) {
+var crossPartial = function crossPartial(op, ls, or) {
   return function (xs, ss) {
     var n = ls[LENGTH];
     if (!seemsArrayLike(xs)) return;
@@ -1207,17 +1207,17 @@ var crossPartial = function crossPartial(op, ls, or$$1) {
     var m = Math.max(n, xs[LENGTH], ss[LENGTH]);
     var ys = Array(m);
     for (var i = 0; i < m; ++i) {
-      if (void 0 === (ys[i] = op(i < n ? ls[i] : or$$1, xs[i], ss[i]))) return;
+      if (void 0 === (ys[i] = op(i < n ? ls[i] : or, xs[i], ss[i]))) return;
     }return ys;
   };
 };
 
-var crossOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.curry : function (fn$$1) {
-  return I.curry(function crossOr(or$$1, ls) {
-    return toFunction([isoU(id, I.freeze), fn$$1(or$$1, ls), isoU(I.freeze, id)]);
+var crossOr = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? I.curry : function (fn) {
+  return I.curry(function crossOr(or, ls) {
+    return toFunction([isoU(id, I.freeze), fn(or, ls), isoU(I.freeze, id)]);
   });
-})(function crossOr(or$$1, ls) {
-  return lensU(crossPartial(getU, ls, or$$1), crossPartial(setU, ls, or$$1));
+})(function crossOr(or, ls) {
+  return lensU(crossPartial(getU, ls, or), crossPartial(setU, ls, or));
 });
 
 var subsetPartial = function subsetPartial(p) {
@@ -1556,7 +1556,7 @@ var groupByFn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(r
 
 //
 
-var zW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(I.freeze)))(function (fn$$1) {
+var zW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(I.freeze)))(function (fn) {
   return function zipWith1(xys) {
     if (isPair(xys)) {
       var ys = xys[1];
@@ -1565,25 +1565,25 @@ var zW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(I
         var x = xys[0];
         var zs = Array(n);
         for (var i = 0; i < n; ++i) {
-          if (void 0 === (zs[i] = fn$$1([x, ys[i]]))) return;
+          if (void 0 === (zs[i] = fn([x, ys[i]]))) return;
         }return zs;
       }
     }
   };
 });
 
-var unzW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(freezeObjectOfObjects)))(function (fn$$1) {
+var unzW1Fn = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : res(res(freezeObjectOfObjects)))(function (fn) {
   return function unzipWith1(zs) {
     if (I.isArray(zs)) {
       var n = zs[LENGTH];
       if (n) {
-        var xy0 = fn$$1(zs[0]);
+        var xy0 = fn(zs[0]);
         if (isPair(xy0)) {
           var ys = Array(n);
           var x = xy0[0];
           ys[0] = xy0[1];
           for (var i = 1; i < n; ++i) {
-            var xy = fn$$1(zs[i]);
+            var xy = fn(zs[i]);
             if (!isPair(xy) || !I.acyclicEqualsU(x, xy[0])) return;
             ys[i] = xy[1];
           }
@@ -1680,7 +1680,7 @@ var choose = function choose(xiM2o) {
   }, xiM2o);
 };
 
-var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function cond() {
     var pair = tup(ef(reqFn), ef(reqOptic));
 
@@ -1690,7 +1690,7 @@ var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (
 
     arr(pair)(cs.slice(0, -1));
     arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
-    return fn$$1.apply(undefined, cs);
+    return fn.apply(undefined, cs);
   };
 })(function cond() {
   var n = arguments[LENGTH];
@@ -1702,7 +1702,7 @@ var cond = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (
   return r;
 });
 
-var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function condOf(of) {
     var pair = tup(ef(reqFn), ef(reqOptic));
 
@@ -1712,7 +1712,7 @@ var condOf = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function
 
     arr(pair)(cs.slice(0, -1));
     arr(or(tup(ef(reqOptic)), pair))(cs.slice(-1));
-    return fn$$1.apply(undefined, [of].concat(cs));
+    return fn.apply(undefined, [of].concat(cs));
   };
 })(function condOf(of) {
   of = toFunction(of);
@@ -1854,9 +1854,9 @@ var transformAsync = /*#__PURE__*/I.curry(function transformAsync(o, s) {
 
 // Sequencing
 
-var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var seq = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function seq() {
-    return par(2, ef(reqMonad('seq')))(fn$$1.apply(undefined, arguments));
+    return par(2, ef(reqMonad('seq')))(fn.apply(undefined, arguments));
   };
 })(function seq() {
   var n = arguments[LENGTH];
@@ -2084,10 +2084,10 @@ var forEach = /*#__PURE__*/I.curry(function forEach(f, t, s) {
   }, t, s);
 });
 
-var forEachWith = /*#__PURE__*/I.curry(function forEachWith(newC, ef$$1, t, s) {
+var forEachWith = /*#__PURE__*/I.curry(function forEachWith(newC, ef, t, s) {
   var c = newC();
   getAsU(function (x, i) {
-    ef$$1(c, x, i);
+    ef(c, x, i);
   }, t, s);
   return c;
 });
@@ -2365,11 +2365,11 @@ var pick = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : par(0, ef(
   };
 });
 
-var replace$1 = /*#__PURE__*/I.curry(function replace$$1(inn, out) {
+var replace$1 = /*#__PURE__*/I.curry(function replace(inn, out) {
   function o2i(x) {
     return replaced(out, inn, x);
   }
-  return function replace$$1(x, i, F, xi2yF) {
+  return function replace(x, i, F, xi2yF) {
     return F.map(o2i, xi2yF(replaced(inn, out, x), i));
   };
 });
@@ -2682,9 +2682,9 @@ var replaces = /*#__PURE__*/I.curry(function replaces(i, o) {
   return stringIsoU(replace(toRegExpU(i, 'g'), o), replace(toRegExpU(o, 'g'), i));
 });
 
-var split = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var split = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function split(_sep) {
-    return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
+    return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)]);
   };
 })(function split(sep) {
   var re = arguments[LENGTH] > 1 ? arguments[1] : sep;
@@ -2695,9 +2695,9 @@ var split = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function 
   }));
 });
 
-var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn$$1) {
+var uncouple = /*#__PURE__*/(process.env.NODE_ENV === 'production' ? id : function (fn) {
   return function uncouple(_sep) {
-    return toFunction([fn$$1.apply(null, arguments), isoU(I.freeze, id)]);
+    return toFunction([fn.apply(null, arguments), isoU(I.freeze, id)]);
   };
 })(function uncouple(sep) {
   var re = toRegExpU(arguments[LENGTH] > 1 ? arguments[1] : sep, '');
@@ -2721,13 +2721,13 @@ var querystring = /*#__PURE__*/setName( /*#__PURE__*/toFunction([/*#__PURE__*/re
 
 // Arithmetic isomorphisms
 
-var add$1 = function add$$1(c) {
+var add$1 = function add$1(c) {
   return numberIsoU(add(c), add(-c));
 };
 var divide = function divide(c) {
   return numberIsoU(divideBy(c), multiply(c));
 };
-var multiply$1 = function multiply$$1(c) {
+var multiply$1 = function multiply$1(c) {
   return numberIsoU(multiply(c), divideBy(c));
 };
 var negate$1 = /*#__PURE__*/numberIsoU(negate, negate);
@@ -2747,192 +2747,222 @@ var pointer = function pointer(s) {
   return ts;
 };
 
-exports.Identity = I.Identity;
-exports.IdentityAsync = I.IdentityAsync;
-exports.FantasyFunctor = I.FantasyFunctor;
-exports.fromFantasy = I.fromFantasy;
-exports.fromFantasyApplicative = I.fromFantasyApplicative;
-exports.fromFantasyMonad = I.fromFantasyMonad;
-exports.seemsArrayLike = seemsArrayLike;
+Object.defineProperty(exports, 'FantasyFunctor', {
+  enumerable: true,
+  get: function () {
+    return I.FantasyFunctor;
+  }
+});
+Object.defineProperty(exports, 'Identity', {
+  enumerable: true,
+  get: function () {
+    return I.Identity;
+  }
+});
+Object.defineProperty(exports, 'IdentityAsync', {
+  enumerable: true,
+  get: function () {
+    return I.IdentityAsync;
+  }
+});
+Object.defineProperty(exports, 'fromFantasy', {
+  enumerable: true,
+  get: function () {
+    return I.fromFantasy;
+  }
+});
+Object.defineProperty(exports, 'fromFantasyApplicative', {
+  enumerable: true,
+  get: function () {
+    return I.fromFantasyApplicative;
+  }
+});
+Object.defineProperty(exports, 'fromFantasyMonad', {
+  enumerable: true,
+  get: function () {
+    return I.fromFantasyMonad;
+  }
+});
 exports.Select = Select;
-exports.toFunction = toFunction;
+exports._ = _;
+exports.add = add$1;
+exports.all = all;
+exports.all1 = all1;
+exports.alternatives = alternatives;
+exports.and = and$1;
+exports.and1 = and1;
+exports.any = any;
+exports.append = append;
+exports.appendOp = appendOp;
+exports.appendTo = appendTo;
+exports.applyAt = applyAt;
+exports.array = array;
+exports.arrays = arrays;
 exports.assign = assign;
-exports.disperse = disperse;
-exports.modify = modify;
-exports.modifyAsync = modifyAsync;
-exports.remove = remove;
-exports.set = set;
-exports.traverse = traverse;
-exports.compose = compose;
-exports.flat = flat;
-exports.lazy = lazy;
+exports.assignOp = assignOp;
+exports.assignTo = assignTo;
+exports.attemptEveryDown = attemptEveryDown;
+exports.attemptEveryUp = attemptEveryUp;
+exports.attemptSomeDown = attemptSomeDown;
+exports.branch = branch;
+exports.branchOr = branchOr;
+exports.branches = branches;
+exports.chain = chain;
+exports.children = children;
+exports.choice = choice;
 exports.choices = choices;
 exports.choose = choose;
+exports.collect = collect;
+exports.collectAs = collectAs;
+exports.collectTotal = collectTotal;
+exports.collectTotalAs = collectTotalAs;
+exports.complement = complement;
+exports.compose = compose;
+exports.concat = concat;
+exports.concatAs = concatAs;
 exports.cond = cond;
 exports.condOf = condOf;
-exports.ifElse = ifElse;
-exports.orElse = orElse;
-exports.chain = chain;
-exports.choice = choice;
-exports.unless = unless;
-exports.when = when;
-exports.optional = optional;
-exports.zero = zero;
-exports.mapIx = mapIx;
-exports.setIx = setIx;
-exports.tieIx = tieIx;
-exports.joinIx = joinIx;
-exports.reIx = reIx;
-exports.skipIx = skipIx;
-exports.getLog = getLog;
-exports.log = log;
-exports.transform = transform;
-exports.transformAsync = transformAsync;
-exports.seq = seq;
-exports.branchOr = branchOr;
-exports.branch = branch;
-exports.branches = branches;
+exports.conjugate = conjugate;
+exports.count = count;
+exports.countIf = countIf;
+exports.counts = counts;
+exports.countsAs = countsAs;
+exports.cross = cross;
+exports.defaults = defaults;
+exports.define = define;
+exports.disjoint = disjoint;
+exports.disperse = disperse;
+exports.divide = divide;
+exports.dropPrefix = dropPrefix;
+exports.dropSuffix = dropSuffix;
 exports.elems = elems;
 exports.elemsTotal = elemsTotal;
 exports.entries = entries;
-exports.keys = keys;
-exports.keysEverywhere = keysEverywhere;
-exports.subseq = subseq;
-exports.limit = limit;
-exports.offset = offset;
-exports.matches = matches;
-exports.values = values;
-exports.children = children;
+exports.filter = filter;
+exports.find = find;
+exports.findWith = findWith;
+exports.first = first;
+exports.flat = flat;
 exports.flatten = flatten;
-exports.query = query;
-exports.satisfying = satisfying;
-exports.leafs = leafs;
-exports.whereEq = whereEq;
-exports.all = all;
-exports.and = and$1;
-exports.all1 = all1;
-exports.and1 = and1;
-exports.any = any;
-exports.collectAs = collectAs;
-exports.collect = collect;
-exports.collectTotalAs = collectTotalAs;
-exports.collectTotal = collectTotal;
-exports.concatAs = concatAs;
-exports.concat = concat;
-exports.countIf = countIf;
-exports.count = count;
-exports.countsAs = countsAs;
-exports.counts = counts;
+exports.fold = fold;
+exports.foldTraversalLens = foldTraversalLens;
 exports.foldl = foldl;
 exports.foldr = foldr;
 exports.forEach = forEach;
 exports.forEachWith = forEachWith;
 exports.get = get;
 exports.getAs = getAs;
+exports.getInverse = getInverse;
+exports.getLog = getLog;
+exports.getter = getter;
+exports.groupBy = groupBy;
+exports.identity = identity;
+exports.ifElse = ifElse;
+exports.index = index;
+exports.indexed = indexed;
+exports.inverse = inverse;
+exports.is = is;
 exports.isDefined = isDefined;
 exports.isEmpty = isEmpty;
-exports.joinAs = joinAs;
+exports.iso = iso;
+exports.iterate = iterate;
 exports.join = join;
-exports.maximumBy = maximumBy;
-exports.maximum = maximum;
-exports.meanAs = meanAs;
-exports.mean = mean;
-exports.minimumBy = minimumBy;
-exports.minimum = minimum;
-exports.none = none;
-exports.or = or$1;
-exports.productAs = productAs;
-exports.product = product;
-exports.select = select;
-exports.selectAs = selectAs;
-exports.sumAs = sumAs;
-exports.sum = sum;
-exports.foldTraversalLens = foldTraversalLens;
-exports.getter = getter;
-exports.lens = lens;
-exports.partsOf = partsOf;
-exports.setter = setter;
-exports.defaults = defaults;
-exports.define = define;
-exports.normalize = normalize;
-exports.required = required;
-exports.reread = reread;
-exports.rewrite = rewrite;
-exports.filter = filter;
-exports.find = find;
-exports.findWith = findWith;
-exports.first = first;
-exports.index = index;
+exports.joinAs = joinAs;
+exports.joinIx = joinIx;
+exports.json = json;
+exports.keyed = keyed;
+exports.keys = keys;
+exports.keysEverywhere = keysEverywhere;
 exports.last = last;
-exports.prefix = prefix;
-exports.slice = slice;
-exports.suffix = suffix;
+exports.lazy = lazy;
+exports.leafs = leafs;
+exports.lens = lens;
+exports.limit = limit;
+exports.log = log;
+exports.mapIx = mapIx;
+exports.mapping = mapping;
+exports.mappings = mappings;
+exports.matches = matches;
+exports.maximum = maximum;
+exports.maximumBy = maximumBy;
+exports.mean = mean;
+exports.meanAs = meanAs;
+exports.minimum = minimum;
+exports.minimumBy = minimumBy;
+exports.modify = modify;
+exports.modifyAsync = modifyAsync;
+exports.modifyOp = modifyOp;
+exports.multikeyed = multikeyed;
+exports.multiply = multiply$1;
+exports.negate = negate$1;
+exports.none = none;
+exports.normalize = normalize;
+exports.offset = offset;
+exports.optional = optional;
+exports.or = or$1;
+exports.orAlternatively = orAlternatively;
+exports.orElse = orElse;
+exports.partsOf = partsOf;
+exports.pattern = pattern;
+exports.patterns = patterns;
+exports.pick = pick;
 exports.pickIn = pickIn;
+exports.pointer = pointer;
+exports.prefix = prefix;
+exports.prependOp = prependOp;
+exports.prependTo = prependTo;
+exports.product = product;
+exports.productAs = productAs;
 exports.prop = prop;
 exports.props = props;
 exports.propsExcept = propsExcept;
 exports.propsOf = propsOf;
+exports.query = query;
+exports.querystring = querystring;
+exports.reIx = reIx;
 exports.removable = removable;
-exports.valueOr = valueOr;
-exports.pick = pick;
-exports.replace = replace$1;
-exports.appendTo = appendTo;
-exports.append = append;
-exports.assignTo = assignTo;
-exports.prependTo = prependTo;
-exports.appendOp = appendOp;
-exports.assignOp = assignOp;
-exports.modifyOp = modifyOp;
-exports.prependOp = prependOp;
-exports.setOp = setOp;
+exports.remove = remove;
 exports.removeOp = removeOp;
-exports.cross = cross;
-exports.getInverse = getInverse;
-exports.iso = iso;
-exports._ = _;
-exports.mapping = mapping;
-exports.mappings = mappings;
-exports.pattern = pattern;
-exports.patterns = patterns;
-exports.alternatives = alternatives;
-exports.applyAt = applyAt;
-exports.attemptEveryDown = attemptEveryDown;
-exports.attemptEveryUp = attemptEveryUp;
-exports.attemptSomeDown = attemptSomeDown;
-exports.conjugate = conjugate;
-exports.inverse = inverse;
-exports.iterate = iterate;
-exports.orAlternatively = orAlternatively;
-exports.fold = fold;
-exports.unfold = unfold;
-exports.complement = complement;
-exports.identity = identity;
-exports.is = is;
-exports.subset = subset;
-exports.array = array;
-exports.arrays = arrays;
-exports.indexed = indexed;
+exports.replace = replace$1;
+exports.replaces = replaces;
+exports.required = required;
+exports.reread = reread;
 exports.reverse = reverse;
+exports.rewrite = rewrite;
+exports.satisfying = satisfying;
+exports.seemsArrayLike = seemsArrayLike;
+exports.select = select;
+exports.selectAs = selectAs;
+exports.seq = seq;
+exports.set = set;
+exports.setIx = setIx;
+exports.setOp = setOp;
+exports.setter = setter;
 exports.singleton = singleton;
-exports.groupBy = groupBy;
+exports.skipIx = skipIx;
+exports.slice = slice;
+exports.split = split;
+exports.subseq = subseq;
+exports.subset = subset;
+exports.subtract = subtract;
+exports.suffix = suffix;
+exports.sum = sum;
+exports.sumAs = sumAs;
+exports.tieIx = tieIx;
+exports.toFunction = toFunction;
+exports.transform = transform;
+exports.transformAsync = transformAsync;
+exports.traverse = traverse;
+exports.uncouple = uncouple;
+exports.unfold = unfold;
 exports.ungroupBy = ungroupBy;
-exports.zipWith1 = zipWith1;
+exports.unless = unless;
 exports.unzipWith1 = unzipWith1;
-exports.disjoint = disjoint;
-exports.keyed = keyed;
-exports.multikeyed = multikeyed;
-exports.json = json;
 exports.uri = uri;
 exports.uriComponent = uriComponent;
-exports.dropPrefix = dropPrefix;
-exports.dropSuffix = dropSuffix;
-exports.replaces = replaces;
-exports.split = split;
-exports.uncouple = uncouple;
-exports.querystring = querystring;
-exports.add = add$1;
-exports.divide = divide;
-exports.multiply = multiply$1;
-exports.negate = negate$1;
-exports.subtract = subtract;
-exports.pointer = pointer;
+exports.valueOr = valueOr;
+exports.values = values;
+exports.when = when;
+exports.whereEq = whereEq;
+exports.zero = zero;
+exports.zipWith1 = zipWith1;
